@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>Coal Management App</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Coal App">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- PDF and Excel Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Chart.js for interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <!-- Navbar will be loaded here -->
+    <div id="navbar-container"></div>
+
+    <div class="container py-4" id="main-content">
+        <!-- Main content goes here -->
+        <h1 class="text-center">Welcome</h1>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Your custom JS -->
+    <script src="utils.js"></script>
+    <script src="MainDashboard.js"></script>
+    <script src="LRParseDate.js"></script>
+    <script src="MDCWL-Lifting.js"></script>
+    <script src="MDCWL-Loading.js"></script>
+    <script src="Pachhwara-Prod&Desp.js"></script>
+    <script src="Pachhwara-QualityAnalysis.js"></script>
+    <script src="Loading&Receipt.js"></script>
+        <script src="CoalQualityPDF.js"></script>
+    <script src="CoalQuality&CostAnalysis.js"></script>
+    <script src="Dashboard-DailyCoalPosition.js"></script>
+    <script src="Dashbaord-Pachhwara.js"></script>
+
+    <script>
+        // Initialize navbar loading and setup
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing navbar...');
+            
+            // Register Service Worker for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            }
+            
+            // Check if required functions are loaded
+            console.log('Checking if showMainDashboard is loaded:', typeof showMainDashboard);
+            console.log('Checking if showPachhwaraDashboard is loaded:', typeof showPachhwaraDashboard);
+            
+            // Wait a bit for all scripts to load then check again
+            setTimeout(() => {
+                console.log('After delay - showMainDashboard:', typeof showMainDashboard);
+                console.log('After delay - showPachhwaraDashboard:', typeof showPachhwaraDashboard);
+                if (typeof showMainDashboard !== 'function') {
+                    console.error('showMainDashboard function not found!');
+                }
+                if (typeof showPachhwaraDashboard !== 'function') {
+                    console.error('showPachhwaraDashboard function not found!');
+                }
+                
+                // Load main dashboard by default
+                if (typeof showMainDashboard === 'function') {
+                    showMainDashboard();
+                }
+            }, 1000);
+        });
+    </script>
+
+</body>
+</html>

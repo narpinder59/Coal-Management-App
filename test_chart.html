@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Daily Coal Position Dashboard - Chart Test</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <!-- PDF and Excel Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Daily Coal Position Dashboard - Chart Test</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <button class="btn btn-primary mb-3" onclick="loadDashboard()">Load Dashboard with Chart</button>
+                <div id="main-content">
+                    <!-- Dashboard will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Dashboard Script -->
+    <script src="utils.js"></script>
+    <script src="Dashboard-DailyCoalPosition.js"></script>
+    
+    <script>
+        function loadDashboard() {
+            console.log('Loading Daily Coal Position Dashboard...');
+            showDailyCoalDashboard();
+        }
+        
+        // Test function to check if Chart.js is loaded
+        function testChart() {
+            if (typeof Chart !== 'undefined') {
+                console.log('✓ Chart.js is loaded and ready');
+                return true;
+            } else {
+                console.error('✗ Chart.js is not loaded');
+                return false;
+            }
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, testing Chart.js availability...');
+            testChart();
+        });
+    </script>
+</body>
+</html>

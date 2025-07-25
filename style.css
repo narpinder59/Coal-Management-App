@@ -1,0 +1,2804 @@
+/* Card and table color schemes for Pachhwara Quality Analysis */
+.bg-ggsstp { background-color: #e3f2fd !important; }
+.table-ggsstp { background-color: #90caf9 !important; }
+.bg-ggsstp-light { background-color: #e3f2fd !important; }
+.bg-ghtp { background-color: #f3e5f5 !important; }
+.table-ghtp { background-color: #ce93d8 !important; }
+.bg-ghtp-light { background-color: #f3e5f5 !important; }
+.bg-gatp { background-color: #e8f5e9 !important; }
+.table-gatp { background-color: #a5d6a7 !important; }
+.bg-gatp-light { background-color: #e8f5e9 !important; }
+
+/* New table style for Quality Analysis */
+.table-quality-analysis {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  font-size: 0.8rem; /* Reduced font size */
+  width: auto !important; /* Auto width to fit content */
+  min-width: 100%; /* Ensure minimum full width */
+}
+
+.table-quality-analysis th,
+.table-quality-analysis td {
+  vertical-align: middle;
+  padding: 0.3rem 0.5rem; /* Reduced padding */
+  white-space: nowrap; /* Prevent text wrapping for better fit */
+  width: auto; /* Auto width for cells */
+}
+
+/* Header styling to match card color scheme */
+.table-quality-analysis thead th {
+  background: #2c5aa0 !important; /* Deep blue to match pachhwara-pd-section-header */
+  color: white !important;
+  border: 1px solid #1e3d73 !important;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1; /* Lower z-index for regular headers */
+}
+
+/* Non-sticky headers should not overlap sticky column */
+.table-quality-analysis thead th:not(.sticky-col) {
+  z-index: 1;
+}
+
+/* First column (Sr. No.) - frozen */
+.table-quality-analysis .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 998 !important;
+  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.15);
+  width: 80px; /* Fixed width for first column */
+  min-width: 80px;
+  max-width: 80px;
+}
+
+/* Header first column styling */
+.table-quality-analysis thead th.sticky-col {
+  background: #2c5aa0 !important;
+  color: white !important;
+  z-index: 999 !important; /* Much higher z-index to ensure it's always on top */
+  box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.3);
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  position: sticky;
+  left: 0;
+  top: 0;
+}
+
+/* Body first column styling */
+.table-quality-analysis tbody td.sticky-col {
+  background: #f8f9fa !important;
+  color: #495057 !important;
+  font-weight: 500;
+  border-right: 2px solid #2c5aa0;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+}
+
+/* Table body styling */
+.table-quality-analysis tbody tr {
+  background: white;
+}
+
+.table-quality-analysis tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.table-quality-analysis tbody tr:hover {
+  background: #e3f2fd;
+}
+
+/* Total/Average row styling */
+.table-quality-analysis tbody tr.table-warning {
+  background: #fff3cd !important;
+  font-weight: 600;
+}
+
+.table-quality-analysis tbody tr.table-warning td.sticky-col {
+  background: #ffeaa7 !important;
+  color: #856404 !important;
+  font-weight: 600;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+}
+body {
+  padding-top: 60px;
+}
+
+/* Right Sidebar Filter Styles */
+.filter-sidebar {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 350px;
+  height: 100%;
+  background-color: #f8f9fa;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  z-index: 1050;
+  padding: 20px;
+  border-left: 3px solid #2c5aa0;
+}
+
+.filter-sidebar.open {
+  right: 0;
+}
+
+.filter-toggle-btn {
+  position: fixed;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  z-index: 1100;
+  background: #2c5aa0 !important;
+  border-color: #2c5aa0 !important;
+  color: white !important;
+  border-radius: 50px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+}
+
+.filter-toggle-btn:hover {
+  background: #1e3d73 !important;
+  border-color: #1e3d73 !important;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.filter-sidebar .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.8rem;
+  border: none;
+  background: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-sidebar .close-btn:hover {
+  color: #495057;
+  background: #e9ecef;
+  border-radius: 50%;
+}
+
+.filter-sidebar h5 {
+  color: #2c5aa0;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-right: 40px;
+}
+
+.filter-sidebar hr {
+  margin: 1rem 0;
+  border-color: #dee2e6;
+}
+
+.filter-sidebar .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.filter-sidebar .form-check-label {
+  font-weight: normal;
+  color: #6c757d;
+}
+
+.filter-sidebar .btn-primary {
+  background: #2c5aa0;
+  border-color: #2c5aa0;
+}
+
+.filter-sidebar .btn-primary:hover {
+  background: #1e3d73;
+  border-color: #1e3d73;
+}
+
+.filter-sidebar .btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.filter-sidebar .btn-outline-success:hover {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+.filter-sidebar .btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.filter-sidebar .btn-outline-danger:hover {
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.filter-sidebar .max-height-200 {
+  max-height: 200px;
+}
+
+/* Export Sidebar Styles */
+.export-sidebar {
+  position: fixed;
+  top: 50%;
+  left: -80px;
+  transform: translateY(-50%);
+  width: 70px;
+  background-color: #f8f9fa;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: left 0.3s ease;
+  z-index: 1040;
+  padding: 15px 10px;
+  border-radius: 0 15px 15px 0;
+  border-right: 3px solid #2c5aa0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.export-sidebar.open {
+  left: 0;
+}
+
+.export-toggle-btn {
+  position: fixed;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  z-index: 1100;
+  background: #28a745 !important;
+  border-color: #28a745 !important;
+  color: white !important;
+  border-radius: 50px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.export-toggle-btn:hover {
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.export-sidebar .export-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 2px solid;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.export-sidebar .export-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.export-sidebar .export-btn.pdf-btn {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.export-sidebar .export-btn.pdf-btn:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.export-sidebar .export-btn.jpg-btn {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.export-sidebar .export-btn.jpg-btn:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.export-sidebar .export-btn.excel-btn {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.export-sidebar .export-btn.excel-btn:hover {
+  background: #28a745;
+  color: white;
+}
+
+.export-sidebar .export-btn.print-btn {
+  color: #495057;
+  border-color: #495057;
+}
+
+.export-sidebar .export-btn.print-btn:hover {
+  background: #495057;
+  color: white;
+}
+.offcanvas-start {
+  width: 250px;
+}
+.nav-link {
+  font-size: 1rem;
+  padding: 10px 0;
+}
+
+/* Nested dropdown support for Bootstrap 5 */
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+display: none;
+  position: absolute;
+}
+.dropdown-submenu.show > .dropdown-menu {
+  display: block;
+}
+
+/* Responsive table: horizontal scroll on small screens */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix the first two columns (Plant Name and Coal Company) */
+.table-fixed-first th:first-child,
+.table-fixed-first td:first-child {
+  position: sticky;
+  left: 0;
+  background: #667eea;
+  color: white;
+  z-index: 3;
+  min-width: 120px; /* Reduced for mobile */
+  max-width: 120px;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  padding: 0.4rem 0.3rem; /* Reduced padding */
+    text-align: center; /* Align text to the left */
+    vertical-align: middle;
+}
+
+.table-fixed-first th:nth-child(2),
+.table-fixed-first td:nth-child(2) {
+  position: sticky;
+  left: 120px; /* Match first column width */
+  background: #667eea;
+  color: white;
+  z-index: 2;
+  min-width: 120px; /* Consistent width */
+  max-width: 120px;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  padding: 0.4rem 0.3rem; /* Reduced padding */
+}
+
+/* Override for data cells to have lighter background */
+.table-fixed-first tbody td:first-child {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%) !important;
+  color: #495057 !important;
+  border: none !important; /* Remove all table borders */
+  border-right: 3px solid #667eea !important; /* Add vertical line on right side */
+}
+
+.table-fixed-first tbody td:nth-child(2) {
+  background: linear-gradient(135deg, #f0f2ff 0%, #e0e5ff 100%) !important;
+  color: #495057 !important;
+}
+
+/* Total row styling for .table-fixed-first */
+.table-fixed-first .total-row td {
+  background: #28a745 !important; /* Green color for totals */
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  border: 1px solid #1e7e34 !important;
+}
+
+.table-fixed-first .total-row td:first-child {
+  background: #28a745 !important; /* Green for first column in totals */
+  color: white !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-right: 3px solid #1e7e34 !important; /* Darker green right border */
+}
+
+.table-fixed-first .total-row td:nth-child(2) {
+  background: #28a745 !important; /* Green for second column in totals */
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* Calculated total row styling for .table-fixed-first */
+.table-fixed-first .calculated-total-row td {
+  background: #17a2b8 !important; /* Teal/cyan color for calculated totals */
+  color: white !important;
+  font-weight: 600 !important;
+  font-style: italic !important;
+  font-size: 0.9rem !important;
+  border: 1px solid #138496 !important;
+}
+
+.table-fixed-first .calculated-total-row td:first-child {
+  background: #17a2b8 !important; /* Teal for first column in calculated totals */
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-right: 3px solid #138496 !important; /* Darker teal right border */
+}
+
+.table-fixed-first .calculated-total-row td:nth-child(2) {
+  background: #17a2b8 !important; /* Teal for second column in calculated totals */
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Sticky header row - unified color scheme */
+.table-fixed-first thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+}
+/* Fix sticky intersection (top-left cells) so they stay above others */
+.table-fixed-first thead th:first-child {
+  z-index: 6;
+  background: #667eea;
+}
+.table-fixed-first thead th:nth-child(2) {
+  z-index: 5;
+  background: #667eea;
+}
+
+/* Center align all table cells and headers except the first column */
+.table-fixed-first th:not(:first-child),
+.table-fixed-first td:not(:first-child) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+.table-fixed-first th.sticky-col,
+.table-fixed-first td.sticky-col {
+    background: #667eea;
+    color: white;
+    /* Optional: add a border or shadow for clarity */
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+.table-fixed-first thead th.sticky-col {
+    background: #667eea;
+    color: white;
+    z-index: 2;
+}
+
+/* Smaller font and padding for mobile */
+@media (max-width: 600px) {
+  .table-sm td, .table-sm th {
+    font-size: 0.8rem;
+    padding: 0.2rem;
+  }
+  .form-label, .form-check-label {
+    font-size: 0.9rem;
+  }
+  .dropdown-menu {
+    font-size: 0.9rem;
+  }
+}
+
+.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+.table-fixed-first th.sticky-col,
+.table-fixed-first td.sticky-col {
+    background: #fff;
+    /* Optional: add a border or shadow for clarity */
+    box-shadow: 2px 0 5px -2px #888;
+}
+.table-fixed-first thead th.sticky-col {
+    background: #0d6efd;
+    color: #fff;
+    z-index: 2;
+}
+
+/* Coal Quality & Cost Analysis specific styles */
+
+/* Quality Cost Table - Summary Table Styling */
+.quality-cost-table {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.quality-cost-table th,
+.quality-cost-table td {
+    vertical-align: middle;
+    padding: 0.5rem 0.4rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    width: auto;
+}
+
+/* Equal width for all data columns (excluding first column) */
+.quality-cost-table th:not(:first-child),
+.quality-cost-table td:not(:first-child) {
+    width: calc((100% - 120px) / var(--data-columns, 5));
+    min-width: 80px;
+    max-width: none;
+}
+
+/* Frozen header row */
+.quality-cost-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #764ba2;
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid #5a3a7a;
+}
+
+/* Frozen first column - header */
+.quality-cost-table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    background: #764ba2;
+    color: white;
+    min-width: 120px;
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.75rem;
+}
+
+/* Frozen first column - data cells */
+.quality-cost-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #f8f6ff 0%, #f0ebff 100%);
+    color: #495057;
+    font-weight: 500;
+    min-width: 120px;
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.75rem;
+}
+
+/* Alternating row colors for better readability */
+.quality-cost-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.quality-cost-table tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Hover effect for table rows */
+.quality-cost-table tbody tr:hover {
+    background-color: #e8f0ff !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Ensure first column maintains its background on hover */
+.quality-cost-table tbody tr:hover td:first-child {
+    background: linear-gradient(135deg, #f0ebff 0%, #e8e0ff 100%) !important;
+}
+
+/* Card styles for collapsible sections */
+.quality-cost-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.quality-cost-section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quality-cost-section-header:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+}
+
+.quality-cost-section-header i {
+    margin-right: 0.5rem;
+}
+
+.quality-cost-section-header .bi-chevron-down,
+.quality-cost-section-header .bi-chevron-up {
+    transition: transform 0.3s ease;
+}
+
+.quality-cost-card .card-body {
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+/* Form styling within cards */
+.quality-cost-card .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.quality-cost-card .form-select,
+.quality-cost-card .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.quality-cost-card .form-select:focus,
+.quality-cost-card .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+}
+
+.quality-cost-card .form-check-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.quality-cost-card .form-check-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.quality-cost-card .form-check-input:checked + .form-check-label .form-check-card {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+}
+
+.quality-cost-card .form-check-input {
+    border: 2px solid #667eea;
+    border-radius: 4px;
+}
+
+.quality-cost-card .form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.quality-cost-card .form-check-label {
+    color: #495057;
+}
+
+.quality-cost-card .form-check-input:checked + .form-check-label {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* Pachhwara Production & Despatch Card Styles - Two Color Scheme without gradients */
+.pachhwara-pd-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.pachhwara-pd-section-header {
+    background: #2c5aa0; /* Deep blue */
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pachhwara-pd-section-header:hover {
+    background: #1e3d73; /* Darker blue on hover */
+    transform: translateY(-1px);
+}
+
+.pachhwara-pd-section-header i {
+    margin-right: 0.5rem;
+}
+
+.pachhwara-pd-section-header .bi-chevron-down,
+.pachhwara-pd-section-header .bi-chevron-up {
+    transition: transform 0.3s ease;
+}
+
+.pachhwara-pd-card .card-body {
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+/* Loading & Receipt Card Styles - Green Color Scheme */
+.loading-receipt-card {
+    background: white;
+    border: 1px solid #b7e4c7;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.loading-receipt-section-header {
+    background: #2d6a4f; /* Dartmouth green */
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loading-receipt-section-header:hover {
+    background: #1b4332; /* Brunswick green on hover */
+    transform: translateY(-1px);
+}
+
+.loading-receipt-section-header i {
+    margin-right: 0.5rem;
+}
+
+.loading-receipt-section-header .bi-chevron-down,
+.loading-receipt-section-header .bi-chevron-up {
+    transition: transform 0.3s ease;
+}
+
+.loading-receipt-card .card-body {
+    padding: 1rem;
+    background: #d8f3dc; /* Nyanza */
+}
+
+.loading-receipt-card .form-label {
+    font-weight: 600;
+    color: #1b4332; /* Brunswick green */
+    margin-bottom: 0.5rem;
+}
+
+.loading-receipt-card .form-select,
+.loading-receipt-card .form-control {
+    border: 1px solid #95d5b2; /* Celadon-2 */
+    border-radius: 6px;
+    background-color: white;
+}
+
+.loading-receipt-card .form-select:focus,
+.loading-receipt-card .form-control:focus {
+    border-color: #52b788; /* Mint-2 */
+    box-shadow: 0 0 0 0.2rem rgba(82, 183, 136, 0.25);
+}
+
+.loading-receipt-card .form-check-card {
+    background: white;
+    border: 1px solid #95d5b2; /* Celadon-2 */
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.loading-receipt-card .form-check-card:hover {
+    background: #d8f3dc; /* Nyanza */
+    border-color: #52b788; /* Mint-2 */
+    transform: translateY(-1px);
+}
+
+.loading-receipt-card .form-check-input:checked + .form-check-label .form-check-card {
+    background: #52b788; /* Mint-2 */
+    color: white;
+    border-color: #52b788;
+}
+
+.loading-receipt-card .form-check-input {
+    border-color: #52b788; /* Mint-2 */
+}
+
+.loading-receipt-card .form-check-input:checked {
+    background-color: #52b788; /* Mint-2 */
+    border-color: #52b788;
+}
+
+.loading-receipt-card .form-check-label {
+    color: #1b4332; /* Brunswick green */
+}
+
+.loading-receipt-card .form-check-input:checked + .form-check-label {
+    color: #2d6a4f; /* Dartmouth green */
+    font-weight: 600;
+}
+
+.loading-receipt-card .btn-outline-success {
+    border-color: #40916c; /* Sea green */
+    color: #40916c;
+}
+
+.loading-receipt-card .btn-outline-success:hover {
+    background-color: #40916c;
+    border-color: #40916c;
+}
+
+.loading-receipt-card .btn-outline-danger {
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.loading-receipt-card .btn-outline-danger:hover {
+    background-color: #f44336;
+    border-color: #f44336;
+}
+
+/* Loading & Receipt Table Styles */
+.table-loading-receipt {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    table-layout: auto;
+    width: auto;  
+}
+
+.table-loading-receipt th,
+.table-loading-receipt td {
+    vertical-align: middle;
+    padding: 8px 12px;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.table-loading-receipt .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    box-shadow: 2px 0 5px -2px #ccc;
+}
+
+/* === Header Row 1 === */
+.table-loading-receipt thead tr:nth-child(1) th {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background-color: #40916c; /* Sea green */
+    color: white;
+}
+
+/* === Header Row 2 === */
+.table-loading-receipt thead tr:nth-child(2) th {
+    position: sticky;
+    top: 36px; /* Height of row 1 */
+    z-index: 25;
+    background-color: #52b788; /* Mint-2 */
+    color: white;
+}
+
+/* === Header Row 3 === */
+.table-loading-receipt thead tr:nth-child(3) th {
+    position: sticky;
+    top: 72px; /* Height of row 1 + row 2 */
+    z-index: 20;
+    background-color: #74c69d; /* Mint */
+    color: white;
+}
+
+/* === First Column Sticky in Each Row === */
+.table-loading-receipt thead tr:nth-child(1) th:first-child {
+    left: 0;
+    z-index: 100;
+    background-color: #2d6a4f; /* Dartmouth green - darker than row 1 */
+}
+
+.table-loading-receipt thead tr:nth-child(2) th:first-child {
+    left: 0;
+    z-index: 90;
+    background-color: #52b788; /* Mint-2 - match row 2 color */
+}
+
+.table-loading-receipt thead tr:nth-child(3) th:first-child {
+    left: 0;
+    z-index: 80;
+    background-color: #74c69d; /* Mint - match row 3 color */
+}
+
+/* Optionally: First column in tbody as sticky too */
+.table-loading-receipt tbody td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
+
+
+/* First column sticky (Body) */
+.table-loading-receipt tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 60; /* Higher than body cells but lower than headers */
+    background-color: #d8f3dc; /* Nyanza */
+    min-width: 80px;
+    border-right: 2px solid #dee2e6;
+}
+
+/* All other body cells */
+.table-loading-receipt tbody td:not(:first-child) {
+    z-index: 1;
+}
+
+/* Align header text */
+.table-loading-receipt thead th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Total row styling for Loading & Receipt Table */
+.table-loading-receipt .loading-receipt-total-row td {
+    background: #2d6a4f !important; /* Dartmouth green */
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #1b4332 !important;
+}
+
+.table-loading-receipt .loading-receipt-total-row td:first-child {
+    background: #2d6a4f !important; /* Match total row color */
+    color: white !important;
+    font-weight: 700 !important;
+}
+/* Column checkbox headings styling */
+.loading-receipt-checkbox-heading {
+    color: #2d6a4f !important; /* Dartmouth green */
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #b7e4c7; /* Light green underline */
+    padding-bottom: 0.25rem;
+}
+/* Form styling within Pachhwara cards */
+.pachhwara-pd-card .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.pachhwara-pd-card .form-select,
+.pachhwara-pd-card .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.pachhwara-pd-card .form-select:focus,
+.pachhwara-pd-card .form-control:focus {
+    border-color: #2c5aa0; /* Deep blue focus */
+    box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.1);
+}
+
+.pachhwara-pd-card .form-check-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.pachhwara-pd-card .form-check-card:hover {
+    border-color: #2c5aa0; /* Deep blue hover */
+    box-shadow: 0 2px 8px rgba(44, 90, 160, 0.15);
+}
+
+.pachhwara-pd-card .form-check-input:checked + .form-check-label .form-check-card {
+    border-color: #2c5aa0; /* Deep blue when checked */
+    background: #e8f0ff; /* Light blue background */
+}
+
+.pachhwara-pd-card .form-check-input {
+    border: 2px solid #2c5aa0; /* Deep blue */
+    border-radius: 4px;
+}
+
+.pachhwara-pd-card .form-check-input:checked {
+    background-color: #2c5aa0; /* Deep blue */
+    border-color: #2c5aa0;
+}
+
+.pachhwara-pd-card .form-check-label {
+    color: #495057;
+}
+
+.pachhwara-pd-card .form-check-input:checked + .form-check-label {
+    color: #2c5aa0; /* Deep blue */
+    font-weight: 600;
+}
+
+/* Button styles for Pachhwara */
+.pachhwara-pd-card .btn-outline-success {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.pachhwara-pd-card .btn-outline-success:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.pachhwara-pd-card .btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.pachhwara-pd-card .btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* MDCWL Lifting Table Styles - Matching Pachhwara card colors */
+.table-mdcwl-lifting {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.75rem;
+    width: 100%;
+    margin-bottom: 0;
+    table-layout: auto;
+}
+
+.table-mdcwl-lifting th,
+.table-mdcwl-lifting td {
+    vertical-align: middle;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    min-width: 60px;
+}
+
+/* Frozen header row */
+.table-mdcwl-lifting thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #2c5aa0; /* Deep blue matching Pachhwara card header */
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid #1e3d73;
+}
+
+/* Frozen first column - header */
+.table-mdcwl-lifting th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    background: #2c5aa0; /* Deep blue */
+    color: white;
+    min-width: 100px;
+    max-width: 150px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.5rem;
+    padding-right: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Frozen first column - data cells */
+.table-mdcwl-lifting td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+    color: #495057;
+    font-weight: 500;
+    min-width: 100px;
+    max-width: 150px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.5rem;
+    padding-right: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Alternating row colors for better readability */
+.table-mdcwl-lifting tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table-mdcwl-lifting tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Hover effect for table rows */
+.table-mdcwl-lifting tbody tr:hover {
+    background-color: #e8f0ff !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Ensure first column maintains its background on hover */
+.table-mdcwl-lifting tbody tr:hover td:first-child {
+    background: linear-gradient(135deg, #e0ebff 0%, #d5e6ff 100%) !important;
+}
+
+/* Total row styling for MDCWL Lifting */
+.table-mdcwl-lifting .total-row td {
+    background: #28a745 !important; /* Green color for totals */
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #1e7e34 !important;
+}
+
+.table-mdcwl-lifting .total-row td:first-child {
+    background: #28a745 !important; /* Green for first column in totals */
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Calculated total row styling for MDCWL Lifting - using Pachhwara blue theme */
+.table-mdcwl-lifting .calculated-total-row td {
+    background: #1e3d73 !important; /* Darker blue for calculated totals */
+    color: white !important;
+    font-weight: 600 !important;
+    font-style: italic !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #0f1e3a !important;
+}
+
+.table-mdcwl-lifting .calculated-total-row td:first-child {
+    background: #1e3d73 !important; /* Darker blue for first column */
+    color: white !important;
+    font-weight: 600 !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* MDCWL Export Card Styles */
+.mdcwl-export-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+.mdcwl-export-section-header {
+    background: #2c5aa0; /* Deep blue matching table header */
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mdcwl-export-section-header h6 {
+    margin: 0;
+    color: white;
+}
+
+.mdcwl-export-section-header i {
+    margin-right: 0.5rem;
+    color: #a8c5ff;
+}
+
+.mdcwl-export-card .card-body {
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+/* Export button styling for MDCWL */
+.mdcwl-export-btn {
+    padding: 0.75rem 0.5rem !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid #2c5aa0;
+    color: #2c5aa0;
+    background: white;
+    border-radius: 8px;
+}
+
+.mdcwl-export-btn:hover {
+    background: #2c5aa0;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(44, 90, 160, 0.3);
+}
+
+.mdcwl-export-btn i {
+    transition: transform 0.2s ease;
+}
+
+.mdcwl-export-btn:hover i {
+    transform: scale(1.1);
+}
+
+.mdcwl-export-btn .small {
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: center;
+}
+
+/* MDCWL Loading Table Styles - Green theme matching truck/loading concept */
+.table-mdcwl-loading {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.75rem;
+    width: 100%;
+    margin-bottom: 0;
+    table-layout: auto;
+}
+
+.table-mdcwl-loading th,
+.table-mdcwl-loading td {
+    vertical-align: middle;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    min-width: 60px;
+}
+
+/* Frozen header row */
+.table-mdcwl-loading thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #28a745; /* Green theme for loading */
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid #1e7e34;
+}
+
+/* Frozen first column - header */
+.table-mdcwl-loading th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    background: #28a745; /* Green theme */
+    color: white;
+    min-width: 100px;
+    max-width: 150px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.5rem;
+    padding-right: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Frozen first column - data cells */
+.table-mdcwl-loading td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+    color: #495057;
+    font-weight: 500;
+    min-width: 100px;
+    max-width: 150px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    padding-left: 0.5rem;
+    padding-right: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Alternating row colors for better readability */
+.table-mdcwl-loading tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table-mdcwl-loading tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Hover effect for table rows */
+.table-mdcwl-loading tbody tr:hover {
+    background-color: #e8f5e9 !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Ensure first column maintains its background on hover */
+.table-mdcwl-loading tbody tr:hover td:first-child {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+}
+
+/* Total row styling for MDCWL Loading */
+.table-mdcwl-loading .total-row td {
+    background: #dc3545 !important; /* Red color for totals */
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #c82333 !important;
+}
+
+.table-mdcwl-loading .total-row td:first-child {
+    background: #dc3545 !important; /* Red for first column in totals */
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Calculated total row styling for MDCWL Loading */
+.table-mdcwl-loading .calculated-total-row td {
+    background: #17a2b8 !important; /* Teal color for calculated totals */
+    color: white !important;
+    font-weight: 600 !important;
+    font-style: italic !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #138496 !important;
+}
+
+.table-mdcwl-loading .calculated-total-row td:first-child {
+    background: #17a2b8 !important; /* Teal for first column */
+    color: white !important;
+    font-weight: 600 !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* MDCWL Loading Export Card Styles */
+.mdcwl-loading-export-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+.mdcwl-loading-export-section-header {
+    background: #28a745; /* Green matching table header */
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mdcwl-loading-export-section-header h6 {
+    margin: 0;
+    color: white;
+}
+
+.mdcwl-loading-export-section-header i {
+    margin-right: 0.5rem;
+    color: #90ee90;
+}
+
+.mdcwl-loading-export-card .card-body {
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+/* Export button styling for MDCWL Loading */
+.mdcwl-loading-export-btn {
+    padding: 0.75rem 0.5rem !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid #28a745;
+    color: #28a745;
+    background: white;
+    border-radius: 8px;
+}
+
+.mdcwl-loading-export-btn:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.mdcwl-loading-export-btn i {
+    transition: transform 0.2s ease;
+}
+
+.mdcwl-loading-export-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* Loading animation for refresh button */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Export button styling for Pachhwara */
+.pachhwara-export-btn {
+    padding: 0.5rem 0.25rem !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.pachhwara-export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pachhwara-export-btn i {
+    margin-bottom: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.pachhwara-export-btn:hover i {
+    transform: scale(1.1);
+}
+
+.pachhwara-export-btn .small {
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* Pachhwara Data Table Styles */
+.pachhwara-data-table {
+    font-size: 0.75rem !important;
+    margin-bottom: 0;
+}
+
+.pachhwara-data-table th,
+.pachhwara-data-table td {
+    padding: 0.3rem 0.4rem !important;
+    line-height: 1.2;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+}
+
+.pachhwara-data-table th {
+    font-size: 0.7rem !important;
+    font-weight: 600;
+    text-align: center;
+    background-color: #2c5aa0 !important;
+    color: white !important;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.pachhwara-data-table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 11;
+    min-width: 90px;
+    max-width: 90px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.pachhwara-data-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 9;
+    background-color: white;
+    min-width: 90px;
+    max-width: 90px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+}
+
+.pachhwara-data-table tbody tr:nth-child(odd) td:first-child {
+    background-color: #f8f9fa;
+}
+
+.pachhwara-data-table .table-warning td:first-child {
+    background-color: #fff3cd !important;
+}
+
+.pachhwara-data-table td {
+    text-align: center;
+    font-size: 0.7rem;
+}
+
+.pachhwara-data-table .fw-bold {
+    font-weight: 600 !important;
+}
+
+.multiselect-container {
+    position: relative;
+}
+
+.multiselect-enhanced {
+    min-height: 38px;
+}
+
+.qc-summary-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.qc-summary-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.qc-summary-card .card-body {
+    padding: 1.25rem;
+}
+
+/* Summary table - only first column sticky, second column normal */
+.qc-summary-card .table th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.5rem 0.4rem; /* Reduced padding */
+}
+
+.qc-summary-card .table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    min-width: 120px;
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    font-size: 0.75rem !important; /* Match main table header size */
+    font-weight: 600 !important; /* Match main table header weight */
+}
+
+.qc-summary-card .table td:first-child {
+    position: sticky;
+    left: 0;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%) !important;
+    color: #495057 !important;
+    font-weight: 500 !important; /* Match main table data weight */
+    font-size: 0.7rem !important; /* Match main table data size */
+    z-index: 2;
+    min-width: 120px;
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Normal styling for second column and beyond in summary table */
+.qc-summary-card .table td {
+    padding: 0.5rem 0.4rem; /* Reduced padding */
+    text-align: center;
+    vertical-align: middle;
+    background: white; /* Consistent background for all data columns */
+}
+
+/* Ensure second column doesn't have gradient */
+.qc-summary-card .table td:nth-child(2) {
+    background: white !important;
+}
+/* QC Main table styling */
+.qc-main-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.qc-main-table .table {
+    font-size: 0.75rem; /* Reduced for mobile */
+    margin-bottom: 0;
+}
+
+.qc-main-table .table th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+    border: 1px solid #5a6fd8;
+    white-space: nowrap;
+    min-width: 80px; /* Reduced for mobile */
+    padding: 0.4rem 0.3rem; /* Reduced padding */
+    text-align: center;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Sticky columns for QC table - with proper z-index hierarchy */
+.qc-main-table .table th:first-child,
+.qc-main-table .table td:first-child {
+    position: sticky;
+    left: 0;
+    background: #667eea;
+    color: white;
+    z-index: 15;
+    min-width: 120px; /* Reduced for mobile */
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.qc-main-table .table th:nth-child(2),
+.qc-main-table .table td:nth-child(2) {
+    position: sticky;
+    left: 120px; /* Match first column width */
+    background: #667eea;
+    color: white;
+    z-index: 14;
+    min-width: 120px; /* Reduced for mobile */
+    max-width: 120px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Override body cell background for sticky columns - lighter for data */
+.qc-main-table .table tbody td:first-child {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%) !important;
+    color: #495057 !important;
+    font-weight: 500 !important; /* Reduced from 600 */
+    font-size: 0.7rem !important; /* Reduced font size */
+}
+
+.qc-main-table .table tbody td:nth-child(2) {
+    background: linear-gradient(135deg, #f0f2ff 0%, #e0e5ff 100%) !important;
+    color: #495057 !important;
+    font-weight: 500 !important; /* Reduced from 600 */
+    font-size: 0.7rem !important; /* Reduced font size */
+}
+
+/* Ensure header cells keep the main color scheme */
+.qc-main-table .table thead th:first-child {
+    background: #667eea !important;
+    color: white !important;
+    z-index: 15;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 0.75rem !important; /* Consistent with table font size */
+    font-weight: 600 !important;
+}
+
+.qc-main-table .table thead th:nth-child(2) {
+    background: #667eea !important;
+    color: white !important;
+    z-index: 14;
+    font-size: 0.75rem !important; /* Consistent with table font size */
+    font-weight: 600 !important;
+}
+
+.qc-main-table .table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 0.4rem 0.3rem; /* Reduced padding */
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+/* Alternating row colors */
+.qc-main-table .table tbody tr:nth-child(even) {
+    background-color: #f8f9ff;
+}
+
+.qc-main-table .table tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+/* Hover effect for table rows */
+.qc-main-table .table tbody tr:hover {
+    background-color: #e8f0ff !important;
+    transition: background-color 0.2s ease;
+}
+/* Extended columns styling */
+.qc-extended-col {
+    background-color: #fff9e6 !important;
+    font-weight: 600;
+    color: #856404;
+    border-left: 3px solid #667eea !important;
+}
+
+.qc-calculated-col {
+    background-color: #f0f2ff !important;
+    font-style: italic;
+    color: #5a6fd8;
+    border-left: 3px solid #667eea !important; /* Updated to match header color */
+}
+
+/* Hover effect for table rows */
+.qc-main-table .table tbody tr:hover {
+    background-color: #e3f2fd !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Extended columns styling */
+.qc-extended-col {
+    background-color: #fff9e6 !important;
+    font-weight: 600;
+    color: #856404;
+    border-left: 3px solid #667eea !important;
+}
+
+.qc-calculated-col {
+    background-color: #f0f2ff !important;
+    font-style: italic;
+    color: #5a6fd8;
+    border-left: 3px solid #667eea !important;
+}
+
+/* Merged cells styling for Plant Name when no consolidation */
+.qc-merged-plant-cell {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: white !important;
+    font-weight: bold;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 2px solid #28a745 !important;
+    font-size: 1rem;
+}
+
+/* Special styling for consolidated rows */
+.qc-consolidated-row {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    font-weight: 600;
+    border-top: 2px solid #6c757d !important;
+    border-bottom: 2px solid #6c757d !important;
+}
+
+.qc-consolidated-row td {
+    padding: 0.8rem 0.5rem !important;
+}
+
+/* Total row styling - single color different from header */
+.qc-total-row td {
+    background: #28a745 !important; /* Green color for totals */
+    color: white !important;
+    font-weight: 600 !important;
+    border: 1px solid #1e7e34 !important;
+}
+
+/* Total row styling for sticky columns - override light backgrounds */
+.qc-total-row td:first-child,
+.qc-total-row td:nth-child(2) {
+    background: #28a745 !important; /* Green for first two columns in totals */
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/* Total row styling for extended columns */
+.qc-total-row .qc-extended-col,
+.qc-total-row .qc-calculated-col {
+    background: #28a745 !important; /* Green for extended columns in totals */
+    color: white !important;
+    border-left: 3px solid #1e7e34 !important; /* Darker green border */
+}
+
+/* Controls styling */
+.qc-controls {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.qc-controls .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.qc-controls .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.qc-controls .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+.qc-controls .form-check-input {
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.qc-controls .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.qc-controls .btn {
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.qc-controls .btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+    border: none;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+}
+
+.qc-controls .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.4);
+}
+
+.qc-controls .btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    border: none;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.qc-controls .btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+}
+
+/* Table header with gradient */
+.qc-table-header {
+    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .qc-main-table .table {
+        font-size: 0.65rem; /* Even smaller for mobile */
+    }
+    
+    .qc-main-table .table th,
+    .qc-main-table .table td {
+        padding: 0.25rem 0.2rem; /* Much smaller padding */
+        min-width: 70px; /* Reduced minimum width */
+    }
+    
+    .qc-main-table .table th:first-child,
+    .qc-main-table .table td:first-child {
+        min-width: 100px; /* Smaller sticky column */
+        max-width: 100px;
+        font-size: 0.6rem !important; /* Even smaller for mobile */
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    
+    .qc-main-table .table th:nth-child(2),
+    .qc-main-table .table td:nth-child(2) {
+        left: 100px; /* Adjust position */
+        min-width: 100px;
+        max-width: 100px;
+        z-index: 14; /* Maintain proper z-index */
+    }
+    
+    .table-fixed-first th:first-child,
+    .table-fixed-first td:first-child {
+        min-width: 100px;
+        max-width: 100px;
+        z-index: 6; /* Ensure proper layering */
+    }
+    
+    .table-fixed-first th:nth-child(2),
+    .table-fixed-first td:nth-child(2) {
+        left: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        z-index: 5; /* Ensure proper layering */
+    }
+    
+    /* Summary table mobile optimization */
+    .qc-summary-card .table {
+        font-size: 0.65rem;
+    }
+    
+    .qc-summary-card .table th,
+    .qc-summary-card .table td {
+        padding: 0.25rem 0.2rem;
+        min-width: 70px;
+    }
+    
+    .qc-summary-card .table th:first-child,
+    .qc-summary-card .table td:first-child {
+        min-width: 90px;
+        max-width: 90px;
+        font-size: 0.6rem !important; /* Match main table mobile font size */
+        font-weight: 500 !important; /* Consistent weight */
+    }
+    
+    /* Consolidation options mobile optimization */
+    .consolidation-options {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .consolidation-options .form-check {
+        margin-bottom: 0.25rem;
+    }
+    
+    .consolidation-options .form-check-label {
+        font-size: 0.9rem;
+        color: white !important;
+    }
+    
+    .qc-controls {
+        padding: 1rem;
+    }
+    
+    .qc-summary-card .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .quality-cost-card .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Loading animation */
+.qc-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.qc-loading .spinner-border {
+    color: #0d6efd;
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Error message styling */
+.qc-error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 1px solid #f1aeb5;
+    border-radius: 12px;
+    color: #721c24;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Success message styling */
+.qc-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #b8dacc;
+    border-radius: 12px;
+    color: #155724;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Print styles for Coal Quality Analysis */
+@media print {
+    .qc-summary-card,
+    .qc-main-table {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .qc-main-table .table th,
+    .qc-main-table .table td {
+        font-size: 7px !important;
+        padding: 2px 3px !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .qc-summary-card .card-body {
+        padding: 8px !important;
+    }
+    
+    .qc-controls {
+        display: none !important;
+    }
+    
+    .qc-main-table .table th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+    }
+    
+    .qc-extended-col {
+        background: #f9f9f9 !important;
+        color: #000 !important;
+    }
+    
+    .qc-calculated-col {
+        background: #f5f5f5 !important;
+        color: #000 !important;
+    }
+}
+
+/* ====== Daily Coal Position Dashboard Styles ====== */
+/* Card styling with teal/green color scheme */
+.daily-coal-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 150, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.daily-coal-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 150, 136, 0.15);
+    transform: translateY(-2px);
+}
+
+.daily-coal-section-header {
+    background: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    border-bottom: 3px solid #00695c;
+}
+
+.daily-coal-section-header h4,
+.daily-coal-section-header h6 {
+    margin: 0;
+    color: white;
+}
+
+.daily-coal-section-header i {
+    margin-right: 0.5rem;
+    color: #b2dfdb;
+}
+
+.daily-coal-card .card-body {
+    padding: 0;
+    background: white;
+}
+
+.daily-coal-card .card-body .table-responsive {
+    margin: 0;
+    border-radius: 0;
+}
+
+.daily-coal-card .card-body:not(:has(.table-responsive)) {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fffe 0%, #e0f2f1 100%);
+}
+
+/* Date selector styling */
+.date-selector-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.date-nav-btn {
+    border: 2px solid #26a69a;
+    color: #26a69a;
+    background: white;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.date-nav-btn:hover {
+    background: #26a69a;
+    color: white;
+    transform: scale(1.05);
+}
+
+.date-nav-btn:active {
+    transform: scale(0.95);
+}
+
+/* Table styling for Daily Coal Position */
+.daily-coal-table {
+    font-size: 0.85rem;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+}
+
+.daily-coal-table thead th {
+    background: #00796b;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.daily-coal-table tbody td {
+    padding: 0.6rem 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid rgba(0, 150, 136, 0.1);
+    background: white;
+    transition: background-color 0.2s ease;
+}
+
+.daily-coal-table tbody tr:hover td {
+    background: rgba(178, 223, 219, 0.3);
+}
+
+.daily-coal-table tbody td:first-child {
+    background: #e0f2f1;
+    font-weight: 600;
+    color: #004d40;
+    text-align: left;
+    padding-left: 1rem;
+}
+
+.daily-coal-table tbody tr:hover td:first-child {
+    background: #b2dfdb;
+}
+
+/* Total row styling */
+.daily-coal-total-row td {
+    background: #00796b !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+}
+
+.daily-coal-total-row td:first-child {
+    background: #00796b !important;
+    color: white !important;
+    text-align: left !important;
+    padding-left: 1rem !important;
+}
+
+/* Loading spinner styling */
+.daily-coal-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    background: linear-gradient(135deg, #f8fffe 0%, #e0f2f1 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 150, 136, 0.1);
+}
+
+.daily-coal-loading .spinner-border {
+    color: #26a69a;
+    width: 3rem;
+    height: 3rem;
+    border-width: 3px;
+}
+
+.daily-coal-loading p {
+    color: #00695c;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Expandable card styling */
+.expandable {
+    transition: all 0.3s ease;
+}
+
+.expandable:hover {
+    background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+}
+
+.expandable i {
+    transition: transform 0.3s ease;
+}
+
+.expandable.expanded i {
+    transform: rotate(180deg);
+}
+
+/* Export buttons styling */
+.daily-coal-card .btn-outline-success {
+    border: 2px solid #26a69a;
+    color: #26a69a;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.daily-coal-card .btn-outline-success:hover {
+    background: #26a69a;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(38, 166, 154, 0.3);
+}
+
+.daily-coal-card .btn-outline-primary {
+    border: 2px solid #00838f;
+    color: #00838f;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.daily-coal-card .btn-outline-primary:hover {
+    background: #00838f;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 131, 143, 0.3);
+}
+
+.daily-coal-card .btn-outline-info {
+    border: 2px solid #0097a7;
+    color: #0097a7;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.daily-coal-card .btn-outline-info:hover {
+    background: #0097a7;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 151, 167, 0.3);
+}
+
+/* Responsive design for Daily Coal Position */
+@media (max-width: 768px) {
+    .daily-coal-card .card-body:not(:has(.table-responsive)) {
+        padding: 1rem;
+    }
+    
+    .daily-coal-section-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .daily-coal-section-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .daily-coal-section-header h6 {
+        font-size: 0.95rem;
+    }
+    
+    .daily-coal-table {
+        font-size: 0.75rem;
+    }
+    
+    .daily-coal-table thead th,
+    .daily-coal-table tbody td {
+        padding: 0.4rem 0.3rem;
+    }
+    
+    .date-selector-container {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .date-nav-btn {
+        width: 35px;
+        height: 35px;
+        flex-shrink: 0;
+    }
+    
+    #datePicker {
+        flex: 1;
+        max-width: 200px;
+    }
+}
+
+/* Print and Export Styles */
+@media print {
+    body { 
+        font-size: 12px; 
+        padding-top: 0;
+        background: white !important;
+    }
+    
+    .table { 
+        font-size: 10px; 
+        break-inside: avoid;
+    }
+    
+    .btn, .date-selector-container, #dashboard-loading { 
+        display: none !important; 
+    }
+    
+    .expandable { 
+        cursor: default !important; 
+    }
+    
+    .card-body { 
+        display: block !important; 
+    }
+    
+    h1, h2, h3, h4, h5, h6 { 
+        color: #000 !important; 
+        page-break-after: avoid;
+    }
+    
+    .table thead th { 
+        background-color: #f8f9fa !important; 
+        color: #000 !important;
+    }
+    
+    .daily-coal-card {
+        break-inside: avoid;
+        margin-bottom: 0.5rem;
+        border: 1px solid #000;
+    }
+    
+    .daily-coal-section-header {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000;
+    }
+    
+    .table-responsive {
+        overflow: visible !important;
+    }
+    
+    .container {
+        max-width: 100% !important;
+        padding: 0;
+    }
+    
+    /* Ensure tables fit on page */
+    .table {
+        width: 100% !important;
+        table-layout: fixed;
+    }
+    
+    .table th, .table td {
+        padding: 0.25rem !important;
+        word-wrap: break-word;
+        border: 1px solid #000 !important;
+    }
+}
+
+/* Export loading styles */
+.export-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    text-align: center;
+}
+
+/* Export mode - keep original beautiful styling but hide export card */
+.export-mode .daily-coal-card:has(.bi-download) {
+    display: none !important;
+}
+
+/* Alternative selector for browsers that don't support :has() */
+.export-mode #DCExportBody,
+.export-mode .daily-coal-card .bi-download {
+    display: none !important;
+}
+
+/* ===== CHART STYLES ===== */
+
+/* Chart container styling */
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    width: 100%;
+    min-height: 500px;
+}
+
+/* Chart controls styling */
+.chart-controls {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.chart-controls .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.chart-controls .form-select {
+    border: 2px solid #26a69a;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.chart-controls .form-select:focus {
+    border-color: #00838f;
+    box-shadow: 0 0 0 0.2rem rgba(38, 166, 154, 0.25);
+}
+
+/* Chart loading indicator */
+#chart-loading {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #dee2e6;
+}
+
+#chart-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
+
+#chart-loading p {
+    margin-top: 1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Chart action buttons */
+.chart-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+
+.chart-actions .btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.chart-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Canvas responsive styling */
+#coalStockChart {
+    max-width: 100%;
+    width: 100% !important;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    min-height: 450px;
+}
+
+/* Chart responsive design */
+@media (max-width: 768px) {
+    .chart-container {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        min-height: 350px;
+    }
+    
+    .chart-controls {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .chart-actions {
+        gap: 0.25rem;
+    }
+    
+    .chart-actions .btn {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    #chart-loading {
+        padding: 1.5rem;
+    }
+    
+    #chart-loading .spinner-border {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    #coalStockChart {
+        min-height: 300px;
+    }
+}
+
+/* Print styles for charts */
+@media print {
+    .chart-container {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+    
+    .chart-controls,
+    .chart-actions,
+    #chart-loading {
+        display: none !important;
+    }
+    
+    #coalStockChart {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    .daily-coal-card:has(#coalStockChart) {
+        page-break-inside: avoid;
+    }
+}
+
+/* MDCWL Loading Data Table Styling */
+.mdcwl-loading-data-table {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    width: 100% !important;
+    background-color: white;
+}
+
+.mdcwl-loading-data-table th {
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3d73 100%) !important;
+    color: white !important;
+    border: 1px solid #1e3d73 !important;
+    font-weight: 600;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Sticky header cell should have higher z-index */
+.mdcwl-loading-data-table th.sticky-col {
+    z-index: 11 !important;
+}
+
+.mdcwl-loading-data-table td {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.mdcwl-loading-data-table tbody tr:hover {
+    background-color: #f8f9fa !important;
+    transform: scale(1.001);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mdcwl-loading-data-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* First column sticky for better navigation */
+.mdcwl-loading-data-table .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 9;
+    background-color: #e3f2fd !important;
+    box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+}
+
+.mdcwl-loading-data-table tbody tr:hover .sticky-col {
+    background-color: #bbdefb !important;
+}
+
+/* MDCWL Lifting Data Table Styling */
+.mdcwl-lifting-data-table {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    width: 100% !important;
+    background-color: white;
+}
+
+.mdcwl-lifting-data-table th {
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3d73 100%) !important;
+    color: white !important;
+    border: 1px solid #1e3d73 !important;
+    font-weight: 600;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Sticky header cell should have higher z-index */
+.mdcwl-lifting-data-table th.sticky-col {
+    z-index: 11 !important;
+}
+
+.mdcwl-lifting-data-table td {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.mdcwl-lifting-data-table tbody tr:hover {
+    background-color: #f8f9fa !important;
+    transform: scale(1.001);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mdcwl-lifting-data-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* First column sticky for better navigation */
+.mdcwl-lifting-data-table .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 9;
+    background-color: #e3f2fd !important;
+    box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+}
+
+.mdcwl-lifting-data-table tbody tr:hover .sticky-col {
+    background-color: #bbdefb !important;
+}
+
+/* Sidebar Styles for Modern Dual Sidebar Navigation */
+.sidebar {
+    position: fixed;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: white;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 1.5rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.sidebar.sidebar-left {
+    left: 0;
+    transform: translateX(-100%);
+}
+
+.sidebar.sidebar-right {
+    right: 0;
+    transform: translateX(100%);
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Main content area adjustment when sidebars are present */
+.main-content-area {
+    transition: margin 0.3s ease-in-out;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 100vw;
+        padding: 1rem;
+    }
+}

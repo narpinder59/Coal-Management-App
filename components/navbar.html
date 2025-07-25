@@ -1,0 +1,170 @@
+<nav class="navbar navbar-light bg-light fixed-top shadow-sm">
+  <div class="container-fluid">
+    <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+      ☰ Menu
+    </button>
+    <span class="navbar-brand mb-0 h1">Fuel App</span>
+  </div>
+</nav>
+
+<style>
+  .offcanvas-start {
+    width: 280px !important;
+  }
+  
+  .sidebar-content {
+    background-color: #343a40;
+    color: white;
+    min-height: 100vh;
+    margin: -1rem;
+    padding: 1rem 0;
+  }
+
+  .sidebar-content .offcanvas-body {
+    padding: 0;
+  }
+
+  .sidebar-content .nav-link {
+    color: white;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.2s;
+  }
+
+  .sidebar-content .nav-link:hover {
+    background-color: #495057;
+    color: white;
+  }
+
+  .sidebar-content .nav-link:focus {
+    box-shadow: none;
+    color: white;
+  }
+
+  .sidebar-content .submenu {
+    background-color: #717375;
+  }
+
+  .sidebar-content .submenu .nav-link {
+    padding-left: 2rem;
+    background-color: #717375;
+  }
+
+  .sidebar-content .submenu .nav-link:hover {
+    background-color: #717375;
+  }
+
+  .sidebar-content .sub-submenu {
+    background-color: #6c757d;
+  }
+
+  .sidebar-content .sub-submenu .nav-link {
+    padding-left: 3rem;
+    background-color: #6c757d;
+  }
+
+  .sidebar-content .sub-submenu .nav-link:hover {
+    background-color: #868e96;
+  }
+
+  .sidebar-content .btn-close {
+    filter: invert(1);
+  }
+
+  .sidebar-content .nav-item button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sidebar-content .nav-item button::after {
+    content: '▼';
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+  }
+
+  .sidebar-content .nav-item button[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+  }
+
+  .sidebar-content .collapse.show {
+    display: block !important;
+  }
+</style>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar">
+  <div class="sidebar-content">
+    <div class="offcanvas-body">
+      <ul class="nav flex-column">
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-page="dashboard">🏠 Dashboard</a>
+        </li>
+
+        <!-- Punjab Generation -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-page="punjabgen">⚡ Punjab Generation</a>
+        </li>
+
+        <!-- Daily Reports Accordion -->
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#dailyReports" aria-expanded="false">
+            📊 Daily Reports
+          </button>
+          <div class="collapse submenu" id="dailyReports">
+            <!-- Daily Coal Position -->
+            <a class="nav-link progress-menu-item" href="#" data-report="daily-coal-position">📋 Daily Coal Position</a>
+            <!-- Pachhwara Dashboard -->
+            <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-dashboard">🏭 Pachhwara Dashboard</a>
+          </div>
+        </li>
+
+        <!-- Progress Reports Accordion -->
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#progressReports" aria-expanded="false">
+            📈 Progress Reports
+          </button>
+          <div class="collapse submenu" id="progressReports">
+            <!-- Loading and Receipt -->
+            <a class="nav-link progress-menu-item" href="#" data-report="loading-receipt">🚛 Loading and Receipt</a>
+            
+            <!-- Coal Quality & Cost Analysis -->
+            <a class="nav-link progress-menu-item" href="#" data-report="coal-quality-cost">🔬 Coal Quality & Cost Analysis</a>
+            
+            <!-- MDCWL Submenu -->
+            <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#mdcwlSubmenu" aria-expanded="false">
+              🏭 MDCWL
+            </button>
+            <div class="collapse sub-submenu" id="mdcwlSubmenu">
+              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-lifting">📦 Lifting</a>
+              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-loading">🔄 Loading</a>
+            </div>
+            
+            <!-- Pachhwara Submenu -->
+            <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#pachhwaraSubmenu" aria-expanded="false">
+              ⛏️ Pachhwara
+            </button>
+            <div class="collapse sub-submenu" id="pachhwaraSubmenu">
+              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-prod-desp">🏗️ Production & Despatch</a>
+              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-quality">🧪 Quality Analysis</a>
+              <a class="nav-link" href="#" data-report="pachhwara-dashboard">🏭 Pachhwara Dashboard</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Calculators -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-page="calculators">🧮 Calculators</a>
+        </li>
+
+        <!-- Settings -->
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-page="settings">⚙️ Settings</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+{
+  "name": "coal-management-app",
+  "version": "1.0.0",
+  "description": "Coal Quality and Management Dashboard Mobile App",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "build": "cordova build android",
+    "build-release": "cordova build android --release",
+    "serve": "cordova serve"
+  },
+  "keywords": ["coal", "management", "dashboard", "mobile"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "cordova": "^12.0.0",
+    "cordova-android": "^12.0.0"
+  }
+}
