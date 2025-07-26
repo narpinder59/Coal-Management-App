@@ -1256,7 +1256,7 @@ async function showDailyCoalDashboard() {
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="mb-0"><i class="bi bi-arrow-down-circle text-info"></i> Rakes Received and in Pipeline</h6>
+                            <h6 class="mb-0"><i class="bi bi-arrow-down-circle text-info"></i> Rakes Received and Pipeline</h6>
                         </div>
                         <div class="table-responsive">
                             ${tables.rakesReceivedTable}
