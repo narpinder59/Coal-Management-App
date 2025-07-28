@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Format Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Date Format Test - DD/MM/YYYY</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Before (Original Date Inputs)</h4>
+                <p><em>These show in browser's default format (usually MM/DD/YYYY in US)</em></p>
+                
+                <div class="mb-3">
+                    <label>Start Date (Original):</label>
+                    <input type="date" class="form-control" id="originalDate1">
+                </div>
+                
+                <div class="mb-3">
+                    <label>End Date (Original):</label>
+                    <input type="date" class="form-control" id="originalDate2">
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>After (Formatted DD/MM/YYYY)</h4>
+                <p><em>These will always show DD/MM/YYYY format</em></p>
+                
+                <div class="mb-3">
+                    <label>Start Date (Formatted):</label>
+                    <input type="date" class="form-control" id="formattedDate1">
+                </div>
+                
+                <div class="mb-3">
+                    <label>End Date (Formatted):</label>
+                    <input type="date" class="form-control" id="formattedDate2">
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h4>Test Results:</h4>
+            <button class="btn btn-primary" onclick="showValues()">Show All Values</button>
+            <div id="results" class="mt-3"></div>
+        </div>
+    </div>
+
+    <script src="date-formatter.js"></script>
+    
+    <script>
+        function showValues() {
+            const results = document.getElementById('results');
+            
+            const orig1 = document.getElementById('originalDate1').value;
+            const orig2 = document.getElementById('originalDate2').value;
+            
+            // For formatted inputs, we need to get the hidden input values
+            const form1 = DateFormatter.getValue('formattedDate1');
+            const form2 = DateFormatter.getValue('formattedDate2');
+            
+            results.innerHTML = `
+                <div class="alert alert-info">
+                    <h5>Values Retrieved:</h5>
+                    <p><strong>Original Date 1:</strong> ${orig1 || 'No value'}</p>
+                    <p><strong>Original Date 2:</strong> ${orig2 || 'No value'}</p>
+                    <p><strong>Formatted Date 1:</strong> ${form1 || 'No value'}</p>
+                    <p><strong>Formatted Date 2:</strong> ${form2 || 'No value'}</p>
+                    <small><em>All values are in ISO format (YYYY-MM-DD) for consistency with your backend code.</em></small>
+                </div>
+            `;
+        }
+        
+        // Set some example dates
+        setTimeout(() => {
+            // Set original inputs
+            document.getElementById('originalDate1').value = '2025-07-28';
+            document.getElementById('originalDate2').value = '2025-08-15';
+            
+            // Set formatted inputs
+            DateFormatter.setValue('formattedDate1', '2025-07-28');
+            DateFormatter.setValue('formattedDate2', '2025-08-15');
+        }, 1000);
+    </script>
+</body>
+</html>
