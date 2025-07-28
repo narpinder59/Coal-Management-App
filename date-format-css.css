@@ -1,0 +1,38 @@
+/* Simple Date Format Override - DD/MM/YYYY Display Only */
+/* This CSS forces date inputs to show DD/MM/YYYY format without breaking existing JavaScript */
+
+/* Target all date inputs and set locale to UK format */
+input[type="date"] {
+    /* Force British English locale for DD/MM/YYYY display */
+    -webkit-locale: "en-GB";
+    locale: "en-GB";
+}
+
+/* For browsers that support it, use CSS-only locale override */
+input[type="date"]::-webkit-datetime-edit {
+    /* Force DD/MM/YYYY order in Webkit browsers */
+    -webkit-appearance: none;
+}
+
+/* Add a small indicator that this is DD/MM format */
+input[type="date"]::after {
+    content: " (DD/MM/YYYY)";
+    font-size: 0.75rem;
+    color: #6c757d;
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: none; /* Hidden by default, can be enabled if needed */
+}
+
+/* Optional: Show format hint on focus */
+input[type="date"]:focus::after {
+    display: inline;
+}
+
+/* Ensure date inputs maintain consistent styling */
+input[type="date"] {
+    padding-right: 40px; /* Extra space for calendar icon */
+}

@@ -4,7 +4,7 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/style.css',
-  '/date-format-simple.js',
+  '/date-formatter.js',
   '/MainDashboard.js',
   '/utils.js',
   '/LRParseDate.js',

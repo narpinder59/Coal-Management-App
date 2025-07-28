@@ -17,7 +17,7 @@ function showMainDashboard() {
                             </div>
                             <h1 class="display-4 fw-bold text-dark mb-3">Welcome</h1>
                             <p class="lead text-muted mb-4">
-                                Welcome to the Fuel Management Application
+                                Fuel Management Application
                             </p>
                             <p class="text-muted">
                                 Use the navigation menu to access different reports and dashboards.

@@ -6,6 +6,17 @@ let plantOrder = [];
 let columnStructure = [];
 let dashboardData = {};
 
+// Data caching system for improved chart performance
+let historicalDataCache = new Map(); // Cache for daily data by date
+let chartDataCache = {}; // Cache for processed chart data
+let lastCacheRefresh = null;
+const CACHE_DURATION = 5 * 60 * 1000; // Cache for 5 minutes
+
+// Dashboard data preloading system
+let dashboardDataCache = new Map(); // Cache for dashboard table data by date
+let isDashboardDataPreloaded = false;
+const DASHBOARD_PRELOAD_DAYS = 30; // Preload last 30 days for instant date switching
+
 // Enhanced mapping structures for precise data extraction
 let columnMappings = {
     table1: {},  // Rakes Loaded: {index: {plantCode, plantName, company}}
@@ -539,6 +550,143 @@ async function fetchDashboardConfig() {
     }
 }
 
+// Update preload status indicator
+function updatePreloadStatus(message, isComplete = false) {
+    const statusElement = document.getElementById('preload-status');
+    if (statusElement) {
+        statusElement.textContent = message;
+        if (isComplete) {
+            statusElement.className = 'text-success';
+            // Hide status after 5 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        } else {
+            statusElement.className = 'text-muted';
+        }
+    }
+}
+
+// Preload dashboard data for the last 15 days
+async function preloadDashboardData() {
+    console.log(`=== PRELOADING DASHBOARD DATA FOR LAST ${DASHBOARD_PRELOAD_DAYS} DAYS ===`);
+    
+    if (isDashboardDataPreloaded) {
+        console.log("Dashboard data already preloaded");
+        updatePreloadStatus('Data ready - instant date switching enabled!', true);
+        return;
+    }
+    
+    updatePreloadStatus(`Preloading last ${DASHBOARD_PRELOAD_DAYS} days for instant switching...`);
+    
+    try {
+        // Load configuration if not already loaded
+        if (Object.keys(plantMappings).length === 0) {
+            await fetchDashboardConfig();
+        }
+        
+        const endDate = new Date();
+        const preloadPromises = [];
+        
+        // Generate dates for preloading
+        const datesToPreload = [];
+        for (let i = 0; i < DASHBOARD_PRELOAD_DAYS; i++) {
+            const date = new Date(endDate);
+            date.setDate(date.getDate() - i);
+            datesToPreload.push(date);
+        }
+        
+        console.log(`Preloading data for ${datesToPreload.length} dates...`);
+        
+        let completedCount = 0;
+        
+        // Batch preload with controlled concurrency
+        const batchSize = 3; // Smaller batch for background preloading
+        for (let i = 0; i < datesToPreload.length; i += batchSize) {
+            const batch = datesToPreload.slice(i, i + batchSize);
+            const batchPromises = batch.map(async (date) => {
+                const dateString = date.toISOString().split('T')[0];
+                
+                try {
+                    console.log(`Preloading data for ${dateString}...`);
+                    const dayData = await fetchDailyCoalData(dateString);
+                    
+                    // Cache the data
+                    dashboardDataCache.set(dateString, {
+                        data: dayData,
+                        timestamp: new Date().getTime()
+                    });
+                    
+                    completedCount++;
+                    updatePreloadStatus(`Preloading... ${completedCount}/${DASHBOARD_PRELOAD_DAYS} days cached`);
+                    
+                    console.log(`✓ Preloaded data for ${dateString}`);
+                    return dateString;
+                    
+                } catch (error) {
+                    console.warn(`Failed to preload data for ${dateString}:`, error);
+                    // Cache null data to avoid repeated failed requests
+                    dashboardDataCache.set(dateString, {
+                        data: null,
+                        timestamp: new Date().getTime()
+                    });
+                    completedCount++;
+                    updatePreloadStatus(`Preloading... ${completedCount}/${DASHBOARD_PRELOAD_DAYS} days processed`);
+                    return null;
+                }
+            });
+            
+            await Promise.all(batchPromises);
+            
+            // Small delay between batches for background loading
+            if (i + batchSize < datesToPreload.length) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+        
+        isDashboardDataPreloaded = true;
+        updatePreloadStatus('✓ Preloading complete - Date switching is now instant!', true);
+        
+        console.log(`=== DASHBOARD DATA PRELOADING COMPLETE ===`);
+        console.log(`Cached data for ${dashboardDataCache.size} dates`);
+        
+    } catch (error) {
+        console.error('Error preloading dashboard data:', error);
+        updatePreloadStatus('Preloading failed - date switching may be slower');
+    }
+}
+
+// Get cached dashboard data or fetch if not available
+async function getCachedDashboardData(dateString) {
+    const cachedEntry = dashboardDataCache.get(dateString);
+    const now = new Date().getTime();
+    
+    // Check if we have fresh cached data
+    if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_DURATION) {
+        console.log(`Using cached dashboard data for ${dateString}`);
+        return cachedEntry.data;
+    }
+    
+    // If not cached or expired, fetch fresh data
+    console.log(`Fetching fresh dashboard data for ${dateString}`);
+    const freshData = await fetchDailyCoalData(dateString);
+    
+    // Cache the fresh data
+    dashboardDataCache.set(dateString, {
+        data: freshData,
+        timestamp: now
+    });
+    
+    return freshData;
+}
+
+// Clear dashboard data cache
+function clearDashboardCache() {
+    dashboardDataCache.clear();
+    isDashboardDataPreloaded = false;
+    console.log('Dashboard data cache cleared');
+}
+
 // Fetch data from the Google Sheet with dynamic processing
 async function fetchDailyCoalData(date) {
     console.log("=== FETCHING DAILY COAL DATA ===");
@@ -873,24 +1021,48 @@ function clearErrorMessages() {
     }
 }
 
-// Format numbers with commas
-function formatNumber(num) {
+// Format numbers with commas and optional decimal places
+function formatNumber(num, decimals = null) {
+    if (decimals !== null) {
+        // Round to specified decimal places first, then format with commas
+        const roundedNum = Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+        return new Intl.NumberFormat('en-IN', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+        }).format(roundedNum);
+    }
     return new Intl.NumberFormat('en-IN').format(num);
 }
 
 // Update the dashboard with the fetched data
 // Load dashboard data for selected date
+// Load dashboard data for selected date with smart caching
 async function loadDashboardData(selectedDate) {
     console.log("Loading dashboard data for:", selectedDate);
     
     // Clear any existing error messages when starting to load new data
     clearErrorMessages();
     
-    // Show loading spinner
+    // Check if data is already cached (for instant loading)
+    const cachedEntry = dashboardDataCache.get(selectedDate);
+    const now = new Date().getTime();
+    
+    if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_DURATION) {
+        console.log(`Using cached dashboard data for ${selectedDate} (instant load)`);
+        
+        if (cachedEntry.data) {
+            updateDashboard(cachedEntry.data);
+        } else {
+            showError(`No data available for selected date: ${selectedDate}`);
+        }
+        return;
+    }
+    
+    // Show loading spinner only for non-cached data
     document.getElementById('dashboard-loading').style.display = 'block';
     
     try {
-        const data = await fetchDailyCoalData(selectedDate);
+        const data = await getCachedDashboardData(selectedDate);
         document.getElementById('dashboard-loading').style.display = 'none';
         
         if (data) {
@@ -911,6 +1083,9 @@ function updateDashboard(data) {
         console.error("No data provided to updateDashboard");
         return;
     }
+    
+    // Store data globally for export functions
+    dashboardData = data;
     
     // Clear any existing error messages since data loaded successfully
     clearErrorMessages();
@@ -1044,7 +1219,7 @@ function updateDashboard(data) {
                 console.log(`*** COAL STOCK UPDATE: Processing ${plantName} at table position ${plantIndex}, cell index ${cellIndex} ***`);
                 
                 if (cellIndex < mtCells.length && data[plantName]) {
-                    updateCell(mtCells[cellIndex], formatNumber(data[plantName].coalStockMT || 0));
+                    updateCell(mtCells[cellIndex], formatNumber(data[plantName].coalStockMT || 0, 0));
                     console.log(`*** Updated ${plantName} coal stock MT: ${data[plantName].coalStockMT} at cell ${cellIndex} ***`);
                 }
                 
@@ -1084,8 +1259,11 @@ async function generateDynamicTablesHTML() {
     
     console.log(`Generating tables for ${plantOrder.length} plants and ${coalCompanies.length} coal companies`);
     
-    // Generate plant headers dynamically
+    // Generate plant headers dynamically using CSS class styling
     const plantHeaders = plantOrder.map(plant => `<th>${plant}</th>`).join('');
+    const plantHeadersGreen = plantOrder.map(plant => `<th>${plant}</th>`).join('');
+    const plantHeadersBlue = plantOrder.map(plant => `<th>${plant}</th>`).join('');
+    const plantHeadersYellow = plantOrder.map(plant => `<th>${plant}</th>`).join('');
     
     // Generate coal company rows for Rakes Loaded table dynamically
     const coalCompanyRows = coalCompanies.map(company => {
@@ -1093,7 +1271,7 @@ async function generateDynamicTablesHTML() {
         return `<tr><td>${company}</td>${cells}</tr>`;
     }).join('');
     
-    // Generate total row
+    // Generate total row using CSS class styling
     const totalCells = plantOrder.map(() => '<td>0</td>').join('');
     const totalRow = `<tr class="fw-bold daily-coal-total-row"><td>Total</td>${totalCells}</tr>`;
     
@@ -1116,29 +1294,68 @@ async function generateDynamicTablesHTML() {
                 .daily-coal-unified-table th:first-child,
                 .daily-coal-unified-table td:first-child {
                     width: 20%;
-                    min-width: 120px;
+                    min-width: 80px;
+                    font-size: 0.75rem;
+                    line-height: 1.2;
+                    padding: 4px 6px !important;
+                    white-space: normal;
+                    word-wrap: break-word;
+                    hyphens: auto;
                 }
                 .daily-coal-unified-table th:not(:first-child),
                 .daily-coal-unified-table td:not(:first-child) {
                     width: 16%;
                     text-align: center;
+                    font-size: 0.8rem;
+                    padding: 4px 2px !important;
                 }
                 .daily-coal-unified-table th,
                 .daily-coal-unified-table td {
                     vertical-align: middle;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
                 }
                 .daily-coal-unified-table .fw-bold {
                     background-color: #f8f9fa;
+                }
+                
+                /* Mobile-specific adjustments */
+                @media (max-width: 768px) {
+                    .daily-coal-unified-table th:first-child,
+                    .daily-coal-unified-table td:first-child {
+                        width: 25%;
+                        min-width: 70px;
+                        font-size: 0.7rem;
+                        padding: 3px 4px !important;
+                    }
+                    .daily-coal-unified-table th:not(:first-child),
+                    .daily-coal-unified-table td:not(:first-child) {
+                        width: 15%;
+                        font-size: 0.7rem;
+                        padding: 3px 1px !important;
+                    }
+                }
+                
+                /* Extra small mobile devices */
+                @media (max-width: 480px) {
+                    .daily-coal-unified-table th:first-child,
+                    .daily-coal-unified-table td:first-child {
+                        width: 30%;
+                        min-width: 60px;
+                        font-size: 0.65rem;
+                        padding: 2px 3px !important;
+                    }
+                    .daily-coal-unified-table th:not(:first-child),
+                    .daily-coal-unified-table td:not(:first-child) {
+                        width: 14%;
+                        font-size: 0.65rem;
+                        padding: 2px 1px !important;
+                    }
                 }
             </style>
             <table class="table table-sm table-bordered daily-coal-table daily-coal-unified-table">
                 <thead>
                     <tr>
-                        <th>Coal Source</th>
-                        ${plantHeaders}
+                        <th>Rakes Loaded</th>
+                        ${plantHeadersGreen}
                     </tr>
                 </thead>
                 <tbody id="rakesLoadedTableBody">
@@ -1151,8 +1368,8 @@ async function generateDynamicTablesHTML() {
             <table class="table table-sm table-bordered daily-coal-table daily-coal-unified-table">
                 <thead>
                     <tr>
-                        <th>Status</th>
-                        ${plantHeaders}
+                        <th>Rakes Received/Pipeline</th>
+                        ${plantHeadersBlue}
                     </tr>
                 </thead>
                 <tbody id="rakesReceivedTableBody">
@@ -1165,8 +1382,8 @@ async function generateDynamicTablesHTML() {
             <table class="table table-sm table-bordered daily-coal-table daily-coal-unified-table">
                 <thead>
                     <tr>
-                        <th>Inventory Type</th>
-                        ${plantHeaders}
+                        <th>Coal Stock Inventory/UIO</th>
+                        ${plantHeadersYellow}
                     </tr>
                 </thead>
                 <tbody id="coalStockTableBody">
@@ -1195,26 +1412,23 @@ async function showDailyCoalDashboard() {
     
     // Set main content with unified card design
     document.getElementById('main-content').innerHTML = `
-        <!-- Main Title -->
-        <div class="daily-coal-card mb-3">
-            <div class="daily-coal-section-header">
-                <h4 class="mb-0"><i class="bi bi-speedometer2"></i> Daily Coal Position Dashboard</h4>
-            </div>
-        </div>
-        
         <!-- Unified Dashboard Card -->
         <div class="daily-coal-card mb-3">
             <div class="daily-coal-section-header d-flex justify-content-between align-items-center expandable" style="cursor: pointer;" onclick="toggleCard('DCUnifiedDashboardBody', 'DCUnifiedChevron')">
-                <h5 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Daily Coal Position Dashboard</h5>
-                <i class="bi bi-chevron-up" id="DCUnifiedChevron"></i>
+                <h5 class="mb-0"><i class="bi bi-speedometer2"></i> Daily Coal/Rake Position</h5>
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-outline-success btn-sm me-2" 
+                            onclick="event.stopPropagation(); exportDailyCoalPositionReportToJPG();" 
+                            title="Export Report to JPG">
+                        <i class="bi bi-file-earmark-image"></i> Export Report
+                    </button>
+                    <i class="bi bi-chevron-up" id="DCUnifiedChevron"></i>
+                </div>
             </div>
             <div class="card-body" id="DCUnifiedDashboardBody">
                 <!-- Date Selection Section -->
-                <div class="row mb-4">
+                <div class="row mt-1 mb-1">
                     <div class="col-12">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="mb-0"><i class="bi bi-calendar-date text-primary"></i> Date Selection</h6>
-                        </div>
                         <div class="row justify-content-center">
                             <div class="col-md-6">
                                 <div class="date-selector-container d-flex justify-content-center align-items-center">
@@ -1225,6 +1439,10 @@ async function showDailyCoalDashboard() {
                                     <button type="button" class="btn btn-outline-primary btn-sm date-nav-btn" id="nextDateBtn">
                                         <i class="bi bi-chevron-right"></i>
                                     </button>
+                                </div>
+                                <!-- Preload Status Indicator -->
+                                <div class="text-center mt-2">
+                                    <small id="preload-status" class="text-muted" style="font-size: 11px;">Loading dashboard...</small>
                                 </div>
                             </div>
                         </div>
@@ -1241,11 +1459,8 @@ async function showDailyCoalDashboard() {
                 </div>
 
                 <!-- Rakes Loaded Section -->
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-12">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="mb-0"><i class="bi bi-train-freight-front text-success"></i> Rakes Loaded - Plant Wise & Coal Company Wise</h6>
-                        </div>
                         <div class="table-responsive">
                             ${tables.rakesLoadedTable}
                         </div>
@@ -1253,11 +1468,8 @@ async function showDailyCoalDashboard() {
                 </div>
 
                 <!-- Rakes Received and Pipeline Section -->
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-12">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="mb-0"><i class="bi bi-arrow-down-circle text-info"></i> Rakes Received and Pipeline</h6>
-                        </div>
                         <div class="table-responsive">
                             ${tables.rakesReceivedTable}
                         </div>
@@ -1265,11 +1477,8 @@ async function showDailyCoalDashboard() {
                 </div>
 
                 <!-- Coal Stock Section -->
-                <div class="row mb-4">
+                <div class="row mb-0">
                     <div class="col-12">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="mb-0"><i class="bi bi-box-seam text-warning"></i> Coal Stock Inventory</h6>
-                        </div>
                         <div class="table-responsive">
                             ${tables.coalStockTable}
                         </div>
@@ -1288,22 +1497,36 @@ async function showDailyCoalDashboard() {
                 <!-- Chart Controls -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="chartDataType" class="form-label">Data Type:</label>
-                        <select class="form-select form-select-sm" id="chartDataType" onchange="updateChart()">
-                            <option value="days">Coal Stock (Days)</option>
-                            <option value="mt">Coal Stock (MT)</option>
-                        </select>
+                        <label class="form-label">Data Type:</label>
+                        <div class="btn-group btn-group-sm w-100" role="group">
+                            <input type="radio" class="btn-check" name="chartDataType" id="chartDataTypeDays" value="days" checked onchange="updateChart()">
+                            <label class="btn btn-outline-primary" for="chartDataTypeDays">Coal Stock (Days)</label>
+                            
+                            <input type="radio" class="btn-check" name="chartDataType" id="chartDataTypeMT" value="mt" onchange="updateChart()">
+                            <label class="btn btn-outline-primary" for="chartDataTypeMT">Coal Stock (MT)</label>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="chartPeriod" class="form-label">Period:</label>
-                        <select class="form-select form-select-sm" id="chartPeriod" onchange="updateChart()">
-                            <option value="7">Last 7 Days</option>
-                            <option value="15">Last 15 Days</option>
-                            <option value="30" selected>Last 30 Days</option>
-                            <option value="60">Last 2 Months</option>
-                            <option value="90">Last 3 Months</option>
-                            <option value="180">Last 6 Months</option>
-                        </select>
+                        <label class="form-label">Period:</label>
+                        <div class="btn-group btn-group-sm w-100" role="group">
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod7" value="7" onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod7">7D</label>
+                            
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod15" value="15" onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod15">15D</label>
+                            
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod30" value="30" checked onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod30">30D</label>
+                            
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod60" value="60" onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod60">2M</label>
+                            
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod90" value="90" onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod90">3M</label>
+                            
+                            <input type="radio" class="btn-check" name="chartPeriod" id="chartPeriod180" value="180" onchange="updateChart()">
+                            <label class="btn btn-outline-secondary" for="chartPeriod180">6M</label>
+                        </div>
                     </div>
                 </div>
                 
@@ -1323,7 +1546,10 @@ async function showDailyCoalDashboard() {
                 </div>
                 
                 <!-- Chart Actions -->
-                <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <!-- Cache Status Indicator -->
+                    <small id="cache-status" class="text-muted" style="font-size: 11px;"></small>
+                    
                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshChart()">
                         <i class="bi bi-arrow-clockwise"></i> Refresh Chart
                     </button>
@@ -1362,8 +1588,8 @@ async function showDailyCoalDashboard() {
         </div>
     `;
     
-    // Initialize date picker and event handlers
-    initializeDateControls();
+    // Initialize date picker and event handlers (with background preloading)
+    await initializeDateControls();
     
     // Initialize chart after DOM is ready
     setTimeout(() => {
@@ -1372,7 +1598,7 @@ async function showDailyCoalDashboard() {
 }
 
 // Initialize date controls and event handlers
-function initializeDateControls() {
+async function initializeDateControls() {
     const datePicker = document.getElementById('datePicker');
     const prevBtn = document.getElementById('prevDateBtn');
     const nextBtn = document.getElementById('nextDateBtn');
@@ -1382,8 +1608,20 @@ function initializeDateControls() {
         const today = new Date();
         datePicker.value = today.toISOString().split('T')[0];
         
-        // Load data for today
-        loadDashboardData(datePicker.value);
+        // Update initial status
+        updatePreloadStatus('Loading today\'s data...');
+        
+        // Load data for today first
+        await loadDashboardData(datePicker.value);
+        
+        // Start preloading data for last 15 days in background for instant date switching
+        setTimeout(() => {
+            preloadDashboardData().then(() => {
+                console.log('Background preloading completed - date switching will now be instant!');
+            }).catch(error => {
+                console.warn('Background preloading failed:', error);
+            });
+        }, 1000); // Start preloading 1 second after initial load
         
         // Date picker change event
         datePicker.addEventListener('change', function() {
@@ -1476,22 +1714,55 @@ async function exportDashboardToPDF() {
                     body: rows.slice(1),
                     startY: startY + 8,
                     theme: 'grid',
-                    styles: { fontSize: 8 },
-                    headStyles: { fillColor: [65, 105, 225] },
-                    margin: { left: 20, right: 20 }
+                    styles: { 
+                        fontSize: 9,
+                        textColor: [0, 0, 0],
+                        fillColor: [255, 255, 255],
+                        halign: 'center', // Center align all data
+                        valign: 'middle'
+                    },
+                    headStyles: { 
+                        fillColor: [0, 121, 107], // #00796b color matching the tables
+                        textColor: [255, 255, 255],
+                        fontSize: 10,
+                        fontStyle: 'bold',
+                        halign: 'center', // Center align headers
+                        valign: 'middle'
+                    },
+                    bodyStyles: {
+                        halign: 'center', // Center align body data
+                        valign: 'middle'
+                    },
+                    columnStyles: {
+                        0: { halign: 'left', fontStyle: 'bold' } // First column (row labels) left aligned and bold
+                    },
+                    margin: { left: 15, right: 15 },
+                    tableWidth: 'auto'
                 });
                 return pdf.lastAutoTable.finalY + 10;
             } else {
-                // Fallback: Simple table rendering
+                // Fallback: Enhanced table rendering with center alignment
                 let currentY = startY + 8;
-                rows.forEach((row, index) => {
-                    let xPosition = 20;
-                    pdf.setFontSize(8);
-                    pdf.setFont('helvetica', index === 0 ? 'bold' : 'normal');
+                const columnWidth = 25;
+                const startX = 20;
+                
+                rows.forEach((row, rowIndex) => {
+                    pdf.setFontSize(rowIndex === 0 ? 10 : 9);
+                    pdf.setFont('helvetica', rowIndex === 0 ? 'bold' : 'normal');
                     
                     row.forEach((cell, cellIndex) => {
-                        pdf.text(cell.substring(0, 15), xPosition, currentY); // Truncate long text
-                        xPosition += 35;
+                        const xPosition = startX + (cellIndex * columnWidth);
+                        const cellText = cell.substring(0, 12); // Truncate long text
+                        
+                        if (cellIndex === 0) {
+                            // First column - left aligned
+                            pdf.text(cellText, xPosition, currentY);
+                        } else {
+                            // Data columns - center aligned
+                            const textWidth = pdf.getTextWidth(cellText);
+                            const centerX = xPosition + (columnWidth / 2) - (textWidth / 2);
+                            pdf.text(cellText, centerX, currentY);
+                        }
                     });
                     currentY += 6;
                 });
@@ -1574,16 +1845,47 @@ async function exportDashboardToJPG() {
         // Capture the main content area
         const element = document.getElementById('main-content');
         
-        // Configure html2canvas options
+        // Add temporary CSS to ensure perfect alignment for export
+        const tempStyle = document.createElement('style');
+        tempStyle.id = 'temp-export-styles';
+        tempStyle.innerHTML = `
+            .daily-coal-unified-table td:not(:first-child),
+            .daily-coal-unified-table th:not(:first-child) {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+            .daily-coal-unified-table td:first-child,
+            .daily-coal-unified-table th:first-child {
+                text-align: left !important;
+                vertical-align: middle !important;
+            }
+            .daily-coal-table th {
+                background-color: #00796b !important;
+                color: white !important;
+                text-align: center !important;
+            }
+            .daily-coal-table th:first-child {
+                text-align: left !important;
+            }
+        `;
+        document.head.appendChild(tempStyle);
+        
+        // Wait for styles to be applied
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Configure html2canvas options for maximum quality
         const options = {
             backgroundColor: '#ffffff',
-            scale: 2, // Higher quality
+            scale: 4, // Ultra high quality (increased from 2 to 4)
             useCORS: true,
             allowTaint: true,
             scrollX: 0,
             scrollY: 0,
             width: element.scrollWidth,
             height: element.scrollHeight,
+            dpi: 300, // High DPI for print quality
+            imageTimeout: 0, // No timeout for better quality rendering
+            logging: false, // Disable logging for better performance
             ignoreElements: function(element) {
                 // Additional check to ignore export-related elements and loading indicators
                 return element.classList.contains('bi-download') || 
@@ -1596,6 +1898,33 @@ async function exportDashboardToJPG() {
         
         // Generate canvas
         const canvas = await html2canvas(element, options);
+        
+        // Create A4-sized canvas for export (2480 x 3508 pixels at 300 DPI)
+        const a4Canvas = document.createElement('canvas');
+        const a4Ctx = a4Canvas.getContext('2d');
+        const a4Width = 2480;
+        const a4Height = 3508;
+        
+        a4Canvas.width = a4Width;
+        a4Canvas.height = a4Height;
+        
+        // Fill with white background
+        a4Ctx.fillStyle = '#ffffff';
+        a4Ctx.fillRect(0, 0, a4Width, a4Height);
+        
+        // Calculate scaling to fit content within A4 while maintaining aspect ratio
+        const scaleX = (a4Width - 100) / canvas.width; // 50px margin on each side
+        const scaleY = (a4Height - 100) / canvas.height; // 50px margin on top/bottom
+        const scale = Math.min(scaleX, scaleY);
+        
+        // Calculate centered position
+        const scaledWidth = canvas.width * scale;
+        const scaledHeight = canvas.height * scale;
+        const x = (a4Width - scaledWidth) / 2;
+        const y = (a4Height - scaledHeight) / 2;
+        
+        // Draw the original canvas onto A4 canvas with scaling and centering
+        a4Ctx.drawImage(canvas, x, y, scaledWidth, scaledHeight);
         
         // Restore export card visibility
         if (exportCard) {
@@ -1612,14 +1941,20 @@ async function exportDashboardToJPG() {
             card.style.display = 'none';
         });
         
-        // Convert canvas to JPG blob
-        canvas.toBlob(function(blob) {
+        // Remove temporary styles
+        const tempExportStyle = document.getElementById('temp-export-styles');
+        if (tempExportStyle) {
+            tempExportStyle.remove();
+        }
+        
+        // Convert A4 canvas to ultra high quality JPG blob
+        a4Canvas.toBlob(function(blob) {
             // Create download link
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `Daily_Coal_Position_${selectedDate.replace(/-/g, '_')}.jpg`;
+            a.download = `Daily_Coal_Position_A4_${selectedDate.replace(/-/g, '_')}.jpg`;
             
             // Trigger download
             document.body.appendChild(a);
@@ -1627,8 +1962,8 @@ async function exportDashboardToJPG() {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             
-            console.log(`JPG exported successfully: Daily_Coal_Position_${selectedDate.replace(/-/g, '_')}.jpg`);
-        }, 'image/jpeg', 0.95); // High quality JPG
+            console.log(`A4-sized JPG exported successfully: Daily_Coal_Position_A4_${selectedDate.replace(/-/g, '_')}.jpg`);
+        }, 'image/jpeg', 1.0); // Maximum quality JPG
         
     } catch (error) {
         console.error('Error exporting JPG:', error);
@@ -1658,7 +1993,7 @@ function printDashboard() {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Daily Coal Position Dashboard - ${formattedDate}</title>
+            <title>Daily Coal/Rake Position Dashboard - ${formattedDate}</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
             <style>
                 @media print {
@@ -1686,12 +2021,31 @@ function printDashboard() {
                 .table {
                     margin-bottom: 0;
                 }
+                /* Ensure proper table alignment for printing */
+                .daily-coal-unified-table td:not(:first-child),
+                .daily-coal-unified-table th:not(:first-child) {
+                    text-align: center !important;
+                    vertical-align: middle !important;
+                }
+                .daily-coal-unified-table td:first-child,
+                .daily-coal-unified-table th:first-child {
+                    text-align: left !important;
+                    vertical-align: middle !important;
+                }
+                .daily-coal-table th {
+                    background-color: #00796b !important;
+                    color: white !important;
+                    text-align: center !important;
+                }
+                .daily-coal-table th:first-child {
+                    text-align: left !important;
+                }
             </style>
         </head>
         <body>
             <div class="container-fluid">
                 <div class="text-center mb-4">
-                    <h2>Daily Coal Position Dashboard</h2>
+                    <h2>Daily Coal/Rake Position Dashboard</h2>
                     <p><strong>Date:</strong> ${formattedDate} | <strong>Generated:</strong> ${new Date().toLocaleString()}</p>
                 </div>
                 ${printContent}
@@ -1740,6 +2094,9 @@ async function initializeChart() {
         await loadChartJS();
     }
     
+    // Initialize cache status indicator
+    updateCacheStatus();
+    
     // Initialize chart with default data
     await updateChart();
 }
@@ -1767,6 +2124,210 @@ function loadChartJS() {
 }
 
 // Fetch historical data for chart
+// Optimized historical data fetching with smart caching
+async function fetchHistoricalDataOptimized(days) {
+    console.log(`=== FETCHING OPTIMIZED HISTORICAL DATA FOR ${days} DAYS ===`);
+    
+    // Show loading spinner and update status
+    const loadingDiv = document.getElementById('chart-loading');
+    if (loadingDiv) loadingDiv.style.display = 'block';
+    updateCacheStatus('Loading chart data...');
+    
+    try {
+        // Check if we have fresh cached data for this period
+        const cacheKey = `historical_${days}`;
+        const now = new Date().getTime();
+        
+        if (chartDataCache[cacheKey] && 
+            lastCacheRefresh && 
+            (now - lastCacheRefresh) < CACHE_DURATION) {
+            console.log(`Using cached data for ${days} days`);
+            if (loadingDiv) loadingDiv.style.display = 'none';
+            updateCacheStatus();
+            return chartDataCache[cacheKey];
+        }
+        
+        // Load configuration if not already loaded
+        if (Object.keys(plantMappings).length === 0) {
+            await fetchDashboardConfig();
+        }
+        
+        const historicalData = [];
+        const endDate = new Date();
+        const datePromises = [];
+        
+        // Generate all dates first
+        const dates = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date(endDate);
+            date.setDate(date.getDate() - i);
+            dates.push(date);
+        }
+        
+        // Check which dates we need to fetch (not in cache or cache expired)
+        const datesToFetch = [];
+        const cachedResults = [];
+        
+        dates.forEach(date => {
+            const dateString = date.toISOString().split('T')[0];
+            const cachedData = historicalDataCache.get(dateString);
+            
+            if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
+                // Use cached data
+                cachedResults.push({
+                    date: dateString,
+                    formattedDate: date.toLocaleDateString('en-GB'),
+                    plants: cachedData.data
+                });
+            } else {
+                // Need to fetch this date
+                datesToFetch.push({ date, dateString });
+            }
+        });
+        
+        console.log(`Using ${cachedResults.length} cached entries, fetching ${datesToFetch.length} new entries`);
+        
+        // Fetch only the dates we don't have cached
+        if (datesToFetch.length > 0) {
+            // Batch fetch with controlled concurrency to avoid overwhelming the API
+            const batchSize = 5; // Fetch 5 dates at a time
+            for (let i = 0; i < datesToFetch.length; i += batchSize) {
+                const batch = datesToFetch.slice(i, i + batchSize);
+                const batchPromises = batch.map(async ({ date, dateString }) => {
+                    try {
+                        console.log(`Fetching data for date: ${dateString}`);
+                        const dayData = await fetchDailyCoalData(dateString);
+                        
+                        let plants = {};
+                        if (dayData) {
+                            // Extract coal stock data for each plant
+                            Object.keys(dayData).forEach(plantName => {
+                                if (plantOrder.includes(plantName)) {
+                                    plants[plantName] = {
+                                        coalStockMT: dayData[plantName].coalStockMT || 0,
+                                        coalStockDays: dayData[plantName].coalStockDays || 0
+                                    };
+                                }
+                            });
+                        } else {
+                            // No data found, create empty entries
+                            plantOrder.forEach(plantName => {
+                                plants[plantName] = {
+                                    coalStockMT: null,
+                                    coalStockDays: null
+                                };
+                            });
+                        }
+                        
+                        // Cache the result
+                        historicalDataCache.set(dateString, {
+                            data: plants,
+                            timestamp: now
+                        });
+                        
+                        return {
+                            date: dateString,
+                            formattedDate: date.toLocaleDateString('en-GB'),
+                            plants: plants
+                        };
+                        
+                    } catch (error) {
+                        console.error(`Error fetching data for ${dateString}:`, error);
+                        // Create empty data for error dates
+                        const plants = {};
+                        plantOrder.forEach(plantName => {
+                            plants[plantName] = {
+                                coalStockMT: null,
+                                coalStockDays: null
+                            };
+                        });
+                        
+                        return {
+                            date: dateString,
+                            formattedDate: date.toLocaleDateString('en-GB'),
+                            plants: plants
+                        };
+                    }
+                });
+                
+                const batchResults = await Promise.all(batchPromises);
+                historicalData.push(...batchResults);
+                
+                // Small delay between batches to be gentle on the API
+                if (i + batchSize < datesToFetch.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+        }
+        
+        // Combine cached and newly fetched data
+        const allData = [...cachedResults, ...historicalData];
+        
+        // Sort by date to ensure proper order
+        allData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // Cache the processed result for this period
+        chartDataCache[cacheKey] = allData;
+        lastCacheRefresh = now;
+        
+        console.log(`=== OPTIMIZED HISTORICAL DATA FETCH COMPLETE ===`);
+        console.log(`Total data points: ${allData.length}`);
+        
+        // Hide loading spinner and update cache status
+        if (loadingDiv) loadingDiv.style.display = 'none';
+        updateCacheStatus();
+        
+        return allData;
+        
+    } catch (error) {
+        console.error('Error fetching optimized historical data:', error);
+        if (loadingDiv) loadingDiv.style.display = 'none';
+        updateCacheStatus('Error loading data');
+        throw error;
+    }
+}
+
+// Clear cache when needed (e.g., when refreshing dashboard)
+function clearDataCache() {
+    historicalDataCache.clear();
+    chartDataCache = {};
+    lastCacheRefresh = null;
+    updateCacheStatus('Cache cleared');
+    
+    // Also clear dashboard data cache
+    clearDashboardCache();
+    updatePreloadStatus('Cache cleared - will preload on next refresh');
+    
+    console.log('All data caches cleared');
+}
+
+// Update cache status indicator
+function updateCacheStatus(message) {
+    const statusElement = document.getElementById('cache-status');
+    if (statusElement) {
+        if (message) {
+            statusElement.textContent = message;
+        } else {
+            const now = new Date().getTime();
+            if (lastCacheRefresh && (now - lastCacheRefresh) < CACHE_DURATION) {
+                const minutesAgo = Math.floor((now - lastCacheRefresh) / 60000);
+                statusElement.textContent = minutesAgo === 0 ? 'Data cached (fresh)' : `Data cached (${minutesAgo}m ago)`;
+                statusElement.className = 'text-success';
+            } else {
+                statusElement.textContent = 'Data will be fetched fresh';
+                statusElement.className = 'text-muted';
+            }
+        }
+        
+        // Clear status after 3 seconds if it's a temporary message
+        if (message && (message.includes('cleared') || message.includes('Loading'))) {
+            setTimeout(() => {
+                updateCacheStatus();
+            }, 3000);
+        }
+    }
+}
+
 async function fetchHistoricalData(days) {
     console.log(`=== FETCHING HISTORICAL DATA FOR ${days} DAYS ===`);
     
@@ -1867,16 +2428,16 @@ async function fetchHistoricalData(days) {
 
 // Update chart with current settings
 async function updateChart() {
-    console.log("=== UPDATING CHART ===");
+    console.log("=== UPDATING CHART (OPTIMIZED) ===");
     
     try {
-        const dataType = document.getElementById('chartDataType')?.value || 'days';
-        const period = parseInt(document.getElementById('chartPeriod')?.value || '30');
+        const dataType = document.querySelector('input[name="chartDataType"]:checked')?.value || 'days';
+        const period = parseInt(document.querySelector('input[name="chartPeriod"]:checked')?.value || '30');
         
         console.log(`Chart settings: Type=${dataType}, Period=${period} days`);
         
-        // Fetch historical data
-        const historicalData = await fetchHistoricalData(period);
+        // Use optimized historical data fetching with caching
+        const historicalData = await fetchHistoricalDataOptimized(period);
         
         if (!historicalData || historicalData.length === 0) {
             console.error('No historical data available for chart');
@@ -1924,11 +2485,11 @@ function prepareChartData(historicalData, dataType) {
             data: data,
             borderColor: plantColor,
             backgroundColor: plantColor + '20', // 20% opacity
-            borderWidth: 3,
+            borderWidth: 1, // line thickness 
             fill: false,
             tension: 0.4,
-            pointRadius: 4,
-            pointHoverRadius: 6,
+            pointRadius: 3, // circle radius
+            pointHoverRadius: 5, // hover radius
             spanGaps: true // Connect points even if there are null values
         });
     });
@@ -2079,7 +2640,8 @@ function createChart(chartData, dataType) {
             },
             elements: {
                 point: {
-                    hoverRadius: 8
+                    hoverRadius: 5, // global hover radius
+                    radius: 3 // global point radius
                 }
             }
         }
@@ -2089,8 +2651,14 @@ function createChart(chartData, dataType) {
 }
 
 // Refresh chart
+// Refresh chart with cache clearing for fresh data
 async function refreshChart() {
-    console.log("Refreshing chart...");
+    console.log("Refreshing chart with fresh data...");
+    
+    // Clear cache to force fresh data fetch
+    clearDataCache();
+    
+    // Update chart with fresh data
     await updateChart();
 }
 
@@ -2100,16 +2668,31 @@ function printChart() {
     
     try {
         // Get current settings for title
-        const dataType = document.getElementById('chartDataType')?.value || 'days';
-        const period = document.getElementById('chartPeriod')?.value || '30';
+        const dataType = document.querySelector('input[name="chartDataType"]:checked')?.value || 'days';
+        const period = document.querySelector('input[name="chartPeriod"]:checked')?.value || '30';
         const yAxisTitle = dataType === 'mt' ? 'Coal Stock (MT)' : 'Coal Stock (Days)';
         
         // Create print window
         const printWindow = window.open('', '_blank');
         
-        // Get chart canvas as image
+        // Get chart canvas as ultra high quality image
         const canvas = document.getElementById('coalStockChart');
-        const chartImage = canvas.toDataURL('image/png');
+        
+        // Create a temporary high-resolution canvas for better quality
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        const scaleFactor = 4; // 4x resolution for ultra high quality
+        
+        // Set high resolution dimensions
+        tempCanvas.width = canvas.width * scaleFactor;
+        tempCanvas.height = canvas.height * scaleFactor;
+        
+        // Scale the context and draw the original canvas
+        tempCtx.scale(scaleFactor, scaleFactor);
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // Get ultra high quality image data
+        const chartImage = tempCanvas.toDataURL('image/png', 1.0);
         
         printWindow.document.write(`
             <!DOCTYPE html>
@@ -2136,7 +2719,7 @@ function printChart() {
                 </style>
             </head>
             <body>
-                <h2>Daily Coal Position Dashboard</h2>
+                <h2>Daily Coal Position</h2>
                 <h3>Coal Stock Trend Analysis - ${yAxisTitle}</h3>
                 <div class="chart-info">
                     <p><strong>Period:</strong> Last ${period} Days</p>
@@ -2163,33 +2746,189 @@ function printChart() {
     }
 }
 
-// Export chart as image
+// Export chart as ultra high quality image with orientation choice
 function exportChartAsImage() {
-    console.log("Exporting chart as image...");
+    console.log("Exporting chart as ultra high quality image...");
     
+    // Create orientation selection modal
+    const orientationModal = createOrientationModal();
+    document.body.appendChild(orientationModal);
+    
+    // Show the modal
+    orientationModal.style.display = 'flex';
+}
+
+// Create orientation selection modal
+function createOrientationModal() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+    `;
+    
+    content.innerHTML = `
+        <h4 style="margin-bottom: 20px; color: #333;">Choose Export Orientation</h4>
+        <p style="margin-bottom: 25px; color: #666;">Select the orientation for your chart export:</p>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;">
+            <button id="portraitBtn" class="btn btn-outline-primary" style="padding: 15px 25px; border-radius: 8px;">
+                <i class="bi bi-phone" style="font-size: 24px; margin-bottom: 5px; display: block;"></i>
+                Portrait<br>
+                <small style="opacity: 0.7;">2480 × 3508</small>
+            </button>
+            <button id="landscapeBtn" class="btn btn-outline-primary" style="padding: 15px 25px; border-radius: 8px;">
+                <i class="bi bi-laptop" style="font-size: 24px; margin-bottom: 5px; display: block;"></i>
+                Landscape<br>
+                <small style="opacity: 0.7;">3508 × 2480</small>
+            </button>
+        </div>
+        <button id="cancelBtn" class="btn btn-secondary" style="padding: 8px 20px;">Cancel</button>
+    `;
+    
+    modal.appendChild(content);
+    
+    // Add event listeners
+    content.querySelector('#portraitBtn').addEventListener('click', () => {
+        modal.remove();
+        performChartExport('portrait');
+    });
+    
+    content.querySelector('#landscapeBtn').addEventListener('click', () => {
+        modal.remove();
+        performChartExport('landscape');
+    });
+    
+    content.querySelector('#cancelBtn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    return modal;
+}
+
+// Perform chart export with selected orientation
+function performChartExport(orientation) {
     try {
         const canvas = document.getElementById('coalStockChart');
         
         // Get current settings for filename
-        const dataType = document.getElementById('chartDataType')?.value || 'days';
-        const period = document.getElementById('chartPeriod')?.value || '30';
+        const dataType = document.querySelector('input[name="chartDataType"]:checked')?.value || 'days';
+        const period = document.querySelector('input[name="chartPeriod"]:checked')?.value || '30';
         const today = new Date().toISOString().split('T')[0];
         
-        // Convert canvas to blob and download
-        canvas.toBlob(function(blob) {
+        // Create a temporary high-resolution canvas for maximum quality
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        const scaleFactor = 4; // 4x resolution for ultra high quality
+        
+        // Set ultra high resolution dimensions
+        tempCanvas.width = canvas.width * scaleFactor;
+        tempCanvas.height = canvas.height * scaleFactor;
+        
+        // Enable high quality rendering
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        
+        // Scale the context and draw the original canvas
+        tempCtx.scale(scaleFactor, scaleFactor);
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // Create A4-sized canvas for export with orientation support
+        const a4Canvas = document.createElement('canvas');
+        const a4Ctx = a4Canvas.getContext('2d');
+        
+        // Set dimensions based on orientation
+        let a4Width, a4Height;
+        if (orientation === 'landscape') {
+            a4Width = 3508;  // A4 landscape width
+            a4Height = 2480; // A4 landscape height
+        } else {
+            a4Width = 2480;  // A4 portrait width
+            a4Height = 3508; // A4 portrait height
+        }
+        
+        a4Canvas.width = a4Width;
+        a4Canvas.height = a4Height;
+        
+        // Fill with white background
+        a4Ctx.fillStyle = '#ffffff';
+        a4Ctx.fillRect(0, 0, a4Width, a4Height);
+        
+        // Calculate scaling to fit chart within A4 while maintaining aspect ratio
+        // Adjust margins based on orientation
+        const marginX = orientation === 'landscape' ? 300 : 200; // More horizontal margin for landscape
+        const marginY = orientation === 'landscape' ? 200 : 300; // More vertical margin for portrait
+        
+        const scaleX = (a4Width - marginX) / tempCanvas.width;
+        const scaleY = (a4Height - marginY) / tempCanvas.height;
+        const scale = Math.min(scaleX, scaleY);
+        
+        // Add title and date information with orientation-specific positioning
+        a4Ctx.fillStyle = '#000000';
+        a4Ctx.font = 'bold 48px Arial';
+        a4Ctx.textAlign = 'center';
+        
+        const titleY = orientation === 'landscape' ? 80 : 100;
+        a4Ctx.fillText('Coal Stock Trend Analysis', a4Width / 2, titleY);
+        
+        a4Ctx.font = '32px Arial';
+        const yAxisTitle = dataType === 'mt' ? 'Coal Stock (MT)' : 'Coal Stock (Days)';
+        const subtitleY = orientation === 'landscape' ? 130 : 150;
+        a4Ctx.fillText(`${yAxisTitle} - Last ${period} Days`, a4Width / 2, subtitleY);
+        
+        a4Ctx.font = '24px Arial';
+        const dateY = orientation === 'landscape' ? 170 : 190;
+        a4Ctx.fillText(`Generated: ${new Date().toLocaleDateString()}`, a4Width / 2, dateY);
+        
+        // Calculate centered position for chart
+        const scaledWidth = tempCanvas.width * scale;
+        const scaledHeight = tempCanvas.height * scale;
+        const x = (a4Width - scaledWidth) / 2;
+        const y = orientation === 'landscape' ? 210 : 230; // Start below title area
+        
+        // Draw the chart onto A4 canvas with scaling and centering
+        a4Ctx.drawImage(tempCanvas, x, y, scaledWidth, scaledHeight);
+        
+        // Convert A4 canvas to ultra high quality blob and download
+        a4Canvas.toBlob(function(blob) {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `Coal_Stock_Trend_${dataType}_${period}days_${today.replace(/-/g, '_')}.png`;
+            const orientationSuffix = orientation === 'landscape' ? '_landscape' : '_portrait';
+            a.download = `Coal_Stock_Trend_A4${orientationSuffix}_${dataType}_${period}days_${today.replace(/-/g, '_')}.jpg`;
             
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             
-            console.log(`Chart exported as: Coal_Stock_Trend_${dataType}_${period}days_${today.replace(/-/g, '_')}.png`);
-        }, 'image/png');
+            console.log(`A4-sized ${orientation} chart exported as: Coal_Stock_Trend_A4${orientationSuffix}_${dataType}_${period}days_${today.replace(/-/g, '_')}.jpg`);
+        }, 'image/jpeg', 1.0); // Maximum quality JPG for A4 format
         
     } catch (error) {
         console.error('Error exporting chart:', error);
@@ -2216,3 +2955,374 @@ function toggleCard(bodyId, chevronId) {
         }
     }
 }
+
+// Export Daily Coal Position Report as high-quality JPG
+async function exportDailyCoalPositionReportToJPG() {
+    const html2canvas = window.html2canvas;
+    
+    if (!html2canvas) {
+        alert('Export library not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        // Get current date from the date input or use today
+        const dateInput = document.getElementById('datePicker');
+        const selectedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+        
+        console.log('=== EXPORT FUNCTION DEBUG ===');
+        console.log('Date input element found:', !!dateInput);
+        console.log('Selected date from picker:', selectedDate);
+        
+        const dateObj = new Date(selectedDate);
+        const formattedDate = dateObj.toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
+        
+        console.log('Formatted date for report header:', formattedDate);
+        
+        // Debug: Check if we have current data
+        console.log('Export function - checking dashboardData:', dashboardData);
+        
+        // Try to get fresh data if dashboardData is empty
+        let currentData = dashboardData;
+        if (!currentData || Object.keys(currentData).length === 0) {
+            console.log('Dashboard data is empty, trying to fetch fresh data...');
+            try {
+                currentData = await getCachedDashboardData(selectedDate);
+                console.log('Fresh data fetched:', currentData);
+            } catch (error) {
+                console.error('Error fetching fresh data:', error);
+                alert('No data available for export. Please load the dashboard first.');
+                return;
+            }
+        }
+        
+        if (!currentData || Object.keys(currentData).length === 0) {
+            alert('No data available for export. Please load the dashboard first.');
+            return;
+        }
+        
+        // Debug: Verify data structure
+        console.log('Using data for export:', currentData);
+        plantOrder.forEach(plant => {
+            if (currentData[plant]) {
+                console.log(`${plant} data:`, currentData[plant]);
+            } else {
+                console.log(`${plant}: NO DATA FOUND`);
+            }
+        });
+        
+        // Get previous date data for comparison
+        const previousDate = new Date(dateObj);
+        previousDate.setDate(previousDate.getDate() - 1);
+        const previousDateString = previousDate.toISOString().split('T')[0];
+        const previousDateFormatted = previousDate.toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
+        
+        console.log('Previous date calculation:');
+        console.log('- Previous date object:', previousDate);
+        console.log('- Previous date string:', previousDateString);
+        console.log('- Previous date formatted:', previousDateFormatted);
+        
+        console.log('Getting previous date data for comparison:', previousDateString);
+        let previousData = {};
+        try {
+            previousData = await getCachedDashboardData(previousDateString) || {};
+            console.log('Previous date data loaded:', previousData);
+        } catch (error) {
+            console.warn('Could not load previous date data:', error);
+            previousData = {};
+        }
+        
+        // Ensure configuration is loaded
+        if (plantOrder.length === 0 || coalCompanies.length === 0) {
+            console.log('Configuration not loaded, fetching...');
+            await fetchDashboardConfig();
+        }
+        
+        console.log('Using plantOrder:', plantOrder);
+        console.log('Using coalCompanies:', coalCompanies);
+        
+        // Create a temporary container for the report
+        const reportContainer = document.createElement('div');
+        reportContainer.style.cssText = `
+            position: absolute;
+            top: -10000px;
+            left: -10000px;
+            width: 794px;
+            background: white;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        `;
+        
+        // Create the comprehensive daily coal position report
+        reportContainer.innerHTML = `
+            <div style="text-align: center; margin-bottom: 25px; border-bottom: 3px solid #2c3e50; padding-bottom: 15px;">
+                <h1 style="color: #2c3e50; margin: 0; font-size: 28px; font-weight: 700; text-transform: uppercase;">
+                    DAILY COAL POSITION REPORT
+                </h1>
+                <h2 style="color: #34495e; margin: 8px 0 4px 0; font-size: 22px; font-weight: 600;">
+                    PUNJAB STATE POWER CORPORATION LIMITED
+                </h2>
+                <h3 style="color: #7f8c8d; margin: 4px 0 0 0; font-size: 18px; font-weight: 500;">
+                    Date: ${formattedDate}
+                </h3>
+            </div>
+            
+            <!-- Table 1: Rakes Loaded (by Company) -->
+            <div style="margin-bottom: 25px;">
+                <h3 style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 12px; margin: 0 0 12px 0; font-size: 16px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-train-front-fill" style="margin-right: 8px;"></i>RAKES LOADED BY COMPANY
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white;">
+                            <th style="padding: 12px; font-size: 16px; font-weight: 600; text-align: center; border: 1px solid #34495e;">COMPANY</th>
+                            ${plantOrder.map(plant => `<th style="padding: 12px; font-size: 16px; font-weight: 600; text-align: center; border: 1px solid #34495e;">${plant}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${coalCompanies.map((company, index) => {
+                            const rowStyle = index % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8f9fa;';
+                            return `
+                                <tr style="${rowStyle}">
+                                    <td style="padding: 10px 12px; font-size: 15px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">${company}</td>
+                                    ${plantOrder.map(plant => {
+                                        const value = currentData[plant] ? (currentData[plant].rakesLoaded[company] || 0) : 0;
+                                        return `<td style="padding: 10px; font-size: 15px; text-align: center; border: 1px solid #dee2e6;">${formatNumber(value, 0)}</td>`;
+                                    }).join('')}
+                                </tr>
+                            `;
+                        }).join('')}
+                        <tr style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; font-weight: 700;">
+                            <td style="padding: 15px; font-size: 14px; font-weight: 700; border: 1px solid #27ae60;">TOTAL RAKES</td>
+                            ${plantOrder.map((plant, plantIndex) => {
+                                let total = 0;
+                                if (currentData[plant]) {
+                                    // For first 3 plants (GGSSTP, GHTP, GATP), calculate from company breakdown
+                                    if (plantIndex < 3) {
+                                        coalCompanies.forEach(company => {
+                                            total += currentData[plant].rakesLoaded[company] || 0;
+                                        });
+                                    } else {
+                                        // For NPL/TSPL, use totalRakesLoaded if available
+                                        total = currentData[plant].totalRakesLoaded || 0;
+                                    }
+                                }
+                                return `<td style="padding: 15px; font-size: 14px; font-weight: 700; text-align: center; border: 1px solid #27ae60;">${formatNumber(total, 0)}</td>`;
+                            }).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Table 2: Rakes Received and Pipeline -->
+            <div style="margin-bottom: 25px;">
+                <h3 style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 12px; margin: 0 0 12px 0; font-size: 16px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-arrow-down-circle-fill" style="margin-right: 8px;"></i>RAKES RECEIVED & PIPELINE
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white;">
+                            <th style="padding: 12px; font-size: 16px; font-weight: 600; text-align: center; border: 1px solid #34495e;">STATUS</th>
+                            ${plantOrder.map(plant => `<th style="padding: 12px; font-size: 16px; font-weight: 600; text-align: center; border: 1px solid #34495e;">${plant}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px 12px; font-size: 15px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">Rakes Received</td>
+                            ${plantOrder.map(plant => {
+                                const value = currentData[plant] ? (currentData[plant].rakesReceived || 0) : 0;
+                                return `<td style="padding: 10px; font-size: 15px; text-align: center; border: 1px solid #dee2e6; ${value > 0 ? 'background-color: #d5f4e6; color: #27ae60; font-weight: 600;' : ''}">${formatNumber(value, 0)}</td>`;
+                            }).join('')}
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 10px 12px; font-size: 15px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">Pipeline</td>
+                            ${plantOrder.map(plant => {
+                                const value = currentData[plant] ? (currentData[plant].rakesPipeline || 0) : 0;
+                                return `<td style="padding: 10px; font-size: 15px; text-align: center; border: 1px solid #dee2e6; ${value > 0 ? 'background-color: #fff3cd; color: #856404; font-weight: 600;' : ''}">${formatNumber(value, 0)}</td>`;
+                            }).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Table 3: Coal Stock Position -->
+            <div style="margin-bottom: 35px;">
+                <h3 style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 15px; margin: 0 0 15px 0; font-size: 18px; font-weight: 600; text-align: center; border-radius: 8px;">
+                    <i class="bi bi-boxes" style="margin-right: 10px;"></i>COAL STOCK POSITION
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white;">
+                            <th style="padding: 15px; font-size: 14px; font-weight: 600; text-align: center; border: 1px solid #34495e;">PARAMETER</th>
+                            ${plantOrder.map(plant => `<th style="padding: 15px; font-size: 14px; font-weight: 600; text-align: center; border: 1px solid #34495e;">${plant}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 12px 15px; font-size: 13px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">Coal Stock (MT)</td>
+                            ${plantOrder.map(plant => {
+                                const value = currentData[plant] ? (currentData[plant].coalStockMT || 0) : 0;
+                                const stockClass = value > 50000 ? 'background-color: #d5f4e6; color: #27ae60; font-weight: 600;' : 
+                                                  value > 20000 ? 'background-color: #fff3cd; color: #856404; font-weight: 600;' : 
+                                                  'background-color: #f8d7da; color: #721c24; font-weight: 600;';
+                                return `<td style="padding: 12px; font-size: 13px; text-align: center; border: 1px solid #dee2e6; ${stockClass}">${formatNumber(value, 0)}</td>`;
+                            }).join('')}
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 12px 15px; font-size: 13px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">Coal Stock (Days)</td>
+                            ${plantOrder.map(plant => {
+                                const value = currentData[plant] ? (currentData[plant].coalStockDays || 0) : 0;
+                                const daysClass = value >= 15 ? 'background-color: #d5f4e6; color: #27ae60; font-weight: 600;' : 
+                                                 value >= 7 ? 'background-color: #fff3cd; color: #856404; font-weight: 600;' : 
+                                                 'background-color: #f8d7da; color: #721c24; font-weight: 600;';
+                                return `<td style="padding: 12px; font-size: 13px; text-align: center; border: 1px solid #dee2e6; ${daysClass}">${formatNumber(value, 1)}</td>`;
+                            }).join('')}
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 12px 15px; font-size: 13px; font-weight: 600; border: 1px solid #dee2e6; color: #2c3e50;">Units in Operation</td>
+                            ${plantOrder.map(plant => {
+                                const value = currentData[plant] ? (currentData[plant].unitsInOperation || 0) : 0;
+                                return `<td style="padding: 12px; font-size: 13px; text-align: center; border: 1px solid #dee2e6;">${formatNumber(value, 0)}</td>`;
+                            }).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Summary Section -->
+            <div style="margin-top: 25px; padding: 15px; background: linear-gradient(135deg, #ecf0f1, #d5dbdb); border-left: 5px solid #3498db; border-radius: 6px;">
+                <h4 style="color: #2c3e50; margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">
+                    <i class="bi bi-clipboard-check-fill" style="margin-right: 8px; color: #3498db;"></i>SUMMARY & ANALYSIS
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7;">
+                        <h5 style="color: #e74c3c; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">TOTAL RAKES LOADED</h5>
+                        <p style="margin: 0; font-size: 20px; font-weight: 700; color: #2c3e50;">
+                            ${plantOrder.reduce((total, plant, plantIndex) => {
+                                if (currentData[plant]) {
+                                    if (plantIndex < 3) {
+                                        // For first 3 plants (GGSSTP, GHTP, GATP), sum company-wise rakes loaded
+                                        let plantTotal = 0;
+                                        if (currentData[plant].rakesLoaded) {
+                                            coalCompanies.forEach(company => {
+                                                plantTotal += currentData[plant].rakesLoaded[company] || 0;
+                                            });
+                                        }
+                                        return total + plantTotal;
+                                    } else {
+                                        // For NPL/TSPL (plants 4 & 5), use totalRakesLoaded
+                                        return total + (currentData[plant].totalRakesLoaded || 0);
+                                    }
+                                }
+                                return total;
+                            }, 0)} Rakes
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7;">
+                        <h5 style="color: #27ae60; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">TOTAL RAKES RECEIVED</h5>
+                        <p style="margin: 0; font-size: 20px; font-weight: 700; color: #2c3e50;">
+                            ${plantOrder.reduce((total, plant) => {
+                                return total + (currentData[plant] ? (currentData[plant].rakesReceived || 0) : 0);
+                            }, 0)} Rakes
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7;">
+                        <h5 style="color: #8e44ad; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">TOTAL RAKES IN PIPELINE</h5>
+                        <p style="margin: 0; font-size: 20px; font-weight: 700; color: #2c3e50;">
+                            ${plantOrder.reduce((total, plant) => {
+                                return total + (currentData[plant] ? (currentData[plant].rakesPipeline || 0) : 0);
+                            }, 0)} Rakes
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7;">
+                        <h5 style="color: #f39c12; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">TOTAL COAL STOCK</h5>
+                        <p style="margin: 0; font-size: 20px; font-weight: 700; color: #2c3e50;">
+                            ${(() => {
+                                const currentStock = plantOrder.reduce((total, plant) => {
+                                    return total + (currentData[plant] ? (currentData[plant].coalStockMT || 0) : 0);
+                                }, 0);
+                                
+                                const previousStock = plantOrder.reduce((total, plant) => {
+                                    return total + (previousData[plant] ? (previousData[plant].coalStockMT || 0) : 0);
+                                }, 0);
+                                
+                                const change = currentStock - previousStock;
+                                const changeText = change === 0 ? '' : 
+                                    change > 0 ? ` <span style="color: #27ae60; font-size: 11px;">(↑${formatNumber(change, 0)} MT)</span>` :
+                                    ` <span style="color: #e74c3c; font-size: 11px;">(↓${formatNumber(Math.abs(change), 0)} MT)</span>`;
+                                
+                                return formatNumber(currentStock, 0) + ' MT' + changeText;
+                            })()}
+                        </p>
+                        <div style="font-size: 10px; color: #7f8c8d; margin-top: 4px;">
+                            Previous: ${formatNumber(plantOrder.reduce((total, plant) => {
+                                return total + (previousData[plant] ? (previousData[plant].coalStockMT || 0) : 0);
+                            }, 0), 0)} MT (${previousDateFormatted})
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div style="font-size: 11px; color: #2c3e50;">
+                        <strong>Report Generated:</strong> ${new Date().toLocaleString('en-GB')}
+                    </div>
+                    <div style="font-size: 11px; color: #2c3e50; text-align: right;">
+                        <strong>Punjab State Power Corporation Limited</strong><br>
+                        <em>Daily Coal Position Monitoring System</em>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(reportContainer);
+        
+        // Generate high-quality image in A4 size
+        const canvas = await html2canvas(reportContainer, {
+            scale: 3, // High quality for 300 DPI
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: 794, // A4 width at 96 DPI (210mm)
+            height: reportContainer.scrollHeight,
+            dpi: 300, // High DPI for professional quality
+            letterRendering: true, // Better text rendering
+            logging: false, // Disable logging for cleaner console
+            imageTimeout: 30000, // Longer timeout for complex content
+            removeContainer: true // Clean up temporary elements
+        });
+        
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `Daily_Coal_Position_Report_${formattedDate.replace(/\//g, '-')}_${dateStr}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.98); // Maximum quality JPEG
+        
+        // Remove temporary container
+        document.body.removeChild(reportContainer);
+        
+        console.log('Daily Coal Position Report exported successfully');
+        
+    } catch (error) {
+        console.error('Error exporting Daily Coal Position Report:', error);
+        alert('Error exporting Daily Coal Position Report. Please try again.');
+    }
+}
+
+// Make functions globally available
+window.showDailyCoalDashboard = showDailyCoalDashboard;
+window.exportDailyCoalPositionReportToJPG = exportDailyCoalPositionReportToJPG;

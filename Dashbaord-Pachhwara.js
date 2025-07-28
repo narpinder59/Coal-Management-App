@@ -6,6 +6,15 @@ let coalChart = null;
 let stockChart = null;
 let plantRakesChart = null;
 
+// Helper function to format numbers with commas
+function formatNumber(value, decimals = 2) {
+    if (value === null || value === undefined || isNaN(value)) return '0';
+    if (decimals === 0) {
+        return Math.round(Number(value)).toLocaleString();
+    }
+    return Number(value).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 // Fetch headers from Google Sheets
 async function fetchPachhwaraDashboardHeaders() {
     try {
@@ -130,11 +139,12 @@ function calculateOBSummary(days) {
 
 // Get today's data
 function getTodayOBData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    
     const todayData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
+        return rowDate.toDateString() === selectedDateObj.toDateString();
     });
     
     let totalActual = 0;
@@ -154,13 +164,16 @@ function getTodayOBData() {
 
 // Get current month's data
 function getCurrentMonthOBData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
     const monthData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate.getMonth() === currentMonth && 
+               rowDate.getFullYear() === currentYear &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let totalActual = 0;
@@ -180,9 +193,10 @@ function getCurrentMonthOBData() {
 
 // Get current financial year's data
 function getCurrentFYOBData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth(); // 0-based
     
     // Financial year starts from April (month 3 in 0-based)
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -191,7 +205,9 @@ function getCurrentFYOBData() {
     
     const fyData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && 
+               rowDate <= fyEndDate &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let totalActual = 0;
@@ -211,11 +227,12 @@ function getCurrentFYOBData() {
 
 // Get today's coal data
 function getTodayCoalData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    
     const todayData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
+        return rowDate.toDateString() === selectedDateObj.toDateString();
     });
     
     let totalActual = 0;
@@ -235,13 +252,16 @@ function getTodayCoalData() {
 
 // Get current month's coal data
 function getCurrentMonthCoalData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
     const monthData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate.getMonth() === currentMonth && 
+               rowDate.getFullYear() === currentYear &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let totalActual = 0;
@@ -261,9 +281,10 @@ function getCurrentMonthCoalData() {
 
 // Get current financial year's coal data
 function getCurrentFYCoalData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth(); // 0-based
     
     // Financial year starts from April (month 3 in 0-based)
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -272,7 +293,9 @@ function getCurrentFYCoalData() {
     
     const fyData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && 
+               rowDate <= fyEndDate &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let totalActual = 0;
@@ -297,13 +320,12 @@ function updateOBSummary() {
     const fyData = getCurrentFYOBData();
     
     // Get current date info
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const currentMonthName = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const currentMonthName = selectedDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth();
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
     const fyLabel = `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`;
     
@@ -311,35 +333,35 @@ function updateOBSummary() {
         <thead class="table-light">
             <tr>
                 <th style="width: 40%; font-size: 12px; padding: 8px 12px;">Metrics</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${yesterdayFormatted}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${selectedDateFormatted}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Up to Date)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel} (Up to Date)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Total Target</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.totalTarget)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.totalTarget)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.totalTarget)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.totalTarget, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.totalTarget, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.totalTarget, 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Total Production</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.totalActual)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.totalActual)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.totalActual)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.totalActual, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.totalActual, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.totalActual, 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Average Target</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(todayData.avgTarget))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(monthData.avgTarget))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(fyData.avgTarget))}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(todayData.avgTarget), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(monthData.avgTarget), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(fyData.avgTarget), 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Average Production</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(todayData.avgActual))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(monthData.avgActual))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(fyData.avgActual))}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(todayData.avgActual), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(monthData.avgActual), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(fyData.avgActual), 0)}</td>
             </tr>
             <tr class="table-warning">
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Overall Percentage</td>
@@ -353,11 +375,12 @@ function updateOBSummary() {
 
 // Get today's dispatch data
 function getTodayDispatchData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    
     const todayData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
+        return rowDate.toDateString() === selectedDateObj.toDateString();
     });
     
     let roadDispatch = 0;
@@ -375,13 +398,16 @@ function getTodayDispatchData() {
 
 // Get current month's dispatch data
 function getCurrentMonthDispatchData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
     const monthData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate.getMonth() === currentMonth && 
+               rowDate.getFullYear() === currentYear &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let roadDispatch = 0;
@@ -399,9 +425,10 @@ function getCurrentMonthDispatchData() {
 
 // Get current financial year's dispatch data
 function getCurrentFYDispatchData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth(); // 0-based
     
     // Financial year starts from April (month 3 in 0-based)
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -410,7 +437,9 @@ function getCurrentFYDispatchData() {
     
     const fyData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && 
+               rowDate <= fyEndDate &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let roadDispatch = 0;
@@ -434,12 +463,12 @@ function updateCoalSummary() {
     
     // Get current date info
     const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const currentMonthName = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const currentMonthName = selectedDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth();
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
     const fyLabel = `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`;
     
@@ -447,35 +476,35 @@ function updateCoalSummary() {
         <thead class="table-light">
             <tr>
                 <th style="width: 40%; font-size: 12px; padding: 8px 12px;">Metrics</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${yesterdayFormatted}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${selectedDateFormatted}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Up to Date)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel} (Up to Date)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Total Target</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.totalTarget)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.totalTarget)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.totalTarget)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.totalTarget, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.totalTarget, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.totalTarget, 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Total Production</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.totalActual)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.totalActual)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.totalActual)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.totalActual, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.totalActual, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.totalActual, 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Average Target</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(todayData.avgTarget))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(monthData.avgTarget))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(fyData.avgTarget))}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(todayData.avgTarget), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(monthData.avgTarget), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(fyData.avgTarget), 0)}</td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Average Production</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(todayData.avgActual))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(monthData.avgActual))}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(parseFloat(fyData.avgActual))}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(todayData.avgActual), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(monthData.avgActual), 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(parseFloat(fyData.avgActual), 0)}</td>
             </tr>
             <tr class="table-warning">
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Overall Percentage</td>
@@ -533,81 +562,6 @@ function handleCoalDurationChange(event) {
     updateCoalChart();
 }
 
-// Get today's dispatch data
-function getTodayDispatchData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
-    const todayData = PachhwaraDashboardData.filter(row => {
-        const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
-    });
-    
-    let roadDispatch = 0;
-    let railDispatch = 0;
-    let rakesDispatch = 0;
-    
-    todayData.forEach(row => {
-        roadDispatch += Number(row[7]) || 0; // Road Dispatch (MT)
-        railDispatch += Number(row[15]) || 0; // Rail Despatch (MT)
-        rakesDispatch += Number(row[20]) || 0; // Rakes despatch (Rakes)
-    });
-    
-    return { roadDispatch, railDispatch, rakesDispatch };
-}
-
-// Get current month's dispatch data
-function getCurrentMonthDispatchData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    
-    const monthData = PachhwaraDashboardData.filter(row => {
-        const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
-    });
-    
-    let roadDispatch = 0;
-    let railDispatch = 0;
-    let rakesDispatch = 0;
-    
-    monthData.forEach(row => {
-        roadDispatch += Number(row[7]) || 0; // Road Dispatch (MT)
-        railDispatch += Number(row[15]) || 0; // Rail Despatch (MT)
-        rakesDispatch += Number(row[20]) || 0; // Rakes despatch (Rakes)
-    });
-    
-    return { roadDispatch, railDispatch, rakesDispatch };
-}
-
-// Get current financial year's dispatch data
-function getCurrentFYDispatchData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
-    
-    // Financial year starts from April (month 3 in 0-based)
-    const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
-    const fyStartDate = new Date(fyStartYear, 3, 1); // April 1st
-    const fyEndDate = new Date(fyStartYear + 1, 2, 31); // March 31st
-    
-    const fyData = PachhwaraDashboardData.filter(row => {
-        const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
-    });
-    
-    let roadDispatch = 0;
-    let railDispatch = 0;
-    let rakesDispatch = 0;
-    
-    fyData.forEach(row => {
-        roadDispatch += Number(row[7]) || 0; // Road Dispatch (MT)
-        railDispatch += Number(row[15]) || 0; // Rail Despatch (MT)
-        rakesDispatch += Number(row[20]) || 0; // Rakes despatch (Rakes)
-    });
-    
-    return { roadDispatch, railDispatch, rakesDispatch };
-}
-
 // Update Dispatch summary table
 function updateDispatchSummary() {
     const todayData = getTodayDispatchData();
@@ -615,14 +569,18 @@ function updateDispatchSummary() {
     const fyData = getCurrentFYDispatchData();
     
     // Calculate averages for month and FY
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
-    // Get count of days for averages
+    // Get month start date for cumulative calculation
+    const monthStartDate = new Date(currentYear, currentMonth, 1);
+    
+    // Get count of days for averages (up to selected date)
     const monthDaysCount = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate >= monthStartDate && rowDate <= selectedDateObj;
     }).length;
     
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -631,7 +589,7 @@ function updateDispatchSummary() {
     
     const fyDaysCount = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && rowDate <= selectedDateObj;
     }).length;
     
     // Calculate averages with specific decimal formatting
@@ -644,39 +602,37 @@ function updateDispatchSummary() {
     const fyAvgRakes = fyDaysCount > 0 ? (fyData.rakesDispatch / fyDaysCount).toFixed(2) : '0.00';
     
     // Get current date info
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const currentMonthName = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const currentMonthName = selectedDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     const fyLabel = `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`;
     
     document.getElementById('dispatchSummaryData').innerHTML = `
         <thead class="table-light">
             <tr>
                 <th style="width: 40%; font-size: 12px; padding: 8px 12px;">Metrics</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${yesterdayFormatted}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${selectedDateFormatted}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Up to Date)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel} (Up to Date)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Road Dispatch (MT)</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.roadDispatch)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.roadDispatch)}<br><small class="text-muted">(${monthAvgRoad})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.roadDispatch)}<br><small class="text-muted">(${fyAvgRoad})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.roadDispatch, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.roadDispatch, 0)}<br><small class="text-muted">(${formatNumber(parseFloat(monthAvgRoad), 0)})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.roadDispatch, 0)}<br><small class="text-muted">(${formatNumber(parseFloat(fyAvgRoad), 0)})</small></td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Rail Despatch (MT)</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.railDispatch)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.railDispatch)}<br><small class="text-muted">(${monthAvgRail})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.railDispatch)}<br><small class="text-muted">(${fyAvgRail})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.railDispatch, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.railDispatch, 0)}<br><small class="text-muted">(${formatNumber(parseFloat(monthAvgRail), 0)})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.railDispatch, 0)}<br><small class="text-muted">(${formatNumber(parseFloat(fyAvgRail), 0)})</small></td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Rakes Despatch (Rakes)</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.rakesDispatch)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.rakesDispatch)}<br><small class="text-muted">(${monthAvgRakes})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.rakesDispatch)}<br><small class="text-muted">(${fyAvgRakes})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.rakesDispatch, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.rakesDispatch, 0)}<br><small class="text-muted">(${monthAvgRakes})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.rakesDispatch, 0)}<br><small class="text-muted">(${fyAvgRakes})</small></td>
             </tr>
         </tbody>
     `;
@@ -780,11 +736,12 @@ async function exportDispatchToJPG() {
 
 // Get today's stock data
 function getTodayStockData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    
     const todayData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
+        return rowDate.toDateString() === selectedDateObj.toDateString();
     });
     
     let mineEndStock = 0;
@@ -800,13 +757,16 @@ function getTodayStockData() {
 
 // Get current month's stock data
 function getCurrentMonthStockData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
     const monthData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate.getMonth() === currentMonth && 
+               rowDate.getFullYear() === currentYear &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let mineEndStock = 0;
@@ -828,9 +788,10 @@ function getCurrentMonthStockData() {
 
 // Get current financial year's stock data
 function getCurrentFYStockData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth(); // 0-based
     
     // Financial year starts from April (month 3 in 0-based)
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -839,7 +800,9 @@ function getCurrentFYStockData() {
     
     const fyData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && 
+               rowDate <= fyEndDate &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let mineEndStock = 0;
@@ -867,12 +830,12 @@ function updateStockSummary() {
     
     // Get current date info
     const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const currentMonthName = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const currentMonthName = selectedDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth();
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
     const fyLabel = `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`;
     
@@ -880,23 +843,23 @@ function updateStockSummary() {
         <thead class="table-light">
             <tr>
                 <th style="width: 40%; font-size: 12px; padding: 8px 12px;">Stock Type</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${yesterdayFormatted}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Avg)</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel} (Avg)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${selectedDateFormatted}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Up to Date)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel} (Up to Date)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Mine End Closing Stock (MT)</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.mineEndStock)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.mineEndStock)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.mineEndStock)}</td>
+                <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Mine End Closing Stock</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.mineEndStock, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.mineEndStock, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.mineEndStock, 0)}</td>
             </tr>
             <tr>
-                <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Railway Siding Closing Stock (MT)</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.railwaySidingStock)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.railwaySidingStock)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.railwaySidingStock)}</td>
+                <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Railway Siding Closing Stock</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.railwaySidingStock, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.railwaySidingStock, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.railwaySidingStock, 0)}</td>
             </tr>
         </tbody>
     `;
@@ -1154,11 +1117,11 @@ async function exportStockToJPG() {
 
 // Get today's plant rakes dispatch data
 function getTodayPlantRakesData() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1); // Get yesterday's date
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
     const todayData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.toDateString() === yesterday.toDateString();
+        return rowDate.toDateString() === selectedDateObj.toDateString();
     });
     
     let ggsstpRakes = 0;
@@ -1178,13 +1141,16 @@ function getTodayPlantRakesData() {
 
 // Get current month's plant rakes dispatch data
 function getCurrentMonthPlantRakesData() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentMonth = selectedDateObj.getMonth();
+    const currentYear = selectedDateObj.getFullYear();
     
     const monthData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+        return rowDate.getMonth() === currentMonth && 
+               rowDate.getFullYear() === currentYear &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let ggsstpRakes = 0;
@@ -1204,9 +1170,10 @@ function getCurrentMonthPlantRakesData() {
 
 // Get current financial year's plant rakes dispatch data
 function getCurrentFYPlantRakesData() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const currentYear = selectedDateObj.getFullYear();
+    const currentMonth = selectedDateObj.getMonth(); // 0-based
     
     // Financial year starts from April (month 3 in 0-based)
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -1215,7 +1182,9 @@ function getCurrentFYPlantRakesData() {
     
     const fyData = PachhwaraDashboardData.filter(row => {
         const rowDate = parseDMY(row[0]);
-        return rowDate >= fyStartDate && rowDate <= fyEndDate;
+        return rowDate >= fyStartDate && 
+               rowDate <= fyEndDate &&
+               rowDate <= selectedDateObj; // Only include dates up to selected date
     });
     
     let ggsstpRakes = 0;
@@ -1271,45 +1240,45 @@ function updatePlantRakesSummary() {
     const fyAvgTotal = fyDaysCount > 0 ? (fyData.totalRakes / fyDaysCount).toFixed(2) : '0.00';
     
     // Get current date info
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const currentMonthName = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const selectedDateStr = getSelectedDate();
+    const selectedDateObj = new Date(selectedDateStr);
+    const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const currentMonthName = selectedDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     const fyLabel = `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`;
     
     document.getElementById('plantRakesSummaryData').innerHTML = `
         <thead class="table-light">
             <tr>
                 <th style="width: 40%; font-size: 12px; padding: 8px 12px;">Plant</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${yesterdayFormatted}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName}</th>
-                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${selectedDateFormatted}</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${currentMonthName} (Avg)</th>
+                <th style="width: 20%; text-align: center; font-size: 12px; padding: 8px 6px;">${fyLabel}  (Avg)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">GGSSTP</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.ggsstpRakes)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.ggsstpRakes)}<br><small class="text-muted">(${monthAvgGGSSTP})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.ggsstpRakes)}<br><small class="text-muted">(${fyAvgGGSSTP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.ggsstpRakes, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.ggsstpRakes, 0)}<br><small class="text-muted">(${monthAvgGGSSTP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.ggsstpRakes, 0)}<br><small class="text-muted">(${fyAvgGGSSTP})</small></td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">GHTP</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.ghtpRakes)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.ghtpRakes)}<br><small class="text-muted">(${monthAvgGHTP})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.ghtpRakes)}<br><small class="text-muted">(${fyAvgGHTP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.ghtpRakes, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.ghtpRakes, 0)}<br><small class="text-muted">(${monthAvgGHTP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.ghtpRakes, 0)}<br><small class="text-muted">(${fyAvgGHTP})</small></td>
             </tr>
             <tr>
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">GATP</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.gatpRakes)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.gatpRakes)}<br><small class="text-muted">(${monthAvgGATP})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.gatpRakes)}<br><small class="text-muted">(${fyAvgGATP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.gatpRakes, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.gatpRakes, 0)}<br><small class="text-muted">(${monthAvgGATP})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.gatpRakes, 0)}<br><small class="text-muted">(${fyAvgGATP})</small></td>
             </tr>
             <tr class="table-info">
                 <td style="font-weight: 600; font-size: 11px; padding: 6px 12px;">Total</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(todayData.totalRakes)}</td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(monthData.totalRakes)}<br><small class="text-muted">(${monthAvgTotal})</small></td>
-                <td class="text-center" style="font-size: 11px; padding: 6px;">${Math.round(fyData.totalRakes)}<br><small class="text-muted">(${fyAvgTotal})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(todayData.totalRakes, 0)}</td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(monthData.totalRakes, 0)}<br><small class="text-muted">(${monthAvgTotal})</small></td>
+                <td class="text-center" style="font-size: 11px; padding: 6px;">${formatNumber(fyData.totalRakes, 0)}<br><small class="text-muted">(${fyAvgTotal})</small></td>
             </tr>
         </tbody>
     `;
@@ -1864,10 +1833,10 @@ async function exportAllDashboardToPDF() {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         `;
         
-        // Get yesterday's date for the title
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { 
+        // Get selected date for the title
+        const selectedDateStr = getSelectedDate();
+        const selectedDateObj = new Date(selectedDateStr);
+        const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { 
             day: '2-digit', 
             month: '2-digit', 
             year: 'numeric' 
@@ -1880,7 +1849,7 @@ async function exportAllDashboardToPDF() {
                     Daily Progress Report of Pachwara Central Coal Mine
                 </h2>
                 <h3 style="color: #6c757d; margin: 5px 0 0 0; font-size: 16px; font-weight: 500;">
-                    Date: ${yesterdayFormatted}
+                    Date: ${selectedDateFormatted}
                 </h3>
             </div>
             
@@ -1980,7 +1949,7 @@ async function exportAllDashboardToPDF() {
         
         const today = new Date();
         const dateStr = today.toISOString().split('T')[0];
-        pdf.save(`Daily_Progress_Report_${yesterdayFormatted.replace(/\//g, '-')}_${dateStr}.pdf`);
+        pdf.save(`Daily_Progress_Report_${selectedDateFormatted.replace(/\//g, '-')}_${dateStr}.pdf`);
         
         // Remove temporary container
         document.body.removeChild(dashboardContainer);
@@ -2014,9 +1983,9 @@ async function exportAllDashboardToJPG() {
         `;
         
         // Get yesterday's date for the title
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { 
+        const selectedDateStr = getSelectedDate();
+        const selectedDateObj = new Date(selectedDateStr);
+        const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { 
             day: '2-digit', 
             month: '2-digit', 
             year: 'numeric' 
@@ -2029,7 +1998,7 @@ async function exportAllDashboardToJPG() {
                     Daily Progress Report of Pachwara Central Coal Mine
                 </h2>
                 <h3 style="color: #6c757d; margin: 5px 0 0 0; font-size: 16px; font-weight: 500;">
-                    Date: ${yesterdayFormatted}
+                    Date: ${selectedDateFormatted}
                 </h3>
             </div>
             
@@ -2110,7 +2079,7 @@ async function exportAllDashboardToJPG() {
             const dateStr = today.toISOString().split('T')[0];
             
             a.href = url;
-            a.download = `Daily_Progress_Report_${yesterdayFormatted.replace(/\//g, '-')}_${dateStr}.jpg`;
+            a.download = `Daily_Progress_Report_${selectedDateFormatted.replace(/\//g, '-')}_${dateStr}.jpg`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2256,6 +2225,755 @@ async function exportToJPG() {
         console.error('Error exporting JPG:', error);
         alert('Error exporting JPG. Please try again.');
     }
+}
+
+// Export OB card as high-quality PDF
+async function exportOBToPDF() {
+    const { jsPDF } = window.jspdf;
+    const html2canvas = window.html2canvas;
+    
+    if (!jsPDF || !html2canvas) {
+        alert('Export libraries not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        const cardElement = document.getElementById('obCard');
+        const canvas = await html2canvas(cardElement, {
+            scale: 4, // Increased scale for higher quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: cardElement.offsetWidth,
+            height: cardElement.offsetHeight,
+            dpi: 300, // High DPI for crisp text and graphics
+            letterRendering: true, // Better text rendering
+            logging: false, // Disable logging for cleaner console
+            imageTimeout: 30000, // Longer timeout for complex content
+            removeContainer: true // Clean up temporary elements
+        });
+        
+        // Use higher quality image format
+        const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality PNG
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const imgWidth = 190;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        
+        let position = 10;
+        
+        // Add image with compression settings for quality preservation
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, '', 'MEDIUM');
+        heightLeft -= pageHeight;
+        
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, '', 'MEDIUM');
+            heightLeft -= pageHeight;
+        }
+        
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        pdf.save(`OB_Production_Dashboard_${dateStr}.pdf`);
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Error exporting PDF. Please try again.');
+    }
+}
+
+// Export OB card as high-quality JPG
+async function exportOBToJPG() {
+    const html2canvas = window.html2canvas;
+    
+    if (!html2canvas) {
+        alert('Export library not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        const cardElement = document.getElementById('obCard');
+        const canvas = await html2canvas(cardElement, {
+            scale: 3, // High quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: cardElement.offsetWidth,
+            height: cardElement.offsetHeight
+        });
+        
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `OB_Production_Dashboard_${dateStr}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95); // High quality JPEG
+    } catch (error) {
+        console.error('Error exporting JPG:', error);
+        alert('Error exporting JPG. Please try again.');
+    }
+}
+
+// Export Coal card as high-quality PDF
+async function exportCoalToPDF() {
+    const { jsPDF } = window.jspdf;
+    const html2canvas = window.html2canvas;
+    
+    if (!jsPDF || !html2canvas) {
+        alert('Export libraries not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        const cardElement = document.getElementById('coalCard');
+        const canvas = await html2canvas(cardElement, {
+            scale: 4, // Increased scale for higher quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: cardElement.offsetWidth,
+            height: cardElement.offsetHeight,
+            dpi: 300, // High DPI for crisp text and graphics
+            letterRendering: true, // Better text rendering
+            logging: false, // Disable logging for cleaner console
+            imageTimeout: 30000, // Longer timeout for complex content
+            removeContainer: true // Clean up temporary elements
+        });
+        
+        // Use higher quality image format
+        const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality PNG
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const imgWidth = 190;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        
+        let position = 10;
+        
+        // Add image with compression settings for quality preservation
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, '', 'MEDIUM');
+        heightLeft -= pageHeight;
+        
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, '', 'MEDIUM');
+            heightLeft -= pageHeight;
+        }
+        
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        pdf.save(`Coal_Production_Dashboard_${dateStr}.pdf`);
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Error exporting PDF. Please try again.');
+    }
+}
+
+// Export Coal card as high-quality JPG
+async function exportCoalToJPG() {
+    const html2canvas = window.html2canvas;
+    
+    if (!html2canvas) {
+        alert('Export library not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        const cardElement = document.getElementById('coalCard');
+        const canvas = await html2canvas(cardElement, {
+            scale: 3, // High quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: cardElement.offsetWidth,
+            height: cardElement.offsetHeight
+        });
+        
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `Coal_Production_Dashboard_${dateStr}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95); // High quality JPEG
+    } catch (error) {
+        console.error('Error exporting JPG:', error);
+        alert('Error exporting JPG. Please try again.');
+    }
+}
+
+// Export Daily Report as high-quality JPG with comprehensive data
+async function exportDailyReportToJPG() {
+    const html2canvas = window.html2canvas;
+    
+    if (!html2canvas) {
+        alert('Export library not loaded. Please refresh the page and try again.');
+        return;
+    }
+    
+    try {
+        // Create a temporary container for the daily report
+        const reportContainer = document.createElement('div');
+        reportContainer.style.cssText = `
+            position: absolute;
+            top: -10000px;
+            left: -10000px;
+            width: 794px;
+            background: white;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+        
+        // Get selected date for the report
+        const selectedDateStr = getSelectedDate();
+        const selectedDateObj = new Date(selectedDateStr);
+        const selectedDateFormatted = selectedDateObj.toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
+        
+        // Calculate date ranges for comprehensive data
+        const month = selectedDateObj.getMonth();
+        const year = selectedDateObj.getFullYear();
+        const monthStart = new Date(year, month, 1);
+        const monthUpToDate = selectedDateObj;
+        
+        // Financial year calculation (April to March)
+        let fyStart;
+        if (month >= 3) { // April onwards (month 3 = April, 0-indexed)
+            fyStart = new Date(year, 3, 1); // April 1st of current year
+        } else {
+            fyStart = new Date(year - 1, 3, 1); // April 1st of previous year
+        }
+        const fyUpToDate = selectedDateObj;
+        
+        // Get all the data needed for the report
+        const selectedDateData = {
+            ob: getTodayOBData(),
+            coal: getTodayCoalData(),
+            dispatch: getTodayDispatchData(),
+            stock: getTodayStockData(),
+            plantRakes: getTodayPlantRakesData()
+        };
+        
+        // Get cumulative data for month up to selected date
+        const monthData = {
+            ob: getOBDataUpToDate(monthStart, monthUpToDate),
+            coal: getCoalDataUpToDate(monthStart, monthUpToDate),
+            dispatch: getDispatchDataUpToDate(monthStart, monthUpToDate),
+            plantRakes: getPlantRakesDataUpToDate(monthStart, monthUpToDate)
+        };
+        
+        // Get cumulative data for FY up to selected date
+        const fyData = {
+            ob: getOBDataUpToDate(fyStart, fyUpToDate),
+            coal: getCoalDataUpToDate(fyStart, fyUpToDate),
+            dispatch: getDispatchDataUpToDate(fyStart, fyUpToDate),
+            plantRakes: getPlantRakesDataUpToDate(fyStart, fyUpToDate)
+        };
+        
+        // Stock level indicators
+        const getMineEndStockStatus = (stock) => {
+            if (stock < 100000) return { text: 'Very Low Stock', color: '#e74c3c', bgColor: '#fadbd8' };
+            if (stock < 200000) return { text: 'Low Stock', color: '#f39c12', bgColor: '#fef9e7' };
+            return { text: 'Stock Available', color: '#27ae60', bgColor: '#d5f4e6' };
+        };
+        
+        const getRailwayStockStatus = (stock) => {
+            if (stock < 50000) return { text: 'Very Low Stock', color: '#e74c3c', bgColor: '#fadbd8' };
+            if (stock < 100000) return { text: 'Low Stock', color: '#f39c12', bgColor: '#fef9e7' };
+            return { text: 'Stock Available', color: '#27ae60', bgColor: '#d5f4e6' };
+        };
+        
+        const mineEndStockStatus = getMineEndStockStatus(selectedDateData.stock.mineEndStock);
+        const railwayStockStatus = getRailwayStockStatus(selectedDateData.stock.railwaySidingStock);
+        
+        // Format date range labels
+        const monthLabel = monthStart.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) + ' up to ' + selectedDateFormatted;
+        const fyLabel = 'FY ' + (fyStart.getFullYear()) + '-' + (fyStart.getFullYear() + 1).toString().substr(-2) + ' up to ' + selectedDateFormatted;
+        
+        // Create the comprehensive daily report content
+        reportContainer.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 12px;">
+                <h1 style="color: #2c3e50; margin: 0; font-size: 24px; font-weight: 700;">
+                    PROGRESS REPORT OF PACHHWARA CENTRAL COAL MINE
+                </h1>
+                <h3 style="color: #7f8c8d; margin: 8px 0 0 0; font-size: 16px; font-weight: 500;">
+                    Date: ${selectedDateFormatted}
+                </h3>
+            </div>
+            
+            <!-- OB Production Table -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 8px; margin: 0 0 10px 0; font-size: 14px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-bar-chart-fill" style="margin-right: 6px;"></i>OB PRODUCTION ANALYSIS
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: left; border: 1px solid #34495e;">PERIOD</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">TARGET (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACTUAL (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACHIEVEMENT (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${selectedDateFormatted}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.ob.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${selectedDateData.ob.totalActual >= selectedDateData.ob.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(selectedDateData.ob.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(selectedDateData.ob.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(selectedDateData.ob.achievement))}%</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${monthLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.ob.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${monthData.ob.totalActual >= monthData.ob.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(monthData.ob.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(monthData.ob.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(monthData.ob.achievement))}%</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${fyLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.ob.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${fyData.ob.totalActual >= fyData.ob.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(fyData.ob.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(fyData.ob.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(fyData.ob.achievement))}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Coal Production Table -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="background: linear-gradient(135deg, #6f4e37, #5d4037); color: white; padding: 8px; margin: 0 0 10px 0; font-size: 14px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-minecart-loaded" style="margin-right: 6px;"></i>COAL PRODUCTION ANALYSIS
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: left; border: 1px solid #34495e;">PERIOD</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">TARGET (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACTUAL (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACHIEVEMENT (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${selectedDateFormatted}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.coal.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${selectedDateData.coal.totalActual >= selectedDateData.coal.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(selectedDateData.coal.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(selectedDateData.coal.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(selectedDateData.coal.achievement))}%</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${monthLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.coal.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${monthData.coal.totalActual >= monthData.coal.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(monthData.coal.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(monthData.coal.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(monthData.coal.achievement))}%</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${fyLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.coal.totalTarget, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; ${fyData.coal.totalActual >= fyData.coal.totalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(fyData.coal.totalActual, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${parseFloat(fyData.coal.achievement) >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(parseFloat(fyData.coal.achievement))}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Dispatch Summary Table -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 8px; margin: 0 0 10px 0; font-size: 14px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-truck" style="margin-right: 6px;"></i>DISPATCH SUMMARY ANALYSIS
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: left; border: 1px solid #34495e;">PERIOD</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ROAD (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">RAIL (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">TOTAL RAKES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${selectedDateFormatted}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.dispatch.roadDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.dispatch.railDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.dispatch.rakesDispatch, 0)}</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${monthLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.dispatch.roadDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.dispatch.railDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.dispatch.rakesDispatch, 0)}</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${fyLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.dispatch.roadDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.dispatch.railDispatch, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.dispatch.rakesDispatch, 0)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Stock Summary -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; padding: 8px; margin: 0 0 10px 0; font-size: 14px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-box-seam-fill" style="margin-right: 6px;"></i>CURRENT STOCK STATUS
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: left; border: 1px solid #34495e;">STOCK TYPE</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">QUANTITY (MT)</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 5px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">Mine End Stock</td>
+                            <td style="padding: 5px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.stock.mineEndStock, 0)}</td>
+                            <td style="padding: 5px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; background-color: ${mineEndStockStatus.bgColor}; color: ${mineEndStockStatus.color}; font-weight: 600;">${mineEndStockStatus.text}</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 5px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">Railway Siding Stock</td>
+                            <td style="padding: 5px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.stock.railwaySidingStock, 0)}</td>
+                            <td style="padding: 5px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; background-color: ${railwayStockStatus.bgColor}; color: ${railwayStockStatus.color}; font-weight: 600;">${railwayStockStatus.text}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Plant-wise Rakes Dispatch Table -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="background: linear-gradient(135deg, #28a745, #218838); color: white; padding: 8px; margin: 0 0 10px 0; font-size: 14px; font-weight: 600; text-align: center; border-radius: 6px;">
+                    <i class="bi bi-train-freight-front" style="margin-right: 6px;"></i>PLANT-WISE RAKES DISPATCH ANALYSIS
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: left; border: 1px solid #34495e;">PERIOD</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GGSSTP</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GHTP</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GATP</th>
+                            <th style="padding: 6px; font-size: 11px; font-weight: 600; text-align: center; border: 1px solid #34495e;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${selectedDateFormatted}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.plantRakes.ggsstpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.plantRakes.ghtpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(selectedDateData.plantRakes.gatpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600;">${formatNumber(selectedDateData.plantRakes.totalRakes, 0)}</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${monthLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.plantRakes.ggsstpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.plantRakes.ghtpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(monthData.plantRakes.gatpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600;">${formatNumber(monthData.plantRakes.totalRakes, 0)}</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 4px; font-size: 10px; font-weight: 600; border: 1px solid #bdc3c7;">${fyLabel}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.plantRakes.ggsstpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.plantRakes.ghtpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fyData.plantRakes.gatpRakes, 0)}</td>
+                            <td style="padding: 4px; font-size: 10px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600;">${formatNumber(fyData.plantRakes.totalRakes, 0)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Financial Year Comparison Section -->
+            ${(() => {
+                const allFYData = getAllFinancialYearsData();
+                if (allFYData.length === 0) return '';
+                
+                return `
+                    <!-- Coal Dispatch - All Financial Years -->
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 6px; margin: 0 0 8px 0; font-size: 12px; font-weight: 600; text-align: center; border-radius: 4px;">
+                            <i class="bi bi-minecart-loaded" style="margin-right: 4px;"></i>COAL PRODUCTION & DISPATCH - ALL FINANCIAL YEARS
+                        </h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">FINANCIAL YEAR</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">PRODUCTION TARGET (MT)</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACTUAL PRODUCTION (MT)</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ACHIEVEMENT (%)</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">ROAD DISPATCH (MT)</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">RAIL DISPATCH (MT)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${allFYData.map((fy, index) => `
+                                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'};">
+                                        <td style="padding: 2px; font-size: 8px; font-weight: 600; text-align: center; border: 1px solid #bdc3c7;">FY ${fy.fyLabel}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.coalTarget, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7; ${fy.coalActual >= fy.coalTarget ? 'background-color: #d5f4e6; color: #27ae60;' : 'background-color: #fadbd8; color: #e74c3c;'}">${formatNumber(fy.coalActual, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; ${fy.coalAchievement >= 100 ? 'color: #27ae60;' : 'color: #e74c3c;'}">${Math.round(fy.coalAchievement)}%</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.roadDispatch, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.railDispatch, 0)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Rakes Dispatch - All Financial Years -->
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 6px; margin: 0 0 8px 0; font-size: 12px; font-weight: 600; text-align: center; border-radius: 4px;">
+                            <i class="bi bi-train-freight-front" style="margin-right: 4px;"></i>RAKES DISPATCH - ALL FINANCIAL YEARS
+                        </h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">FINANCIAL YEAR</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GGSSTP</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GHTP</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">GATP</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">TOTAL RAKES</th>
+                                    <th style="padding: 3px; font-size: 9px; font-weight: 600; text-align: center; border: 1px solid #34495e;">AVG PER DAY</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${allFYData.map((fy, index) => `
+                                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'};">
+                                        <td style="padding: 2px; font-size: 8px; font-weight: 600; text-align: center; border: 1px solid #bdc3c7;">FY ${fy.fyLabel}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.ggsstpRakes, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.ghtpRakes, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7;">${formatNumber(fy.gatpRakes, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7; font-weight: 600; background-color: #e8f4f8;">${formatNumber(fy.totalRakes, 0)}</td>
+                                        <td style="padding: 2px; font-size: 8px; text-align: center; border: 1px solid #bdc3c7; font-style: italic;">${formatNumber(fy.totalRakes / 365, 1)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            })()}
+            
+            <div style="margin-top: 15px; padding: 10px; background: linear-gradient(135deg, #ecf0f1, #d5dbdb); border-left: 3px solid #3498db; border-radius: 3px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 10px; color: #2c3e50;">
+                        <strong>Report Generated:</strong> ${new Date().toLocaleString('en-GB')}
+                    </div>
+                    <div style="font-size: 10px; color: #2c3e50; text-align: right;">
+                        <strong>Pachwara Central Coal Mine Dashboard</strong><br>
+                        <em>Progress Analysis System</em>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(reportContainer);
+        
+        // Generate high-quality A4 image
+        const canvas = await html2canvas(reportContainer, {
+            scale: 3, // High quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: 794, // A4 width
+            height: reportContainer.scrollHeight,
+            dpi: 300, // High DPI for professional quality
+            letterRendering: true, // Better text rendering
+            logging: false, // Disable logging for cleaner console
+            imageTimeout: 30000, // Longer timeout for complex content
+            removeContainer: true // Clean up temporary elements
+        });
+        
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `Comprehensive_Report_Pachwara_${selectedDateFormatted.replace(/\//g, '-')}_${dateStr}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.98); // Maximum quality JPEG
+        
+        // Remove temporary container
+        document.body.removeChild(reportContainer);
+        
+    } catch (error) {
+        console.error('Error exporting Comprehensive Daily Report:', error);
+        alert('Error exporting Comprehensive Daily Report. Please try again.');
+    }
+}
+
+// Helper functions for comprehensive export data calculation
+function getOBDataUpToDate(startDate, endDate) {
+    const filteredData = PachhwaraDashboardData.filter(row => {
+        const rowDate = parseDMY(row[0]);
+        return rowDate >= startDate && rowDate <= endDate;
+    });
+    
+    let totalTarget = 0;
+    let totalActual = 0;
+    
+    filteredData.forEach(row => {
+        totalTarget += Number(row[9]) || 0; // OB Production Target (Column J)
+        totalActual += Number(row[10]) || 0; // OB Actual Production (Column K)
+    });
+    
+    const achievement = totalTarget > 0 ? ((totalActual / totalTarget) * 100).toFixed(2) : '0.00';
+    const avgTarget = filteredData.length > 0 ? (totalTarget / filteredData.length).toFixed(0) : '0';
+    const avgActual = filteredData.length > 0 ? (totalActual / filteredData.length).toFixed(0) : '0';
+    
+    return { totalTarget, totalActual, achievement, avgTarget, avgActual };
+}
+
+function getCoalDataUpToDate(startDate, endDate) {
+    const filteredData = PachhwaraDashboardData.filter(row => {
+        const rowDate = parseDMY(row[0]);
+        return rowDate >= startDate && rowDate <= endDate;
+    });
+    
+    let totalTarget = 0;
+    let totalActual = 0;
+    
+    filteredData.forEach(row => {
+        totalTarget += Number(row[2]) || 0; // Coal Production Target (Column C)
+        totalActual += Number(row[3]) || 0; // Coal Actual Production (Column D)
+    });
+    
+    const achievement = totalTarget > 0 ? ((totalActual / totalTarget) * 100).toFixed(2) : '0.00';
+    const avgTarget = filteredData.length > 0 ? (totalTarget / filteredData.length).toFixed(0) : '0';
+    const avgActual = filteredData.length > 0 ? (totalActual / filteredData.length).toFixed(0) : '0';
+    
+    return { totalTarget, totalActual, achievement, avgTarget, avgActual };
+}
+
+function getDispatchDataUpToDate(startDate, endDate) {
+    const filteredData = PachhwaraDashboardData.filter(row => {
+        const rowDate = parseDMY(row[0]);
+        return rowDate >= startDate && rowDate <= endDate;
+    });
+    
+    let roadDispatch = 0;
+    let railDispatch = 0;
+    let rakesDispatch = 0;
+    
+    filteredData.forEach(row => {
+        roadDispatch += Number(row[7]) || 0; // Road Dispatch (MT)
+        railDispatch += Number(row[15]) || 0; // Rail Despatch (MT)
+        rakesDispatch += Number(row[20]) || 0; // Rakes despatch (Rakes)
+    });
+    
+    return { roadDispatch, railDispatch, rakesDispatch };
+}
+
+function getPlantRakesDataUpToDate(startDate, endDate) {
+    const filteredData = PachhwaraDashboardData.filter(row => {
+        const rowDate = parseDMY(row[0]);
+        return rowDate >= startDate && rowDate <= endDate;
+    });
+    
+    let ggsstpRakes = 0;
+    let ghtpRakes = 0;
+    let gatpRakes = 0;
+    
+    filteredData.forEach(row => {
+        ggsstpRakes += Number(row[17]) || 0; // GGSSTP Rakes
+        ghtpRakes += Number(row[18]) || 0; // GHTP Rakes
+        gatpRakes += Number(row[19]) || 0; // GATP Rakes
+    });
+    
+    const totalRakes = ggsstpRakes + ghtpRakes + gatpRakes;
+    
+    return { ggsstpRakes, ghtpRakes, gatpRakes, totalRakes };
+}
+
+// Helper function to get all available financial years data
+function getAllFinancialYearsData() {
+    // Get all unique years from the data
+    const allYears = new Set();
+    PachhwaraDashboardData.forEach(row => {
+        const rowDate = parseDMY(row[0]);
+        if (rowDate) {
+            allYears.add(rowDate.getFullYear());
+        }
+    });
+    
+    const sortedYears = Array.from(allYears).sort((a, b) => a - b);
+    const fyData = [];
+    
+    // Generate financial year data for each year
+    sortedYears.forEach(year => {
+        // Check if we have data for FY starting this year (April onwards)
+        const fyStart = new Date(year, 3, 1); // April 1st
+        const fyEnd = new Date(year + 1, 2, 31); // March 31st next year
+        
+        const fyDataset = PachhwaraDashboardData.filter(row => {
+            const rowDate = parseDMY(row[0]);
+            return rowDate >= fyStart && rowDate <= fyEnd;
+        });
+        
+        if (fyDataset.length > 0) {
+            // Calculate coal production and dispatch data
+            let coalTarget = 0;
+            let coalActual = 0;
+            let roadDispatch = 0;
+            let railDispatch = 0;
+            let totalRakes = 0;
+            let ggsstpRakes = 0;
+            let ghtpRakes = 0;
+            let gatpRakes = 0;
+            
+            fyDataset.forEach(row => {
+                coalTarget += Number(row[2]) || 0; // Coal Production Target
+                coalActual += Number(row[3]) || 0; // Coal Actual Production
+                roadDispatch += Number(row[7]) || 0; // Road Dispatch
+                railDispatch += Number(row[15]) || 0; // Rail Despatch
+                totalRakes += Number(row[20]) || 0; // Total Rakes
+                ggsstpRakes += Number(row[17]) || 0; // GGSSTP Rakes
+                ghtpRakes += Number(row[18]) || 0; // GHTP Rakes
+                gatpRakes += Number(row[19]) || 0; // GATP Rakes
+            });
+            
+            const coalAchievement = coalTarget > 0 ? ((coalActual / coalTarget) * 100) : 0;
+            
+            fyData.push({
+                fyLabel: `${year}-${(year + 1).toString().substr(-2)}`,
+                fyStartYear: year,
+                coalTarget,
+                coalActual,
+                coalAchievement,
+                roadDispatch,
+                railDispatch,
+                totalRakes,
+                ggsstpRakes,
+                ghtpRakes,
+                gatpRakes,
+                totalDispatch: roadDispatch + railDispatch
+            });
+        }
+    });
+    
+    return fyData.sort((a, b) => a.fyStartYear - b.fyStartYear);
 }
 
 // Get coal data for specific duration
@@ -2620,28 +3338,27 @@ function updateOBData() {
 
 // Initialize the dashboard
 function showPachhwaraDashboard() {
-    // Get yesterday's date for the header
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = yesterday.toLocaleDateString('en-GB', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-    });
-    
     document.getElementById('main-content').innerHTML = `
         <div class="container py-4">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <!-- Header Card -->
                     <div class="card custom-card mb-4" id="headerCard" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); border: none;">
-                        <div class="card-body text-center" style="padding: 15px;">
-                            <h2 class="card-title mb-2" style="color: white; font-weight: 700; font-size: 24px; margin: 0;">
-                                Daily Progress Report of Pachwara Central Coal Mine
-                            </h2>
-                            <h4 class="mb-0" style="color: #e3f2fd; font-weight: 500; font-size: 18px; margin: 5px 0 0 0;">
-                                Date: ${yesterdayFormatted}
-                            </h4>
+                        <div class="card-body" style="padding: 15px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-center flex-grow-1">
+                                    <h2 class="card-title mb-2" style="color: white; font-weight: 700; font-size: 24px; margin: 0;">
+                                        Daily Progress Report of Pachwara Central Coal Mine
+                                    </h2>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-outline-light btn-sm" 
+                                            onclick="exportDailyReportToJPG();" 
+                                            title="Export Daily Report to JPG">
+                                        <i class="bi bi-file-earmark-image"></i> Export Report
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -2661,7 +3378,7 @@ function showPachhwaraDashboard() {
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0" style="color: #2c3e50; font-weight: 600;">
                                     <i class="bi bi-box-seam-fill" style="color: #17a2b8;"></i>
-                                    Closing Stock Summary
+                                    Coal Stock Summary
                                 </h5>
                                 <small class="text-muted" style="font-size: 11px; font-weight: 500;">Units: MT</small>
                             </div>
@@ -2717,7 +3434,7 @@ function showPachhwaraDashboard() {
                     </div>
                     
                     <!-- OB Production Card -->
-                    <div class="card custom-card mb-4">
+                    <div class="card custom-card mb-4" id="obCard">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0" style="color: #2c3e50; font-weight: 600;">
@@ -2732,67 +3449,59 @@ function showPachhwaraDashboard() {
                                     <tr><td colspan="4" class="text-center">Loading data...</td></tr>
                                 </tbody>
                             </table>
-                            
-                            <!-- Toggle Arrow -->
-                            <div class="text-center mt-3">
-                                <button class="btn btn-link p-0 toggle-arrow" onclick="toggleOBCard()" id="obToggleArrow">
-                                    <i class="bi bi-chevron-down" style="font-size: 1.2rem; color: #6c757d;"></i>
-                                </button>
-                            </div>
-                            
-                            <div id="obExpandableContent" class="card-expanded mt-4">
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold">Select Duration:</label><br>
-                                    <div class="btn-group flex-wrap" role="group" aria-label="Duration selection">
+                        </div>
+                        
+                        <div class="text-center mb-3">
+                            <button type="button" class="btn btn-link toggle-arrow p-0" id="obToggleArrow" onclick="toggleOBCard()" style="font-size: 18px; text-decoration: none;">
+                                <i class="bi bi-chevron-down" style="color: #007bff;"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="obExpandableContent" style="display: none;">
+                            <div class="card-body pt-0">
+                                <div class="mb-3">
+                                    <div class="btn-group btn-group-sm" role="group" style="font-size: 12px;">
                                         <input type="radio" class="btn-check" name="duration" id="duration7" value="7" checked onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration7">7 Days</label>
+                                        <label class="btn btn-outline-primary" for="duration7" style="padding: 4px 12px; font-size: 11px;">7 Days</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration15" value="15" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration15">15 Days</label>
+                                        <label class="btn btn-outline-primary" for="duration15" style="padding: 4px 12px; font-size: 11px;">15 Days</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration30" value="30" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration30">1 Month</label>
+                                        <label class="btn btn-outline-primary" for="duration30" style="padding: 4px 12px; font-size: 11px;">1 Month</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration60" value="60" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration60">2 Months</label>
+                                        <label class="btn btn-outline-primary" for="duration60" style="padding: 4px 12px; font-size: 11px;">2 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration90" value="90" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration90">3 Months</label>
+                                        <label class="btn btn-outline-primary" for="duration90" style="padding: 4px 12px; font-size: 11px;">3 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration180" value="180" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration180">6 Months</label>
+                                        <label class="btn btn-outline-primary" for="duration180" style="padding: 4px 12px; font-size: 11px;">6 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="duration" id="duration365" value="365" onchange="handleDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="duration365">1 Year</label>
+                                        <label class="btn btn-outline-primary" for="duration365" style="padding: 4px 12px; font-size: 11px;">1 Year</label>
+                                    </div>
+                                    
+                                    <div class="float-end">
+                                        <button class="btn btn-outline-danger btn-sm me-2" onclick="exportOBToPDF()" title="Export as PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm" onclick="exportOBToJPG()" title="Export as JPG">
+                                            <i class="bi bi-file-earmark-image"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 
-                                <div class="chart-container mb-3">
+                                <div style="height: 300px; position: relative;">
                                     <canvas id="obDataChart"></canvas>
-                                </div>
-                                
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="text-center flex-grow-1">
-                                        <small class="text-muted">
-                                            <i class="bi bi-info-circle"></i>
-                                            Red: Actual Production, Green: Target, Orange: Achievement %
-                                        </small>
-                                    </div>
-                                    <div class="export-buttons">
-                                        <button class="btn btn-outline-danger btn-sm me-2" onclick="exportToPDF()" title="Export as PDF">
-                                            <i class="bi bi-file-earmark-pdf"></i> PDF
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm" onclick="exportToJPG()" title="Export as JPG">
-                                            <i class="bi bi-file-earmark-image"></i> JPG
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Coal Production Card -->
-                    <div class="card custom-card">
+                    <div class="card custom-card" id="coalCard">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0" style="color: #2c3e50; font-weight: 600;">
@@ -2807,60 +3516,52 @@ function showPachhwaraDashboard() {
                                     <tr><td colspan="4" class="text-center">Loading data...</td></tr>
                                 </tbody>
                             </table>
-                            
-                            <!-- Toggle Arrow -->
-                            <div class="text-center mt-3">
-                                <button class="btn btn-link p-0 toggle-arrow" onclick="toggleCoalCard()" id="coalToggleArrow">
-                                    <i class="bi bi-chevron-down" style="font-size: 1.2rem; color: #6c757d;"></i>
-                                </button>
-                            </div>
-                            
-                            <div id="coalExpandableContent" class="card-expanded mt-4">
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold">Select Duration:</label><br>
-                                    <div class="btn-group flex-wrap" role="group" aria-label="Duration selection">
+                        </div>
+                        
+                        <div class="text-center mb-3">
+                            <button type="button" class="btn btn-link toggle-arrow p-0" id="coalToggleArrow" onclick="toggleCoalCard()" style="font-size: 18px; text-decoration: none;">
+                                <i class="bi bi-chevron-down" style="color: #007bff;"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="coalExpandableContent" style="display: none;">
+                            <div class="card-body pt-0">
+                                <div class="mb-3">
+                                    <div class="btn-group btn-group-sm" role="group" style="font-size: 12px;">
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration7" value="7" checked onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration7">7 Days</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration7" style="padding: 4px 12px; font-size: 11px;">7 Days</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration15" value="15" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration15">15 Days</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration15" style="padding: 4px 12px; font-size: 11px;">15 Days</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration30" value="30" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration30">1 Month</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration30" style="padding: 4px 12px; font-size: 11px;">1 Month</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration60" value="60" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration60">2 Months</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration60" style="padding: 4px 12px; font-size: 11px;">2 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration90" value="90" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration90">3 Months</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration90" style="padding: 4px 12px; font-size: 11px;">3 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration180" value="180" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration180">6 Months</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration180" style="padding: 4px 12px; font-size: 11px;">6 Months</label>
                                         
                                         <input type="radio" class="btn-check" name="coalDuration" id="coalDuration365" value="365" onchange="handleCoalDurationChange(event)">
-                                        <label class="btn btn-outline-primary btn-sm" for="coalDuration365">1 Year</label>
+                                        <label class="btn btn-outline-primary" for="coalDuration365" style="padding: 4px 12px; font-size: 11px;">1 Year</label>
+                                    </div>
+                                    
+                                    <div class="float-end">
+                                        <button class="btn btn-outline-danger btn-sm me-2" onclick="exportCoalToPDF()" title="Export as PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm" onclick="exportCoalToJPG()" title="Export as JPG">
+                                            <i class="bi bi-file-earmark-image"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 
-                                <div class="chart-container mb-3">
+                                <div style="height: 300px; position: relative;">
                                     <canvas id="coalDataChart"></canvas>
-                                </div>
-                                
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="text-center flex-grow-1">
-                                        <small class="text-muted">
-                                            <i class="bi bi-info-circle"></i>
-                                            Red: Actual Production, Green: Target, Orange: Achievement %
-                                        </small>
-                                    </div>
-                                    <div class="export-buttons">
-                                        <button class="btn btn-outline-danger btn-sm me-2" onclick="exportToPDF()" title="Export as PDF">
-                                            <i class="bi bi-file-earmark-pdf"></i> PDF
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm" onclick="exportToJPG()" title="Export as JPG">
-                                            <i class="bi bi-file-earmark-image"></i> JPG
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3088,6 +3789,73 @@ function showPachhwaraDashboard() {
                 }
             }
         </style>
+        
+        <!-- Floating Date Picker Widget -->
+        <div id="floatingDatePicker" style="
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 1050;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        ">
+            <!-- Collapsed State - Calendar Icon -->
+            <div id="datePickerCollapsed" style="
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 20px;
+                border-radius: 50px;
+                transition: all 0.3s ease;
+            " onclick="toggleFloatingDatePicker()">
+                <i class="bi bi-calendar3"></i>
+            </div>
+            
+            <!-- Expanded State - Date Controls -->
+            <div id="datePickerExpanded" style="
+                display: none;
+                background: white;
+                border-radius: 25px;
+                padding: 15px 20px;
+                min-width: 280px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+                border: 2px solid #007bff;
+            ">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <strong style="color: #007bff; font-size: 14px;">Select Date</strong>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                            onclick="changeDate(-1)" 
+                            style="width: 35px; height: 35px; border-radius: 50%; padding: 0;">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <input type="date" class="form-control form-control-sm mx-2" 
+                           id="pachhwaraDatePicker" 
+                           style="text-align: center; font-weight: 500;"
+                           onchange="handleDateChange()">
+                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                            onclick="changeDate(1)" 
+                            style="width: 35px; height: 35px; border-radius: 50%; padding: 0;">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button type="button" class="btn btn-link btn-sm text-muted" 
+                            onclick="toggleFloatingDatePicker()" 
+                            style="text-decoration: none; font-size: 12px;">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
 
     // Load required libraries for export functionality
@@ -3106,6 +3874,10 @@ function showPachhwaraDashboard() {
     // Load data and initialize dashboard
     fetchPachhwaraDashboardHeaders().then(() => {
         fetchPachhwaraDashboardData().then(() => {
+            // Initialize date picker first
+            initializeDatePicker();
+            
+            // Then load data for the selected date
             updateStockSummary();
             updateOBSummary();
             updateCoalSummary();
@@ -3187,6 +3959,10 @@ window.handleStockDurationChange = handleStockDurationChange;
 window.toggleStockCard = toggleStockCard;
 window.exportToPDF = exportToPDF;
 window.exportToJPG = exportToJPG;
+window.exportOBToPDF = exportOBToPDF;
+window.exportOBToJPG = exportOBToJPG;
+window.exportCoalToPDF = exportCoalToPDF;
+window.exportCoalToJPG = exportCoalToJPG;
 window.exportStockToPDF = exportStockToPDF;
 window.exportStockToJPG = exportStockToJPG;
 window.exportDispatchToPDF = exportDispatchToPDF;
@@ -3198,4 +3974,112 @@ window.exportFYDispatchToPDF = exportFYDispatchToPDF;
 window.exportFYDispatchToJPG = exportFYDispatchToJPG;
 window.exportAllDashboardToPDF = exportAllDashboardToPDF;
 window.exportAllDashboardToJPG = exportAllDashboardToJPG;
+window.exportDailyReportToJPG = exportDailyReportToJPG;
 window.showPachhwaraDashboard = showPachhwaraDashboard;
+
+// Global variable to store selected date
+let selectedDate = null;
+
+// Initialize date picker with yesterday's date
+function initializeDatePicker() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    selectedDate = yesterday.toISOString().split('T')[0];
+    
+    const datePicker = document.getElementById('pachhwaraDatePicker');
+    if (datePicker) {
+        datePicker.value = selectedDate;
+    }
+}
+
+// Handle date change from date picker
+function handleDateChange() {
+    const datePicker = document.getElementById('pachhwaraDatePicker');
+    if (datePicker) {
+        selectedDate = datePicker.value;
+        refreshAllDashboardData();
+    }
+}
+
+// Change date by days (for prev/next buttons)
+function changeDate(days) {
+    const currentDate = new Date(selectedDate);
+    currentDate.setDate(currentDate.getDate() + days);
+    selectedDate = currentDate.toISOString().split('T')[0];
+    
+    const datePicker = document.getElementById('pachhwaraDatePicker');
+    if (datePicker) {
+        datePicker.value = selectedDate;
+    }
+    
+    refreshAllDashboardData();
+}
+
+// Toggle floating date picker visibility
+function toggleFloatingDatePicker() {
+    const collapsed = document.getElementById('datePickerCollapsed');
+    const expanded = document.getElementById('datePickerExpanded');
+    const container = document.getElementById('floatingDatePicker');
+    
+    if (expanded.style.display === 'none') {
+        // Show expanded state
+        collapsed.style.display = 'none';
+        expanded.style.display = 'block';
+        container.style.borderRadius = '25px';
+        container.style.width = 'auto';
+    } else {
+        // Show collapsed state
+        collapsed.style.display = 'flex';
+        expanded.style.display = 'none';
+        container.style.borderRadius = '50px';
+        container.style.width = '50px';
+    }
+}
+
+// Get selected date or default to yesterday
+function getSelectedDate() {
+    if (!selectedDate) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        selectedDate = yesterday.toISOString().split('T')[0];
+    }
+    return selectedDate;
+}
+
+// Refresh all dashboard data based on selected date
+function refreshAllDashboardData() {
+    try {
+        updateStockSummary();
+        updateOBSummary();
+        updateCoalSummary();
+        updateDispatchSummary();
+        updatePlantRakesSummary();
+        updateFYDispatchSummary();
+        
+        // Update charts if they are visible
+        if (document.getElementById('stockExpandableContent').style.display !== 'none') {
+            updateStockChart();
+        }
+        if (document.getElementById('obExpandableContent').style.display !== 'none') {
+            updateOBChart();
+        }
+        if (document.getElementById('coalExpandableContent').style.display !== 'none') {
+            updateCoalChart();
+        }
+        if (document.getElementById('plantRakesExpandableContent').style.display !== 'none') {
+            updatePlantRakesChart();
+        }
+        
+        console.log(`Dashboard data refreshed for date: ${selectedDate}`);
+    } catch (error) {
+        console.error('Error refreshing dashboard data:', error);
+    }
+}
+
+// Make date functions globally available
+window.initializeDatePicker = initializeDatePicker;
+window.handleDateChange = handleDateChange;
+window.changeDate = changeDate;
+window.getSelectedDate = getSelectedDate;
+window.refreshAllDashboardData = refreshAllDashboardData;
+window.toggleFloatingDatePicker = toggleFloatingDatePicker;
