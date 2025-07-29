@@ -203,7 +203,40 @@ function renderMDCWLLiftingFilters() {
     const startMonth = document.getElementById('mdcwlStartMonth');
     const endMonth = document.getElementById('mdcwlEndMonth');
     startMonth.innerHTML = months.map(m => `<option value="${m}">${parseAndFormatDateMonthYear(m)}</option>`).join('');
-endMonth.innerHTML = months.map(m => `<option value="${m}">${parseAndFormatDateMonthYear(m)}</option>`).join('');
+    endMonth.innerHTML = months.map(m => `<option value="${m}">${parseAndFormatDateMonthYear(m)}</option>`).join('');
+    
+    // Set default start month to current financial year start (April of current FY)
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // 1-12
+    
+    // Determine current financial year start
+    const fyStartYear = currentMonth >= 4 ? currentYear : currentYear - 1;
+    const fyStartMonth = 4; // April
+    
+    // Find the closest match to April of current FY in available months
+    let defaultStartIndex = 0;
+    for (let i = 0; i < months.length; i++) {
+        const monthData = months[i];
+        if (typeof monthData === "string" && monthData.startsWith("Date(")) {
+            const parts = monthData.match(/\d+/g);
+            if (parts && parts.length >= 2) {
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) + 1; // Convert from 0-based to 1-based
+                
+                // Check if this matches April of current FY or later
+                if (year === fyStartYear && month >= fyStartMonth) {
+                    defaultStartIndex = i;
+                    break;
+                } else if (year > fyStartYear) {
+                    defaultStartIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+    
+    startMonth.selectedIndex = defaultStartIndex;
     endMonth.selectedIndex = months.length - 1;
 
     // Colliery checkboxes
@@ -395,11 +428,13 @@ if (consolidate && consolidateFY) {
 
     // Calculate totals for numeric columns
     let totals = Array(mdcwlHeaders.length).fill('');
+    totals[0] = 'TOTAL'; // Put TOTAL in first column (index 0)
     totals[monthIdx] = '';
-    totals[collieryIdx] = 'TOTAL';
+    totals[collieryIdx] = '';
     filtered.forEach(row => {
         for (let i = 0; i < mdcwlHeaders.length; i++) {
-            if (i !== monthIdx && i !== collieryIdx && !isNaN(Number(row[i]))) {
+            // Exclude month, colliery, first column (0), column 7, and column 14 from summing
+            if (i !== monthIdx && i !== collieryIdx && i !== 0 && i !== 7 && i !== 14 && !isNaN(Number(row[i]))) {
                 totals[i] = (Number(totals[i]) || 0) + (Number(row[i]) || 0);
             }
         }
@@ -441,19 +476,52 @@ if (consolidate && consolidateFY) {
     if ([0, 1,8,9].includes(i)) {
         val = parseAndFormatDate(val);
     }
-    if (!isNaN(Number(val)) && mdcwlHeaders[i] !== 'Colliery' && mdcwlHeaders[i] !== 'Month' && ![0,1,8,9].includes(i)) val = Number(val).toFixed(2);
+    // Format columns 12, 15, 16, 17 with 0 decimal places and comma separation
+    if ([12, 15, 16, 17].includes(i) && !isNaN(Number(val))) {
+        val = Number(val).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+    // Format numeric values with comma separation for column 5 and columns 10-14 (excluding 12)
+    else if ((i === 5 || (i >= 10 && i <= 14 && i !== 12)) && !isNaN(Number(val))) {
+        val = Number(val).toLocaleString();
+    } else if (!isNaN(Number(val)) && mdcwlHeaders[i] !== 'Colliery' && mdcwlHeaders[i] !== 'Month' && ![0,1,8,9].includes(i)) {
+        val = Number(val).toFixed(0);
+    }
     const cellClass = colIndex === 0 ? 'sticky-col' : '';
     html += `<td class="${cellClass}">${val}</td>`;
 });
             html += `</tr>`;
         });
         // Total Row
-        html += `<tr class="total-row">`;
+        html += `<tr class="total-row-mdcwl-lifting">`;
         selectedCols.forEach((i, colIndex) => {
-            let val = totals[i];
-            if (!isNaN(Number(val)) && mdcwlHeaders[i] !== 'Colliery' && mdcwlHeaders[i] !== 'Month') val = Number(val).toFixed(2);
+            let val = '';
+            
+            // Put "TOTAL" in the first visible column
+            if (colIndex === 0) {
+                val = 'TOTAL';
+            } else {
+                val = totals[i];
+                // Format columns 12, 15, 16, 17 with 0 decimal places and comma separation
+                if ([12, 15, 16, 17].includes(i) && !isNaN(Number(val))) {
+                    val = Number(val).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                }
+                // Format column 5 and columns 10-14 (excluding 12) with comma separation
+                else if ((i === 5 || (i >= 10 && i <= 14 && i !== 12)) && !isNaN(Number(val))) {
+                    val = Number(val).toLocaleString();
+                } else if (!isNaN(Number(val)) && mdcwlHeaders[i] !== 'Colliery' && mdcwlHeaders[i] !== 'Month') {
+                    val = Number(val).toFixed(0);
+                }
+                
+                // Hide data for specific columns (1,2,3,4,6,7,8,9,14) if value is 0
+                if ([1,2,3,4,6,7,8,9,14].includes(i) && Number(val) === 0) {
+                    val = '';
+                }
+            }
+            
             const cellClass = colIndex === 0 ? 'sticky-col' : '';
-            html += `<td class="${cellClass}">${val !== undefined ? val : ''}</td>`;
+            // Add vertical lines for column 5 and columns 10-17 in total row with white borders for better contrast
+            const borderStyle = (i === 5 || (i >= 10 && i <= 17)) ? 'border-left: 1px solid #1e3d73 !important; border-right: 1px solid #1e3d73 !important;' : '';
+            html += `<td class="${cellClass}" style="${borderStyle}">${val !== undefined ? val : ''}</td>`;
         });
         html += `</tr>`;
     } else {
@@ -468,7 +536,7 @@ if (consolidate && consolidateFY) {
             <div class="pachhwara-pd-card mb-2">
                 <div class="pachhwara-pd-section-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <h6 class="mb-0"><i class="bi bi-table"></i> MDCWL Lifting Table</h6>
+                        <h6 class="mb-0"><i class="bi bi-table"></i> Data Table</h6>
                         <span class="badge bg-light text-dark ms-2">${filtered.length} entries</span>
                     </div>
                     <div class="d-flex gap-2">
@@ -600,7 +668,7 @@ function MDCWLGetFinancialYear(str) {
     }
     if (!y || !m) return '';
     const fyStart = m >= 4 ? y : y - 1;
-    return `FY ${fyStart}-${(fyStart + 1).toString().slice(-2)}`;
+    return `${fyStart}-${(fyStart + 1).toString().slice(-2)}`;
 }
 
 // Export Functions for MDCWL Lifting

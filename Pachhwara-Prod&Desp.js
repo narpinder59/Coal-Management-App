@@ -473,7 +473,7 @@ function showPachhwaraPDReport() {
 
     document.getElementById('main-content').innerHTML = `
         <!-- Main Title Card -->
-        <div class="pachhwara-pd-card mb-3">
+        <div class="pachhwara-pd-card mb-2">
             <div class="pachhwara-pd-section-header">
                 <h4 class="mb-0"><i class="bi bi-truck"></i> Pachhwara Production & Despatch</h4>
             </div>
@@ -979,10 +979,17 @@ function PachhwaraPDRenderTable() {
                     agg[i] = '';
                 }
             }
-            // Format columns to 2 decimals for display
-    [1,2,3,7,8,9,10,13,14,15,22].forEach(idx => {
+            // Format columns with comma separation for display
+    // Columns 3, 9, 10 with 0 decimal places
+    [3, 9, 10].forEach(idx => {
         if (agg[idx] !== undefined && agg[idx] !== '' && !isNaN(agg[idx])) {
-            agg[idx] = Number(agg[idx]).toFixed(2);
+            agg[idx] = Number(agg[idx]).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+    });
+    // Other columns with 2 decimal places (excluding 3, 9, 10)
+    [1,2,7,8,13,14,15,22].forEach(idx => {
+        if (agg[idx] !== undefined && agg[idx] !== '' && !isNaN(agg[idx])) {
+            agg[idx] = Number(agg[idx]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
     });
             return agg;
@@ -1008,14 +1015,26 @@ html += `</tr></thead><tbody>`;
         let totalRow = [];
         totalRow[0] = '<b>TOTAL</b>';
         checkedCols.forEach(i => {
-    if ([2, 3, 6, 7, 9, 10, 12, 14, 15, 16, 17, 18, 19].includes(i)) { // Sum columns
+    if ([2, 3, 6, 7, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20].includes(i)) { // Sum columns (added column 20)
         let sum = filtered.reduce((sum, r) => sum + (Number(r[i]) || 0), 0);
-        // Format to 2 decimals for columns 2,3,8,9,10,13,14,15,23 (indexes 1,2,7,8,9,10,13,14,22)
-        totalRow[i] = [1,2,7,8,9,10,14,22].includes(i) ? sum.toFixed(2) : sum;
-    } else if ([1, 5, 8, 11, 13, 20, 21, 22].includes(i)) { // Avg columns
+        // Format columns 3, 9, 10 with 0 decimal places
+        if ([3, 9, 10].includes(i)) {
+            totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+        // Format with comma separation and 2 decimals for specific columns (excluding 3, 9, 10)
+        else if ([1,2,7,8,14,22].includes(i)) {
+            totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+            totalRow[i] = sum.toLocaleString();
+        }
+    } else if ([1, 5, 8, 11, 13, 21, 22].includes(i)) { // Avg columns (removed column 20)
         const nums = filtered.map(r => Number(r[i])).filter(n => !isNaN(n));
         let avg = nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length) : '';
-        totalRow[i] = (i === 23 && avg !== '') ? avg.toFixed(2) : (avg !== '' ? avg.toFixed(2) : '');
+        if (avg !== '') {
+            totalRow[i] = avg.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+            totalRow[i] = '';
+        }
     } else if (i === 4) { // E: Percentage D/C
         const sumC = filtered.reduce((sum, r) => sum + (Number(r[2]) || 0), 0);
         const sumD = filtered.reduce((sum, r) => sum + (Number(r[3]) || 0), 0);
@@ -1024,7 +1043,7 @@ html += `</tr></thead><tbody>`;
         totalRow[i] = '';
     }
 });
-        html += `<tr class="table-warning fw-bold"><td>${totalRow[0]}</td>`;
+        html += `<tr class="pachhwara-total-row"><td>${totalRow[0]}</td>`;
         checkedCols.forEach(i => html += `<td>${totalRow[i]}</td>`);
         html += `</tr>`;
     } else {
@@ -1047,10 +1066,10 @@ html += `</tbody></table>`;
     // Render table in card format
     document.getElementById('PachhwaraPD-table-container').innerHTML = `
         <!-- Table Header Card -->
-        <div class="pachhwara-pd-card mb-3">
+        <div class="pachhwara-pd-card mb-2">
             <div class="pachhwara-pd-section-header d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="mb-0"><i class="bi bi-table"></i> Production & Despatch Data</h6>
+                    <h6 class="mb-0"><i class="bi bi-table"></i>Data Table</h6>
                     <small class="text-light opacity-75">
                         ${filtered.length} records
                     </small>
@@ -1101,13 +1120,35 @@ function PachhwaraPDFormatDate(str) {
     }
     return str;
 }
-// Format cell values for display
+// Format cell values for display with comma separation
 // Handles specific columns that need formatting
 function PachhwaraPDFormatCell(val, colIdx) {
-    // Columns: 2,3,8,9,10,13,14,15,23 (indexes 1,2,7,8,9,10,13,14,22)
-    if ([1,2,3,7,8,9,10,13,14,22,23].includes(colIdx) && val !== '' && !isNaN(val)) {
-        return Number(val).toFixed(2);
+    // Skip empty values and non-numeric values
+    if (val === '' || val === null || val === undefined || isNaN(val)) {
+        return val;
     }
+    
+    // Check if it's a percentage column (column 4: E: Percentage D/C)
+    if (colIdx === 4 && typeof val === 'string' && val.includes('%')) {
+        return val; // Return percentage as-is
+    }
+    
+    // Format all numeric columns with comma separation
+    const numVal = Number(val);
+    if (!isNaN(numVal)) {
+        // Columns 3, 9, 10 with 0 decimal places
+        if ([3, 9, 10].includes(colIdx)) {
+            return numVal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+        // Columns that need 2 decimal places: 2,3,8,9,10,13,14,15,23 (indexes 1,2,7,8,9,10,13,14,22) - excluding 3, 9, 10
+        else if ([1,2,7,8,13,14,22,23].includes(colIdx)) {
+            return numVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+            // Other numeric columns with comma separation but no forced decimal places
+            return numVal.toLocaleString();
+        }
+    }
+    
     return val;
 }
 // Render the dropdown for selecting value column

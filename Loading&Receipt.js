@@ -754,12 +754,12 @@ function LRRenderTable() {
         filtered = Object.entries(grouped).map(([key, rows]) => {
             let agg = [];
             agg[0] = key;
-            // Sum columns: B to S (1-19), W to Y (23-25), AI to AN (34-40)
-            const sumCols = [...Array(19).keys()].map(i => i+1)
-                .concat([23,24,25])
-                .concat([34,35,36,37,38,39,40]);
+            // Sum columns: B to S (1-18), W to Y (22-24), AI to AN (34-40)
+            const sumCols = [...Array(18).keys()].map(i => i+1)
+                .concat([22,23,24])
+                .concat([34,35,36,37,38,39]);
             // Avg columns: T,U,V,Z,AA,AB,AC,AD,AE,AF,AG,AH,AO to BA (20,21,22,26-33,41-52)
-            const avgCols = [20,21,22,26,27,28,29,30,31,32,33,41,42,43,44,45,46,47,48,49,50,51,52];
+            const avgCols = [19,20,21,25,26,27,28,29,30,31,32,33,40,41,42,43,44,45,46,47,48,49,50,51,52];
             for (let i = 1; i < LoadingReceiptHeaders.length; i++) {
                 if (sumCols.includes(i)) {
                     agg[i] = rows.reduce((sum, r) => sum + (Number(r[i]) || 0), 0);
@@ -869,9 +869,9 @@ function LRRenderTable() {
             if (i === 0) return; // Skip date column
             
             // Sum columns
-            const sumCols = [...Array(19).keys()].map(idx => idx+1).concat([23,24,25]).concat([34,35,36,37,38,39,40]);
+            const sumCols = [...Array(18).keys()].map(idx => idx+1).concat([22,23,24]).concat([34,35,36,37,38,39]);
             // Avg columns
-            const avgCols = [20,21,22,26,27,28,29,30,31,32,33,41,42,43,44,45,46,47,48,49,50,51,52];
+            const avgCols = [19,20,21,25,26,27,28,29,30,31,32,33,40,41,42,43,44,45,46,47,48,49,50,51,52];
             
             if (sumCols.includes(i)) {
                 totalRow[i] = filtered.reduce((sum, row) => {
@@ -1057,8 +1057,8 @@ function LRGetExportData() {
         filtered = Object.entries(grouped).map(([key, rows]) => {
             let agg = [];
             agg[0] = key;
-            const sumCols = [...Array(19).keys()].map(i => i+1).concat([23,24,25]).concat([34,35,36,37,38,39,40]);
-            const avgCols = [20,21,22,26,27,28,29,30,31,32,33,41,42,43,44,45,46,47,48,49,50,51,52];
+            const sumCols = [...Array(18).keys()].map(i => i+1).concat([22,23,24]).concat([34,35,36,37,38,39]);
+            const avgCols = [19,20,21,25,26,27,28,29,30,31,32,33,40,41,42,43,44,45,46,47,48,49,50,51,52];
             
             for (let i = 1; i < LoadingReceiptHeaders.length; i++) {
                 if (sumCols.includes(i)) {
@@ -1101,8 +1101,8 @@ function LRGetExportData() {
     
     // Calculate totals
     let totalRow = ['TOTAL'];
-    const sumCols = [...Array(19).keys()].map(i => i+1).concat([23,24,25]).concat([34,35,36,37,38,39,40]);
-    const avgCols = [20,21,22,26,27,28,29,30,31,32,33,41,42,43,44,45,46,47,48,49,50,51,52];
+    const sumCols = [...Array(18).keys()].map(i => i+1).concat([22,23,24]).concat([34,35,36,37,38,39]);
+    const avgCols = [19,20,21,25,26,27,28,29,30,31,32,33,40,41,42,43,44,45,46,47,48,49,50,51,52];
     
     checkedCols.forEach(i => {
         if (i === 0) return;

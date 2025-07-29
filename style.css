@@ -232,31 +232,34 @@ body {
 /* Export Sidebar Styles */
 .export-sidebar {
   position: fixed;
-  top: 50%;
-  left: -80px;
-  transform: translateY(-50%);
-  width: 70px;
+  bottom: 80px;
+  left: 15px;
+  width: auto;
   background-color: #f8f9fa;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-  transition: left 0.3s ease;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  transition: bottom 0.3s ease, opacity 0.3s ease;
   z-index: 1040;
-  padding: 15px 10px;
-  border-radius: 0 15px 15px 0;
-  border-right: 3px solid #2c5aa0;
+  padding: 10px 15px;
+  border-radius: 15px;
+  border: 3px solid #2c5aa0;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex-direction: row;
+  gap: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
 }
 
 .export-sidebar.open {
-  left: 0;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .export-toggle-btn {
   position: fixed;
-  top: 50%;
+  bottom: 15px;
   left: 15px;
-  transform: translateY(-50%);
   z-index: 1100;
   background: #28a745 !important;
   border-color: #28a745 !important;
@@ -269,20 +272,21 @@ body {
 .export-toggle-btn:hover {
   background: #1e7e34 !important;
   border-color: #1e7e34 !important;
-  transform: translateY(-50%) scale(1.05);
+  transform: scale(1.05);
 }
 
 .export-sidebar .export-btn {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   border: 2px solid;
   transition: all 0.3s ease;
   background: white;
+  flex-shrink: 0;
 }
 
 .export-sidebar .export-btn:hover {
@@ -1173,15 +1177,15 @@ display: none;
 
 /* Total row styling for MDCWL Lifting */
 .table-mdcwl-lifting .total-row td {
-    background: #28a745 !important; /* Green color for totals */
+    background: #2c5aa0 !important; /* Blue color matching header */
     color: white !important;
     font-weight: 700 !important;
     font-size: 0.9rem !important;
-    border: 1px solid #1e7e34 !important;
+    border: 1px solid #2c5aa0 !important;
 }
 
 .table-mdcwl-lifting .total-row td:first-child {
-    background: #28a745 !important; /* Green for first column in totals */
+    background: #2c5aa0 !important; /* Blue for first column in totals */
     color: white !important;
     font-weight: 700 !important;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
@@ -1523,7 +1527,7 @@ display: none;
     border: 1px solid #dee2e6;
 }
 
-.pachhwara-data-table th {
+.pachhwara-data-table th tr{
     font-size: 0.7rem !important;
     font-weight: 600;
     text-align: center;
@@ -1558,8 +1562,10 @@ display: none;
     background-color: #f8f9fa;
 }
 
-.pachhwara-data-table .table-warning td:first-child {
-    background-color: #fff3cd !important;
+.pachhwara-data-table .pachhwara-total-row td:first-child {
+    background-color: #2c5aa0 !important;
+    color: white !important;
+    font-weight: 600 !important;
 }
 
 .pachhwara-data-table td {
@@ -1567,7 +1573,23 @@ display: none;
     font-size: 0.7rem;
 }
 
-.pachhwara-data-table .fw-bold {
+/* Header styling */
+.pachhwara-data-table .table-primary th {
+    font-weight: 600 !important;
+    background-color: #2c5aa0 !important;
+    color: white !important;
+}
+
+/* Total row styling - matches header */
+.pachhwara-data-table .pachhwara-total-row {
+    font-weight: 600 !important;
+    background-color: #2c5aa0 !important;
+    color: white !important;
+}
+
+.pachhwara-data-table .pachhwara-total-row td {
+    background-color: #2c5aa0 !important;
+    color: white !important;
     font-weight: 600 !important;
 }
 
@@ -2685,33 +2707,41 @@ display: none;
 }
 
 .mdcwl-lifting-data-table th {
-    background: linear-gradient(135deg, #2c5aa0 0%, #1e3d73 100%) !important;
+    background: #2c5aa0 !important;
     color: white !important;
     border: 1px solid #1e3d73 !important;
     font-weight: 600;
     padding: 0.75rem 0.5rem;
     text-align: center;
+    vertical-align: middle;
     position: sticky;
     top: 0;
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Sticky header cell should have higher z-index */
+/* Sticky header cell should have higher z-index and same background */
 .mdcwl-lifting-data-table th.sticky-col {
+    background: #2c5aa0 !important;
+    color: white !important;
     z-index: 11 !important;
 }
 
 .mdcwl-lifting-data-table td {
-    padding: 0.5rem;
+    padding: 0.3rem;
     border: 1px solid #dee2e6;
     background-color: #fff;
     vertical-align: middle;
     text-align: center;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100px;
 }
 
 .mdcwl-lifting-data-table tbody tr:hover {
-    background-color: #f8f9fa !important;
+    background-color: #e3f2fd !important;
     transform: scale(1.001);
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -2734,6 +2764,38 @@ display: none;
 .mdcwl-lifting-data-table tbody tr:hover .sticky-col {
     background-color: #bbdefb !important;
 }
+
+/* Total row styling for MDCWL Lifting table */
+.mdcwl-lifting-data-table .total-row-mdcwl-lifting td {
+    background-color: #2c5aa0 !important;
+    color: white !important;
+    font-weight: bold !important;
+    border-color: #1e3d73 !important;
+    box-shadow: 2px 0 5px -2px rgba(44, 90, 160, 0.3) !important;
+    border-left: 1px solid #1e3d73;
+}
+/* Total row styling for MDCWL Lifting table */
+.total-row-mdcwl-lifting tr {
+    background-color: #2c5aa0 !important;
+    color: white !important;
+    font-weight: bold !important;
+    border-color: #1e3d73 !important;
+    box-shadow: 2px 0 5px -2px rgba(44, 90, 160, 0.3) !important;
+    border-left: 1px solid #1e3d73;
+    border-right: 1px solid #1e3d73;
+}
+
+.mdcwl-lifting-data-table .total-row-mdcwl-lifting td:first-child {
+    background-color: #2c5aa0 !important;
+    color: white !important;
+    font-weight: bold !important;
+    border-left: 1px solid #1e3d73 !important;
+    box-shadow: none !important; /* No shadow for first cell */
+
+}
+
+
+
 
 /* Sidebar Styles for Modern Dual Sidebar Navigation */
 .sidebar {

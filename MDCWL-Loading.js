@@ -34,7 +34,7 @@ async function fetchMDCWLLoadingData() {
 function showMDCWLLoadingReport() {
     document.getElementById('main-content').innerHTML = `
         <!-- Main Title Card -->
-        <div class="pachhwara-pd-card mb-3">
+        <div class="pachhwara-pd-card mb-2">
             <div class="pachhwara-pd-section-header">
                 <h4 class="mb-0"><i class="bi bi-truck"></i> MDCWL Loading Position</h4>
             </div>
@@ -80,11 +80,11 @@ function showMDCWLLoadingReport() {
                 <label class="form-label"><strong>Date Range</strong></label>
                 <div class="mb-2">
                     <label class="form-label small">Start Date</label>
-                    <select id="mdcwlStartMonth" class="form-select form-select-sm"></select>
+                    <input type="date" id="mdcwlStartDate" class="form-control form-control-sm">
                 </div>
                 <div class="mb-2">
                     <label class="form-label small">End Date</label>
-                    <select id="mdcwlEndMonth" class="form-select form-select-sm"></select>
+                    <input type="date" id="mdcwlEndDate" class="form-control form-control-sm">
                 </div>
             </div>
             <hr>
@@ -97,6 +97,13 @@ function showMDCWLLoadingReport() {
                     <label class="form-check-label" for="mdcwlConsolidateMonth">
                         Consolidate by Month
                         <small class="d-block text-muted">Group data monthly</small>
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="mdcwlConsolidateFY">
+                    <label class="form-check-label" for="mdcwlConsolidateFY">
+                        Consolidate by Financial Year
+                        <small class="d-block text-muted">Group data by FY</small>
                     </label>
                 </div>
             </div>
@@ -134,23 +141,45 @@ function mdcwlLoadingToggleCard(bodyId, chevronId) {
 }
 
 function renderMDCWLLoadingFilters() {
-    // Get unique dates
+    // Get unique dates and find date range
     const dateIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('date'));
     const dates = [...new Set(mdcwlLoadingData.map(row => row[dateIdx]).filter(Boolean))];
     dates.sort((a, b) => parseDate(a) - parseDate(b));
-    const startMonth = document.getElementById('mdcwlStartMonth');
-    const endMonth = document.getElementById('mdcwlEndMonth');
     
-    // Format dates properly for display and keep original values
-    startMonth.innerHTML = dates.map(d => `<option value="${d}">${formatDateDMY(d)}</option>`).join('');
-    endMonth.innerHTML = dates.map(d => `<option value="${d}">${formatDateDMY(d)}</option>`).join('');
-    endMonth.selectedIndex = dates.length - 1;
+    if (dates.length > 0) {
+        const startDate = document.getElementById('mdcwlStartDate');
+        const endDate = document.getElementById('mdcwlEndDate');
+        
+        // Convert first and last dates to YYYY-MM-DD format for date inputs
+        const firstDate = parseDate(dates[0]);
+        const lastDate = parseDate(dates[dates.length - 1]);
+        
+        startDate.value = firstDate.toISOString().split('T')[0];
+        endDate.value = lastDate.toISOString().split('T')[0];
+        
+        // Set min and max dates to prevent selection outside data range
+        startDate.min = firstDate.toISOString().split('T')[0];
+        startDate.max = lastDate.toISOString().split('T')[0];
+        endDate.min = firstDate.toISOString().split('T')[0];
+        endDate.max = lastDate.toISOString().split('T')[0];
+    }
 }
 
 function setupMDCWLLoadingListeners() {
-    document.getElementById('mdcwlStartMonth').addEventListener('change', renderMDCWLLoadingTable);
-    document.getElementById('mdcwlEndMonth').addEventListener('change', renderMDCWLLoadingTable);
-    document.getElementById('mdcwlConsolidateMonth').addEventListener('change', renderMDCWLLoadingTable);
+    document.getElementById('mdcwlStartDate').addEventListener('change', renderMDCWLLoadingTable);
+    document.getElementById('mdcwlEndDate').addEventListener('change', renderMDCWLLoadingTable);
+    document.getElementById('mdcwlConsolidateMonth').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('mdcwlConsolidateFY').checked = false;
+        }
+        renderMDCWLLoadingTable();
+    });
+    document.getElementById('mdcwlConsolidateFY').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('mdcwlConsolidateMonth').checked = false;
+        }
+        renderMDCWLLoadingTable();
+    });
     
     // Apply filters button
     document.getElementById('MDCWLLoadingApplyFilters').addEventListener('click', function() {
@@ -230,10 +259,35 @@ function getMonthYear(dateStr) {
     return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 }
 
+function getFinancialYearFromDate(dateStr) {
+    // Handle Date(YYYY,M,D) format from Google Sheets
+    let year, month;
+    if (typeof dateStr === "string" && dateStr.startsWith("Date(")) {
+        const parts = dateStr.match(/\d+/g);
+        if (parts && parts.length >= 3) {
+            year = parseInt(parts[0]);
+            month = parseInt(parts[1]) + 1; // Google Sheets months are 0-based
+        }
+    } else {
+        const d = parseDate(dateStr);
+        year = d.getFullYear();
+        month = d.getMonth() + 1; // JS months are 0-based
+    }
+    
+    if (!year || !month) return '';
+    const fyStart = month >= 4 ? year : year - 1;
+    return `${fyStart}-${(fyStart + 1).toString().slice(-2)}`;
+}
+
 function renderMDCWLLoadingTable() {
-    const startDate = document.getElementById('mdcwlStartMonth').value;
-    const endDate = document.getElementById('mdcwlEndMonth').value;
+    const startDateInput = document.getElementById('mdcwlStartDate').value;
+    const endDateInput = document.getElementById('mdcwlEndDate').value;
     const consolidate = document.getElementById('mdcwlConsolidateMonth').checked;
+    const consolidateFY = document.getElementById('mdcwlConsolidateFY').checked;
+
+    // Convert date picker values to Date objects for comparison
+    const startDateObj = new Date(startDateInput);
+    const endDateObj = new Date(endDateInput);
 
     // Find column indices
     const dateIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('date'));
@@ -241,19 +295,31 @@ function renderMDCWLLoadingTable() {
     const ghtpIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('ghtp'));
     const totalIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('total'));
 
-    // Filter by date range
-    const dates = [...new Set(mdcwlLoadingData.map(row => row[dateIdx]).filter(Boolean))];
-    dates.sort((a, b) => parseDate(a) - parseDate(b));
-    const startIdx = dates.indexOf(startDate);
-    const endIdx = dates.indexOf(endDate);
-    const dateRange = dates.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+    // Filter by date range using date comparison
+    let filtered = mdcwlLoadingData.filter(row => {
+        const rowDate = parseDate(row[dateIdx]);
+        return rowDate >= startDateObj && rowDate <= endDateObj;
+    });
 
-    let filtered = mdcwlLoadingData.filter(row =>
-        dateRange.includes(row[dateIdx])
-    );
-
-    // Consolidate by month if checked
-    if (consolidate) {
+    // Consolidate by FY if checked (takes priority over monthly consolidation)
+    if (consolidateFY) {
+        const grouped = {};
+        filtered.forEach(row => {
+            const fyKey = getFinancialYearFromDate(row[dateIdx]);
+            if (!grouped[fyKey]) {
+                grouped[fyKey] = Array(mdcwlLoadingHeaders.length).fill('');
+                grouped[fyKey][dateIdx] = fyKey;
+            }
+            // Sum all numeric columns except the date column
+            for (let i = 0; i < mdcwlLoadingHeaders.length; i++) {
+                if (i !== dateIdx && !isNaN(Number(row[i]))) {
+                    grouped[fyKey][i] = (Number(grouped[fyKey][i]) || 0) + (Number(row[i]) || 0);
+                }
+            }
+        });
+        filtered = Object.values(grouped);
+    } else if (consolidate) {
+        // Consolidate by month if checked and FY is not checked
         const grouped = {};
         filtered.forEach(row => {
             const monthKey = getMonthYearFromDate(row[dateIdx]);
@@ -288,7 +354,17 @@ function renderMDCWLLoadingTable() {
 <table class="table table-sm table-bordered table-striped align-middle mdcwl-loading-data-table">
         <thead class="table-primary">
             <tr>
-                ${visibleHeaders.map((h, index) => `<th class="${index === 0 ? 'sticky-col' : ''}">${h}</th>`).join('')}
+                ${visibleHeaders.map((h, index) => {
+                    // If consolidating by FY and this is the Date column, show "FY"
+                    if (consolidateFY && h.toLowerCase().includes('date')) {
+                        return `<th class="${index === 0 ? 'sticky-col' : ''}">FY</th>`;
+                    }
+                    // If consolidating by Month and this is the Date column, show "Month-Year"
+                    if (consolidate && h.toLowerCase().includes('date')) {
+                        return `<th class="${index === 0 ? 'sticky-col' : ''}">Month-Year</th>`;
+                    }
+                    return `<th class="${index === 0 ? 'sticky-col' : ''}">${h}</th>`;
+                }).join('')}
             </tr>
         </thead>
         <tbody>
@@ -300,7 +376,11 @@ function renderMDCWLLoadingTable() {
             visibleIndices.forEach((idx, colIndex) => {
                 let val = row[idx] || '';
                 if (idx === dateIdx) {
-                    val = formatDateDMY(val);
+                    if (consolidateFY) {
+                        val = val; // Already formatted as "FY YYYY-YY"
+                    } else {
+                        val = formatDateDMY(val);
+                    }
                 } else if (idx === ggsstpIdx || idx === ghtpIdx || idx === totalIdx) {
                     val = Number(val) || 0;
                 }
@@ -311,8 +391,8 @@ function renderMDCWLLoadingTable() {
         });
         
         // Total Row
-        html += `<tr class="total-row">`;
-        visibleIndices.forEach(idx => {
+        html += `<tr class="total-row table-primary" style="font-weight: bold;">`;
+        visibleIndices.forEach((idx, colIndex) => {
             let val = '';
             if (idx === dateIdx) {
                 val = 'TOTAL';
@@ -330,7 +410,8 @@ function renderMDCWLLoadingTable() {
                 });
                 val = colTotal || '';
             }
-            html += `<td>${val}</td>`;
+            const cellClass = colIndex === 0 ? 'sticky-col' : '';
+            html += `<th class="${cellClass}" style="font-weight: bold;">${val}</th>`;
         });
         html += `</tr>`;
     } else {
@@ -345,7 +426,7 @@ function renderMDCWLLoadingTable() {
             <div class="pachhwara-pd-card mb-2">
                 <div class="pachhwara-pd-section-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <h6 class="mb-0"><i class="bi bi-table"></i> MDCWL Loading Table</h6>
+                        <h6 class="mb-0"><i class="bi bi-table"></i>Data Table (Rakes)</h6>
                         <span class="badge bg-light text-dark ms-2">${filtered.length} entries</span>
                     </div>
                     <div class="d-flex gap-2">
