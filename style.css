@@ -21,9 +21,33 @@
 .table-quality-analysis th,
 .table-quality-analysis td {
   vertical-align: middle;
-  padding: 0.3rem 0.5rem; /* Reduced padding */
-  white-space: nowrap; /* Prevent text wrapping for better fit */
-  width: auto; /* Auto width for cells */
+  text-align: center; /* Center align all text */
+  padding: 0.2rem 0.3rem; /* Further reduced padding */
+  width: 80px; /* Further reduced width for better fit */
+  min-width: 80px;
+  max-width: 80px;
+}
+
+/* Header specific styling - allow text wrapping */
+.table-quality-analysis th {
+  white-space: normal; /* Allow text wrapping for headers */
+  word-break: keep-all; /* Keep complete words */
+  word-wrap: break-word; /* Break at word boundaries */
+  hyphens: auto; /* Add hyphens if needed */
+  line-height: 1.1; /* More compact line height */
+}
+
+/* Data cells - prevent wrapping */
+.table-quality-analysis td {
+  white-space: nowrap; /* Prevent text wrapping for data cells */
+}
+
+/* Special width for date-containing columns - reduced but still wider */
+.table-quality-analysis th[data-date-column],
+.table-quality-analysis td[data-date-column] {
+  width: 95px; /* Reduced width for date columns */
+  min-width: 95px;
+  max-width: 95px;
 }
 
 /* Header styling to match card color scheme */
@@ -42,15 +66,137 @@
   z-index: 1;
 }
 
+/* Sortable header styling */
+.table-quality-analysis thead th[onclick] {
+  transition: background-color 0.2s ease;
+}
+
+.table-quality-analysis thead th[onclick]:hover {
+  background: #1e3d73 !important;
+  cursor: pointer;
+}
+
+/* Sort arrow styling */
+.table-quality-analysis .sort-arrow {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.8em;
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.table-quality-analysis th[onclick]:hover .sort-arrow {
+  color: #fff;
+}
+
+.table-quality-analysis .sort-arrow.active {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* Production & Despatch table sorting styles */
+.pachhwara-data-table .sort-arrow {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.8em;
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.pachhwara-data-table th[onclick]:hover .sort-arrow {
+  color: #fff;
+}
+
+.pachhwara-data-table .sort-arrow.active {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.pachhwara-data-table th[onclick] {
+  cursor: pointer;
+  background-color: #0d6efd;
+  transition: background-color 0.2s ease;
+}
+
+.pachhwara-data-table th[onclick]:hover {
+  background-color: #0b5ed7;
+}
+
+/* Sticky header for Production & Despatch table */
+.pachhwara-data-table .sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #0d6efd !important;
+  border-bottom: 2px solid #0a58ca !important;
+}
+
+.pachhwara-data-table thead.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Production & Despatch table Min/Max value highlighting */
+.pachhwara-data-table .min-value {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border: 1px solid #81c784 !important;
+  font-weight: bold;
+}
+
+.pachhwara-data-table .max-value {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #e57373 !important;
+  font-weight: bold;
+}
+
+.pachhwara-data-table .min-value:hover {
+  background-color: #c8e6c9 !important;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+}
+
+.pachhwara-data-table .max-value:hover {
+  background-color: #ffcdd2 !important;
+  box-shadow: 0 2px 4px rgba(198, 40, 40, 0.3);
+}
+
+/* Min/Max value highlighting */
+.table-quality-analysis .min-value {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  font-weight: bold;
+  border: 2px solid #81c784 !important;
+}
+
+.table-quality-analysis .max-value {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  font-weight: bold;
+  border: 2px solid #e57373 !important;
+}
+
+/* Hover effects for min/max values */
+.table-quality-analysis .min-value:hover {
+  background-color: #c8e6c9 !important;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+}
+
+.table-quality-analysis .max-value:hover {
+  background-color: #ffcdd2 !important;
+  box-shadow: 0 2px 4px rgba(198, 40, 40, 0.3);
+}
+
 /* First column (Sr. No.) - frozen */
 .table-quality-analysis .sticky-col {
   position: sticky;
   left: 0;
   z-index: 998 !important;
   box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.15);
-  width: 80px; /* Fixed width for first column */
-  min-width: 80px;
-  max-width: 80px;
+  width: 60px; /* Further reduced width for first column */
+  min-width: 60px;
+  max-width: 60px;
 }
 
 /* Header first column styling */
@@ -59,9 +205,9 @@
   color: white !important;
   z-index: 999 !important; /* Much higher z-index to ensure it's always on top */
   box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.3);
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 60px; /* Further reduced width */
+  min-width: 60px;
+  max-width: 60px;
   position: sticky;
   left: 0;
   top: 0;
@@ -73,9 +219,9 @@
   color: #495057 !important;
   font-weight: 500;
   border-right: 2px solid #2c5aa0;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 60px; /* Reduced width */
+  min-width: 60px;
+  max-width: 60px;
 }
 
 /* Table body styling */
@@ -83,27 +229,162 @@
   background: white;
 }
 
+.table-quality-analysis tbody tr td {
+  background: inherit; /* Inherit background from row */
+}
+
 .table-quality-analysis tbody tr:nth-child(even) {
   background: #f8f9fa;
 }
 
-.table-quality-analysis tbody tr:hover {
-  background: #e3f2fd;
+.table-quality-analysis tbody tr:nth-child(even) td {
+  background: #f8f9fa; /* Ensure all cells get the striped color */
 }
 
-/* Total/Average row styling */
+.table-quality-analysis tbody tr:hover {
+  background: #e3f2fd !important;
+  transition: background-color 0.2s ease;
+}
+
+/* Apply hover effect to all cells in the row */
+.table-quality-analysis tbody tr:hover td {
+  background: #e3f2fd !important;
+  transition: background-color 0.2s ease;
+}
+
+/* Ensure hover doesn't affect total row */
+.table-quality-analysis tbody tr.table-warning:hover {
+  background: #2c5aa0 !important; /* Keep total row blue on hover */
+}
+
+.table-quality-analysis tbody tr.table-warning:hover td {
+  background: #2c5aa0 !important; /* Keep all total row cells blue on hover */
+}
+
+.table-quality-analysis tbody tr:hover td.sticky-col {
+  background: #e3f2fd !important;
+}
+
+.table-quality-analysis tbody tr.table-warning:hover td.sticky-col {
+  background: #2c5aa0 !important; /* Keep total row sticky col blue on hover */
+}
+
+/* Total/Average row styling - Match header row styling */
 .table-quality-analysis tbody tr.table-warning {
-  background: #fff3cd !important;
+  background: #2c5aa0 !important; /* Same blue as header */
+  color: white !important; /* White text like header */
   font-weight: 600;
+}
+
+.table-quality-analysis tbody tr.table-warning td {
+  background: #2c5aa0 !important; /* Same blue as header */
+  color: white !important; /* White text like header */
+  border: 1px solid #1e3d73 !important; /* Same border as header */
 }
 
 .table-quality-analysis tbody tr.table-warning td.sticky-col {
-  background: #ffeaa7 !important;
-  color: #856404 !important;
+  background: #2c5aa0 !important; /* Same blue as header */
+  color: white !important; /* White text like header */
   font-weight: 600;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 60px; /* Reduced width */
+  min-width: 60px;
+  max-width: 60px;
+  border: 1px solid #1e3d73 !important; /* Same border as header */
+}
+
+/* Report Styles */
+.report-container {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.report-container .card {
+  border: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+}
+
+.report-container .card-header {
+  border: none;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+}
+
+.report-container .card-body {
+  padding: 0.5rem 0.75rem;
+}
+
+.report-container .table {
+  margin-bottom: 0;
+  font-size: 0.75rem;
+}
+
+.report-container .table td {
+  border-top: 1px solid #dee2e6;
+  padding: 0.25rem 0.5rem;
+}
+
+.report-container .table th {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+.report-container .table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: rgba(0,0,0,.02);
+}
+
+/* Mobile-specific styles for report */
+@media (max-width: 768px) {
+  .report-container {
+    padding: 5px;
+    margin: 0;
+  }
+  
+  .report-container .card {
+    margin-bottom: 8px;
+  }
+  
+  .report-container .card-header {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .report-container .card-body {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .report-container .table {
+    font-size: 0.65rem;
+  }
+  
+  .report-container .table td,
+  .report-container .table th {
+    padding: 0.2rem 0.3rem;
+  }
+  
+  .report-container h6 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.report-toggle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.report-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.report-toggle-btn i {
+  font-size: 1.2rem;
 }
 body {
   padding-top: 60px;

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Punjab Generation Dashboard Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <h2>Testing Punjab Generation Dashboard</h2>
+        <div id="punjab-generation-app"></div>
+    </div>
+    
+    <script src="PunjabGenerationCompact.js"></script>
+    <script>
+        // Initialize the app
+        document.getElementById('punjab-generation-app').innerHTML = getHTML();
+        
+        // Test the functions
+        console.log("Testing setBadge function...");
+        setBadge("GGSSTP3Badge", 150);
+        
+        console.log("Testing setProgress function...");
+        setProgress("GGSSTPTotalProgress", 500, 840);
+        
+        console.log("Testing updateDynamicText function...");
+        updateDynamicText("GGSSTPTotalProgressText", 500, 840);
+        
+        // Try to fetch real data
+        console.log("Attempting to fetch real data...");
+        updatePbGenData();
+    </script>
+</body>
+</html>

@@ -432,6 +432,10 @@ function PachhwaraPDSetupChartExportListeners() {
 }
 let PachhwaraPDData = [];
 let PachhwaraPDHeaders = [];
+let PachhwaraPDSortState = {
+    column: -1,
+    direction: 'none' // 'none', 'asc', 'desc'
+};
 
 // Fetch headers from Google Sheets
 async function fetchPachhwaraPDHeaders() {
@@ -999,16 +1003,142 @@ function PachhwaraPDRenderTable() {
     // Reverse filtered data to show latest dates first (which will be on the right in charts)
     filtered.reverse();
 
+    // Apply sorting if active
+    if (PachhwaraPDSortState.direction !== 'none' && PachhwaraPDSortState.column >= 0) {
+        const sortColumn = PachhwaraPDSortState.column;
+        const isAscending = PachhwaraPDSortState.direction === 'asc';
+        
+        console.log('Applying sort to column:', sortColumn, 'direction:', PachhwaraPDSortState.direction);
+        
+        filtered.sort((a, b) => {
+            let aVal = a[sortColumn];
+            let bVal = b[sortColumn];
+            
+            // Handle empty/null values
+            if (aVal === '' || aVal === null || aVal === undefined) aVal = 0;
+            if (bVal === '' || bVal === null || bVal === undefined) bVal = 0;
+            
+            // Convert to numbers for numeric comparison
+            const aNum = Number(aVal);
+            const bNum = Number(bVal);
+            
+            // If both are valid numbers, sort numerically
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return isAscending ? aNum - bNum : bNum - aNum;
+            }
+            
+            // Otherwise, sort as strings
+            const aStr = String(aVal).toLowerCase();
+            const bStr = String(bVal).toLowerCase();
+            
+            if (aStr < bStr) return isAscending ? -1 : 1;
+            if (aStr > bStr) return isAscending ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Calculate min/max values for highlighting (only for sortable columns)
+    const minMaxValues = {};
+    checkedCols.forEach(i => {
+        const headerName = PachhwaraPDHeaders[i];
+        const headerLower = headerName.toLowerCase();
+        
+        const shouldHaveSorting = (headerLower.includes('production') && !headerLower.includes('target')) || 
+                                headerLower.includes('stock') || 
+                                headerLower.includes('opening') || 
+                                headerLower.includes('actual') || 
+                                headerLower.includes('percentage') || 
+                                headerLower.includes('%') ||
+                                headerLower.includes('pit') ||
+                                headerLower.includes('rail') ||
+                                headerLower.includes('siding') ||
+                                (headerLower.includes('ob') && !headerLower.includes('target')) ||
+                                headerLower.includes('overburden') ||
+                                headerLower.includes('despatch') ||
+                                headerLower.includes('dispatch') ||
+                                // Numeric value columns for production data, but exclude target columns
+                                (i >= 2 && i <= 23 && headerName && headerName.trim() !== '' && 
+                                 !headerLower.includes('target'));
+        
+        if (shouldHaveSorting) {
+            const values = filtered.map(row => {
+                const val = row[i];
+                return val !== '' && val !== null && val !== undefined && !isNaN(Number(val)) ? Number(val) : null;
+            }).filter(val => val !== null);
+            
+            if (values.length > 0) {
+                // For minimum calculation, exclude zero values to get the next smallest value
+                const nonZeroValues = values.filter(val => val > 0);
+                
+                minMaxValues[i] = {
+                    min: nonZeroValues.length > 0 ? Math.min(...nonZeroValues) : Math.min(...values),
+                    max: Math.max(...values)
+                };
+            }
+        }
+    });
+
     let html = `<table class="table table-sm table-bordered table-striped align-middle pachhwara-data-table">
-    <thead class="table-primary"><tr>
-        <th>Date</th>`;
-checkedCols.forEach(i => html += `<th>${PachhwaraPDHeaders[i]}</th>`);
+    <thead class="table-primary sticky-top"><tr>
+        <th class="sticky-header">Date</th>`;
+checkedCols.forEach(i => {
+    const headerName = PachhwaraPDHeaders[i];
+    const headerLower = headerName.toLowerCase();
+    
+    // Determine which columns should have sorting functionality
+    // Target specific production and despatch related columns, but exclude "Production Target" and "OB Production Target"
+    const shouldHaveSorting = (headerLower.includes('production') && !headerLower.includes('target')) || 
+                            headerLower.includes('stock') || 
+                            headerLower.includes('opening') || 
+                            headerLower.includes('actual') || 
+                            headerLower.includes('percentage') || 
+                            headerLower.includes('%') ||
+                            headerLower.includes('pit') ||
+                            headerLower.includes('rail') ||
+                            headerLower.includes('siding') ||
+                            (headerLower.includes('ob') && !headerLower.includes('target')) ||
+                            headerLower.includes('overburden') ||
+                            headerLower.includes('despatch') ||
+                            headerLower.includes('dispatch') ||
+                            // Numeric value columns for production data, but exclude target columns
+                            (i >= 2 && i <= 23 && headerName && headerName.trim() !== '' && 
+                             !headerLower.includes('target')); // Exclude all target columns
+    
+    if (shouldHaveSorting) {
+        const isActive = PachhwaraPDSortState.column === i;
+        const sortIcon = isActive 
+            ? (PachhwaraPDSortState.direction === 'asc' ? '↑' : PachhwaraPDSortState.direction === 'desc' ? '↓' : '↕')
+            : '↕';
+        const arrowClass = isActive ? 'sort-arrow active' : 'sort-arrow';
+        
+        html += `<th class="sticky-header" onclick="pachhwaraPDSortColumn(${i})" title="Click to sort" style="user-select: none;">
+                    ${headerName}<span class="${arrowClass}">${sortIcon}</span>
+                 </th>`;
+    } else {
+        html += `<th class="sticky-header">${headerName}</th>`;
+    }
+});
 html += `</tr></thead><tbody>`;
 
     if (filtered.length) {
     filtered.forEach(row => {
         html += `<tr><td>${PachhwaraPDFormatDate(row[0])}</td>`;
-        checkedCols.forEach(i => html += `<td>${PachhwaraPDFormatCell(row[i], i)}</td>`);
+        checkedCols.forEach(i => {
+            let cellValue = PachhwaraPDFormatCell(row[i], i);
+            
+            // Check for min/max highlighting
+            let cellClass = '';
+            if (minMaxValues[i] && !isNaN(parseFloat(row[i]))) {
+                const numValue = parseFloat(row[i]);
+                if (numValue === minMaxValues[i].min && minMaxValues[i].min !== minMaxValues[i].max) {
+                    cellClass = ' class="min-value"';
+                } else if (numValue === minMaxValues[i].max && minMaxValues[i].min !== minMaxValues[i].max) {
+                    cellClass = ' class="max-value"';
+                }
+            }
+            
+            html += `<td${cellClass}>${cellValue}</td>`;
+        });
         html += `</tr>`;
     });
         // Total row
@@ -1177,6 +1307,9 @@ function PachhwaraPDToggleCard(bodyId, chevronId) {
 // Make toggle function globally available
 window.PachhwaraPDToggleCard = PachhwaraPDToggleCard;
 
+// Make sort function globally available
+window.pachhwaraPDSortColumn = pachhwaraPDSortColumn;
+
 // Loading state functions
 function PachhwaraPDShowLoadingState(buttonId, loadingText) {
     const button = document.getElementById(buttonId);
@@ -1195,6 +1328,30 @@ function PachhwaraPDHideLoadingState(buttonId, originalHtml) {
 }
 
 
+
+// Function to sort table by column
+function pachhwaraPDSortColumn(columnIndex) {
+    console.log('Sorting column:', columnIndex, PachhwaraPDHeaders[columnIndex]);
+    
+    // Update sort state
+    if (PachhwaraPDSortState.column === columnIndex) {
+        // Same column - cycle through states: none -> asc -> desc -> none
+        if (PachhwaraPDSortState.direction === 'none') {
+            PachhwaraPDSortState.direction = 'asc';
+        } else if (PachhwaraPDSortState.direction === 'asc') {
+            PachhwaraPDSortState.direction = 'desc';
+        } else {
+            PachhwaraPDSortState.direction = 'none';
+        }
+    } else {
+        // New column - start with ascending
+        PachhwaraPDSortState.column = columnIndex;
+        PachhwaraPDSortState.direction = 'asc';
+    }
+    
+    // Re-render table with sorting
+    PachhwaraPDRenderTable();
+}
 
 // PDF Export Function
 function PachhwaraPDExportToPDF() {

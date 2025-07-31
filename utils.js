@@ -35,6 +35,14 @@ function setupMenuListeners() {
             e.preventDefault();
             console.log("Main nav item clicked:", pageType);
             
+            // Stop Punjab Generation updates when navigating away
+            if (typeof stopPunjabGenerationUpdates === 'function') {
+                stopPunjabGenerationUpdates();
+            }
+            if (typeof stopPunjabGenerationCompactUpdates === 'function') {
+                stopPunjabGenerationCompactUpdates();
+            }
+            
             if (pageType === 'dashboard') {
                 console.log("Loading Main Dashboard...");
                 if (typeof showMainDashboard === 'function') {
@@ -50,8 +58,13 @@ function setupMenuListeners() {
                     alert("Error: The Main Dashboard function is not available. Please check if the script is loaded properly.");
                 }
             } else if (pageType === 'punjabgen') {
-                console.log("Punjab Generation page requested - not implemented yet");
-                document.getElementById('main-content').innerHTML = "<h2>Punjab Generation</h2><p>Coming Soon...</p>";
+                console.log("Punjab Generation page requested");
+                if (typeof showPunjabGenerationCompact === 'function') {
+                    showPunjabGenerationCompact();
+                } else {
+                    console.error("showPunjabGenerationCompact function not found!");
+                    document.getElementById('main-content').innerHTML = "<h2>Punjab Generation</h2><p>Error: Compact function not loaded. Please refresh the page.</p>";
+                }
             } else if (pageType === 'calculators') {
                 console.log("Calculators page requested - not implemented yet");
                 document.getElementById('main-content').innerHTML = "<h2>Calculators</h2><p>Coming Soon...</p>";
@@ -79,6 +92,15 @@ function setupMenuListeners() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             console.log("Menu item clicked:", reportType);
+            
+            // Stop Punjab Generation updates when navigating away
+            if (typeof stopPunjabGenerationUpdates === 'function') {
+                stopPunjabGenerationUpdates();
+            }
+            if (typeof stopPunjabGenerationCompactUpdates === 'function') {
+                stopPunjabGenerationCompactUpdates();
+            }
+            
             if (reportType === 'mdcwl-lifting') {
                 showMDCWLLiftingReport();
             } else if (reportType === 'mdcwl-loading') {

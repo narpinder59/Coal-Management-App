@@ -1,5 +1,9 @@
 let PachhwaraQAData = [];
 let PachhwaraQAHeaders = [];
+let PachhwaraQASortState = {
+    column: -1,
+    direction: 'none' // 'none', 'asc', 'desc'
+};
 
 // Plant configurations
 const PLANTS = {
@@ -87,7 +91,7 @@ function showPachhwaraQualityAnalysisReport() {
         <!-- Header Card -->
         <div class="pachhwara-pd-card mb-3">
             <div class="pachhwara-pd-section-header">
-                <h4 class="mb-0"><i class="bi bi-clipboard-data"></i> Pachhwara Coal Quantity & Quality Analysis</h4>
+                <h4 class="mb-0"><i class="bi bi-clipboard-data"></i> Pachhwara Coal Quantity & Quality Analysis at <span id="pachhwaraQASelectedPlant">GGSSTP</span></h4>
             </div>
         </div>
 
@@ -98,7 +102,7 @@ function showPachhwaraQualityAnalysisReport() {
                     <h6 class="mb-0"><i class="bi bi-table"></i> Data Table</h6>
                     <span class="badge bg-secondary" id="pachhwaraQAEntriesCount">0 entries</span>
                 </div>
-                <button class="btn btn-outline-success btn-sm" id="pachhwaraQARefreshBtnTable">
+                <button class="btn btn-outline-light btn-sm" id="pachhwaraQARefreshBtnTable">
                     <i class="bi bi-arrow-clockwise"></i> Refresh Data
                 </button>
             </div>
@@ -106,6 +110,14 @@ function showPachhwaraQualityAnalysisReport() {
 
         <!-- Table Container (Outside Card) -->
         <div id="pachhwaraQA-table-container" class="mb-3"></div>
+
+        <!-- Report Container -->
+        <div id="pachhwaraQA-report-container" class="mb-3" style="display: none;"></div>
+
+        <!-- Report Toggle Button -->
+        <button class="btn btn-info report-toggle-btn" id="pachhwaraQAReportToggle" style="position: fixed; bottom: 160px; right: 20px; z-index: 1040;">
+            <i class="bi bi-file-earmark-text"></i>
+        </button>
 
         <!-- Export Toggle Button -->
         <button class="btn btn-success export-toggle-btn" id="pachhwaraQAExportToggle">
@@ -271,6 +283,7 @@ function showPachhwaraQualityAnalysisReport() {
     document.querySelectorAll('input[name="pachhwaraQAPlant"]').forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.checked) {
+                pachhwaraQAUpdateHeaderPlantName(this.value);
                 loadPachhwaraQAPlantData(this.value);
             }
         });
@@ -292,6 +305,15 @@ function showPachhwaraQualityAnalysisReport() {
     // Setup sidebar controls
     pachhwaraQASetupSidebar();
     pachhwaraQASetupExportSidebar();
+    pachhwaraQASetupReportToggle();
+}
+
+// Function to update the header with selected plant name
+function pachhwaraQAUpdateHeaderPlantName(plantName) {
+    const plantSpan = document.getElementById('pachhwaraQASelectedPlant');
+    if (plantSpan) {
+        plantSpan.textContent = plantName;
+    }
 }
 
 // Setup export sidebar controls
@@ -377,6 +399,283 @@ function pachhwaraQASetupSidebar() {
             sidebar.classList.remove('open');
         }
     });
+}
+
+// Setup report toggle functionality
+function pachhwaraQASetupReportToggle() {
+    const reportToggle = document.getElementById('pachhwaraQAReportToggle');
+    const reportContainer = document.getElementById('pachhwaraQA-report-container');
+    const tableContainer = document.getElementById('pachhwaraQA-table-container');
+
+    if (reportToggle) {
+        reportToggle.addEventListener('click', () => {
+            if (reportContainer.style.display === 'none') {
+                // Show report, hide table
+                pachhwaraQAGenerateReport();
+                reportContainer.style.display = 'block';
+                tableContainer.style.display = 'none';
+                reportToggle.innerHTML = '<i class="bi bi-table"></i>';
+                reportToggle.title = 'Show Table';
+            } else {
+                // Show table, hide report
+                reportContainer.style.display = 'none';
+                tableContainer.style.display = 'block';
+                reportToggle.innerHTML = '<i class="bi bi-file-earmark-text"></i>';
+                reportToggle.title = 'Show Report';
+            }
+        });
+    }
+}
+
+// Generate comprehensive report
+function pachhwaraQAGenerateReport() {
+    const reportContainer = document.getElementById('pachhwaraQA-report-container');
+    const selectedPlant = document.querySelector('input[name="pachhwaraQAPlant"]:checked')?.value || 'Unknown';
+    const startDate = document.getElementById('pachhwaraQAStartDate')?.value || '';
+    const endDate = document.getElementById('pachhwaraQAEndDate')?.value || '';
+    
+    // Get filtered data (same as table)
+    const filteredData = pachhwaraQAGetFilteredData();
+    
+    if (!filteredData || filteredData.length === 0) {
+        reportContainer.innerHTML = '<div class="alert alert-warning">No data available for report generation.</div>';
+        return;
+    }
+
+    const reportStats = pachhwaraQACalculateStatistics(filteredData);
+    const reportHTML = pachhwaraQAGenerateReportHTML(selectedPlant, startDate, endDate, reportStats, filteredData);
+    
+    reportContainer.innerHTML = reportHTML;
+}
+
+// Get filtered data (same logic as table rendering)
+function pachhwaraQAGetFilteredData() {
+    if (!PachhwaraQAData || PachhwaraQAData.length === 0) return [];
+    
+    const startDateValue = document.getElementById('pachhwaraQAStartDate').value;
+    const endDateValue = document.getElementById('pachhwaraQAEndDate').value;
+    
+    if (!startDateValue || !endDateValue) return [];
+    
+    const startDate = new Date(startDateValue);
+    const endDate = new Date(endDateValue);
+    
+    return pachhwaraQAFilterByDate(PachhwaraQAData, startDate, endDate);
+}
+
+// Calculate comprehensive statistics
+function pachhwaraQACalculateStatistics(data) {
+    const stats = {
+        totalRecords: data.length,
+        weightStats: {},
+        qualityStats: {},
+        dateRange: {},
+        rakeStats: {}
+    };
+
+    // Calculate weight statistics
+    const plantWeights = data.map(r => parseFloat(r[7])).filter(v => !isNaN(v));
+    const rrWeights = data.map(r => parseFloat(r[8])).filter(v => !isNaN(v));
+    
+    stats.weightStats = {
+        totalPlantWeight: plantWeights.reduce((a, b) => a + b, 0),
+        totalRRWeight: rrWeights.reduce((a, b) => a + b, 0),
+        avgPlantWeight: plantWeights.length > 0 ? plantWeights.reduce((a, b) => a + b, 0) / plantWeights.length : 0,
+        avgRRWeight: rrWeights.length > 0 ? rrWeights.reduce((a, b) => a + b, 0) / rrWeights.length : 0,
+        weightDifference: 0
+    };
+    
+    stats.weightStats.weightDifference = stats.weightStats.totalRRWeight - stats.weightStats.totalPlantWeight;
+
+    // Calculate quality parameter statistics for key columns
+    // Use dynamic header detection to find ALL quality parameters from actual headers
+    // Skip non-quality columns: Sr. No., Plant, Rake No, RR Date, RR No, DOP, Plant Weight, RR Weight
+    const skipColumns = [
+        'sr. no', 'sr no', 'serial', 'plant', 'rake no', 'rake no.', 'rr date', 'rr no', 'rr no.', 
+        'dop', 'plant weight', 'rr weight', 'consigned', 'div-in', 'consigned/div-in', 'consigned/ div-in'
+    ];
+    
+    // Process all headers starting from index 1 (skip Sr. No.)
+    for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
+        const header = PachhwaraQAHeaders[i];
+        if (!header || header.trim() === '') continue;
+        
+        const headerLower = header.toLowerCase().trim();
+        
+        // Check if this column should be skipped (non-quality parameters)
+        const shouldSkip = skipColumns.some(skipCol => {
+            if (skipCol === 'plant') {
+                // Only skip if it's exactly "plant" or "plant name", not "plant weight" etc.
+                return headerLower === 'plant' || headerLower === 'plant name';
+            }
+            return headerLower.includes(skipCol);
+        });
+        
+        if (shouldSkip) continue;
+        
+        // This is a quality parameter - process it
+        const values = data.map(r => parseFloat(r[i])).filter(v => !isNaN(v));
+        if (values.length > 0) {
+            // Create proper display name with better formatting
+            let displayName = header.trim();
+            
+            // Enhance display names for better presentation
+            if (displayName.toLowerCase().includes('tm') && displayName.toLowerCase().includes('moist')) {
+                displayName = 'TM (%)';
+            } else if (displayName.toLowerCase().includes('moisture ad')) {
+                displayName = 'Moisture AD (%)';
+            } else if (displayName.toLowerCase().includes('ash ad')) {
+                displayName = 'Ash AD (%)';
+            } else if (displayName.toLowerCase().includes('vm ad')) {
+                displayName = 'VM AD (%)';
+            } else if (displayName.toLowerCase().includes('gcv bomb')) {
+                displayName = 'GCV Bomb (kcal/kg)';
+            } else if (displayName.toLowerCase().includes('moisture eq')) {
+                displayName = 'Moisture Eq (%)';
+            } else if (displayName.toLowerCase().includes('ash eq')) {
+                displayName = 'Ash Eq (%)';
+            } else if (displayName.toLowerCase().includes('vm eq')) {
+                displayName = 'VM Eq (%)';
+            } else if (displayName.toLowerCase().includes('gcv eq') || displayName.toLowerCase().includes('gcv-eq')) {
+                displayName = 'GCV Eq (kcal/kg)';
+            } else if (displayName.toLowerCase().includes('sulphur') || displayName.toLowerCase().includes('sulfur')) {
+                displayName = 'Sulphur (%)';
+            } else if (displayName.toLowerCase().includes('fc')) {
+                displayName = 'FC (%)';
+            }
+            
+            stats.qualityStats[displayName] = {
+                min: Math.min(...values),
+                max: Math.max(...values),
+                avg: values.reduce((a, b) => a + b, 0) / values.length,
+                count: values.length
+            };
+        }
+    }
+
+    // Date range analysis
+    const dates = data.map(r => pachhwaraQAParseDMY(r[5])).filter(d => d !== null);
+    if (dates.length > 0) {
+        stats.dateRange = {
+            earliestDate: new Date(Math.min(...dates)),
+            latestDate: new Date(Math.max(...dates)),
+            totalDays: Math.ceil((Math.max(...dates) - Math.min(...dates)) / (1000 * 60 * 60 * 24)) + 1
+        };
+    }
+
+    // Rake statistics
+    const rakes = data.map(r => r[2]).filter(r => r && r !== '');
+    const uniqueRakes = [...new Set(rakes)];
+    stats.rakeStats = {
+        totalRakes: uniqueRakes.length,
+        totalConsignments: rakes.length,
+        avgConsignmentsPerRake: rakes.length / uniqueRakes.length
+    };
+
+    return stats;
+}
+
+// Generate HTML report
+function pachhwaraQAGenerateReportHTML(plant, startDate, endDate, stats, data) {
+    const formatDate = (dateStr) => {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB');
+    };
+
+    const formatNumber = (num, decimals = 2) => {
+        return typeof num === 'number' ? num.toFixed(decimals) : 'N/A';
+    };
+
+    return `
+        <div class="report-container">
+            <!-- Report Header -->
+            <div class="card mb-2">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0"><i class="bi bi-file-earmark-text"></i> Quality Analysis Report</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-2">Report Details</h6>
+                            <table class="table table-sm mb-0" style="font-size: 0.75rem;">
+                                <tr><td><strong>Plant:</strong></td><td>${plant}</td></tr>
+                                <tr><td><strong>Period:</strong></td><td>${formatDate(startDate)} to ${formatDate(endDate)}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-2">Period Analysis</h6>
+                            <table class="table table-sm mb-0" style="font-size: 0.75rem;">
+                                <tr><td><strong>Date Range:</strong></td><td>${stats.dateRange.totalDays || 0} days</td></tr>
+                                <tr><td><strong>Avg Rakes/Day:</strong></td><td>${stats.dateRange.totalDays ? (stats.totalRecords / stats.dateRange.totalDays).toFixed(1) : 'N/A'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weight Analysis -->
+            <div class="card mb-2">
+                <div class="card-header bg-success text-white py-2">
+                    <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Weight Analysis</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-2">Total Weights</h6>
+                            <table class="table table-striped mb-0" style="font-size: 0.75rem;">
+                                <tr><td><strong>Total Plant Weight:</strong></td><td>${formatNumber(stats.weightStats.totalPlantWeight)} MT</td></tr>
+                                <tr><td><strong>Total RR Weight:</strong></td><td>${formatNumber(stats.weightStats.totalRRWeight)} MT</td></tr>
+                                <tr><td><strong>Weight Difference:</strong></td><td class="${stats.weightStats.weightDifference >= 0 ? 'text-success' : 'text-danger'}">${formatNumber(stats.weightStats.weightDifference)} MT</td></tr>
+                                <tr><td><strong>Variance (%):</strong></td><td class="${Math.abs(stats.weightStats.weightDifference / stats.weightStats.totalPlantWeight * 100) <= 2 ? 'text-success' : 'text-warning'}">${formatNumber(Math.abs(stats.weightStats.weightDifference / stats.weightStats.totalPlantWeight * 100))}%</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-2">Average Weights</h6>
+                            <table class="table table-striped mb-0" style="font-size: 0.75rem;">
+                                <tr><td><strong>Avg Plant Weight/Rake:</strong></td><td>${formatNumber(stats.weightStats.avgPlantWeight)} MT</td></tr>
+                                <tr><td><strong>Avg RR Weight/Rake:</strong></td><td>${formatNumber(stats.weightStats.avgRRWeight)} MT</td></tr>
+                                <tr><td><strong>Total Rakes:</strong></td><td>${stats.rakeStats.totalRakes}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Parameters Analysis -->
+            <div class="card mb-2">
+                <div class="card-header bg-info text-white py-2">
+                    <h6 class="mb-0"><i class="bi bi-graph-up"></i> Quality Parameters Analysis</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0" style="font-size: 0.7rem;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="font-size: 0.65rem;">Parameter</th>
+                                    <th style="font-size: 0.65rem;">Minimum</th>
+                                    <th style="font-size: 0.65rem;">Maximum</th>
+                                    <th style="font-size: 0.65rem;">Average</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.entries(stats.qualityStats).map(([param, data]) => {
+                                    return `
+                                        <tr>
+                                            <td><strong>${param}</strong></td>
+                                            <td>${formatNumber(data.min)}</td>
+                                            <td>${formatNumber(data.max)}</td>
+                                            <td>${formatNumber(data.avg)}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Toggle card visibility function (removed - no longer needed)
@@ -633,6 +932,10 @@ function pachhwaraQARenderTable() {
     console.log('=== Starting table render ===');
     console.log('PachhwaraQAData length:', PachhwaraQAData.length);
     console.log('PachhwaraQAHeaders:', PachhwaraQAHeaders);
+    console.log('All headers with indices:');
+    PachhwaraQAHeaders.forEach((header, index) => {
+        console.log(`Index ${index}: "${header}"`);
+    });
     
     // Check if data exists
     if (!PachhwaraQAData || PachhwaraQAData.length === 0) {
@@ -779,6 +1082,70 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
 
     console.log('Final data for table:', finalData.length, 'rows');
 
+    // Calculate min/max values for sortable columns for highlighting
+    const minMaxValues = {};
+    if (finalData.length > 0) {
+        for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
+            const headerName = PachhwaraQAHeaders[i];
+            const headerLower = headerName?.toLowerCase() || '';
+            const shouldCalculateMinMax = headerLower.includes('weight') || 
+                                        headerLower.includes('moisture') || 
+                                        headerLower.includes('moist') || 
+                                        headerLower.includes('tm') || 
+                                        headerLower.includes('ash') || 
+                                        headerLower.includes('vm') || 
+                                        headerLower.includes('fc') || 
+                                        headerLower.includes('gcv') || 
+                                        headerLower.includes('sulphur') || 
+                                        headerLower.includes('sulfur');
+            
+            if (shouldCalculateMinMax) {
+                const values = finalData.map(r => parseFloat(r[i])).filter(v => !isNaN(v));
+                if (values.length > 0) {
+                    // For minimum calculation, exclude zero values to highlight the next meaningful minimum
+                    const nonZeroValues = values.filter(val => val > 0);
+                    const minValue = nonZeroValues.length > 0 ? Math.min(...nonZeroValues) : Math.min(...values);
+                    
+                    minMaxValues[i] = {
+                        min: minValue,
+                        max: Math.max(...values)
+                    };
+                }
+            }
+        }
+    }
+
+    // Apply sorting if enabled
+    if (PachhwaraQASortState.direction !== 'none' && PachhwaraQASortState.column >= 0) {
+        const sortColumn = PachhwaraQASortState.column;
+        const isAscending = PachhwaraQASortState.direction === 'asc';
+        
+        console.log('Applying sort to column:', sortColumn, 'direction:', PachhwaraQASortState.direction);
+        
+        finalData.sort((a, b) => {
+            let valueA = a[sortColumn] || '';
+            let valueB = b[sortColumn] || '';
+            
+            // Try to parse as numbers first
+            const numA = parseFloat(valueA);
+            const numB = parseFloat(valueB);
+            
+            let comparison = 0;
+            
+            if (!isNaN(numA) && !isNaN(numB)) {
+                // Both are numbers
+                comparison = numA - numB;
+            } else {
+                // String comparison
+                comparison = String(valueA).localeCompare(String(valueB));
+            }
+            
+            return isAscending ? comparison : -comparison;
+        });
+        
+        console.log('Data sorted');
+    }
+
     // Generate table HTML
     const tableContainer = document.getElementById('pachhwaraQA-table-container');
     let html = '';
@@ -797,7 +1164,36 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                                 <th class="sticky-col bg-primary text-white" style="left:0;z-index:2;">Sr. No.</th>`;
         for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
             if (checkedCols.includes(i)) {
-                html += `<th>${PachhwaraQAHeaders[i]}</th>`;
+                const isDateColumn = (i === 3 || i === 5) ? ' data-date-column="true"' : '';
+                const headerName = PachhwaraQAHeaders[i];
+                
+                // Check if this column should have sorting (from RR Weight onwards)
+                // Look for RR Weight, Plant Weight, and quality parameters
+                const headerLower = headerName.toLowerCase();
+                const shouldHaveSorting = headerLower.includes('weight') || 
+                                        headerLower.includes('moisture') || 
+                                        headerLower.includes('moist') || 
+                                        headerLower.includes('tm') || 
+                                        headerLower.includes('ash') || 
+                                        headerLower.includes('vm') || 
+                                        headerLower.includes('fc') || 
+                                        headerLower.includes('gcv') || 
+                                        headerLower.includes('sulphur') || 
+                                        headerLower.includes('sulfur');
+                
+                if (shouldHaveSorting) {
+                    const isActive = PachhwaraQASortState.column === i;
+                    const sortIcon = isActive 
+                        ? (PachhwaraQASortState.direction === 'asc' ? '↑' : PachhwaraQASortState.direction === 'desc' ? '↓' : '↕')
+                        : '↕';
+                    const arrowClass = isActive ? 'sort-arrow active' : 'sort-arrow';
+                    
+                    html += `<th${isDateColumn} onclick="pachhwaraQASortColumn(${i})" title="Click to sort" style="user-select: none;">
+                                ${headerName}<span class="${arrowClass}">${sortIcon}</span>
+                             </th>`;
+                } else {
+                    html += `<th${isDateColumn}>${headerName}</th>`;
+                }
             }
         }
         html += `</tr></thead><tbody>`;
@@ -810,37 +1206,40 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                         let cellValue = row[i] || '';
                         if (i === 3 || i === 5) { cellValue = pachhwaraQAFormatDate(cellValue); }
                         if ((i === 7 || i === 8) && !isNaN(Number(cellValue)) && cellValue !== '') { cellValue = Number(cellValue).toFixed(2); }
-                        html += `<td>${cellValue}</td>`;
+                        
+                        // Check for min/max highlighting
+                        let cellClass = '';
+                        if (minMaxValues[i] && !isNaN(parseFloat(cellValue))) {
+                            const numValue = parseFloat(cellValue);
+                            if (numValue === minMaxValues[i].min && minMaxValues[i].min !== minMaxValues[i].max) {
+                                cellClass = ' class="min-value"';
+                            } else if (numValue === minMaxValues[i].max && minMaxValues[i].min !== minMaxValues[i].max) {
+                                cellClass = ' class="max-value"';
+                            }
+                        }
+                        
+                        const isDateColumn = (i === 3 || i === 5) ? ' data-date-column="true"' : '';
+                        html += `<td${isDateColumn}${cellClass}>${cellValue}</td>`;
                     }
                 }
                 html += `</tr>`;
             });
             // Add total/average row
             html += `<tr class="table-warning fw-bold">
-                <td class="sticky-col bg-warning" style="left:0;z-index:1;"><b>TOTAL/AVG</b></td>`;
+                <td class="sticky-col" style="left:0;z-index:1;"><b>Total/Avg</b></td>`;
             for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
                 if (checkedCols.includes(i)) {
+                    console.log('Processing total row for column:', i, PachhwaraQAHeaders[i]);
                     let result = '';
-                    // Leave these columns blank in total row: Plant, Rake No, RR Date, RR No, DOP, Consigned/Div-in
+                    
+                    // Handle GCV Band-Eq first (special case)
                     const headerName = PachhwaraQAHeaders[i].trim().toLowerCase();
-                    const blankColumns = ['plant', 'rake no', 'rake no.', 'rr date', 'rr no', 'rr no.', 'dop', 'consigned', 'div-in', 'consigned/div-in', 'consigned/ div-in'];
+                    console.log('Current header:', headerName, 'at index:', i);
                     
-                    // Check for exact matches or specific patterns to avoid false matches like "Plant Weight"
-                    const shouldBlank = blankColumns.some(col => {
-                        if (col === 'plant') {
-                            // Only match if it's exactly "plant" or "plant name", not "plant weight" etc.
-                            return headerName === 'plant' || headerName === 'plant name';
-                        }
-                        return headerName.includes(col);
-                    });
-                    
-                    if (shouldBlank) {
-                        result = ''; // Leave blank for specified columns
-                    } else if (i === 7 || i === 8) {
-                        const values = finalData.map(r => parseFloat(r[i])).filter(v => !isNaN(v));
-                        if (values.length > 0) { result = values.reduce((a, b) => a + b, 0).toFixed(2); }
-                    } else if (PachhwaraQAHeaders[i].trim().toLowerCase() === 'gcv band-eq') {
-                        const gcvEqIdx = PachhwaraQAHeaders.findIndex(h => h.trim().toLowerCase() === 'gcv-eq');
+                    if (headerName === 'gcv band-eq' || headerName.includes('gcv') && headerName.includes('band')) {
+                        console.log('Processing GCV Band-Eq column at index:', i);
+                        const gcvEqIdx = PachhwaraQAHeaders.findIndex(h => h.trim().toLowerCase() === 'gcv-eq' || (h.trim().toLowerCase().includes('gcv') && h.trim().toLowerCase().includes('eq') && !h.trim().toLowerCase().includes('band')));
+                        console.log('Found GCV-Eq column at index:', gcvEqIdx);
                         if (gcvEqIdx !== -1) {
                             const weightedSum = finalData.reduce((sum, r) => {
                                 const v = parseFloat(r[gcvEqIdx]);
@@ -852,21 +1251,48 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                                 return !isNaN(w) ? sum + w : sum;
                             }, 0);
                             const avgGcvEq = totalWeight > 0 ? (weightedSum / totalWeight) : NaN;
+                            console.log('Calculated avgGcvEq:', avgGcvEq);
                             result = !isNaN(avgGcvEq) ? getGCVBandEqGrade(avgGcvEq) : '';
+                            console.log('GCV Band result:', result);
                         }
-                    } else {
-                        const weightedSum = finalData.reduce((sum, r) => {
-                            const v = parseFloat(r[i]);
-                            const w = parseFloat(r[8]);
-                            return (!isNaN(v) && !isNaN(w)) ? sum + v * w : sum;
-                        }, 0);
-                        const totalWeight = finalData.reduce((sum, r) => {
-                            const w = parseFloat(r[8]);
-                            return !isNaN(w) ? sum + w : sum;
-                        }, 0);
-                        result = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : '';
+                    } 
+                    // Handle sum columns (columns 7 and 8)
+                    else if (i === 7 || i === 8) {
+                        const values = finalData.map(r => parseFloat(r[i])).filter(v => !isNaN(v));
+                        if (values.length > 0) { result = values.reduce((a, b) => a + b, 0).toFixed(2); }
                     }
-                    html += `<td>${result}</td>`;
+                    // Check for columns that should be blank in total row
+                    else {
+                        // Leave these columns blank in total row: Plant, Rake No, RR Date, RR No, DOP, Consigned/Div-in
+                        const blankColumns = ['plant', 'rake no', 'rake no.', 'rr date', 'rr no', 'rr no.', 'dop', 'consigned', 'div-in', 'consigned/div-in', 'consigned/ div-in'];
+                        
+                        // Check for exact matches or specific patterns to avoid false matches like "Plant Weight"
+                        const shouldBlank = blankColumns.some(col => {
+                            if (col === 'plant') {
+                                // Only match if it's exactly "plant" or "plant name", not "plant weight" etc.
+                                return headerName === 'plant' || headerName === 'plant name';
+                            }
+                            return headerName.includes(col);
+                        });
+                        
+                        if (shouldBlank) {
+                            result = ''; // Leave blank for specified columns
+                        } else {
+                            // Calculate weighted average for other numeric columns
+                            const weightedSum = finalData.reduce((sum, r) => {
+                                const v = parseFloat(r[i]);
+                                const w = parseFloat(r[8]);
+                                return (!isNaN(v) && !isNaN(w)) ? sum + v * w : sum;
+                            }, 0);
+                            const totalWeight = finalData.reduce((sum, r) => {
+                                const w = parseFloat(r[8]);
+                                return !isNaN(w) ? sum + w : sum;
+                            }, 0);
+                            result = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : '';
+                        }
+                    }
+                    const isDateColumn = (i === 3 || i === 5) ? ' data-date-column="true"' : '';
+                    html += `<td${isDateColumn}>${result}</td>`;
                 }
             }
             html += `</tr>`;
@@ -879,6 +1305,30 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
     if (tableContainer) {
         tableContainer.innerHTML = html;
     }
+}
+
+// Function to sort table by column
+function pachhwaraQASortColumn(columnIndex) {
+    console.log('Sorting column:', columnIndex, PachhwaraQAHeaders[columnIndex]);
+    
+    // Update sort state
+    if (PachhwaraQASortState.column === columnIndex) {
+        // Same column - cycle through states: none -> asc -> desc -> none
+        if (PachhwaraQASortState.direction === 'none') {
+            PachhwaraQASortState.direction = 'asc';
+        } else if (PachhwaraQASortState.direction === 'asc') {
+            PachhwaraQASortState.direction = 'desc';
+        } else {
+            PachhwaraQASortState.direction = 'none';
+        }
+    } else {
+        // New column - start with ascending
+        PachhwaraQASortState.column = columnIndex;
+        PachhwaraQASortState.direction = 'asc';
+    }
+    
+    // Re-render table with sorting
+    pachhwaraQARenderTable();
 }
 
 // Simple date formatting function
@@ -1088,52 +1538,169 @@ async function pachhwaraQAExportToJPG() {
             await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
         }
         
+        // Check if report is currently shown
+        const reportContainer = document.getElementById('pachhwaraQA-report-container');
         const tableContainer = document.getElementById('pachhwaraQA-table-container');
-        if (!tableContainer) {
-            alert('No table found to export');
+        const isReportView = reportContainer && reportContainer.style.display !== 'none';
+        
+        let contentToExport;
+        let exportTitle;
+        
+        if (isReportView) {
+            // Export the report
+            contentToExport = reportContainer;
+            exportTitle = 'Quality Analysis Report';
+        } else {
+            // Export the table
+            contentToExport = tableContainer;
+            exportTitle = 'Quality Analysis Data Table';
+        }
+        
+        if (!contentToExport) {
+            alert('No content found to export');
             return;
         }
         
         const data = pachhwaraQAGetExportData();
-        if (!data) {
-            alert('No data available to export');
-            return;
-        }
+        const selectedPlant = document.querySelector('input[name="pachhwaraQAPlant"]:checked')?.value || 'Unknown';
+        const startDate = document.getElementById('pachhwaraQAStartDate')?.value || '';
+        const endDate = document.getElementById('pachhwaraQAEndDate')?.value || '';
         
-        // Create a temporary container for export
+        // Format dates for display
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB');
+        };
+        
+        // Create a temporary container for A4 export
         const exportContainer = document.createElement('div');
         exportContainer.style.position = 'absolute';
         exportContainer.style.left = '-9999px';
         exportContainer.style.background = 'white';
-        exportContainer.style.padding = '20px';
+        exportContainer.style.width = '210mm'; // A4 width
+        exportContainer.style.maxWidth = '210mm';
+        exportContainer.style.padding = '15mm'; // A4 margins
         exportContainer.style.fontFamily = 'Arial, sans-serif';
+        exportContainer.style.fontSize = '12px';
+        exportContainer.style.lineHeight = '1.4';
+        exportContainer.style.color = '#333';
+        exportContainer.style.boxSizing = 'border-box';
         
-        // Add title and date range
+        // Clone the content and adjust styles for A4
+        const clonedContent = contentToExport.cloneNode(true);
+        
+        // Adjust table styles for A4 if it's table view
+        if (!isReportView) {
+            const tables = clonedContent.querySelectorAll('table');
+            tables.forEach(table => {
+                table.style.fontSize = '10px';
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                
+                // Adjust cell padding
+                const cells = table.querySelectorAll('th, td');
+                cells.forEach(cell => {
+                    cell.style.padding = '4px 6px';
+                    cell.style.fontSize = '10px';
+                    cell.style.border = '1px solid #dee2e6';
+                });
+                
+                // Ensure headers are visible
+                const headers = table.querySelectorAll('th');
+                headers.forEach(header => {
+                    header.style.backgroundColor = '#0d6efd';
+                    header.style.color = 'white';
+                    header.style.fontWeight = 'bold';
+                });
+            });
+        } else {
+            // Adjust report cards for A4
+            const cards = clonedContent.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.style.marginBottom = '10px';
+                card.style.border = '1px solid #dee2e6';
+                card.style.borderRadius = '5px';
+            });
+            
+            const cardHeaders = clonedContent.querySelectorAll('.card-header');
+            cardHeaders.forEach(header => {
+                header.style.padding = '8px 12px';
+                header.style.fontSize = '14px';
+                header.style.fontWeight = 'bold';
+            });
+            
+            const cardBodies = clonedContent.querySelectorAll('.card-body');
+            cardBodies.forEach(body => {
+                body.style.padding = '10px 12px';
+            });
+            
+            const reportTables = clonedContent.querySelectorAll('table');
+            reportTables.forEach(table => {
+                table.style.fontSize = '10px';
+                table.style.width = '100%';
+                
+                const cells = table.querySelectorAll('th, td');
+                cells.forEach(cell => {
+                    cell.style.padding = '3px 6px';
+                    cell.style.fontSize = '10px';
+                });
+            });
+        }
+        
+        // Add header with title and metadata
         exportContainer.innerHTML = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #2c5aa0; margin: 0 0 10px 0;">${data.title}</h2>
-                ${data.startDate && data.endDate ? `<p style="margin: 0; color: #666;">Date Range: ${data.startDate} to ${data.endDate}</p>` : ''}
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d6efd; padding-bottom: 15px;">
+                <h1 style="color: #0d6efd; margin: 0 0 8px 0; font-size: 20px;">Pachhwara Coal Quantity & Quality Analysis</h1>
+                <h2 style="color: #2c5aa0; margin: 0 0 8px 0; font-size: 16px;">${exportTitle} - ${selectedPlant}</h2>
+                ${startDate && endDate ? `<p style="margin: 0; color: #666; font-size: 12px;">Period: ${formatDate(startDate)} to ${formatDate(endDate)}</p>` : ''}
+                <p style="margin: 5px 0 0 0; color: #888; font-size: 10px;">Generated on: ${new Date().toLocaleString('en-GB')}</p>
             </div>
-            ${tableContainer.innerHTML}
         `;
+        
+        exportContainer.appendChild(clonedContent);
+        
+        // Add footer
+        const footer = document.createElement('div');
+        footer.style.marginTop = '20px';
+        footer.style.textAlign = 'center';
+        footer.style.fontSize = '10px';
+        footer.style.color = '#888';
+        footer.style.borderTop = '1px solid #dee2e6';
+        footer.style.paddingTop = '10px';
+        footer.innerHTML = `
+            <p style="margin: 0;">Generated by Pachhwara Quality Analysis System</p>
+            <p style="margin: 0; font-size: 9px;">© ${new Date().getFullYear()} - All Rights Reserved</p>
+        `;
+        exportContainer.appendChild(footer);
         
         document.body.appendChild(exportContainer);
         
-        // Generate canvas and download
+        // Generate high-quality canvas for A4
         const canvas = await html2canvas(exportContainer, {
             backgroundColor: 'white',
-            scale: 2,
-            useCORS: true
+            scale: 3, // High quality for A4 printing
+            useCORS: true,
+            allowTaint: false,
+            width: 794, // A4 width in pixels at 96 DPI
+            height: 1123, // A4 height in pixels at 96 DPI
+            scrollX: 0,
+            scrollY: 0,
+            logging: false
         });
         
         // Remove temporary container
         document.body.removeChild(exportContainer);
         
-        // Download image
+        // Download high-quality A4 JPG
         const link = document.createElement('a');
-        link.download = `${data.selectedPlant}_Quality_Analysis_${new Date().toISOString().split('T')[0]}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        const viewType = isReportView ? 'Report' : 'Table';
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+        link.download = `Pachhwara_${selectedPlant}_Quality_Analysis_${viewType}_${timestamp}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95); // High quality JPEG
         link.click();
+        
+        console.log('JPG export completed successfully');
         
     } catch (error) {
         console.error('Error exporting JPG:', error);
