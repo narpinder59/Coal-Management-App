@@ -32,7 +32,7 @@ function showPunjabGenerationCompact() {
 
         .card {margin-bottom: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); position: relative; z-index: 1; }
         .card-header { background-color: #343a40;color: #fff; padding: 3px 8px; position: relative; z-index: 2; }
-        
+        .card-header-PunjabTotal { background-color: #0b7beaff;color: #fff; padding: 3px 5px; position: relative; z-index: 2;  border-radius: 4px;}
         .card-body { background-color: #fff; padding: 3px 8px; position: relative; z-index: 3; }
         .card-body .textContent {float:right; font-size: 10px;font-family: Verdana, Geneva, Tahoma, sans-serif; font-weight: bold; margin-right: 2px; width: 100px;}
         .card-body .RESText {float: inline-start; font-size: 10px;font-family: Verdana, Geneva, Tahoma, sans-serif; font-weight: bold; margin-right: 15px; }
@@ -102,21 +102,14 @@ function showPunjabGenerationCompact() {
             border-color: #fff transparent transparent transparent;
         }
         .card-body {font-size: 10px;}
-        .row-align {display: flex; align-items: flex-start; margin-bottom: 5px; margin-top: 3px; }
-        .plant-title {font-size: 12px; color: #0d6efd; font-weight: bold ; width: 80px; margin-right: 5px; margin-top: 1px;}
-        .plant-info {font-size: 9px; color: #6c757d; margin-left: 0px; margin-top: 0px;}
-        .percentage-badge {
-            background-color: #17a2b8;
-            color: white;
-            padding: 8px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: bold;
-            margin-right: 10px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .plant-title {font-size: 12px; color: #0d6efd; font-weight: bold ; width: 80px; margin-right: 5px; margin-top: 1px; margin-bottom: 1px;}
+        .plant-info {font-size: 9px; color: #585e64ff; font-weight: bold ;margin-left: 0px; margin-top: 0px;}
+        .layout-container {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            flex: 1 !important;
+            margin-left: 5px !important;
         }
         .badge {margin: 0 0.5px; font-size: 10px;}
         .badge-container {
@@ -124,17 +117,62 @@ function showPunjabGenerationCompact() {
             flex-direction: column;
             gap: 1px;
             margin-right: 10px;
-        }
-        .layout-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+            min-height: 50px;
+            justify-content: flex-start;
         }
         .badge-row {
             display: flex;
             gap: 1px;
+            align-items: flex-start;
         }
         .badge-container .capacity{font-size: 8px; margin-top: 2px; margin-left: 0px; margin-right: 0.5px; background-color: #6c757d; color: white;}
+        
+        /* Plant info column styling */
+        .plant-info-column {
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 0 0 auto !important;
+            min-width: 80px !important;
+            max-width: 120px !important;
+            margin-right: 10px !important;
+        }
+        
+        /* Ensure all percentage badges align vertically */
+        .percentage-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 8px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+            margin-right: 2px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+        }
+        
+        /* Ensure consistent alignment for all unit badge groups */
+        .badge-row > div {
+            min-height: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        
+        /* Standardize all plant rows for consistent alignment */
+        .row-align {
+            display: flex !important; 
+            align-items: flex-start !important; 
+            margin-bottom: 5px; 
+            margin-top: 3px; 
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+            min-height: 50px;
+        }
         .power-display {
             font-size: 10px;
             font-weight: bold;
@@ -161,7 +199,7 @@ function showPunjabGenerationCompact() {
                     <tr>
                         <td>Load</td>
                         <td id="loadMW"></td>   
-                        <td class="merged-column" rowspan="5" style="vertical-align: middle;">
+                        <td class="merged-column" rowspan="5" style="vertical-align: middle; padding: 0; margin: 0;">
                             <span id="frequencyHz" style="font-size: 2.5rem; color: #0d6efd; "></span>
                             <span id="frequencyHzUnit" style="font-size: 1.0rem; color: #0d6efd; "></span>
                         </td>
@@ -200,7 +238,7 @@ function showPunjabGenerationCompact() {
                     <div class="card-body">
 
                         <div class="row-align" style="align-items: flex-start;">
-                            <div style="display: flex; flex-direction: column;">
+                            <div class="plant-info-column">
                                 <h5 class="plant-title">GGSSTP</h5>
                                 <div class="plant-info" id="GGSSTPTotalProgressText">NA</div>
                             </div>
@@ -230,7 +268,7 @@ function showPunjabGenerationCompact() {
                         </div>
                         <hr style="margin: 0px; border-width: 1px; ">
                         <div class="row-align"style="align-items: flex-start;">
-                            <div style="display: flex; flex-direction: column;">
+                            <div class="plant-info-column">
                                 <h5 class="plant-title">GHTP</h5>
                                 <div class="plant-info" id="GHTPTotalProgressText">NA</div>
                             </div>
@@ -261,7 +299,7 @@ function showPunjabGenerationCompact() {
                         <hr style="margin: 0px; border-width: 1px; ">
 
                         <div class="row-align"style="align-items: flex-start;">
-                            <div style="display: flex; flex-direction: column;">
+                            <div class="plant-info-column">
                                 <h5 class="plant-title">GATP</h5>
                                 <div class="plant-info" id="GATPTotalProgressText">NA</div>
                             </div>
@@ -351,9 +389,9 @@ function showPunjabGenerationCompact() {
             </div>
 
             <!-- Total Punjab Thermal -->
-            <div class="col-md-12">
+            <div class="col-md-12" >
                 <div class="card">
-                    <div class="card-header">Punjab Thermal
+                    <div class="card-header-PunjabTotal">Punjab Thermal
                         <span class="percentage-badge" id="PunjabThermalPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
                         <span style="float:right;" class="textContent" id="PunjabThermalTotalText">NA</span>
                     </div>                    

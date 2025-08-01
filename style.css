@@ -3137,11 +3137,197 @@ display: none;
         width: 280px;
         padding: 1rem;
     }
+    
+    /* Enhanced mobile card fixes */
+    .card {
+        margin-bottom: 0.75rem !important;
+        margin-left: 0.25rem !important;
+        margin-right: 0.25rem !important;
+        max-width: calc(100vw - 1rem) !important;
+        overflow: hidden !important;
+    }
+    
+    .card-body {
+        padding: 0.75rem !important;
+        word-wrap: break-word !important;
+        overflow-x: auto !important;
+    }
+    
+    .container-fluid {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .col, .col-12, .col-md-6, .col-lg-4 {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    
+    /* Badge container mobile optimization */
+    .badge-container {
+        flex-wrap: wrap !important;
+        gap: 0.25rem !important;
+        justify-content: flex-start !important;
+    }
+    
+    .badge {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0.1rem !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Row alignment for mobile - keep horizontal layout */
+    .row-align {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        width: 100% !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .layout-container {
+        flex: 1 !important;
+        margin-left: 0.5rem !important;
+        margin-top: 0 !important;
+        min-width: 0 !important;
+    }
+    
+    /* Plant title adjustments */
+    .plant-title {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .plant-info {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Plant info container - limit width to allow badges space */
+    .plant-info-column,
+    .d-flex.flex-column.mr-3 {
+        flex: 0 0 auto !important;
+        max-width: 40% !important;
+        margin-right: 0.5rem !important;
+    }
+    
+    /* Strong override for Punjab Generation layout */
+    body .container .row-align {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    body .container .layout-container {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        flex: 1 !important;
+    }
 }
 
 @media (max-width: 576px) {
     .sidebar {
         width: 100vw;
         padding: 1rem;
+    }
+    
+    /* Extra small screen optimizations */
+    .card {
+        margin-bottom: 0.5rem !important;
+        margin-left: 0.125rem !important;
+        margin-right: 0.125rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .card-body {
+        padding: 0.5rem !important;
+    }
+    
+    .container-fluid {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    
+    .badge {
+        font-size: 0.65rem !important;
+        padding: 0.2rem 0.4rem !important;
+    }
+    
+    /* Percentage badge adjustments */
+    .percentage-badge {
+        height: 28px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .plant-title {
+        font-size: 0.85rem !important;
+    }
+    
+    .plant-info {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* OnePlus specific fixes using device detection */
+.device-oneplus .card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.device-oneplus .container-fluid {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+}
+
+/* Additional OnePlus optimizations to keep horizontal layout */
+.device-oneplus .row-align {
+    justify-content: space-between !important;
+}
+
+.device-oneplus .d-flex.flex-column.mr-3 {
+    max-width: 35% !important;
+    flex-shrink: 0 !important;
+}
+
+.device-oneplus .layout-container {
+    flex: 1 !important;
+    margin-left: 0.25rem !important;
+}
+
+.device-oneplus .badge-container {
+    gap: 0.15rem !important;
+}
+
+.device-oneplus .badge {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.4rem !important;
+}
+
+/* Landscape mode optimizations */
+@media (orientation: landscape) and (max-width: 896px) {
+    .card {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .card-body {
+        padding: 0.5rem !important;
+    }
+    
+    .row-align {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+    }
+    
+    .layout-container {
+        margin-top: 0 !important;
+        margin-left: 1rem !important;
     }
 }
