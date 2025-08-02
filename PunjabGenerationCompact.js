@@ -2,6 +2,21 @@
 function showPunjabGenerationCompact() {
     const punjabGenerationCompactHTML = `
         <style>
+/* CSS Reset for badges to ensure consistent rendering */
+.badge {
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+}
+
+/* Force immediate CSS application */
+* {
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
 /* Animated text style */
 .animate-charcter {
         text-transform: uppercase;
@@ -22,6 +37,8 @@ function showPunjabGenerationCompact() {
         font-size: 20px;
         text-align: center;
         width: 100%;
+        margin-top: 0px;
+        margin-bottom: 8px;
         }
 
     @keyframes textclip {
@@ -41,10 +58,34 @@ function showPunjabGenerationCompact() {
         .badge-danger { background-color: red; }
         .badge-success { background-color: rgb(8, 176, 8);}
         .badge-primary { background-color: #007bff !important; color: white !important; }
+        
+        /* Unit generation badges styling - forced consistent sizing */
+        .badge-success, .badge-danger {
+            font-size: 14px !important;
+            font-weight: bold !important;
+            padding: 3px 6px !important;
+            min-width: 28px !important;
+            display: inline-block !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+            border-radius: 0.25rem !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* General badge styling - should come after specific rules */
+        .badge {
+            margin: 0 0.5px; 
+            font-size: 12px !important;
+            display: inline-block !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+        }
         .container {
             max-width: 100%;
             padding-left: 5px;
             padding-right: 5px;
+            padding-top: 2px;
+            margin-top: 0px;
         }
         .row {
             margin-left: -2px;
@@ -111,7 +152,6 @@ function showPunjabGenerationCompact() {
             flex: 1 !important;
             margin-left: 5px !important;
         }
-        .badge {margin: 0 0.5px; font-size: 10px;}
         .badge-container {
             display: flex;
             flex-direction: column;
@@ -166,8 +206,8 @@ function showPunjabGenerationCompact() {
         .row-align {
             display: flex !important; 
             align-items: flex-start !important; 
-            margin-bottom: 5px; 
-            margin-top: 3px; 
+            margin-bottom: 2px; 
+            margin-top: 2px; 
             flex-direction: row !important;
             flex-wrap: nowrap !important;
             width: 100% !important;
@@ -187,8 +227,8 @@ function showPunjabGenerationCompact() {
 
         <div class="container">
         <h5 class="animate-charcter">Punjab Power Generation Dashboard</h5>
-        <div class="col-md-6">
-        <div class="card" style="width: fit-content;">
+        <div class="col-md-12">
+        <div class="card" >
             <div class="card-header">
                 <p style="width:100%; margin: 0px;">Power Status at:<span class="badge badge-success" id="updateDate" style="color: rgb(246, 245, 245); float: right; font-size: large; font-family:monospace;"></span></p>
             </div>
@@ -200,7 +240,7 @@ function showPunjabGenerationCompact() {
                         <td>Load</td>
                         <td id="loadMW"></td>   
                         <td class="merged-column" rowspan="5" style="vertical-align: middle; padding: 0; margin: 0;">
-                            <span id="frequencyHz" style="font-size: 2.5rem; color: #0d6efd; "></span>
+                            <span id="frequencyHz" style="font-size: 3.0rem; color: #0d6efd; margin-left: 0.5rem;"></span>
                             <span id="frequencyHzUnit" style="font-size: 1.0rem; color: #0d6efd; "></span>
                         </td>
                                              
@@ -229,7 +269,7 @@ function showPunjabGenerationCompact() {
         </div>
         <div class="row">
             <!-- PSPCL Thermal Plants -->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header PSPCL">PSPCL
                         <span class="percentage-badge" id="PSPCLThermalPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
@@ -326,7 +366,7 @@ function showPunjabGenerationCompact() {
            
 
             <!-- IPPs -->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">IPPs
                         <span class="percentage-badge" id="IPPsPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
@@ -737,6 +777,40 @@ function showPunjabGenerationCompact() {
 
     document.getElementById('main-content').innerHTML = punjabGenerationCompactHTML;
     
+    // Inject additional aggressive CSS immediately after DOM creation
+    const aggressiveCSS = document.createElement('style');
+    aggressiveCSS.textContent = `
+        /* Override all other badge styles with highest specificity */
+        body .container .badge-success,
+        body .container .badge-danger,
+        .device-oneplus .badge-success,
+        .device-oneplus .badge-danger,
+        .badge-success.badge-success,
+        .badge-danger.badge-danger {
+            font-size: 14px !important;
+            font-weight: bold !important;
+            padding: 3px 6px !important;
+            min-width: 28px !important;
+            display: inline-block !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
+            border-radius: 0.25rem !important;
+            box-sizing: border-box !important;
+            white-space: nowrap !important;
+        }
+        
+        /* Ensure it takes precedence over media queries */
+        @media (max-width: 896px) {
+            body .container .badge-success,
+            body .container .badge-danger {
+                font-size: 14px !important;
+                padding: 3px 6px !important;
+                min-width: 28px !important;
+            }
+        }
+    `;
+    document.head.appendChild(aggressiveCSS);
+    
     // Initialize the Punjab Generation dashboard
     initializePunjabGenerationCompact();
 }
@@ -757,6 +831,18 @@ function setBadge(elementId, value) {
             badge.textContent = '00';
             badge.classList.add('badge-danger');
             badge.classList.remove('badge-success');
+        }
+        
+        // Force consistent styling immediately with setProperty to override any CSS
+        if (badge.classList.contains('badge-success') || badge.classList.contains('badge-danger')) {
+            badge.style.setProperty('font-size', '14px', 'important');
+            badge.style.setProperty('font-weight', 'bold', 'important');
+            badge.style.setProperty('padding', '3px 6px', 'important');
+            badge.style.setProperty('min-width', '28px', 'important');
+            badge.style.setProperty('display', 'inline-block', 'important');
+            badge.style.setProperty('text-align', 'center', 'important');
+            badge.style.setProperty('line-height', '1.2', 'important');
+            badge.style.setProperty('border-radius', '0.25rem', 'important');
         }
     } else {
         console.log(`Badge element ${elementId} not found`);
@@ -1113,30 +1199,54 @@ function myFunction(arr) {
 let compactPunjabGenUpdateInterval;
 
 function initializePunjabGenerationCompact() {
-    console.log("Initializing Punjab Generation dashboard with original PbGen 1.0 styling...");
+    console.log("Initializing Punjab Generation dashboard...");
     
     // Clear any existing intervals
-    if (compactPunjabGenUpdateInterval) {
-        clearInterval(compactPunjabGenUpdateInterval);
+    if (window.compactPunjabGenUpdateInterval) {
+        clearInterval(window.compactPunjabGenUpdateInterval);
     }
     
-    // Show loading indicator
-    showLoadingIndicator();
+    // Simple one-time styling application
+    setTimeout(() => {
+        applyBadgeStyling();
+    }, 100);
     
-    // Initial data load with original functions
+    // Initial data load
+    console.log("Loading Punjab Generation data...");
     updatePbGenData();
     updateDynamicData();
     
-    // Set up auto-refresh every 10 seconds
-    compactPunjabGenUpdateInterval = setInterval(() => {
+    // Set up auto-refresh every 30 seconds (reduced frequency to prevent hanging)
+    window.compactPunjabGenUpdateInterval = setInterval(() => {
+        console.log("Refreshing Punjab Generation data...");
         updatePbGenData();
         updateDynamicData();
-    }, 10000);
+    }, 30000);
     
-    // Hide loading indicator after initial load
-    setTimeout(hideLoadingIndicator, 2000);
+    console.log("Punjab Generation dashboard initialized successfully");
+}
+
+// Simple one-time badge styling application
+function applyBadgeStyling() {
+    console.log("Applying badge styling...");
+    const badges = document.querySelectorAll('.badge-success, .badge-danger');
+    console.log(`Found ${badges.length} badges to style`);
     
-    console.log("Punjab Generation dashboard initialized with original styling");
+    badges.forEach(badge => {
+        // Simple inline style application without recursion
+        badge.style.fontSize = '14px';
+        badge.style.fontWeight = 'bold';
+        badge.style.padding = '3px 6px';
+        badge.style.minWidth = '28px';
+        badge.style.display = 'inline-block';
+        badge.style.textAlign = 'center';
+        badge.style.lineHeight = '1.2';
+        badge.style.borderRadius = '0.25rem';
+        badge.style.boxSizing = 'border-box';
+        badge.style.whiteSpace = 'nowrap';
+    });
+    
+    console.log('Badge styling applied successfully');
 }
 
 function showLoadingIndicator() {

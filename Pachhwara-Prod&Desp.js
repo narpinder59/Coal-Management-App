@@ -51,6 +51,7 @@ function PachhwaraPDRenderCharts() {
                     backgroundColor: 'rgba(0,123,255,0.1)',
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Railways Siding Opening Stock',
@@ -59,6 +60,7 @@ function PachhwaraPDRenderCharts() {
                     backgroundColor: 'rgba(40,167,69,0.1)',
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 }
             ]
         },
@@ -178,6 +180,11 @@ function PachhwaraPDRenderCharts() {
     const chart2YMin = Math.max(0, chart2Min - chart2Padding);
     const chart2YMax = chart2Max + chart2Padding;
 
+    // Calculate percentage range for proper scaling
+    const allPercentData = [...prodPercentData.filter(v => v !== null), ...obPercentData.filter(v => v !== null)].map(Number);
+    const percentMax = allPercentData.length > 0 ? Math.max(...allPercentData) : 120;
+    const chart2PercentMax = Math.max(120, Math.ceil(percentMax / 10) * 10); // Round up to nearest 10, minimum 120
+
     // Chart 2 rendering
     const ctx2 = document.getElementById('PachhwaraPDChart2').getContext('2d');
     if (PachhwaraPDChart2Instance) PachhwaraPDChart2Instance.destroy();
@@ -193,6 +200,7 @@ function PachhwaraPDRenderCharts() {
                     backgroundColor: 'rgba(220,53,69,0.1)',
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Production Target',
@@ -202,6 +210,7 @@ function PachhwaraPDRenderCharts() {
                     borderDash: [5,5],
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Actual Production (%)',
@@ -211,6 +220,7 @@ function PachhwaraPDRenderCharts() {
                     fill: false,
                     tension: 0.2,
                     yAxisID: 'yPercent',
+                    borderWidth: 1,
                 },
                 {
                     label: 'OB Actual Production',
@@ -219,6 +229,7 @@ function PachhwaraPDRenderCharts() {
                     backgroundColor: 'rgba(40,167,69,0.1)',
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 },
                 {
                     label: 'OB Production Target',
@@ -228,6 +239,7 @@ function PachhwaraPDRenderCharts() {
                     borderDash: [5,5],
                     fill: false,
                     tension: 0.2,
+                    borderWidth: 1,
                 },
                 {
                     label: 'OB Actual Production (%)',
@@ -237,6 +249,7 @@ function PachhwaraPDRenderCharts() {
                     fill: false,
                     tension: 0.2,
                     yAxisID: 'yPercent',
+                    borderWidth: 1,
                 }
             ]
         },
@@ -291,27 +304,8 @@ function PachhwaraPDRenderCharts() {
                         }
                     }
                 },
-                yRight: {
-                    type: 'linear',
-                    position: 'right',
-                    title: { 
-                        display: true, 
-                        text: 'Tonnes',
-                        font: {
-                            size: window.innerWidth < 768 ? 10 : 12
-                        }
-                    },
-                    grid: { drawOnChartArea: false },
-                    min: chart2YMin,
-                    max: chart2YMax,
-                    ticks: {
-                        font: {
-                            size: window.innerWidth < 768 ? 8 : 10
-                        }
-                    },
-                    display: true
-                },
                 yPercent: {
+                    type: 'linear',
                     position: 'right',
                     title: { 
                         display: true, 
@@ -322,7 +316,7 @@ function PachhwaraPDRenderCharts() {
                     },
                     grid: { drawOnChartArea: false },
                     min: 0,
-                    max: 120,
+                    max: chart2PercentMax,
                     ticks: {
                         font: {
                             size: window.innerWidth < 768 ? 8 : 10
@@ -340,14 +334,122 @@ function PachhwaraPDChartExportToPDF(chartId, title) {
         alert('PDF export library not loaded. Please ensure jsPDF is included.');
         return;
     }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
-    const canvas = document.getElementById(chartId);
-    doc.setFontSize(16);
-    doc.text(title, 20, 20);
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    doc.addImage(imgData, 'JPEG', 20, 30, 250, 80);
-    doc.save(`${title.replace(/\s+/g,'_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+    
+    try {
+        const canvas = document.getElementById(chartId);
+        if (!canvas) {
+            alert('Chart not found for export.');
+            return;
+        }
+
+        // Get the chart instance to temporarily increase resolution
+        const chartInstance = chartId === 'PachhwaraPDChart1' ? PachhwaraPDChart1Instance : PachhwaraPDChart2Instance;
+        
+        if (!chartInstance) {
+            alert('Chart instance not found for export.');
+            return;
+        }
+
+        // Store original dimensions
+        const originalWidth = canvas.width;
+        const originalHeight = canvas.height;
+        const originalStyle = {
+            width: canvas.style.width,
+            height: canvas.style.height
+        };
+
+        // Set ultra-high resolution for crisp quality (8x scale for PDF)
+        const scaleFactor = 8; // Ultra-high resolution
+        canvas.width = originalWidth * scaleFactor;
+        canvas.height = originalHeight * scaleFactor;
+        canvas.style.width = originalStyle.width;
+        canvas.style.height = originalStyle.height;
+
+        // Get canvas context and scale it with high-quality settings
+        const ctx = canvas.getContext('2d');
+        
+        // Enable high-quality rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.textRenderingOptimization = 'optimizeQuality';
+        
+        ctx.scale(scaleFactor, scaleFactor);
+
+        // Set white background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
+
+        // Re-render the chart at higher resolution
+        chartInstance.resize();
+        chartInstance.render();
+
+        // Wait for chart to fully render
+        setTimeout(() => {
+            // Create PDF with proper A4 landscape dimensions
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4'); // Landscape A4: 297mm x 210mm
+            
+            // Add mine name
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Pachhwara Central Coal Mine', 20, 15);
+            
+            // Add title with better formatting
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text(title, 20, 25);
+            
+            // Add date
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 35);
+            
+            // Calculate optimal dimensions for A4 landscape
+            const pageWidth = 297; // A4 landscape width in mm
+            const pageHeight = 210; // A4 landscape height in mm
+            const margin = 20;
+            const availableWidth = pageWidth - (margin * 2);
+            const availableHeight = pageHeight - 60; // Leave more space for title and mine name
+            
+            // Calculate aspect ratio and fit to page
+            const canvasAspectRatio = canvas.width / canvas.height;
+            let imgWidth = availableWidth;
+            let imgHeight = imgWidth / canvasAspectRatio;
+            
+            // If height exceeds available space, scale by height instead
+            if (imgHeight > availableHeight) {
+                imgHeight = availableHeight;
+                imgWidth = imgHeight * canvasAspectRatio;
+            }
+            
+            // Center the image
+            const xPos = (pageWidth - imgWidth) / 2;
+            const yPos = 45;
+            
+            // Export ultra-high-quality image and add to PDF
+            const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality PNG (no compression)
+            doc.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight, '', 'FAST'); // Use FAST compression for better quality
+            
+            // Save the PDF
+            doc.save(`${title.replace(/\s+/g,'_')}_UltraHQ_${new Date().toISOString().split('T')[0]}.pdf`);
+
+            // Restore original canvas dimensions
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            canvas.style.width = originalStyle.width;
+            canvas.style.height = originalStyle.height;
+
+            // Reset context and re-render at original size
+            const newCtx = canvas.getContext('2d');
+            newCtx.scale(1, 1);
+            chartInstance.resize();
+            chartInstance.render();
+        }, 200);
+
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Error exporting PDF. Please try again.');
+    }
 }
 
 function PachhwaraPDChartExportToJPG(chartId, title) {
@@ -374,27 +476,113 @@ function PachhwaraPDChartExportToJPG(chartId, title) {
             height: canvas.style.height
         };
 
-        // Temporarily increase canvas resolution for higher quality export
-        const scaleFactor = 3; // Increase resolution by 3x
+        // Calculate A4 landscape dimensions in pixels (at 600 DPI for ultra-high quality)
+        const dpi = 600; // Ultra-high DPI for maximum quality
+        const a4WidthInches = 11.69; // A4 landscape width in inches
+        const a4HeightInches = 8.27; // A4 landscape height in inches
+        const a4WidthPixels = Math.floor(a4WidthInches * dpi);
+        const a4HeightPixels = Math.floor(a4HeightInches * dpi);
+        
+        // Create a temporary canvas for A4-sized export
+        const exportCanvas = document.createElement('canvas');
+        const exportCtx = exportCanvas.getContext('2d');
+        
+        // Enable ultra-high quality rendering on export canvas
+        exportCtx.imageSmoothingEnabled = true;
+        exportCtx.imageSmoothingQuality = 'high';
+        exportCtx.textRenderingOptimization = 'optimizeQuality';
+        
+        // Set A4 dimensions
+        exportCanvas.width = a4WidthPixels;
+        exportCanvas.height = a4HeightPixels;
+        
+        // Fill with white background
+        exportCtx.fillStyle = 'white';
+        exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        
+        // Temporarily increase original canvas resolution for ultra-crisp rendering
+        const scaleFactor = 10; // Ultra-high resolution for maximum quality
         canvas.width = originalWidth * scaleFactor;
         canvas.height = originalHeight * scaleFactor;
         canvas.style.width = originalStyle.width;
         canvas.style.height = originalStyle.height;
 
-        // Get canvas context and scale it
+        // Get canvas context and scale it with ultra-high quality settings
         const ctx = canvas.getContext('2d');
+        
+        // Enable ultra-high quality rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.textRenderingOptimization = 'optimizeQuality';
+        
         ctx.scale(scaleFactor, scaleFactor);
+
+        // Set white background on original canvas too
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
 
         // Re-render the chart at higher resolution
         chartInstance.resize();
         chartInstance.render();
 
-        // Wait a moment for the chart to fully render
+        // Wait for the chart to fully render
         setTimeout(() => {
-            // Export the high-resolution chart
+            // Calculate dimensions to fit chart in A4 with margins
+            const margin = Math.floor(0.8 * dpi); // 0.8 inch margins for more space
+            const headerHeight = Math.floor(2.0 * dpi); // 2.0 inches for header area
+            const footerHeight = Math.floor(0.5 * dpi); // 0.5 inches for footer area
+            const availableWidth = a4WidthPixels - (margin * 2);
+            const availableHeight = a4HeightPixels - headerHeight - footerHeight - margin+ 2; // Space for header, footer and margins
+            
+            // Calculate chart dimensions maintaining aspect ratio
+            const chartAspectRatio = canvas.width / canvas.height;
+            let chartWidth = availableWidth;
+            let chartHeight = chartWidth / chartAspectRatio;
+            
+            // If height exceeds available space, scale by height instead
+            if (chartHeight > availableHeight) {
+                chartHeight = availableHeight;
+                chartWidth = chartHeight * chartAspectRatio;
+            }
+            
+            // Center the chart horizontally and position below header
+            const chartX = (a4WidthPixels - chartWidth) / 2;
+            const chartY = headerHeight; // Position chart below header area
+            
+            // Add mine name to export canvas with ultra-high quality - in header area
+            exportCtx.fillStyle = '#1a1a1a'; // Dark color for better visibility
+            exportCtx.font = `bold ${Math.floor(36 * (dpi/72))}px Arial`; // Larger, ultra-high quality font
+            exportCtx.textAlign = 'center';
+            exportCtx.textBaseline = 'middle';
+            exportCtx.fillText('Pachhwara Central Coal Mine', a4WidthPixels / 2, margin + (25 * (dpi/72)));
+            
+            // Add title to export canvas with ultra-high quality - in header area
+            exportCtx.fillStyle = '#2c2c2c';
+            exportCtx.font = `bold ${Math.floor(28 * (dpi/72))}px Arial`; // Larger, ultra-high quality font
+            exportCtx.textAlign = 'center';
+            exportCtx.textBaseline = 'middle';
+            exportCtx.fillText(title, a4WidthPixels / 2, margin + (65 * (dpi/72)));
+            
+            // Draw the chart onto the A4 canvas with ultra-high quality
+            exportCtx.imageSmoothingEnabled = true;
+            exportCtx.imageSmoothingQuality = 'high';
+            exportCtx.drawImage(canvas, chartX, chartY, chartWidth, chartHeight);
+            
+            // Add generated date to footer area with ultra-high quality
+            exportCtx.fillStyle = '#666666';
+            exportCtx.font = `${Math.floor(18 * (dpi/72))}px Arial`; // High quality font for footer
+            exportCtx.textAlign = 'center';
+            exportCtx.textBaseline = 'middle';
+            exportCtx.fillText(
+                `Generated on: ${new Date().toLocaleDateString()}`, 
+                a4WidthPixels / 2, 
+                a4HeightPixels - footerHeight + (25 * (dpi/72)) // Position in footer area
+            );
+            
+            // Export the A4-sized canvas as ultra-high-quality JPEG
             const link = document.createElement('a');
-            link.download = `${title.replace(/\s+/g,'_')}_${new Date().toISOString().split('T')[0]}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.98); // Higher quality JPEG
+            link.download = `${title.replace(/\s+/g,'_')}_UltraHQ_A4_${new Date().toISOString().split('T')[0]}.jpg`;
+            link.href = exportCanvas.toDataURL('image/jpeg', 1.0); // Maximum quality JPEG (no compression)
             link.click();
 
             // Restore original canvas dimensions
@@ -408,11 +596,14 @@ function PachhwaraPDChartExportToJPG(chartId, title) {
             newCtx.scale(1, 1);
             chartInstance.resize();
             chartInstance.render();
-        }, 100);
+            
+            // Clean up temporary canvas
+            exportCanvas.remove();
+        }, 200);
 
     } catch (error) {
         console.error('Error generating high-quality chart image:', error);
-        alert('Error generating chart image.');
+        alert('Error generating chart image. Please try again.');
     }
 }
 

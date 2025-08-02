@@ -1161,7 +1161,7 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                     <table class="table table-sm table-bordered table-striped align-middle table-quality-analysis">
                         <thead class="table-primary">
                             <tr>
-                                <th class="sticky-col bg-primary text-white" style="left:0;z-index:2;">Sr. No.</th>`;
+                                <th class="sticky-col bg-primary text-white" style="left:0;z-index:2;min-width:80px;width:80px;">Sr. No.</th>`;
         for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
             if (checkedCols.includes(i)) {
                 const isDateColumn = (i === 3 || i === 5) ? ' data-date-column="true"' : '';
@@ -1200,7 +1200,7 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
         if (finalData.length > 0) {
             finalData.forEach((row, index) => {
                 html += `<tr>
-                    <td class="sticky-col bg-white" style="left:0;z-index:1;">${index + 1}</td>`;
+                    <td class="sticky-col bg-white" style="left:0;z-index:1;min-width:80px;width:80px;">${index + 1}</td>`;
                 for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
                     if (checkedCols.includes(i)) {
                         let cellValue = row[i] || '';
@@ -1226,7 +1226,7 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
             });
             // Add total/average row
             html += `<tr class="table-warning fw-bold">
-                <td class="sticky-col" style="left:0;z-index:1;"><b>Total/Avg</b></td>`;
+                <td class="sticky-col table-warning fw-bold" style="left:0;z-index:1;min-width:80px;width:80px;"><b>Total/Avg</b></td>`;
             for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
                 if (checkedCols.includes(i)) {
                     console.log('Processing total row for column:', i, PachhwaraQAHeaders[i]);

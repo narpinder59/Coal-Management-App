@@ -316,8 +316,7 @@ function showLoadingReceiptReport() {
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1; // 1-12
     const startDate = `01/${String(currentMonth).padStart(2, '0')}/${currentYear}`;
-    const yesterday = new Date(today.getTime() - 86400000);
-    const endDate = `${String(yesterday.getDate()).padStart(2, '0')}/${String(yesterday.getMonth() + 1).padStart(2, '0')}/${yesterday.getFullYear()}`;
+    const endDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
     console.log("Default date range:", startDate, "to", endDate);
 
     document.getElementById('main-content').innerHTML = `
