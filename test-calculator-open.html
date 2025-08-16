@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Calculator Opening</title>
+</head>
+<body>
+    <h1>Test Calculator Opening</h1>
+    
+    <button onclick="openCalculator1()">Test 1: Direct filename</button><br><br>
+    <button onclick="openCalculator2()">Test 2: URL encoded</button><br><br>
+    <button onclick="openCalculator3()">Test 3: Check if file exists</button><br><br>
+    
+    <div id="result"></div>
+    
+    <script>
+        function openCalculator1() {
+            console.log('Opening calculator with direct filename...');
+            window.open('Cost Analysis of 2 Types of Coal.html', '_blank');
+        }
+        
+        function openCalculator2() {
+            console.log('Opening calculator with URL encoding...');
+            window.open('Cost%20Analysis%20of%202%20Types%20of%20Coal.html', '_blank');
+        }
+        
+        function openCalculator3() {
+            console.log('Checking if file exists...');
+            fetch('Cost Analysis of 2 Types of Coal.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('result').innerHTML = 'File exists! Status: ' + response.status;
+                        console.log('File exists, opening...');
+                        window.open('Cost Analysis of 2 Types of Coal.html', '_blank');
+                    } else {
+                        document.getElementById('result').innerHTML = 'File not found! Status: ' + response.status;
+                        console.log('File not found:', response.status);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = 'Error: ' + error.message;
+                    console.log('Fetch error:', error);
+                });
+        }
+    </script>
+</body>
+</html>

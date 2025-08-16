@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Fixes - Source Names, Negative Signs, Year Display</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .fix-section { margin: 20px 0; padding: 15px; border: 1px solid #007bff; border-radius: 5px; background: #f8f9fa; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #28a745; border-radius: 5px; background: #d4edda; }
+        .warning-section { margin: 20px 0; padding: 15px; border: 1px solid #ffc107; border-radius: 5px; background: #fff3cd; }
+        .code-block { background: #f1f1f1; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 2px; }
+        .example { background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin: 10px 0; }
+        .kbd { background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace; border: 1px solid #adb5bd; }
+    </style>
+</head>
+<body>
+    <h1>Coal Calculator - Final Input & Display Fixes</h1>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #1 Fixed: Source Names Accept All Characters</h2>
+        <p><strong>Problem:</strong> Source names were still restricted to numeric input only.</p>
+        
+        <p><strong>Root Cause:</strong> The cellIndex detection wasn't working properly for identifying source name cells.</p>
+        
+        <p><strong>Solution:</strong> Changed detection method to use DOM position:</p>
+        <div class="code-block">
+// Old method (unreliable)
+const isSourceNameCell = cell.cellIndex === 0;
+
+// New method (reliable)
+const row = cell.closest('tr');
+const isSourceNameCell = cell === row.firstElementChild;
+        </div>
+        
+        <div class="example">
+            <strong>Now Source Names Can Include:</strong>
+            <ul>
+                <li>✅ Letters: "Primary Coal Source"</li>
+                <li>✅ Numbers: "Source 123"</li>
+                <li>✅ Symbols: "Coal Mine #1 (A-Grade)"</li>
+                <li>✅ Spaces: "Main Railway Supply"</li>
+                <li>✅ Unicode: "प्राथमिक कोयला स्रोत"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #2 Fixed: No Negative Signs in Table1</h2>
+        <p><strong>Problem:</strong> Table1 inputs allowed negative values which don't make sense for coal calculations.</p>
+        
+        <p><strong>Solution:</strong> Added number validation to Table1 inputs:</p>
+        <ul>
+            <li>Blocks negative sign (-) from being typed</li>
+            <li>Allows digits and decimal points only</li>
+            <li>Maintains existing PLF validation (max 100%)</li>
+        </ul>
+        
+        <div class="code-block">
+function handleTable1NumberValidation(event) {
+    const char = String.fromCharCode(event.which);
+    
+    // Allow control keys
+    if (event.which <= 32) return true;
+    
+    // Allow digits and decimal point
+    if (/\d/.test(char) || char === '.') return true;
+    
+    // Block negative sign and all other characters
+    event.preventDefault();
+    return false;
+}
+        </div>
+        
+        <div class="example">
+            <strong>Table1 Input Validation:</strong>
+            <ul>
+                <li>✅ <strong>Valid:</strong> 123, 456.78, 0.5</li>
+                <li>❌ <strong>Blocked:</strong> -123, abc, special symbols</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #3 Fixed: Year Display with Months</h2>
+        <p><strong>Problem:</strong> Months only showed names without years (Aug, Sep) instead of (Aug 25, Sep 25).</p>
+        
+        <p><strong>Solution:</strong> Enhanced month naming system:</p>
+        <ul>
+            <li>Created <code>getMonthNameWithYear()</code> function</li>
+            <li>Calculates year progression based on month sequence</li>
+            <li>Shows "25" for 2025, "26" for 2026, etc.</li>
+            <li>Handles year transitions (Dec 25 → Jan 26)</li>
+        </ul>
+        
+        <div class="code-block">
+function getMonthNameWithYear(monthNumber, startingMonth = 8, startingYear = 25) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    // Calculate year offset based on month progression
+    let yearOffset = 0;
+    if (monthNumber < startingMonth) {
+        yearOffset = 1; // We've wrapped to next year
+    }
+    
+    const displayYear = startingYear + yearOffset;
+    return `${months[monthNumber - 1]} ${displayYear}`;
+}
+        </div>
+        
+        <div class="example">
+            <strong>Month Display Examples:</strong>
+            <ul>
+                <li>Starting Aug 2025: Aug 25, Sep 25, Oct 25, Nov 25, Dec 25, Jan 26, Feb 26...</li>
+                <li>Starting Mar 2025: Mar 25, Apr 25, May 25, Jun 25, Jul 25, Aug 25...</li>
+                <li>Starting Nov 2025: Nov 25, Dec 25, Jan 26, Feb 26, Mar 26...</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Comprehensive Test Scenarios</h2>
+        
+        <h3>Scenario 1: Source Name Freedom Test</h3>
+        <ol>
+            <li>Open Coal-Cal-Cleaned.html</li>
+            <li>Click on source name cell (first column in Table2)</li>
+            <li>Try typing: <code>"Coal Mine ABC-123 (Primary Supply) #1"</code></li>
+            <li>✅ Should accept all characters including numbers, symbols, spaces</li>
+            <li>Try Unicode: <code>"कोयला खदान प्राथमिक"</code></li>
+            <li>✅ Should accept non-English characters</li>
+            <li>Try special characters: <code>"Source @#$%^&*()_+-=[]{}|;:,.<>?"</code></li>
+            <li>✅ Should accept all special symbols</li>
+        </ol>
+        
+        <h3>Scenario 2: Table1 Negative Prevention Test</h3>
+        <ol>
+            <li>Click on any Table1 input field (Generation Capacity, PLF, etc.)</li>
+            <li>Try typing negative sign: <span class="kbd">-</span></li>
+            <li>✅ Should be blocked - nothing appears</li>
+            <li>Try typing: <code>-123</code></li>
+            <li>✅ Should only show <code>123</code> (minus sign blocked)</li>
+            <li>Try typing letters: <code>abc</code></li>
+            <li>✅ Should be blocked - nothing appears</li>
+            <li>Try valid input: <code>123.45</code></li>
+            <li>✅ Should be accepted normally</li>
+        </ol>
+        
+        <h3>Scenario 3: Table2 Number Validation Still Works</h3>
+        <ol>
+            <li>Click on Table2 data cell (not source name)</li>
+            <li>Try typing: <code>123.45.67</code></li>
+            <li>✅ Should stop at <code>123.45</code> (single decimal rule)</li>
+            <li>Try negative: <code>-456.78</code></li>
+            <li>✅ Should be accepted (negatives allowed in Table2 data)</li>
+            <li>Try letters: <code>abc</code></li>
+            <li>✅ Should be blocked</li>
+        </ol>
+        
+        <h3>Scenario 4: Year Display Test</h3>
+        <ol>
+            <li>Default load should show: <strong>Aug 25, Sep 25</strong></li>
+            <li>Add months should show: <strong>Oct 25, Nov 25, Dec 25</strong></li>
+            <li>Continue adding: <strong>Jan 26, Feb 26, Mar 26</strong></li>
+            <li>Change first month to November</li>
+            <li>✅ Should update to: <strong>Nov 25, Dec 25, Jan 26, Feb 26</strong></li>
+        </ol>
+        
+        <h3>Scenario 5: Year Transition Test</h3>
+        <ol>
+            <li>Change first month to December</li>
+            <li>✅ Should show: <strong>Dec 25</strong></li>
+            <li>Add month</li>
+            <li>✅ Should show: <strong>Dec 25, Jan 26</strong></li>
+            <li>Add more months</li>
+            <li>✅ Should show: <strong>Dec 25, Jan 26, Feb 26, Mar 26</strong></li>
+            <li>Delete a middle month and add new one</li>
+            <li>✅ Should maintain proper year sequence</li>
+        </ol>
+        
+        <h3>Scenario 6: Mixed Validation Test</h3>
+        <ol>
+            <li>Edit source name: Should accept any characters</li>
+            <li>Tab to Table2 data cell: Should validate numbers only</li>
+            <li>Tab to Table1: Should prevent negative signs</li>
+            <li>Month displays: Should show proper years</li>
+            <li>Navigation: Should work vertically and skip span cells</li>
+        </ol>
+    </div>
+    
+    <div class="warning-section">
+        <h2>⚠️ Important Notes</h2>
+        <ul>
+            <li><strong>Source Names:</strong> First column in Table2 - accepts ANY characters</li>
+            <li><strong>Table2 Data:</strong> Month columns in Table2 - numbers only, single decimal, negatives allowed</li>
+            <li><strong>Table1 Inputs:</strong> All inputs - positive numbers only, no negative signs</li>
+            <li><strong>Year Display:</strong> Automatically calculates based on month sequence</li>
+            <li><strong>Navigation:</strong> Tab moves vertically, skips calculated fields</li>
+        </ul>
+    </div>
+    
+    <div class="fix-section">
+        <h2>📋 Technical Implementation Summary</h2>
+        
+        <h3>New Functions Added:</h3>
+        <ul>
+            <li><code>handleTable1NumberValidation()</code> - Prevents negative signs in Table1</li>
+            <li><code>getMonthNameWithYear()</code> - Calculates month names with years</li>
+        </ul>
+        
+        <h3>Enhanced Functions:</h3>
+        <ul>
+            <li><code>addEventListenersToTable2()</code> - Better source name cell detection</li>
+            <li><code>updateAllMonthColumns()</code> - Uses year-aware month naming</li>
+            <li><code>recalculateMonthSequence()</code> - Maintains year progression</li>
+            <li><code>addCoalColumn()</code> - Creates months with year display</li>
+        </ul>
+        
+        <h3>Validation Matrix:</h3>
+        <table style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+            <tr style="background: #e9ecef;">
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Location</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Input Type</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Validation Rules</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">Table2 Source Names</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">contenteditable</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">No restrictions - all characters</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">Table2 Data Cells</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">contenteditable</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">Numbers only, single decimal, negatives OK</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">Table1 All Inputs</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">input type="number"</td>
+                <td style="border: 1px solid #dee2e6; padding: 8px;">Positive numbers only, no negatives</td>
+            </tr>
+        </table>
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px;">
+        <a href="Coal-Cal-Cleaned.html" target="_blank" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            🚀 Test All Final Fixes in Coal Calculator
+        </a>
+    </p>
+</body>
+</html>

@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coal Requirement Calculator - Professional</title>
+    
+    <!-- Bootstrap 5.3.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Font Awesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+/* Professional Glass-morphism Design */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --text-primary: #2d3748;
+    --text-secondary: #4a5568;
+    --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --shadow-hover: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--primary-gradient);
+    min-height: 100vh;
+    padding: 20px 0;
+    overflow-x: hidden;
+}
+
+/* Main Container */
+.main-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.calculator-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-light);
+    padding: 30px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    animation: slideInUp 0.8s ease-out;
+    transition: all 0.3s ease;
+}
+
+.calculator-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px 0 rgba(31, 38, 135, 0.6);
+}
+
+.calculator-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--success-gradient);
+    z-index: 1;
+}
+
+/* Back Button */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Title */
+.calculator-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--success-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 60px 0 40px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeInDown 1s ease-out 0.2s both;
+}
+
+.table-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.table-title i {
+    color: #4facfe;
+    margin-right: 12px;
+}
+
+/* Input Groups - Matching Coal Linkage Advance Style */
+.input-group {
+    margin-bottom: 16px;
+    animation: slideInRight 0.6s ease-out calc(var(--animation-delay, 0) * 0.1s) both;
+    transition: all 0.3s ease;
+}
+
+.input-group:hover {
+    transform: translateX(5px);
+}
+
+.input-group-prepend {
+    display: flex;
+}
+
+.input-group-text1 {
+    background: linear-gradient(135deg, #495057, #343a40);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    min-width: 200px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.input-group-text1:hover {
+    background: linear-gradient(135deg, #5a6268, #495057);
+    transform: scale(1.02);
+}
+
+.input-group-text2 {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    min-width: 80px;
+    width: 120px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.input-group-text2:hover {
+    background: #f8f9fa;
+    transform: scale(1.02);
+}
+
+.form-control {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+    background: rgba(255, 255, 255, 0.95);
+    transform: scale(1.02);
+}
+
+/* Instruction Message */
+.instruction-message {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-primary);
+    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
+}
+
+.instruction-message:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Results Display */
+.results-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: var(--shadow-light);
+    animation: slideInUp 0.5s ease-out;
+    transition: all 0.3s ease;
+}
+
+.results-container:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.result-badge {
+    background: var(--success-gradient);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 2px;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+}
+
+.additional-info {
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin: 2px;
+    display: inline-block;
+    border: 1px solid var(--glass-border);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-custom {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.btn-custom:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-hover);
+}
+
+.btn-primary-custom {
+    background: var(--success-gradient);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.btn-primary-custom:hover {
+    background: var(--secondary-gradient);
+    color: white;
+}
+
+/* Floating Action Buttons */
+.floating-icons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.floating-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--success-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.floating-icon:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 12px 35px rgba(79, 172, 254, 0.6);
+    color: white;
+}
+
+/* Export Dropdown */
+.export-dropdown {
+    position: absolute;
+    right: 0;
+    bottom: 70px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-light);
+    padding: 8px;
+    min-width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.export-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.export-option {
+    display: flex;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    color: var(--text-primary);
+    text-decoration: none;
+    border: none;
+    background: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.export-option:hover {
+    background: rgba(255, 255, 255, 1);
+    color: var(--text-primary);
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+/* Formula Sidebar */
+.formula-sidebar {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 380px;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid var(--glass-border);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+    transition: right 0.3s ease;
+    z-index: 1001;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.formula-sidebar.show {
+    right: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.formula-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--glass-border);
+}
+
+.formula-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.formula-equation {
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+/* Error Badges */
+.error-badge {
+    background: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: inline-block;
+    margin: 4px 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    .calculator-container {
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 100%;
+    }
+    
+    .table-title {
+        font-size: 1.4rem;
+        margin-top: 40px;
+        margin-bottom: 16px;
+    }
+    
+    .input-group-text1 {
+        min-width: 160px;
+        width: 160px;
+        font-size: 0.75rem;
+        padding: 6px 8px;
+    }
+    
+    .input-group-text2 {
+        min-width: 60px;
+        width: 100px;
+        font-size: 0.75rem;
+        padding: 6px 4px;
+    }
+    
+    .form-control {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+    }
+    
+    .floating-icons {
+        bottom: 20px;
+        right: 15px;
+        gap: 10px;
+    }
+    
+    .floating-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
+    }
+    
+    .formula-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 16px;
+    }
+    
+    .btn-custom {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .results-container {
+        padding: 12px;
+        margin: 12px 0;
+    }
+    
+    .result-badge {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+    
+    .additional-info {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+    
+    .instruction-message {
+        padding: 12px;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile Export Dropdown */
+    .export-dropdown {
+        position: fixed;
+        bottom: 100px;
+        left: 20px;
+        right: auto;
+        top: auto;
+        min-width: 120px;
+        padding: 6px 0;
+        flex-direction: row;
+        gap: 12px;
+    }
+    
+    .export-option {
+        width: 44px;
+        height: 44px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        text-align: center;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-container {
+        align-items: flex-start;
+        padding-top: 15px;
+    }
+    
+    .calculator-container {
+        padding: 15px 10px;
+        margin: 15px 5px 0 5px;
+        border-radius: 16px;
+    }
+    
+    .back-button {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .table-title {
+        font-size: 1.3rem;
+        margin-top: 50px;
+    }
+    
+    .input-group-text1 {
+        min-width: 140px;
+        width: 160px;
+        font-size: 0.8rem;
+        padding: 5px 6px;
+    }
+    
+    .input-group-text2 {
+        min-width: 50px;
+        width: 80px;
+        font-size: 0.7rem;
+        padding: 5px 3px;
+    }
+    
+    .form-control {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+    
+    .floating-icons {
+        bottom: 15px;
+        right: 10px;
+    }
+    
+    .floating-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 0.9rem;
+    }
+    
+    .results-container {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .instruction-message {
+        padding: 10px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Mobile Export Dropdown for smaller screens */
+    .export-dropdown {
+        position: fixed;
+        bottom: 80px;
+        left: 15px;
+        right: auto;
+        top: auto;
+        min-width: 100px;
+        padding: 4px 0;
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .export-option {
+        width: 36px;
+        height: 36px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+}
+
+/* Animation for result updates */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: var(--shadow-light);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(79, 172, 254, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+    }
+}
+
+.result-badge, .additional-info {
+    animation: fadeInUp 0.5s ease;
+}
+
+.floating-icon {
+    animation: glow 2s infinite;
+}
+
+/* Stored data counter */
+.data-counter {
+    background: var(--secondary-gradient);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 8px;
+    display: inline-block;
+    min-width: 24px;
+    text-align: center;
+    animation: pulse 1.5s infinite;
+}
+</style>
+
+</head>
+<body>
+
+<div class="main-container">
+    <div class="calculator-container">
+        <!-- Back Button -->
+        <a href="javascript:void(0)" onclick="goBackToCalculators()" class="back-button">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Calculators
+        </a>
+
+        <!-- Main Content Grid -->
+        <div class="row justify-content-center">
+            <!-- Input Section -->
+            <div class="col-lg-8 col-md-10 col-sm-12">
+                <h3 class="table-title">
+                    <i class="fas fa-cogs me-2"></i>
+                    Coal Requirement Calculator
+                </h3>
+                
+                <!-- Instruction Message -->
+                <div class="instruction-message" id="instruction-message">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Enter values in any 5 to calculate the 6th
+                </div>
+
+                <!-- Results Display - Moved Above Inputs -->
+                <div class="results-container" id="results-display" style="display: none;">
+                    <h5 class="mb-3">
+                        <i class="fas fa-calculator me-2"></i>
+                        Calculation Results
+                    </h5>
+                    <div id="calculated-result"></div>
+                    <div id="additional-info" class="mt-2"></div>
+                </div>
+                
+                <!-- Generation Capacity -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 1;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Generation Capacity</span>
+                        <span class="input-group-text2">MW</span>
+                    </div>
+                    <input type="number" class="form-control" step="1" min="0" id="capacity-gen" placeholder="2300" required>
+                </div>
+
+                <!-- Plant Load Factor -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 2;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Plant Load Factor</span>
+                        <span class="input-group-text2">%</span>
+                    </div>
+                    <input type="number" class="form-control" step="0.01" min="0" max="100" id="plf-gen" placeholder="85.00" required>
+                </div>
+
+                <!-- Number of Days -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 3;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Number of Days</span>
+                        <span class="input-group-text2">Days</span>
+                    </div>
+                    <input type="number" class="form-control" step="1" min="0" id="days-gen" placeholder="365" required>
+                </div>
+
+                <!-- Station Heat Rate -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 4;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Station Heat Rate</span>
+                        <span class="input-group-text2">kcal/kWh</span>
+                    </div>
+                    <input type="number" class="form-control" step="0.01" min="0" id="shr-gen" placeholder="2700.00" required>
+                </div>
+
+                <!-- GCV -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 5;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Gross Calorific Value</span>
+                        <span class="input-group-text2">kcal/kg</span>
+                    </div>
+                    <input type="number" class="form-control" step="0.01" min="0" id="gcv-gen" placeholder="4300.00" required>
+                </div>
+
+                <!-- Coal Requirement -->
+                <div class="input-group input-group-sm mb-2" style="--animation-delay: 6;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Coal Requirement</span>
+                        <span class="input-group-text2">Lakh MT</span>
+                    </div>
+                    <input type="number" class="form-control" step="0.00001" min="0" id="coal-req-gen" placeholder="" required>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons" style="--animation-delay: 7;">
+                    <button class="btn btn-primary-custom" onclick="storeCurrentData()">
+                        <i class="fas fa-save me-2"></i>
+                        Store Data
+                        <span class="data-counter" id="stored-count">0</span>
+                    </button>
+                    <button class="btn btn-custom" onclick="clearStoredData()">
+                        <i class="fas fa-trash me-2"></i>
+                        Clear Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Buttons -->
+<div class="floating-icons">
+    <button class="floating-icon" onclick="toggleFormulaSidebar()" title="View Formulas">
+        <span style="font-weight: bold; font-style: italic;">fx</span>
+    </button>
+    <div style="position: relative;">
+        <button class="floating-icon" id="exportBtn" onclick="toggleExportMenu()" title="Export Options">
+            <i class="fas fa-download"></i>
+        </button>
+        <div class="export-dropdown" id="exportDropdown">
+            <button class="export-option" onclick="exportToPDF()" title="Export to PDF">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+            <button class="export-option" onclick="exportToJPG()" title="Export to JPG">
+                <i class="fas fa-image"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Formula Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeFormulaSidebar()"></div>
+<div class="formula-sidebar" id="formulaSidebar">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+            <i class="fas fa-calculator me-2"></i>
+            Formulas
+        </h4>
+        <button class="btn btn-sm btn-custom" onclick="closeFormulaSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Generation Capacity</div>
+        <div class="formula-equation">
+            [Coal Requirement × {GCV × 100000000}] / [Days × 24 × PLF × 10 × SHR]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Plant Load Factor (PLF)</div>
+        <div class="formula-equation">
+            [Coal Requirement × {GCV × 100000000}] / [Days × 24 × Generation Capacity × 10 × SHR]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Days</div>
+        <div class="formula-equation">
+            [Coal Requirement × {GCV × 100000000}] / [PLF × 24 × Generation Capacity × 10 × SHR]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Station Heat Rate (SHR)</div>
+        <div class="formula-equation">
+            [Coal Requirement × {GCV × 100000000}] / [Days × 24 × Generation Capacity × 10 × PLF]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Gross Calorific Value (GCV)</div>
+        <div class="formula-equation">
+            [PLF × {Days × 24 × Generation Capacity × 10 × SHR}] / [Coal Requirement × 100000000]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Coal Requirement</div>
+        <div class="formula-equation">
+            [Generation Capacity × Days × 24 × PLF × 10 × SHR] / [GCV × 100000000]
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Specific Coal Consumption</div>
+        <div class="formula-equation">
+            SHR / GCV
+        </div>
+    </div>
+    
+    <div class="formula-item">
+        <div class="formula-title">Units Generated</div>
+        <div class="formula-equation">
+            [Generation Capacity × PLF × Days × 24 × 10 / 100000]
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let storedCalculations = [];
+let inputCount = 0;
+
+// Back Button Functionality
+function goBackToCalculators() {
+    // Try to go back to parent window if opened from main app
+    if (window.opener && !window.opener.closed) {
+        try {
+            // If opened from main app, switch focus back and close this tab
+            window.opener.focus();
+            // Call function to show calculators page in parent window
+            if (typeof window.opener.showCalculatorsPage === 'function') {
+                window.opener.showCalculatorsPage();
+            }
+            window.close();
+        } catch (e) {
+            // If cross-origin or other security issues, fallback to alert
+            alert('Please use the browser back button or close this tab to return to the main application.');
+        }
+    } else {
+        // If no parent window, try to navigate to main app
+        try {
+            window.location.href = 'index.html#calculators';
+        } catch (e) {
+            alert('Please use the browser back button to return to the main application.');
+        }
+    }
+}
+
+// Floating Icons Functionality
+function toggleExportMenu() {
+    const dropdown = document.getElementById('exportDropdown');
+    
+    if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+    } else {
+        dropdown.classList.add('show');
+    }
+}
+
+function closeExportMenu() {
+    const dropdown = document.getElementById('exportDropdown');
+    dropdown.classList.remove('show');
+}
+
+// Formula Sidebar Functionality
+function toggleFormulaSidebar() {
+    const sidebar = document.getElementById('formulaSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar.classList.contains('show')) {
+        overlay.style.display = 'none';
+    } else {
+        overlay.style.display = 'block';
+    }
+    
+    sidebar.classList.toggle('show');
+}
+
+function closeFormulaSidebar() {
+    const sidebar = document.getElementById('formulaSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.remove('show');
+    overlay.style.display = 'none';
+}
+
+// Close menus when clicking outside
+document.addEventListener('click', function(event) {
+    const exportBtn = event.target.closest('#exportBtn');
+    const exportDropdown = document.getElementById('exportDropdown');
+    const formulaSidebar = document.getElementById('formulaSidebar');
+    const formulaBtn = event.target.closest('[onclick*="toggleFormulaSidebar"]');
+    
+    // Close export menu if clicking outside
+    if (!exportBtn && exportDropdown && exportDropdown.classList.contains('show')) {
+        closeExportMenu();
+    }
+    
+    // Close formula sidebar if clicking outside
+    if (!formulaBtn && formulaSidebar && formulaSidebar.classList.contains('show') && !formulaSidebar.contains(event.target)) {
+        closeFormulaSidebar();
+    }
+});
+
+// Helper function to format numbers with Indian numbering system
+function formatNumber(number, decimals = 2) {
+    const fixedNumber = parseFloat(number).toFixed(decimals);
+    const parts = fixedNumber.split('.');
+    const integerPart = parts[0];
+    const decimalPart = parts[1];
+    
+    // Apply Indian numbering system
+    let formattedInteger = '';
+    const length = integerPart.length;
+    
+    if (length <= 3) {
+        formattedInteger = integerPart;
+    } else {
+        // First 3 digits from right
+        formattedInteger = integerPart.slice(-3);
+        let remaining = integerPart.slice(0, -3);
+        
+        // Add commas every 2 digits for the remaining part
+        while (remaining.length > 0) {
+            if (remaining.length <= 2) {
+                formattedInteger = remaining + ',' + formattedInteger;
+                break;
+            } else {
+                formattedInteger = remaining.slice(-2) + ',' + formattedInteger;
+                remaining = remaining.slice(0, -2);
+            }
+        }
+    }
+    
+    return decimals > 0 ? formattedInteger + '.' + decimalPart : formattedInteger;
+}
+
+// Input validation and restriction
+function restrictNumericInput(input) {
+    // Prevent non-numeric and negative input on keydown
+    input.addEventListener('keydown', function (event) {
+        const allowedKeys = [
+            'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'
+        ];
+        
+        if (allowedKeys.includes(event.key)) {
+            return; // Allow control keys
+        }
+        
+        if (event.key === '-' || event.key === '+') {
+            event.preventDefault(); // Block negative and positive signs
+            return;
+        }
+        
+        if (!/^[0-9.]$/.test(event.key)) {
+            event.preventDefault(); // Block non-numeric characters
+            return;
+        }
+        
+        // Allow only one decimal point
+        if (event.key === '.' && input.value.includes('.')) {
+            event.preventDefault();
+            return;
+        }
+    });
+
+    // Prevent pasting non-numeric or negative values
+    input.addEventListener('paste', function (event) {
+        event.preventDefault();
+        const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+        const cleanText = pastedText.replace(/[^0-9.]/g, '');
+        
+        // Allow only one decimal point
+        const decimalCount = (cleanText.match(/\./g) || []).length;
+        if (decimalCount <= 1 && cleanText !== '') {
+            input.value = cleanText;
+            calculateCoalRequirement();
+        }
+    });
+
+    // Validate on blur
+    input.addEventListener('blur', function () {
+        const value = parseFloat(input.value);
+        if (isNaN(value) || value < 0) {
+            input.value = '';
+            hideResults();
+            manageInputStates(); // Update input states when value is cleared
+        }
+    });
+}
+
+// Count filled inputs
+function countFilledInputs() {
+    const inputs = [
+        'capacity-gen', 'plf-gen', 'days-gen', 
+        'shr-gen', 'gcv-gen', 'coal-req-gen'
+    ];
+    
+    let count = 0;
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input && input.value.trim() !== '') {
+            count++;
+        }
+    });
+    
+    return count;
+}
+
+// Manage input states based on filled count (simplified - keep all inputs editable)
+function manageInputStates() {
+    const inputs = [
+        'capacity-gen', 'plf-gen', 'days-gen', 
+        'shr-gen', 'gcv-gen', 'coal-req-gen'
+    ];
+    
+    // Keep all inputs editable - remove any readonly states
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.removeAttribute('readonly');
+            input.style.backgroundColor = '';
+            input.style.cursor = '';
+            input.title = '';
+        }
+    });
+}
+
+// Update instruction message based on input count
+function updateInstructionMessage() {
+    const instructionMessage = document.getElementById('instruction-message');
+    const filledCount = countFilledInputs();
+    
+    if (filledCount === 0) {
+        instructionMessage.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            Enter values in any 5 parameters to calculate the 6th
+        `;
+        instructionMessage.style.display = 'block';
+    } else if (filledCount < 5) {
+        instructionMessage.innerHTML = `
+            <i class="fas fa-edit me-2"></i>
+            ${filledCount}/5 parameters entered. Enter ${5 - filledCount} more to calculate.
+        `;
+        instructionMessage.style.display = 'block';
+    } else if (filledCount === 5) {
+        instructionMessage.style.display = 'none'; // Hide when calculation is shown
+    } else if (filledCount === 6) {
+        showErrorMessage("Enter any 5 parameters only. One will be calculated automatically.");
+    }
+}
+
+// Apply input restrictions and add event listeners
+function initializeInputs() {
+    const inputs = [
+        'capacity-gen', 'plf-gen', 'days-gen', 
+        'shr-gen', 'gcv-gen', 'coal-req-gen'
+    ];
+    
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            restrictNumericInput(input);
+            input.addEventListener('input', function() {
+                calculateCoalRequirement();
+                updateInstructionMessage();
+                manageInputStates();
+            });
+            input.addEventListener('blur', validateInput);
+        }
+    });
+    
+    // Special handling for PLF to limit to 100%
+    const plfInput = document.getElementById('plf-gen');
+    if (plfInput) {
+        plfInput.addEventListener('input', function() {
+            if (parseFloat(this.value) > 100) {
+                this.value = 100;
+            }
+            calculateCoalRequirement();
+            updateInstructionMessage();
+            manageInputStates();
+        });
+    }
+    
+    // Initialize instruction message and input states
+    updateInstructionMessage();
+    manageInputStates();
+}
+
+// Input validation function (simplified)
+function validateInput(event) {
+    const input = event.target;
+    const value = input.value.trim();
+
+    // Just clear invalid values, no error messages
+    if (value !== "" && (isNaN(value) || parseFloat(value) < 0)) {
+        input.value = '';
+        hideResults();
+        manageInputStates();
+    }
+}
+
+// Main calculation function with corrected formulas
+function calculateCoalRequirement() {
+    updateInstructionMessage();
+    manageInputStates(); // Manage input states
+    
+    const inputs = {
+        capacity: parseFloat(document.getElementById('capacity-gen').value) || null,
+        plf: parseFloat(document.getElementById('plf-gen').value) || null,
+        days: parseFloat(document.getElementById('days-gen').value) || null,
+        shr: parseFloat(document.getElementById('shr-gen').value) || null,
+        gcv: parseFloat(document.getElementById('gcv-gen').value) || null,
+        coalReq: parseFloat(document.getElementById('coal-req-gen').value) || null
+    };
+
+    // Count filled inputs - must be exactly 5
+    const filledCount = Object.values(inputs).filter(val => val !== null).length;
+    
+    // Show error if not exactly 5 inputs are filled
+    if (filledCount !== 5) {
+        if (filledCount === 6) {
+            showErrorMessage("Enter any 5 parameters only. One will be calculated automatically.");
+        } else if (filledCount > 0) {
+            showErrorMessage(`Enter any 5 inputs. Currently ${filledCount}/5 parameters entered.`);
+        }
+        hideResults();
+        return;
+    }
+
+    let calculatedValue = null;
+    let calculatedParam = null;
+
+    // Formula: Coal Requirement (Lakh MT) = (Capacity × PLF × Days × 24 × SHR) / (GCV × 10^5)
+    // Where: 10^5 = 100000 (conversion factor from MT to Lakh MT)
+
+    // Calculate missing parameter using correct formulas from original file
+    if (inputs.capacity === null) {
+        // Calculate Capacity: Capacity = (Coal Req × GCV × 100000000) / (Days × 24 × PLF × 10 × SHR)
+        calculatedValue = (inputs.coalReq * (inputs.gcv * 100000000)) / (inputs.days * 24 * inputs.plf * 10 * inputs.shr);
+        calculatedParam = 'capacity';
+        // DON'T fill the input - only show in results
+    } else if (inputs.plf === null) {
+        // Calculate PLF: PLF = (Coal Req × GCV × 100000000) / (Days × 24 × Capacity × 10 × SHR)
+        calculatedValue = (inputs.coalReq * (inputs.gcv * 100000000)) / (inputs.days * 24 * inputs.capacity * 10 * inputs.shr);
+        calculatedParam = 'plf';
+        // DON'T fill the input - only show in results
+    } else if (inputs.days === null) {
+        // Calculate Days: Days = (Coal Req × GCV × 100000000) / (PLF × 24 × Capacity × 10 × SHR)
+        calculatedValue = (inputs.coalReq * (inputs.gcv * 100000000)) / (inputs.plf * 24 * inputs.capacity * 10 * inputs.shr);
+        calculatedParam = 'days';
+        // DON'T fill the input - only show in results
+    } else if (inputs.shr === null) {
+        // Calculate SHR: SHR = (Coal Req × GCV × 100000000) / (Days × 24 × Capacity × 10 × PLF)
+        calculatedValue = (inputs.coalReq * (inputs.gcv * 100000000)) / (inputs.days * 24 * inputs.capacity * 10 * inputs.plf);
+        calculatedParam = 'shr';
+        // DON'T fill the input - only show in results
+    } else if (inputs.gcv === null) {
+        // Calculate GCV: GCV = (PLF × Days × 24 × Capacity × 10 × SHR) / (Coal Req × 100000000)
+        calculatedValue = (inputs.plf * (inputs.days * 24 * inputs.capacity * 10 * inputs.shr)) / (inputs.coalReq * 100000000);
+        calculatedParam = 'gcv';
+        // DON'T fill the input - only show in results
+    } else if (inputs.coalReq === null) {
+        // Calculate Coal Requirement: Coal Req = (Capacity × Days × 24 × PLF × 10 × SHR) / (GCV × 100000000)
+        calculatedValue = (inputs.capacity * inputs.days * 24 * inputs.plf * 10 * inputs.shr) / (inputs.gcv * 100000000);
+        calculatedParam = 'coalReq';
+        // DON'T fill the input - only show in results
+    }
+
+    // Use calculated values for additional calculations if needed
+    const finalValues = {
+        capacity: inputs.capacity !== null ? inputs.capacity : (calculatedParam === 'capacity' ? calculatedValue : 0),
+        plf: inputs.plf !== null ? inputs.plf : (calculatedParam === 'plf' ? calculatedValue : 0),
+        days: inputs.days !== null ? inputs.days : (calculatedParam === 'days' ? calculatedValue : 0),
+        shr: inputs.shr !== null ? inputs.shr : (calculatedParam === 'shr' ? calculatedValue : 0),
+        gcv: inputs.gcv !== null ? inputs.gcv : (calculatedParam === 'gcv' ? calculatedValue : 0),
+        coalReq: inputs.coalReq !== null ? inputs.coalReq : (calculatedParam === 'coalReq' ? calculatedValue : 0)
+    };
+
+    // Calculate additional parameters using complete values
+    const sccGen = finalValues.shr / finalValues.gcv; // Specific Coal Consumption
+    const unitsGenerated = finalValues.capacity * finalValues.plf * finalValues.days * 24 * 10 / 100000; // LUs
+    const unitsGeneratedPerDay = unitsGenerated / finalValues.days; // LUs per day
+
+    // Display results
+    showResults(calculatedParam, calculatedValue, finalValues, sccGen, unitsGenerated, unitsGeneratedPerDay);
+    hideErrorMessage();
+}
+
+// Show calculation results
+function showResults(calculatedParam, calculatedValue, finalValues, sccGen, unitsGenerated, unitsGeneratedPerDay) {
+    const resultsContainer = document.getElementById('results-display');
+    const calculatedResult = document.getElementById('calculated-result');
+    const additionalInfo = document.getElementById('additional-info');
+    
+    const paramNames = {
+        'capacity': 'Generation Capacity',
+        'plf': 'Plant Load Factor',
+        'days': 'Number of Days',
+        'shr': 'Station Heat Rate',
+        'gcv': 'Gross Calorific Value',
+        'coalReq': 'Coal Requirement'
+    };
+    
+    const paramUnits = {
+        'capacity': 'MW',
+        'plf': '%',
+        'days': 'Days',
+        'shr': 'kcal/kWh',
+        'gcv': 'kcal/kg',
+        'coalReq': 'Lakh MT'
+    };
+
+    if (calculatedParam && calculatedValue !== null) {
+        calculatedResult.innerHTML = `
+            <div class="result-badge">
+                <i class="fas fa-bolt me-2"></i>
+                Calculated ${paramNames[calculatedParam]}: ${formatNumber(calculatedValue, calculatedParam === 'days' ? 1 : 2)} ${paramUnits[calculatedParam]}
+            </div>
+        `;
+    }
+
+    additionalInfo.innerHTML = `
+        <div class="additional-info">
+            <i class="fas fa-chart-line me-2"></i>
+            Specific Coal Consumption: ${formatNumber(sccGen, 3)} kg/kWh
+        </div>
+        <div class="additional-info">
+            <i class="fas fa-fire me-2"></i>
+            Units Generated: ${formatNumber(unitsGeneratedPerDay, 2)} LUs per day and ${formatNumber(unitsGenerated, 2)} LUs in ${finalValues.days.toFixed(1)} days
+        </div>
+    `;
+
+    resultsContainer.style.display = 'block';
+}
+
+// Hide results
+function hideResults() {
+    const resultsContainer = document.getElementById('results-display');
+    resultsContainer.style.display = 'none';
+    manageInputStates(); // Update input states when results are hidden
+}
+
+// Show error message
+function showErrorMessage(message) {
+    const instructionMessage = document.getElementById('instruction-message');
+    instructionMessage.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+        ${message}
+    `;
+    instructionMessage.style.display = 'block';
+    instructionMessage.style.color = '#dc3545'; // Red color for errors
+}
+
+// Hide error message and show normal instruction
+function hideErrorMessage() {
+    const instructionMessage = document.getElementById('instruction-message');
+    instructionMessage.style.color = ''; // Reset color
+    updateInstructionMessage(); // Show normal instruction
+}
+
+// Store current calculation data
+function storeCurrentData() {
+    let capacity = parseFloat(document.getElementById('capacity-gen').value);
+    let plf = parseFloat(document.getElementById('plf-gen').value);
+    let days = parseFloat(document.getElementById('days-gen').value);
+    let shr = parseFloat(document.getElementById('shr-gen').value);
+    let gcv = parseFloat(document.getElementById('gcv-gen').value);
+    let coalReq = parseFloat(document.getElementById('coal-req-gen').value);
+
+    // Count how many are missing
+    let missingCount = [
+        isNaN(capacity),
+        isNaN(plf),
+        isNaN(days),
+        isNaN(shr),
+        isNaN(gcv),
+        isNaN(coalReq)
+    ].filter(Boolean).length;
+
+    if (missingCount > 1) {
+        alert("Please enter any 5 inputs to calculate and store data.");
+        return;
+    }
+
+    // Calculate the missing parameter using the same formulas as the original
+    if (isNaN(capacity)) {
+        capacity = (coalReq * (gcv * 100000000)) / (days * 24 * plf * 10 * shr);
+    } else if (isNaN(plf)) {
+        plf = (coalReq * (gcv * 100000000)) / (days * 24 * capacity * 10 * shr);
+    } else if (isNaN(days)) {
+        days = (coalReq * (gcv * 100000000)) / (plf * 24 * capacity * 10 * shr);
+    } else if (isNaN(shr)) {
+        shr = (coalReq * (gcv * 100000000)) / (days * 24 * capacity * 10 * plf);
+    } else if (isNaN(gcv)) {
+        gcv = (plf * (days * 24 * capacity * 10 * shr)) / (coalReq * 100000000);
+    } else if (isNaN(coalReq)) {
+        coalReq = (capacity * days * 24 * plf * 10 * shr) / (gcv * 100000000);
+    }
+
+    // Calculate additional derived values
+    const energyGenerated = (capacity * plf * days * 24) / 100;
+    const heatInput = (energyGenerated * shr) / 1000000;
+    const coalInMT = coalReq * 100000;
+    const sccGen = shr / gcv;
+
+    const calculation = {
+        timestamp: new Date().toLocaleString('en-IN'),
+        capacity: capacity,
+        plf: plf,
+        days: days,
+        shr: shr,
+        gcv: gcv,
+        coalReq: coalReq,
+        energyGenerated: energyGenerated,
+        heatInput: heatInput,
+        coalInMT: coalInMT,
+        sccGen: sccGen
+    };
+
+    storedCalculations.push(calculation);
+    updateStoredCount();
+    
+    // Show success feedback
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check me-2"></i>Stored Successfully!';
+    setTimeout(() => {
+        button.innerHTML = originalText;
+    }, 2000);
+}
+
+// Clear stored data
+function clearStoredData() {
+    if (storedCalculations.length === 0) {
+        alert('No data to clear.');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to clear all stored data?')) {
+        storedCalculations = [];
+        updateStoredCount();
+        alert('All stored data has been cleared.');
+    }
+}
+
+// Update stored data counter
+function updateStoredCount() {
+    const counter = document.getElementById('stored-count');
+    counter.textContent = storedCalculations.length;
+}
+
+// Export to PDF function
+function exportToPDF() {
+    closeExportMenu();
+    
+    if (storedCalculations.length === 0) {
+        alert('No data to export. Please store some calculations first.');
+        return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    // Add professional title with styling
+    pdf.setFontSize(18);
+    pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(31, 38, 135);
+    pdf.text('Coal Requirement Calculator', 105, 25, { align: 'center' });
+    
+    // Add subtitle
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'normal');
+    pdf.setTextColor(74, 85, 104);
+    pdf.text('Calculation Results Report', 105, 35, { align: 'center' });
+    
+    // Add decorative line
+    pdf.setDrawColor(79, 172, 254);
+    pdf.setLineWidth(1);
+    pdf.line(60, 40, 150, 40);
+    
+    // Prepare table data with correct columns
+    const headers = [
+        'S.No.',
+        'Capacity\n(MW)',
+        'PLF\n(%)',
+        'Days',
+        'SHR\n(kcal/kWh)',
+        'GCV\n(kcal/kg)',
+        'Coal Req\n(Lakh MT)',
+        'SCC\n(kg/kWh)',
+        'Units Generated\n(LUs)'
+    ];
+    
+    const data = storedCalculations.map((calc, index) => [
+        index + 1,
+        formatNumber(calc.capacity, 0),
+        formatNumber(calc.plf, 2),
+        formatNumber(calc.days, 0),
+        formatNumber(calc.shr, 0),
+        formatNumber(calc.gcv, 0),
+        formatNumber(calc.coalReq, 5),
+        formatNumber(calc.sccGen, 3),
+        formatNumber(calc.energyGenerated / 10, 2) // Convert MWh to LUs
+    ]);
+    
+    // Create professional table
+    pdf.autoTable({
+        head: [headers],
+        body: data,
+        startY: 50,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [79, 172, 254],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9,
+            halign: 'center',
+            valign: 'middle',
+            cellPadding: 3
+        },
+        bodyStyles: {
+            fontSize: 8,
+            halign: 'center',
+            valign: 'middle',
+            cellPadding: 2
+        },
+        columnStyles: {
+            0: { cellWidth: 15 },
+            1: { cellWidth: 20 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 15 },
+            4: { cellWidth: 22 },
+            5: { cellWidth: 22 },
+            6: { cellWidth: 25 },
+            7: { cellWidth: 20 },
+            8: { cellWidth: 28 }
+        },
+        margin: { left: 15, right: 15 },
+        styles: {
+            lineColor: [200, 200, 200],
+            lineWidth: 0.1,
+            overflow: 'linebreak'
+        },
+        alternateRowStyles: {
+            fillColor: [248, 249, 250]
+        }
+    });
+    
+    // Add timestamp at bottom
+    const finalY = pdf.lastAutoTable.finalY || 50;
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(`Report Generated: ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN')}`, 105, finalY + 20, { align: 'center' });
+    
+    // Save the PDF
+    pdf.save(`Coal-Requirement-Calculator-Results-${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+// Export to JPG function
+function exportToJPG() {
+    closeExportMenu();
+    
+    if (storedCalculations.length === 0) {
+        alert('No data to export. Please store some calculations first.');
+        return;
+    }
+    
+    // Create a professional report container for A4 size
+    const reportContainer = document.createElement('div');
+    reportContainer.style.cssText = `
+        width: 794px;
+        min-height: 1123px;
+        background: white;
+        padding: 40px;
+        font-family: 'Segoe UI', sans-serif;
+        color: #333;
+        box-sizing: border-box;
+        position: absolute;
+        left: -9999px;
+        top: 0;
+    `;
+    
+    // Create report HTML with professional styling
+    let tableRows = storedCalculations.map((calc, index) => `
+        <tr style="border-bottom: 1px solid #dee2e6; ${index % 2 === 1 ? 'background-color: #f8f9fa;' : ''}">
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px; font-weight: 500;">${index + 1}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.capacity, 0)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.plf, 2)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.days, 0)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.shr, 0)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.gcv, 0)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.coalReq, 5)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.sccGen, 3)}</td>
+            <td style="padding: 8px 4px; text-align: center; font-size: 10px;">${formatNumber(calc.energyGenerated / 10, 2)}</td>
+        </tr>
+    `).join('');
+    
+    reportContainer.innerHTML = `
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="color: #1f2687; margin: 0 0 10px 0; font-size: 28px; font-weight: 700;">Coal Requirement Calculator</h1>
+            <h2 style="color: #4a5568; margin: 0 0 20px 0; font-size: 20px; font-weight: 500;">Calculation Results Report</h2>
+            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); height: 4px; width: 300px; margin: 0 auto; border-radius: 2px;"></div>
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 2px solid #1f2687; font-size: 11px; margin-bottom: 30px;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">S.No.</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">Capacity<br>(MW)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">PLF<br>(%)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">Days</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">SHR<br>(kcal/kWh)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">GCV<br>(kcal/kg)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">Coal Req<br>(Lakh MT)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px; border-right: 1px solid rgba(255,255,255,0.3);">SCC<br>(kg/kWh)</th>
+                    <th style="padding: 12px 8px; text-align: center; font-weight: 700; font-size: 11px;">Units Generated<br>(LUs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
+        
+        <div style="text-align: center; color: #666; font-size: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <p style="margin: 0;"><strong>Report Generated:</strong> ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN')}</p>
+            <p style="margin: 5px 0 0 0; font-size: 10px; color: #999;">Total Calculations: ${storedCalculations.length}</p>
+        </div>
+    `;
+    
+    document.body.appendChild(reportContainer);
+    
+    // Generate high-quality A4-sized image
+    html2canvas(reportContainer, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123, // A4 height
+        foreignObjectRendering: false
+    }).then(canvas => {
+        // Create download link
+        const link = document.createElement('a');
+        link.download = `Coal-Requirement-Calculator-Results-${new Date().toISOString().split('T')[0]}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Cleanup
+        document.body.removeChild(reportContainer);
+        
+        // Trigger download
+        link.click();
+    }).catch(error => {
+        console.error('Error generating JPG:', error);
+        document.body.removeChild(reportContainer);
+        alert('Error generating JPG report. Please try again.');
+    });
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Coal Requirement Calculator - Professional loaded');
+    
+    // Initialize input restrictions and calculations
+    initializeInputs();
+    
+    // Update stored count on load
+    updateStoredCount();
+    
+    // Prevent form submission on Enter key
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

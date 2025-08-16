@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blended Coal Analysis Calculator</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .calculator-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 25px 0 20px 0;
+            padding: 10px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .input-label {
+            color: white;
+            font-weight: 500;
+            min-width: 180px;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+            color: white;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .unit-label {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            min-width: 80px;
+            text-align: center;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .results-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .results-table th {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            padding: 15px 10px;
+            text-align: center;
+            border: none;
+            font-size: 14px;
+        }
+
+        .results-table td {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+        }
+
+        .results-table tbody tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .results-table tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .instruction-message {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .floating-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .export-dropdown {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            min-width: 180px;
+        }
+
+        .export-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .export-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .formula-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-left: 4px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .formula-sidebar.active {
+            right: 0;
+        }
+
+        .formula-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .formula-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .formula-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-expression {
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .formula-fallback {
+            display: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .stored-calculations {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .stored-calculation-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stored-calculation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stored-calculation-summary {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .store-btn, .clear-btn {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+        }
+
+        .store-btn:hover, .clear-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .input-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .input-label {
+                min-width: auto;
+                text-align: center;
+                padding: 8px 0;
+            }
+
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .formula-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .results-table {
+                font-size: 12px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 8px 5px;
+            }
+
+            .back-button {
+                width: 40px;
+                height: 40px;
+                top: 15px;
+                left: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-title {
+                font-size: 24px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .form-control,
+            .unit-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    .blended-analysis-table td {
+        padding: 0.3rem 0.2rem;
+    }
+}
+
+</style>
+
+</head>
+<    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()" title="Back to Calculators">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <!-- Main Calculator Container -->
+    <div class="calculator-container">
+        <!-- Header -->
+        <div class="calculator-header">
+            <h1 class="calculator-title">Blended Coal Analysis Calculator</h1>
+            <p class="calculator-subtitle">Professional tool for analyzing blended coal economics and performance</p>
+        </div>
+
+        <!-- Error/Instruction Messages -->
+        <div class="error-message" id="errorMessage"></div>
+        <div class="instruction-message" id="instructionMessage">
+            <i class="fas fa-info-circle me-2"></i>
+            Please fill in all the required fields to see the blended coal analysis results
+        </div>
+
+        <!-- Coal Properties Section -->
+        <h3 class="section-title">
+            <i class="fas fa-fire me-2"></i>Coal Properties
+        </h3>
+
+        <div class="input-section">
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-tag me-2"></i>Coal Source Names
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="coalA-blending-name" placeholder="Indigenous Coal" data-allow-text="true">
+                    <input type="text" class="form-control" id="coalB-blending-name" placeholder="Imported Coal" data-allow-text="true">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-rupee-sign me-2"></i>Coal Cost
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="coal-cost-indian" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="coal-cost-imported" placeholder="0" step="0.01" min="0">
+                    <span class="unit-label">Rs/MT</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-train me-2"></i>Railway Freight
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="railway-freight-indian" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="railway-freight-imported" placeholder="0" step="0.01" min="0">
+                    <span class="unit-label">Rs/MT</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-thermometer-half me-2"></i>GCV (ARB)
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="gcv-arb-Indian" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="gcv-arb-Imported" placeholder="0" step="0.01" min="0">
+                    <span class="unit-label">kcal/kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plant Parameters Section -->
+        <h3 class="section-title">
+            <i class="fas fa-industry me-2"></i>Plant Parameters
+        </h3>
+
+        <div class="input-section">
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-bolt me-2"></i>Generation Capacity
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="generationcapacity-blended" placeholder="0" step="0.01" min="0">
+                    <span class="unit-label">MW</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-chart-line me-2"></i>Plant Load Factor
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="plf-blended" placeholder="0" step="0.01" min="0" max="100">
+                    <span class="unit-label">%</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-calendar me-2"></i>Number of Days
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="days-blended" placeholder="0" step="1" min="0" max="365">
+                    <span class="unit-label">Days</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-thermometer-three-quarters me-2"></i>Station Heat Rate
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="shr-blended" placeholder="0" step="0.01" min="0">
+                    <span class="unit-label">kcal/kWh</span>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <label class="input-label">
+                    <i class="fas fa-percentage me-2"></i>Blending Ratio
+                </label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="blending-ratio" placeholder="0" step="0.01" min="0" max="100">
+                    <span class="unit-label">%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Calculation Button -->
+        <div class="text-center">
+            <button class="store-btn" onclick="storeCalculation()" id="storeButton" disabled>
+                <i class="fas fa-save me-2"></i>Store Calculation
+            </button>
+            <button class="clear-btn" onclick="clearForm()">
+                <i class="fas fa-refresh me-2"></i>Clear Form
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h3 class="section-title">
+                <i class="fas fa-chart-bar me-2"></i>Analysis Results
+            </h3>
+
+            <div class="table-responsive">
+                <table class="results-table table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th id="coalA-header">Indigenous Coal</th>
+                            <th id="coalB-header">Imported Coal</th>
+                            <th>Blended Coal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quantity Required (Lakh MT)</strong></td>
+                            <td><span id="indian-coal-quantity"></span></td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Blending Ratio (%)</strong></td>
+                            <td><span id="indian-coal-quantity-ratio-after-blending"></span></td>
+                            <td><span id="imported-coal-quantity-ratio-after-blending"></span></td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quantity Required for Blending (Lakh MT)</strong></td>
+                            <td><span id="indian-coal-quantity-after-blending"></span></td>
+                            <td><span id="imported-coal-quantity-after-blending"></span></td>
+                            <td><span id="blendedcoal"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GCV ARB (kcal/kg)</strong></td>
+                            <td><span id="gcv-arb-Indian-table"></span></td>
+                            <td><span id="gcv-arb-Imported-tabel"></span></td>
+                            <td><span id="gcv-blended"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Landed Cost (Rs/MT)</strong></td>
+                            <td><span id="indian-coal-landed-charges-MT"></span></td>
+                            <td><span id="Imported-coal-landed-charges-MT"></span></td>
+                            <td><span id="landed-cost-blended-MT"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Landed Cost (Rs/MCal)</strong></td>
+                            <td><span id="indian-coal-landed-charges-MC"></span></td>
+                            <td><span id="Imported-coal-landed-charges-MC"></span></td>
+                            <td><span id="landed-cost-blended-MC"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Per Unit Cost (Rs/kWh)</strong></td>
+                            <td><span id="indian-coal-energy-charges"></span></td>
+                            <td><span id="Imported-coal-energy-charges"></span></td>
+                            <td><span id="blended-coal-energy-charges"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Specific Coal Consumption (kg/kWh)</strong></td>
+                            <td><span id="indian-coal-SCC"></span></td>
+                            <td><span id="Imported-coal-SCC"></span></td>
+                            <td><span id="blended-coal-SCC"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Increase in Per Unit Cost (Rs/kWh)</strong></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td><span id="comparison-result"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Additional Financial Liability (Rs.)</strong></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td><span id="additionalFinancialLiabilityImported-result"></span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Units Generated (LUs)</strong></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td><span id="unitsGeneratedBlended-result"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Stored Calculations -->
+        <div class="stored-calculations" id="storedCalculationsContainer" style="display: none;">
+            <h4 style="color: white; margin-bottom: 15px;">
+                <i class="fas fa-database me-2"></i>Stored Calculations
+            </h4>
+            <div id="storedCalculationsList"></div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
+            <i class="fas fa-calculator"></i>
+        </button>
+        <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+
+    <!-- Export Dropdown -->
+    <div class="export-dropdown" id="exportDropdown">
+        <button class="export-btn" onclick="exportToPDF()">
+            <i class="fas fa-file-pdf text-danger"></i>
+            Export as PDF
+        </button>
+        <button class="export-btn" onclick="exportToJPG()">
+            <i class="fas fa-image text-primary"></i>
+            Export as JPG
+        </button>
+    </div>
+
+    <!-- Formula Sidebar -->
+    <div class="formula-sidebar" id="formulaSidebar">
+        <div class="formula-header">
+            <h2 class="formula-title">Formulas</h2>
+            <button class="close-btn" onclick="toggleFormulas()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Landed Cost (Blended)} = \text{Landed Cost Indian} \times (1 - \frac{\text{Blending Ratio}}{100}) + \text{Landed Cost Imported} \times \frac{\text{Blending Ratio}}{100}$$
+                <div class="formula-fallback">Landed Cost (Blended) = Landed Cost Indian × (1 - Blending Ratio/100) + Landed Cost Imported × (Blending Ratio/100)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{GCV (Blended)} = \text{GCV Indian} \times (1 - \frac{\text{Blending Ratio}}{100}) + \text{GCV Imported} \times \frac{\text{Blending Ratio}}{100}$$
+                <div class="formula-fallback">GCV (Blended) = GCV Indian × (1 - Blending Ratio/100) + GCV Imported × (Blending Ratio/100)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Energy Charges (Blended)} = \frac{\text{Landed Cost (Blended)} \times \text{SHR}}{\text{GCV (Blended)} \times 1000}$$
+                <div class="formula-fallback">Energy Charges (Blended) = (Landed Cost (Blended) × SHR) ÷ (GCV (Blended) × 1000)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Generation} = \text{Capacity} \times \frac{\text{PLF}}{100} \times 24 \times \text{Days}$$
+                <div class="formula-fallback">Generation = Capacity × (PLF ÷ 100) × 24 × Days</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{SCC} = \frac{\text{SHR}}{\text{GCV}}$$
+                <div class="formula-fallback">SCC = SHR ÷ GCV</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Additional Financial Liability} = (\text{Energy Charges Blended} - \text{Energy Charges Indian}) \times \text{Generation}$$
+                <div class="formula-fallback">Additional Financial Liability = (Energy Charges Blended - Energy Charges Indian) × Generation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include necessary libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<!-- JavaScript for Professional Coal Blending Analysis -->
+<script>
+// Professional JavaScript with advanced features
+window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+        fontCache: 'global'
+    },
+    startup: {
+        ready() {
+            MathJax.startup.defaultReady();
+            console.log('MathJax is loaded and ready!');
+        }
+    }
+};
+
+// Global variables for professional features
+let storedCalculations = JSON.parse(localStorage.getItem('blendingCalculations')) || [];
+let calculationCounter = parseInt(localStorage.getItem('blendingCalculationCounter')) || 1;
+
+// Professional input validation
+document.addEventListener('DOMContentLoaded', function () {
+    function restrictNumericInput(input) {
+        input.addEventListener('keydown', function (event) {
+            const allowedKeys = [
+                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+            ];
+            if (allowedKeys.includes(event.key)) return;
+
+            if (event.key === "." && this.value.includes(".")) {
+                event.preventDefault();
+                return;
+            }
+            if (
+                event.key === '-' || event.key === '+' || event.key === 'e' ||
+                (!/^\d$/.test(event.key) && event.key !== ".")
+            ) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener('paste', function (event) {
+            const paste = (event.clipboardData || window.clipboardData).getData('text');
+            if (!/^\d*\.?\d*$/.test(paste)) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener('blur', function () {
+            const value = parseFloat(this.value.trim());
+            if (isNaN(value) || value < 0) {
+                this.value = "";
+            }
+        });
+    }
+
+    function applyUniversalNumericRestriction() {
+        document.querySelectorAll('input:not([data-allow-text="true"])').forEach(input => {
+            restrictNumericInput(input);
+        });
+    }
+
+    applyUniversalNumericRestriction();
+    
+    // Initialize professional features
+    initializeStoredCalculations();
+    setupEventListeners();
+    
+    // Prevent form submission on Enter
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    });
+});
+// Professional event listeners setup
+function setupEventListeners() {
+    const blendedInputs = [
+        "gcv-arb-Indian", "coal-cost-indian", "railway-freight-indian",
+        "gcv-arb-Imported", "coal-cost-imported", "railway-freight-imported",
+        "generationcapacity-blended", "plf-blended", "days-blended", 
+        "shr-blended", "blending-ratio"
+    ];
+
+    blendedInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', calculateBlendedCoalEnergyCharges);
+            input.addEventListener('input', showBlendingBadges);
+        }
+    });
+
+    // Coal name updates
+    const coalAInput = document.getElementById('coalA-blending-name');
+    const coalAHeader = document.getElementById('coalA-header');
+    if (coalAInput && coalAHeader) {
+        coalAInput.addEventListener('input', function () {
+            coalAHeader.textContent = coalAInput.value || 'Indigenous Coal';
+        });
+    }
+
+    const coalBInput = document.getElementById('coalB-blending-name');
+    const coalBHeader = document.getElementById('coalB-header');
+    if (coalBInput && coalBHeader) {
+        coalBInput.addEventListener('input', function () {
+            coalBHeader.textContent = coalBInput.value || 'Imported Coal';
+        });
+    }
+
+    // Enhanced input validation
+    blendedInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keydown', function(e) {
+                if (
+                    [46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                    ((e.ctrlKey || e.metaKey) && [65, 67, 86, 88, 90].indexOf(e.keyCode) !== -1) ||
+                    (e.keyCode >= 35 && e.keyCode <= 39)
+                ) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+                    (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+                if (e.key === '-' || e.key === '+' || e.key === 'e') {
+                    e.preventDefault();
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (parseFloat(input.value) < 0) input.value = '';
+                
+                // Auto-correct PLF if over 100
+                if (id === 'plf-blended' && parseFloat(input.value) > 100) {
+                    input.value = 100;
+                }
+            });
+        }
+    });
+}
+
+// Professional calculation function with enhanced features
+function calculateBlendedCoalEnergyCharges() {
+    try {
+        // Get input values with error handling
+        const inputs = {
+            gcvArbindian: parseFloat(document.getElementById("gcv-arb-Indian").value) || 0,
+            coalCostIndian: parseFloat(document.getElementById("coal-cost-indian").value) || 0,
+            railwayFreightIndian: parseFloat(document.getElementById("railway-freight-indian").value) || 0,
+            gcvArbimported: parseFloat(document.getElementById("gcv-arb-Imported").value) || 0,
+            coalCostImported: parseFloat(document.getElementById("coal-cost-imported").value) || 0,
+            railwayFreightImported: parseFloat(document.getElementById("railway-freight-imported").value) || 0,
+            generationcapacityblended: parseFloat(document.getElementById("generationcapacity-blended").value) || 0,
+            plfblended: Math.min(parseFloat(document.getElementById("plf-blended").value) || 0, 100),
+            daysblended: parseFloat(document.getElementById("days-blended").value) || 0,
+            shrblended: parseFloat(document.getElementById("shr-blended").value) || 0,
+            blendingRatio: parseFloat(document.getElementById("blending-ratio").value) || 0
+        };
+
+        // Validation
+        const requiredInputs = Object.values(inputs);
+        if (requiredInputs.some(val => isNaN(val) || val <= 0)) {
+            showErrorState();
+            return;
+        }
+
+        // Calculations with enhanced precision
+        const calculations = performBlendingCalculations(inputs);
+        
+        // Display results with professional formatting
+        displayResults(calculations, inputs);
+        
+        // Show success state
+        showSuccessState(calculations);
+        
+        // Auto-save calculation
+        autoSaveCalculation(inputs, calculations);
+        
+    } catch (error) {
+        console.error('Calculation error:', error);
+        showErrorState();
+    }
+}
+
+// Enhanced calculation engine
+function performBlendingCalculations(inputs) {
+    const {
+        gcvArbindian, coalCostIndian, railwayFreightIndian,
+        gcvArbimported, coalCostImported, railwayFreightImported,
+        generationcapacityblended, plfblended, daysblended,
+        shrblended, blendingRatio
+    } = inputs;
+
+    // Basic calculations
+    const landedCostIndian = coalCostIndian + railwayFreightIndian;
+    const landedCostImported = coalCostImported + railwayFreightImported;
+    const landedCostIndianMC = landedCostIndian / gcvArbindian;
+    const landedCostImportedMC = landedCostImported / gcvArbimported;
+
+    // Energy calculations
+    const energyChargesIndian = (landedCostIndian * shrblended) / (gcvArbindian * 1000);
+    const energyChargesImported = (landedCostImported * shrblended) / (gcvArbimported * 1000);
+    const sccIndian = shrblended / gcvArbindian;
+    const sccImported = shrblended / gcvArbimported;
+
+    // Blending calculations
+    const blendFactor = blendingRatio / 100;
+    const gcvBlended = (gcvArbindian * (1 - blendFactor)) + (gcvArbimported * blendFactor);
+    const landedCostBlended = (landedCostIndian * (1 - blendFactor)) + (landedCostImported * blendFactor);
+    const landedCostBlendedMC = landedCostBlended / gcvBlended;
+    const sccBlended = shrblended / gcvBlended;
+
+    // Advanced energy calculations
+    const energyChargesBlended = (energyChargesIndian * (1 - blendFactor)) + (energyChargesImported * blendFactor);
+    const comparisonResult = (energyChargesBlended - energyChargesIndian) * (sccIndian / sccImported);
+    const energyChargesAfterBlending = energyChargesIndian + comparisonResult;
+
+    // Quantity calculations
+    const quantityIndianCoal = (generationcapacityblended * daysblended * 24 * plfblended * 10 * shrblended) / (gcvArbindian * 100000000);
+    const quantityImportedCoal = quantityIndianCoal * blendingRatio / 100;
+    const quantityIndianCoalAfterBlending = quantityIndianCoal - (quantityImportedCoal * gcvArbimported / gcvArbindian);
+    const quantityblendedCoal = quantityIndianCoalAfterBlending + quantityImportedCoal;
+
+    // Financial impact
+    const expenditureIndianCoal = quantityImportedCoal * landedCostIndian * gcvArbimported / gcvArbindian;
+    const expenditureImportedCoal = quantityImportedCoal * landedCostImported;
+    const additionalFinancialLiability = (expenditureImportedCoal - expenditureIndianCoal) * 100000;
+    const unitsgeneratedBlended = generationcapacityblended * plfblended * daysblended * 24 * 10 / 100000;
+
+    return {
+        landedCostIndian, landedCostImported, landedCostIndianMC, landedCostImportedMC,
+        energyChargesIndian, energyChargesImported, sccIndian, sccImported,
+        gcvBlended, landedCostBlended, landedCostBlendedMC, sccBlended,
+        energyChargesBlended, energyChargesAfterBlending, comparisonResult,
+        quantityIndianCoal, quantityImportedCoal, quantityIndianCoalAfterBlending,
+        quantityblendedCoal, additionalFinancialLiability, unitsgeneratedBlended
+    };
+}
+// Professional results display
+function displayResults(calculations, inputs) {
+    const {
+        landedCostIndian, landedCostImported, landedCostIndianMC, landedCostImportedMC,
+        energyChargesIndian, energyChargesImported, sccIndian, sccImported,
+        gcvBlended, landedCostBlended, landedCostBlendedMC, sccBlended,
+        energyChargesAfterBlending, comparisonResult,
+        quantityIndianCoal, quantityImportedCoal, quantityIndianCoalAfterBlending,
+        quantityblendedCoal, additionalFinancialLiability, unitsgeneratedBlended
+    } = calculations;
+
+    const { blendingRatio } = inputs;
+
+    // Quantity ratios
+    const IndianCoalQuantityRatioAfterBlending = 100 - blendingRatio;
+    const ImportedCoalQuantityRatioAfterBlending = blendingRatio;
+
+    // Update all display elements with professional formatting
+    updateElement("indian-coal-quantity", quantityIndianCoal.toFixed(5));
+    updateElement("indian-coal-quantity-ratio-after-blending", IndianCoalQuantityRatioAfterBlending.toFixed(2));
+    updateElement("imported-coal-quantity-ratio-after-blending", ImportedCoalQuantityRatioAfterBlending.toFixed(2));
+    
+    updateElement("indian-coal-quantity-after-blending", quantityIndianCoalAfterBlending.toFixed(2));
+    updateElement("imported-coal-quantity-after-blending", quantityImportedCoal.toFixed(2));
+    updateElement("blendedcoal", quantityblendedCoal.toFixed(2));
+
+    updateElement("gcv-arb-Indian-table", inputs.gcvArbindian.toFixed(2));
+    updateElement("gcv-arb-Imported-tabel", inputs.gcvArbimported.toFixed(2));
+    updateElement("gcv-blended", gcvBlended.toFixed(2));
+
+    updateElement("indian-coal-landed-charges-MT", landedCostIndian.toFixed(2));
+    updateElement("Imported-coal-landed-charges-MT", landedCostImported.toFixed(2));
+    updateElement("landed-cost-blended-MT", landedCostBlended.toFixed(2));
+    
+    updateElement("indian-coal-landed-charges-MC", landedCostIndianMC.toFixed(4));
+    updateElement("Imported-coal-landed-charges-MC", landedCostImportedMC.toFixed(4));
+    updateElement("landed-cost-blended-MC", landedCostBlendedMC.toFixed(4));
+
+    updateElement("indian-coal-energy-charges", energyChargesIndian.toFixed(4));
+    updateElement("Imported-coal-energy-charges", energyChargesImported.toFixed(4));
+    updateElement("blended-coal-energy-charges", energyChargesAfterBlending.toFixed(4));
+
+    updateElement("indian-coal-SCC", sccIndian.toFixed(4));
+    updateElement("Imported-coal-SCC", sccImported.toFixed(4));
+    updateElement("blended-coal-SCC", sccBlended.toFixed(4));
+
+    updateElement("comparison-result", comparisonResult.toFixed(4));
+    updateElement("additionalFinancialLiabilityImported-result", formatIndianStyleNumber(additionalFinancialLiability));
+    updateElement("unitsGeneratedBlended-result", formatIndianStyleNumber(unitsgeneratedBlended));
+}
+
+// Utility functions
+function updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.innerText = value;
+    }
+}
+
+function formatIndianStyleNumber(num) {
+    if (isNaN(num)) return "0";
+    return new Intl.NumberFormat('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0
+    }).format(num);
+}
+
+// Professional state management
+function showErrorState() {
+    updateElementDisplay('resultshow70', 'block');
+    updateElementDisplay('resultshowblending', 'none');
+    updateElementDisplay('resultshow71', 'none');
+}
+
+function showSuccessState(calculations) {
+    updateElementDisplay('resultshow70', 'none');
+    updateElementDisplay('resultshow71', 'block');
+    updateElementDisplay('resultshowblending', 'block');
+    
+    // Update badges with professional formatting
+    updateElement('blended-coal-perunitcost', `Per Unit Cost: Rs. ${calculations.comparisonResult.toFixed(4)}`);
+    updateElement('blended-coal-addlfinancialliability', 
+        `Addl. Financial Liability: Rs. ${formatIndianStyleNumber(calculations.additionalFinancialLiability)}`);
+}
+
+function updateElementDisplay(id, display) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.style.display = display;
+    }
+}
+
+function showBlendingBadges() {
+    // This function can be used for additional badge functionality
+    calculateBlendedCoalEnergyCharges();
+}
+
+// Professional stored calculations management
+function initializeStoredCalculations() {
+    updateStoredCalculationsDisplay();
+}
+
+function autoSaveCalculation(inputs, calculations) {
+    const calculation = {
+        id: calculationCounter++,
+        timestamp: new Date().toISOString(),
+        date: new Date().toLocaleDateString('en-IN'),
+        time: new Date().toLocaleTimeString('en-IN'),
+        inputs: { ...inputs },
+        results: {
+            comparisonResult: calculations.comparisonResult,
+            additionalFinancialLiability: calculations.additionalFinancialLiability,
+            energyChargesAfterBlending: calculations.energyChargesAfterBlending
+        },
+        coalNames: {
+            coalA: document.getElementById('coalA-blending-name').value || 'Indigenous Coal',
+            coalB: document.getElementById('coalB-blending-name').value || 'Imported Coal'
+        }
+    };
+    
+    storedCalculations.unshift(calculation);
+    if (storedCalculations.length > 10) {
+        storedCalculations = storedCalculations.slice(0, 10);
+    }
+    
+    localStorage.setItem('blendingCalculations', JSON.stringify(storedCalculations));
+    localStorage.setItem('blendingCalculationCounter', calculationCounter.toString());
+    updateStoredCalculationsDisplay();
+}
+
+function updateStoredCalculationsDisplay() {
+    const container = document.getElementById('storedCalculationsList');
+    if (!container) return;
+    
+    if (storedCalculations.length === 0) {
+        container.innerHTML = '<p class="text-muted">No stored calculations yet.</p>';
+        return;
+    }
+    
+    container.innerHTML = storedCalculations.map(calc => `
+        <div class="stored-calc-item" data-calc-id="${calc.id}">
+            <div class="calc-header">
+                <strong>${calc.coalNames.coalA} vs ${calc.coalNames.coalB}</strong>
+                <small class="text-muted">${calc.date} ${calc.time}</small>
+            </div>
+            <div class="calc-summary">
+                <span class="badge bg-primary">Blending: ${calc.inputs.blendingRatio}%</span>
+                <span class="badge bg-success">Cost: Rs.${calc.results.comparisonResult.toFixed(4)}</span>
+            </div>
+            <div class="calc-actions">
+                <button class="btn btn-sm btn-outline-primary" onclick="loadCalculation(${calc.id})">
+                    <i class="fas fa-upload"></i> Load
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteCalculation(${calc.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadCalculation(calcId) {
+    const calc = storedCalculations.find(c => c.id === calcId);
+    if (!calc) return;
+    
+    // Load all input values
+    Object.entries(calc.inputs).forEach(([key, value]) => {
+        const elementId = key.replace(/([A-Z])/g, '-$1').toLowerCase()
+            .replace('gcv-arb-indian', 'gcv-arb-Indian')
+            .replace('gcv-arb-imported', 'gcv-arb-Imported');
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.value = value;
+        }
+    });
+    
+    // Load coal names
+    document.getElementById('coalA-blending-name').value = calc.coalNames.coalA;
+    document.getElementById('coalB-blending-name').value = calc.coalNames.coalB;
+    
+    // Recalculate
+    calculateBlendedCoalEnergyCharges();
+    
+    // Hide stored calculations
+    toggleStoredCalculations();
+    
+    // Show success notification
+    showNotification('Calculation loaded successfully!', 'success');
+}
+
+function deleteCalculation(calcId) {
+    storedCalculations = storedCalculations.filter(c => c.id !== calcId);
+    localStorage.setItem('blendingCalculations', JSON.stringify(storedCalculations));
+    updateStoredCalculationsDisplay();
+    showNotification('Calculation deleted', 'warning');
+}
+
+
+// Professional UI functions
+function toggleFormulas() {
+    const sidebar = document.getElementById('formulaSidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+}
+
+function toggleExportOptions() {
+    const dropdown = document.getElementById('exportDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+function toggleStoredCalculations() {
+    const container = document.getElementById('storedCalculationsContainer');
+    if (container) {
+        const isVisible = container.style.display !== 'none';
+        container.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function clearAllInputs() {
+    if (confirm('Are you sure you want to clear all inputs?')) {
+        const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+        inputs.forEach(input => {
+            if (!input.hasAttribute('data-keep-value')) {
+                input.value = '';
+            }
+        });
+        
+        // Reset coal names
+        document.getElementById('coalA-blending-name').value = '';
+        document.getElementById('coalB-blending-name').value = '';
+        document.getElementById('coalA-header').textContent = 'Indigenous Coal';
+        document.getElementById('coalB-header').textContent = 'Imported Coal';
+        
+        // Hide results
+        showErrorState();
+        
+        showNotification('All inputs cleared', 'info');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} notification-toast`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Professional PDF Export
+function exportToPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        // Header
+        doc.setFontSize(20);
+        doc.setFont(undefined, 'bold');
+        doc.text('Coal Blending Analysis Report', 20, 25);
+        
+        // Timestamp
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 20, 35);
+        
+        // Get coal names
+        const coalAName = document.getElementById('coalA-blending-name').value || 'Indigenous Coal';
+        const coalBName = document.getElementById('coalB-blending-name').value || 'Imported Coal';
+        
+        // Input parameters table
+        const inputData = getInputDataForPDF();
+        if (inputData.length > 0) {
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('Input Parameters', 20, 50);
+            
+            doc.autoTable({
+                startY: 55,
+                head: [['Parameter', coalAName, coalBName, 'Unit']],
+                body: inputData,
+                theme: 'grid',
+                styles: { fontSize: 9 },
+                headStyles: { fillColor: [52, 58, 64] }
+            });
+        }
+        
+        // Results table
+        const resultsData = getResultsDataForPDF();
+        if (resultsData.length > 0) {
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('Results', 20, doc.lastAutoTable.finalY + 15);
+            
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [['Parameter', coalAName, coalBName, 'Blended Coal', 'Unit']],
+                body: resultsData,
+                theme: 'grid',
+                styles: { fontSize: 9 },
+                headStyles: { fillColor: [52, 58, 64] }
+            });
+        }
+        
+        // Key findings
+        const comparisonResult = parseFloat(document.getElementById('comparison-result').innerText || '0');
+        const additionalLiability = document.getElementById('additionalFinancialLiabilityImported-result').innerText || '0';
+        
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text('Key Findings', 20, doc.lastAutoTable.finalY + 15);
+        
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            body: [
+                ['Increase in Per Unit Cost', `Rs. ${comparisonResult.toFixed(4)}/kWh`],
+                ['Additional Financial Liability', `Rs. ${additionalLiability}`]
+            ],
+            theme: 'grid',
+            styles: { fontSize: 10 },
+            columnStyles: {
+                0: { fontStyle: 'bold', fillColor: [248, 249, 250] }
+            }
+        });
+        
+        // Footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.text(`Page ${i} of ${pageCount}`, 20, 285);
+            doc.text('Generated by Professional Coal Blending Analysis Tool', 120, 285);
+        }
+        
+        doc.save(`Coal_Blending_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+        showNotification('PDF exported successfully!', 'success');
+        
+    } catch (error) {
+        console.error('PDF export error:', error);
+        showNotification('Error exporting PDF. Please try again.', 'warning');
+    }
+}
+
+// Professional JPG Export
+function exportToJPG() {
+    try {
+        const element = document.querySelector('.container-fluid');
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Coal_Blending_Analysis_${new Date().toISOString().split('T')[0]}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+            showNotification('JPG exported successfully!', 'success');
+        });
+    } catch (error) {
+        console.error('JPG export error:', error);
+        showNotification('Error exporting JPG. Please try again.', 'warning');
+    }
+}
+
+// Helper functions for PDF export
+function getInputDataForPDF() {
+    const inputs = [
+        ['GCV (ARB)', 'gcv-arb-Indian', 'gcv-arb-Imported', 'kcal/kg'],
+        ['Coal Cost', 'coal-cost-indian', 'coal-cost-imported', 'Rs./MT'],
+        ['Railway Freight', 'railway-freight-indian', 'railway-freight-imported', 'Rs./MT'],
+        ['Generation Capacity', 'generationcapacity-blended', '', 'MW'],
+        ['PLF', 'plf-blended', '', '%'],
+        ['Days', 'days-blended', '', 'days'],
+        ['Station Heat Rate', 'shr-blended', '', 'kcal/kWh'],
+        ['Blending Ratio', 'blending-ratio', '', '%']
+    ];
+    
+    return inputs.map(([param, id1, id2, unit]) => {
+        const val1 = id1 ? (document.getElementById(id1)?.value || '-') : '-';
+        const val2 = id2 ? (document.getElementById(id2)?.value || '-') : '-';
+        return [param, val1, val2, unit];
+    });
+}
+
+function getResultsDataForPDF() {
+    const results = [
+        ['GCV (ARB)', 'gcv-arb-Indian-table', 'gcv-arb-Imported-tabel', 'gcv-blended', 'kcal/kg'],
+        ['Landed Cost', 'indian-coal-landed-charges-MT', 'Imported-coal-landed-charges-MT', 'landed-cost-blended-MT', 'Rs./MT'],
+        ['Landed Cost', 'indian-coal-landed-charges-MC', 'Imported-coal-landed-charges-MC', 'landed-cost-blended-MC', 'Rs./MCal'],
+        ['Energy Charges', 'indian-coal-energy-charges', 'Imported-coal-energy-charges', 'blended-coal-energy-charges', 'Rs./kWh'],
+        ['SCC', 'indian-coal-SCC', 'Imported-coal-SCC', 'blended-coal-SCC', 'kg/kWh']
+    ];
+    
+    return results.map(([param, id1, id2, id3, unit]) => {
+        const val1 = document.getElementById(id1)?.innerText || '-';
+        const val2 = document.getElementById(id2)?.innerText || '-';
+        const val3 = document.getElementById(id3)?.innerText || '-';
+        return [param, val1, val2, val3, unit];
+    });
+}
+
+// Professional back button function
+function goBack() {
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        // Fallback for standalone apps
+        window.location.href = '../index.html';
+    }
+}
+
+// Close export dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('exportDropdown');
+    const button = event.target.closest('.floating-btn');
+    
+    if (dropdown && !dropdown.contains(event.target) && !button) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch(event.key) {
+            case 'p':
+                event.preventDefault();
+                exportToPDF();
+                break;
+            case 's':
+                event.preventDefault();
+                exportToJPG();
+                break;
+            case 'f':
+                event.preventDefault();
+                toggleFormulas();
+                break;
+        }
+    }
+});
+
+console.log('Professional Coal Blending Analysis loaded successfully!');
+</script>
+</body>
+</html>

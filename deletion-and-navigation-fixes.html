@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Month Deletion & Vertical Tab Navigation - Test Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .fix-section { margin: 20px 0; padding: 15px; border: 1px solid #007bff; border-radius: 5px; background: #f8f9fa; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #28a745; border-radius: 5px; background: #d4edda; }
+        .navigation-section { margin: 20px 0; padding: 15px; border: 1px solid #ffc107; border-radius: 5px; background: #fff3cd; }
+        .code-block { background: #f1f1f1; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 2px; }
+        .kbd { background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace; border: 1px solid #adb5bd; }
+    </style>
+</head>
+<body>
+    <h1>Coal Calculator - Month Deletion & Vertical Tab Navigation Fixes</h1>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #1 Fixed: Month Sequence After Deletion</h2>
+        <p><strong>Problem:</strong> When a month was deleted, the subsequent months didn't maintain proper sequence.</p>
+        
+        <p><strong>Solution:</strong> Added <span class="highlight">recalculateMonthSequence()</span> function that:</p>
+        <ul>
+            <li>Maintains the first month unchanged</li>
+            <li>Recalculates all subsequent months in proper sequence</li>
+            <li>Updates both Table1 and Table2 headers</li>
+            <li>Updates remove button onclick handlers</li>
+            <li>Sets the counter for future month additions</li>
+        </ul>
+        
+        <div class="code-block">
+function recalculateMonthSequence() {
+    // Get the first month (which should remain unchanged)
+    const firstMonth = monthColumns[0].monthNumber;
+    let currentMonth = firstMonth;
+    
+    // Update all month columns to maintain sequence
+    monthColumns.forEach((col, index) => {
+        col.monthNumber = currentMonth;
+        col.monthName = getMonthName(currentMonth);
+        currentMonth = getNextMonth(currentMonth);
+    });
+    
+    // Update headers and counter...
+}
+        </div>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #2 Fixed: Vertical Tab Navigation</h2>
+        <p><strong>Problem:</strong> Tab key moved horizontally across columns instead of vertically down rows.</p>
+        
+        <p><strong>Solution:</strong> Implemented vertical tab navigation for both tables:</p>
+        <ul>
+            <li><strong>Table1:</strong> Tab moves down within the same column, then to next column's first row</li>
+            <li><strong>Table2:</strong> Tab moves down within editable cells in the same column</li>
+            <li><strong>Shift+Tab:</strong> Moves up/backward in both tables</li>
+            <li>Automatically selects text content when focusing</li>
+        </ul>
+        
+        <h3>Enhanced Event Listeners:</h3>
+        <ul>
+            <li><span class="highlight">addEventListenersToTable1()</span> - Handles input changes and vertical navigation</li>
+            <li><span class="highlight">addEventListenersToTable2()</span> - Handles Table2 changes and vertical navigation</li>
+            <li><span class="highlight">handleVerticalTabNavigation()</span> - Table1 navigation logic</li>
+            <li><span class="highlight">handleVerticalTabNavigationTable2()</span> - Table2 navigation logic</li>
+        </ul>
+    </div>
+    
+    <div class="navigation-section">
+        <h2>⌨️ Keyboard Navigation Guide</h2>
+        
+        <h3>Table1 Navigation:</h3>
+        <ul>
+            <li><span class="kbd">Tab</span> - Move down to next row in same column</li>
+            <li><span class="kbd">Shift+Tab</span> - Move up to previous row in same column</li>
+            <li>At bottom of column: <span class="kbd">Tab</span> moves to top of next column</li>
+            <li>At top of column: <span class="kbd">Shift+Tab</span> moves to bottom of previous column</li>
+        </ul>
+        
+        <h3>Table2 Navigation:</h3>
+        <ul>
+            <li><span class="kbd">Tab</span> - Move down to next editable cell in same column</li>
+            <li><span class="kbd">Shift+Tab</span> - Move up to previous editable cell in same column</li>
+            <li>At bottom of column: <span class="kbd">Tab</span> moves to top of next editable column</li>
+            <li>Skips non-editable cells (like totals)</li>
+        </ul>
+        
+        <h3>Features:</h3>
+        <ul>
+            <li>✅ Automatic text selection when focusing on a cell</li>
+            <li>✅ Works with both input fields and contenteditable cells</li>
+            <li>✅ Respects table boundaries</li>
+            <li>✅ Skips non-interactive elements</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Scenarios</h2>
+        
+        <h3>Scenario 1: Month Deletion Sequence Test</h3>
+        <ol>
+            <li>Start with default: August, September</li>
+            <li>Add months: October, November, December</li>
+            <li>Delete September (middle month)</li>
+            <li>✅ Should result in: August, October, November, December</li>
+            <li>Delete October</li>
+            <li>✅ Should result in: August, November, December</li>
+            <li>Add new month</li>
+            <li>✅ Should add: January (continues from December)</li>
+        </ol>
+        
+        <h3>Scenario 2: First Month Change + Deletion Test</h3>
+        <ol>
+            <li>Change first month from August to March</li>
+            <li>✅ Should update to: March, April</li>
+            <li>Add months to get: March, April, May, June</li>
+            <li>Delete May (3rd column)</li>
+            <li>✅ Should result in: March, April, June</li>
+            <li>Add new month</li>
+            <li>✅ Should add: July (continues from June)</li>
+        </ol>
+        
+        <h3>Scenario 3: Vertical Tab Navigation Test</h3>
+        <ol>
+            <li><strong>Table1 Test:</strong></li>
+            <ul>
+                <li>Click on Generation Capacity for August</li>
+                <li>Press <span class="kbd">Tab</span> - should move to PLF for August</li>
+                <li>Press <span class="kbd">Tab</span> - should move to SCC for August</li>
+                <li>Continue until Coal Available for August</li>
+                <li>Press <span class="kbd">Tab</span> - should move to Generation Capacity for September</li>
+            </ul>
+            <li><strong>Table2 Test:</strong></li>
+            <ul>
+                <li>Click on Source1 name</li>
+                <li>Press <span class="kbd">Tab</span> - should move to August value for Source1</li>
+                <li>Press <span class="kbd">Tab</span> - should move to September value for Source1</li>
+                <li>At end of row, should wrap to Source1 name of next source</li>
+            </ul>
+            <li><strong>Shift+Tab Test:</strong></li>
+            <ul>
+                <li>Test reverse navigation in both tables</li>
+                <li>Should move up/backward properly</li>
+            </ul>
+        </ol>
+        
+        <h3>Scenario 4: Complex Interaction Test</h3>
+        <ol>
+            <li>Add multiple months and sources</li>
+            <li>Delete a middle month</li>
+            <li>✅ Navigation should still work correctly</li>
+            <li>Add new month after deletion</li>
+            <li>✅ New month should follow proper sequence</li>
+            <li>✅ Navigation should include new month</li>
+        </ol>
+    </div>
+    
+    <div class="fix-section">
+        <h2>📋 Summary of Technical Changes</h2>
+        <ul>
+            <li>✅ Added <code>recalculateMonthSequence()</code> function for proper month sequence after deletion</li>
+            <li>✅ Enhanced <code>removeMonthColumn()</code> to call sequence recalculation</li>
+            <li>✅ Added <code>addEventListenersToTable2()</code> for Table2 event management</li>
+            <li>✅ Implemented <code>handleVerticalTabNavigation()</code> for Table1 vertical movement</li>
+            <li>✅ Implemented <code>handleVerticalTabNavigationTable2()</code> for Table2 vertical movement</li>
+            <li>✅ Updated all functions that modify tables to include proper event listener setup</li>
+            <li>✅ Added text selection on focus for better user experience</li>
+            <li>✅ Handles edge cases (boundaries, non-editable cells, empty tables)</li>
+        </ul>
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px;">
+        <a href="Coal-Cal-Cleaned.html" target="_blank" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            🚀 Test Coal Calculator with All Fixes
+        </a>
+    </p>
+</body>
+</html>

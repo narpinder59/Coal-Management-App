@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Month Sequencing Fixes - Test Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .fix-section { margin: 20px 0; padding: 15px; border: 1px solid #007bff; border-radius: 5px; background: #f8f9fa; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #28a745; border-radius: 5px; background: #d4edda; }
+        .code-block { background: #f1f1f1; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <h1>Coal Calculator - Month Sequencing Fixes</h1>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #1 Fixed: Default Month Selection</h2>
+        <p><strong>Problem:</strong> The first month selector was defaulting to January instead of the current month.</p>
+        <p><strong>Solution:</strong> Changed the initial month to August (current month):</p>
+        <div class="code-block">
+            let currentMonthCounter = 8; // Start with current month (August 2025)
+        </div>
+        <p><strong>Result:</strong> The month selector now defaults to August 2025 when the application loads.</p>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #2 Fixed: Month Sequence Continuation</h2>
+        <p><strong>Problem:</strong> When adding new months after changing the first month, the new months didn't continue the proper sequence from the last existing month.</p>
+        
+        <p><strong>Solution:</strong> Enhanced the <span class="highlight">addCoalColumn()</span> function to:</p>
+        <ul>
+            <li>Check if there are existing months</li>
+            <li>If yes, get the next month after the last existing month</li>
+            <li>If no, use the current month counter</li>
+        </ul>
+        
+        <div class="code-block">
+// Determine the month number for the new column
+let monthNumber;
+if (monthColumns.length === 0) {
+    // First column - use current month
+    monthNumber = currentMonthCounter;
+} else {
+    // Subsequent columns - get next month after the last existing month
+    const lastMonth = monthColumns[monthColumns.length - 1].monthNumber;
+    monthNumber = getNextMonth(lastMonth);
+}
+        </div>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #3 Fixed: Proper Sequence Update</h2>
+        <p><strong>Problem:</strong> When the first month was changed, the sequence logic wasn't updating the counter for future additions.</p>
+        
+        <p><strong>Solution:</strong> Enhanced <span class="highlight">updateAllMonthColumns()</span> to update the counter:</p>
+        <div class="code-block">
+// Update the currentMonthCounter to be the next month after the last column
+// This ensures new columns continue the sequence properly
+if (monthColumns.length > 0) {
+    currentMonthCounter = getNextMonth(monthColumns[monthColumns.length - 1].monthNumber);
+}
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Scenarios</h2>
+        
+        <h3>Scenario 1: Default Loading</h3>
+        <ol>
+            <li>Open Coal-Cal-Cleaned.html</li>
+            <li>✅ First month should default to "August"</li>
+            <li>✅ Second month should be "September"</li>
+        </ol>
+        
+        <h3>Scenario 2: Month Change and Addition</h3>
+        <ol>
+            <li>Change first month from August to January</li>
+            <li>✅ Second month should update to February</li>
+            <li>Click "Add Month" button</li>
+            <li>✅ New third month should be March (continues the sequence)</li>
+        </ol>
+        
+        <h3>Scenario 3: Complex Sequence Test</h3>
+        <ol>
+            <li>Start with August, September</li>
+            <li>Add month → October</li>
+            <li>Add month → November</li>
+            <li>Change first month to June</li>
+            <li>✅ Months should become: June, July, August, September</li>
+            <li>Add month → October (continues from September)</li>
+        </ol>
+        
+        <h3>Scenario 4: Year Boundary Test</h3>
+        <ol>
+            <li>Change first month to November</li>
+            <li>✅ Sequence should be: November, December</li>
+            <li>Add month → January (next year)</li>
+            <li>Add month → February</li>
+        </ol>
+    </div>
+    
+    <div class="fix-section">
+        <h2>📋 Summary of Changes</h2>
+        <ul>
+            <li>✅ Default month changed from January to August (current month)</li>
+            <li>✅ <code>addCoalColumn()</code> now calculates next month from last existing month</li>
+            <li>✅ <code>updateAllMonthColumns()</code> updates the counter for future additions</li>
+            <li>✅ Removed redundant <code>currentMonthCounter</code> increment in <code>addCoalColumn()</code></li>
+            <li>✅ Proper sequence continuation regardless of first month changes</li>
+        </ul>
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px;">
+        <a href="Coal-Cal-Cleaned.html" target="_blank" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            🚀 Test Coal Calculator with Fixes
+        </a>
+    </p>
+</body>
+</html>

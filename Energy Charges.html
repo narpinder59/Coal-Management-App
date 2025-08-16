@@ -1,0 +1,1578 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Charges Calculator</title>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- MathJax for Mathematical Expressions -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                ready: () => {
+                    console.log('MathJax is loaded and ready.');
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Professional Styling -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+       
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            max-width: 100%;
+            overflow: visible;
+            transform: none;
+        }
+
+        .input-group-prepend {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .input-group-text1 {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            border: 1px solid #dee2e6;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            padding: 6px 12px;
+            font-weight: 500;
+            min-width: 180px;
+            width: 180px;
+            max-width: 180px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            height: 45px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text1:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+        }
+
+        .input-group-text2 {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-right: none;
+            padding: 6px 10px;
+            font-weight: bold;
+            min-width: 75px;
+            width: 75px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            height: 45px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text2:hover {
+            background: #f8f9fa;
+        }
+
+        .input-field {
+            flex: 1;
+            flex-shrink: 1;
+            flex-grow: 1;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            min-width: 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            outline: none;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: 45px;
+            box-sizing: border-box;
+        }
+
+        .input-field:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #4a90e2;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .calculated-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-left: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+            to {
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            }
+        }
+
+        .calculated-result .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: white;
+            line-height: 1.2;
+            word-break: break-word;
+            padding-left: 15px;
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 35px;
+            color: #666;
+            font-size: 12px;
+            font-weight: 500;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .results-container {
+            margin: 10px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .results-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .results-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-size: 12px;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            animation: shake 0.5s ease-out;
+            margin-bottom: 20px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Instruction Message */
+        .instruction-message {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            color: white;
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .instruction-message:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Floating Action Buttons */
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Formula Sidebar */
+        .formula-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            transition: right 0.3s ease;
+            z-index: 1001;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .formula-sidebar.active {
+            right: 0;
+        }
+
+        .formula-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .formula-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            font-size: 18px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .formula-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ffffff;
+        }
+
+        .formula-name {
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .formula-expression {
+            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.5;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        .formula-expression .MathJax {
+            color: #ffffff !important;
+        }
+
+        .formula-fallback {
+            display: block !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            font-size: 13px;
+            margin-top: 5px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Show fallback if MathJax is not loaded */
+        .no-mathjax .formula-fallback {
+            display: block !important;
+        }
+
+        /* Export Dropdown */
+        .export-dropdown {
+            position: fixed;
+            right: 0;
+            bottom: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .export-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin: 5px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+
+        .export-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Storage Counter */
+        .storage-counter {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ensure button has proper overflow handling */
+        .btn-primary {
+            overflow: visible;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .calculator-container {
+                margin-top: 70px;
+                padding: 15px;
+                width: calc(100vw - 30px);
+                max-width: calc(100vw - 30px);
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            .input-group {
+                margin-bottom: 12px;
+                max-width: 100%;
+                overflow: hidden;
+            }
+
+            .input-group-text1 {
+                min-width: 170px;
+                width: 170px;
+                font-size: 0.8rem;
+                padding: 6px 10px;
+                word-wrap: break-word;
+            }
+
+            .input-group-text2 {
+                min-width: 70px;
+                width: 70px;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .input-field {
+                font-size: 14px;
+                padding: 8px 10px;
+                min-width: 0;
+                flex: 1;
+                width: calc(100% - 240px);
+            }
+
+            .results-container {
+                padding: 12px;
+                margin-bottom: 15px;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .calculated-result {
+                padding: 12px 15px;
+                margin-bottom: 8px;
+            }
+
+            .calculated-result .result-value {
+                font-size: 16px;
+                padding: 0 8px;
+                word-break: break-word;
+            }
+
+            .result-item {
+                padding: 6px 10px;
+                margin-bottom: 6px;
+            }
+
+            .calculator-title {
+                font-size: 24px;
+            }
+
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .formula-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .back-button {
+                top: 20px;
+                left: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .export-dropdown {
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .calculator-container {
+                margin-top: 60px;
+                padding: 12px;
+                width: calc(100vw - 24px);
+                max-width: calc(100vw - 24px);
+            }
+
+            .calculator-title {
+                font-size: 18px;
+            }
+
+            .input-group-text1 {
+                min-width: 155px;
+                width: 155px;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .input-group-text2 {
+                min-width: 60px;
+                width: 60px;
+                font-size: 0.7rem;
+                padding: 4px 6px;
+            }
+
+            .input-field {
+                font-size: 13px;
+                padding: 6px 8px;
+                width: calc(100% - 215px);
+            }
+
+            .action-buttons {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 8px 15px;
+                font-size: 12px;
+                flex: 1;
+                min-width: auto;
+            }
+
+            .export-dropdown {
+                bottom: 70px;
+                padding: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                max-width: calc(100vw - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBackToCalculators()" title="Back to Calculator List">
+        <i class="bi bi-arrow-left"></i>
+    </button>
+
+    <!-- Main Calculator Container -->
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1 class="calculator-title">Energy Charges Calculator</h1>
+        </div>
+
+        <!-- Instruction Message -->
+        <div class="instruction-message" id="instruction-message">
+            <i class="fas fa-info-circle me-2"></i>
+            Enter values in any 4 parameters to calculate the 5th
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Results Container -->
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h3 class="results-title">Results:</h3>
+            </div>
+            <div class="result-item calculated-result">                
+                <span class="result-value" id="calculatedValue">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Specific Coal Consumption:</span>
+                <span class="result-value" id="sccValue">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Landed Cost:</span>
+                <span class="result-value" id="landedCostValue">-</span>
+            </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Coal Cost</span>
+                <span class="input-group-text2">Rs/MT</span>
+            </div>
+            <input type="number" class="input-field" id="coalCost" step="0.01" min="0" placeholder="2500">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Railway Freight</span>
+                <span class="input-group-text2">Rs/MT</span>
+            </div>
+            <input type="number" class="input-field" id="railwayFreight" step="0.01" min="0" placeholder="2500">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Station Heat Rate</span>
+                <span class="input-group-text2">kcal/kWh</span>
+            </div>
+            <input type="number" class="input-field" id="shr" step="0.01" min="0" placeholder="2700">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Gross Calorific Value</span>
+                <span class="input-group-text2">kcal/kg</span>
+            </div>
+            <input type="number" class="input-field" id="gcv" step="0.01" min="0" placeholder="4300">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Energy Charges</span>
+                <span class="input-group-text2">Rs/kWh</span>
+            </div>
+            <input type="number" class="input-field" id="energyCharges" step="0.000001" min="0" placeholder="">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="storeCalculation()">
+                Store Data
+                <span class="storage-counter" id="storageCounter">0</span>
+            </button>
+            <button class="btn btn-danger" onclick="clearStoredData()">Clear Data</button>
+            <button class="btn btn-outline" onclick="clearInputs()">Reset</button>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
+            fx
+        </button>
+        <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
+                        <i class="fas fa-download"></i>
+
+        </button>
+    </div>
+
+    <!-- Export Dropdown -->
+    <div class="export-dropdown" id="exportDropdown">
+        <button class="export-option" onclick="exportToPDF()" title="Export to PDF">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+        <button class="export-option" onclick="exportToJPG()" title="Export to JPG">
+            <i class="fas fa-image"></i>
+        </button>
+        <button class="export-option" onclick="exportToExcel()" title="Export to Excel">
+            <i class="fas fa-file-excel"></i>
+        </button>
+    </div>
+
+    <!-- Formula Sidebar -->
+    <div class="formula-sidebar" id="formulaSidebar">
+        <div class="formula-header">
+            <h2 class="formula-title">Formulas</h2>
+            <button class="close-btn" onclick="toggleFormulas()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">Energy Charges:</div>
+            <div class="formula-expression">
+                $$ = \frac{(\text{Coal Cost} + \text{Railway Freight}) \times \text{SHR}}{\text{GCV} \times 1000}$$
+                
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">GCV:</div>
+            <div class="formula-expression">
+                $$ = \frac{(\text{Coal Cost} + \text{Railway Freight}) \times \text{SHR}}{\text{Energy Charges} \times 1000}$$
+               
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">SHR:</div>
+            <div class="formula-expression">
+                $$ = \frac{\text{Energy Charges} \times \text{GCV} \times 1000}{\text{Coal Cost} + \text{Railway Freight}}$$
+
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">Railway Freight:</div>
+            <div class="formula-expression">
+                $$ = \frac{\text{Energy Charges} \times \text{GCV} \times 1000}{\text{SHR}} - \text{Coal Cost}$$
+                
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">Coal Cost:</div>
+            <div class="formula-expression">
+                $$ = \frac{\text{Energy Charges} \times \text{GCV} \times 1000}{\text{SHR}} - \text{Railway Freight}$$
+                
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">Specific Coal Consumption:</div>
+            <div class="formula-expression">
+                $$ = \frac{\text{SHR}}{\text{GCV}}$$
+                
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-name">Landed Cost:</div>
+            <div class="formula-expression">
+                $$ = \frac{\text{Coal Cost} + \text{Railway Freight}}{\text{GCV}}$$
+                
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Include necessary libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // Global variables
+        let storedCalculations = JSON.parse(localStorage.getItem('energyCalculations') || '[]');
+        let isExportDropdownOpen = false;
+
+        // DOM elements
+        const inputs = {
+            coalCost: document.getElementById('coalCost'),
+            railwayFreight: document.getElementById('railwayFreight'),
+            shr: document.getElementById('shr'),
+            gcv: document.getElementById('gcv'),
+            energyCharges: document.getElementById('energyCharges')
+        };
+
+        const results = {
+            container: document.getElementById('resultsContainer'),
+            calculatedValue: document.getElementById('calculatedValue'),
+            sccValue: document.getElementById('sccValue'),
+            landedCostValue: document.getElementById('landedCostValue')
+        };
+
+        const errorMessage = document.getElementById('errorMessage');
+        const storageCounter = document.getElementById('storageCounter');
+
+        // Utility functions
+        function formatNumber(num, decimals = 2) {
+            if (isNaN(num) || num === null || num === undefined) return '-';
+            return new Intl.NumberFormat('en-IN', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(num);
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            results.container.style.display = 'none';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Instruction message functions
+        function countFilledInputs() {
+            const values = getInputValues();
+            return Object.values(values).filter(v => !isNaN(v)).length;
+        }
+
+        function updateInstructionMessage() {
+            const instructionMessage = document.getElementById('instruction-message');
+            const filledCount = countFilledInputs();
+            
+            if (filledCount === 0) {
+                instructionMessage.innerHTML = `
+                    <i class="fas fa-info-circle me-2"></i>
+                    Enter values in any 4 parameters to calculate the 5th
+                `;
+                instructionMessage.style.display = 'block';
+                instructionMessage.style.color = 'white';
+            } else if (filledCount < 4) {
+                instructionMessage.innerHTML = `
+                    <i class="fas fa-edit me-2"></i>
+                    ${filledCount}/4 parameters entered. Enter ${4 - filledCount} more to calculate.
+                `;
+                instructionMessage.style.display = 'block';
+                instructionMessage.style.color = 'white';
+            } else if (filledCount === 4) {
+                instructionMessage.style.display = 'none'; // Hide when calculation is shown
+            } else if (filledCount === 5) {
+                showErrorMessage("Enter any 4 parameters only. One will be calculated automatically.");
+            }
+        }
+
+        function showErrorMessage(message) {
+            const instructionMessage = document.getElementById('instruction-message');
+            instructionMessage.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                ${message}
+            `;
+            instructionMessage.style.display = 'block';
+            instructionMessage.style.color = '#dc3545'; // Red color for errors
+        }
+
+        function hideErrorMessage() {
+            const instructionMessage = document.getElementById('instruction-message');
+            instructionMessage.style.color = 'white'; // Reset color
+            updateInstructionMessage(); // Show normal instruction
+        }
+
+        // Input validation and calculation
+        function getInputValues() {
+            return {
+                coalCost: parseFloat(inputs.coalCost.value) || NaN,
+                railwayFreight: parseFloat(inputs.railwayFreight.value) || NaN,
+                shr: parseFloat(inputs.shr.value) || NaN,
+                gcv: parseFloat(inputs.gcv.value) || NaN,
+                energyCharges: parseFloat(inputs.energyCharges.value) || NaN
+            };
+        }
+
+        function validateInputs(values) {
+            // Check for negative values
+            for (let key in values) {
+                if (!isNaN(values[key]) && values[key] < 0) {
+                    showError('Please enter valid non-negative values.');
+                    return false;
+                }
+            }
+
+            // Check if exactly 4 inputs are filled
+            const filledCount = Object.values(values).filter(v => !isNaN(v)).length;
+            if (filledCount !== 4) {
+                showError('Please enter exactly 4 values to calculate the 5th.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function calculateMissingValue(values) {
+            hideError();
+            
+            if (!validateInputs(values)) return null;
+
+            let result = { ...values };
+            let calculationType = '';
+
+            // Calculate missing parameter
+            if (isNaN(values.energyCharges)) {
+                // Calculate Energy Charges
+                const landedCost = values.coalCost + values.railwayFreight;
+                result.energyCharges = (landedCost * values.shr) / (values.gcv * 1000);
+                calculationType = `Energy Charges: Rs. ${formatNumber(result.energyCharges, 6)} per kWh`;
+            } else if (isNaN(values.gcv)) {
+                // Calculate GCV
+                const landedCost = values.coalCost + values.railwayFreight;
+                result.gcv = (landedCost * values.shr) / (values.energyCharges * 1000);
+                calculationType = `GCV: ${formatNumber(result.gcv, 2)} kcal/kg`;
+            } else if (isNaN(values.shr)) {
+                // Calculate SHR
+                const landedCost = values.coalCost + values.railwayFreight;
+                result.shr = (values.energyCharges * values.gcv * 1000) / landedCost;
+                calculationType = `SHR: ${formatNumber(result.shr, 2)} kcal/kWh`;
+            } else if (isNaN(values.railwayFreight)) {
+                // Calculate Railway Freight
+                result.railwayFreight = ((values.energyCharges * values.gcv * 1000) / values.shr) - values.coalCost;
+                calculationType = `Railway Freight: Rs. ${formatNumber(result.railwayFreight, 2)} per MT`;
+            } else if (isNaN(values.coalCost)) {
+                // Calculate Coal Cost
+                result.coalCost = ((values.energyCharges * values.gcv * 1000) / values.shr) - values.railwayFreight;
+                calculationType = `Coal Cost: Rs. ${formatNumber(result.coalCost, 2)} per MT`;
+            }
+
+            // Calculate derived values
+            const landedCost = result.coalCost + result.railwayFreight;
+            const scc = result.shr / result.gcv;
+            const landedCostMC = landedCost / result.gcv;
+
+            return {
+                ...result,
+                landedCost,
+                scc,
+                landedCostMC,
+                calculationType
+            };
+        }
+
+        function displayResults(calculation) {
+            if (!calculation) return;
+
+            results.calculatedValue.textContent = calculation.calculationType;
+            results.sccValue.textContent = `${formatNumber(calculation.scc, 4)} kg/kWh`;
+            results.landedCostValue.textContent = `Rs. ${formatNumber(calculation.landedCostMC, 4)} per MCal`;
+            
+            results.container.style.display = 'block';
+        }
+
+        function calculate() {
+            const values = getInputValues();
+            const filledCount = countFilledInputs();
+            
+            // Update instruction message based on input count
+            updateInstructionMessage();
+            
+            if (filledCount !== 4) {
+                results.container.style.display = 'none';
+                return null;
+            }
+            
+            const calculation = calculateMissingValue(values);
+            displayResults(calculation);
+            return calculation;
+        }
+
+        // Storage functions
+        function storeCalculation() {
+            const calculation = calculate();
+            if (!calculation) return;
+
+            const timestamp = new Date().toLocaleString();
+            const storedData = {
+                timestamp,
+                coalCost: calculation.coalCost,
+                railwayFreight: calculation.railwayFreight,
+                landedCost: calculation.landedCost,
+                gcv: calculation.gcv,
+                landedCostMC: calculation.landedCostMC,
+                shr: calculation.shr,
+                scc: calculation.scc,
+                energyCharges: calculation.energyCharges
+            };
+
+            storedCalculations.push(storedData);
+            localStorage.setItem('energyCalculations', JSON.stringify(storedCalculations));
+            updateStorageCounter();
+            
+            // Show success feedback
+            const storeBtn = document.querySelector('.btn-primary');
+            const originalText = storeBtn.innerHTML;
+            storeBtn.innerHTML = `Stored! (${storedCalculations.length})`;
+            storeBtn.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+            setTimeout(() => {
+                storeBtn.innerHTML = originalText;
+                storeBtn.style.background = '';
+            }, 1000);
+        }
+
+        function clearStoredData() {
+            if (storedCalculations.length === 0) {
+                showError('No stored calculations to clear.');
+                return;
+            }
+
+            if (confirm('Are you sure you want to clear all stored calculations?')) {
+                storedCalculations = [];
+                localStorage.setItem('energyCalculations', JSON.stringify(storedCalculations));
+                updateStorageCounter();
+            }
+        }
+
+        function updateStorageCounter() {
+            const storageCounterElement = document.getElementById('storageCounter');
+            if (storageCounterElement) {
+                storageCounterElement.textContent = storedCalculations.length;
+                storageCounterElement.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // UI functions
+        function clearInputs() {
+            Object.values(inputs).forEach(input => input.value = '');
+            results.container.style.display = 'none';
+            hideError();
+        }
+
+        function toggleFormulas() {
+            const sidebar = document.getElementById('formulaSidebar');
+            sidebar.classList.toggle('active');
+            
+            // Re-render MathJax when sidebar is opened
+            if (sidebar.classList.contains('active')) {
+                setTimeout(() => {
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        MathJax.typesetPromise([sidebar]).then(() => {
+                            console.log('MathJax formulas rendered successfully');
+                        }).catch((err) => {
+                            console.log('MathJax rendering error:', err);
+                        });
+                    }
+                }, 100);
+            }
+        }
+
+        function toggleExportOptions() {
+            const dropdown = document.getElementById('exportDropdown');
+            isExportDropdownOpen = !isExportDropdownOpen;
+            dropdown.style.display = isExportDropdownOpen ? 'flex' : 'none';
+        }
+
+        /**
+         * Go back to calculators page
+         */
+        function goBackToCalculators() {
+            // Try to go back to parent window if opened from main app
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // If opened from main app, switch focus back and close this tab
+                    window.opener.focus();
+                    // Call function to show calculators page in parent window
+                    if (typeof window.opener.showCalculatorsPage === 'function') {
+                        window.opener.showCalculatorsPage();
+                    }
+                    window.close();
+                } catch (e) {
+                    // If cross-origin or other security issues, fallback to alert
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            } else {
+                // If no parent window, try to navigate to main app
+                try {
+                    window.location.href = 'index.html#calculators';
+                } catch (e) {
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            }
+        }
+
+        // Export functions
+        function exportToPDF() {
+            if (storedCalculations.length === 0) {
+                showError('No calculations stored for export.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            // Add professional title
+            pdf.setFontSize(24);
+            pdf.setTextColor(44, 62, 80);
+            pdf.text('Energy Charges Calculator', 20, 25);
+            
+            // Add subtitle
+            pdf.setFontSize(16);
+            pdf.setTextColor(127, 140, 141);
+            pdf.text('Comprehensive Analysis Report', 20, 35);
+
+            // Prepare table data
+            const headers = [
+                'Sr.', 'Coal Cost\n(Rs/MT)', 'Railway Freight\n(Rs/MT)', 'Landed Cost\n(Rs/MT)',
+                'GCV\n(kcal/kg)', 'Landed Cost\n(Rs/MCal)', 'SHR\n(kcal/kWh)',
+                'SCC\n(kg/kWh)', 'Energy Charges\n(Rs/kWh)'
+            ];
+
+            const data = storedCalculations.map((calc, index) => [
+                index + 1,
+                formatNumber(calc.coalCost, 2),
+                formatNumber(calc.railwayFreight, 2),
+                formatNumber(calc.landedCost, 2),
+                formatNumber(calc.gcv, 0),
+                formatNumber(calc.landedCostMC, 3),
+                formatNumber(calc.shr, 0),
+                formatNumber(calc.scc, 3),
+                formatNumber(calc.energyCharges, 6)
+            ]);
+
+            // Create professional table
+            pdf.autoTable({
+                head: [headers],
+                body: data,
+                startY: 50,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [94, 109, 119],
+                    textColor: [255, 255, 255],
+                    fontSize: 9,
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    valign: 'middle'
+                },
+                bodyStyles: {
+                    fontSize: 8,
+                    halign: 'center',
+                    valign: 'middle',
+                    textColor: [44, 62, 80]
+                },
+                alternateRowStyles: {
+                    fillColor: [248, 249, 250]
+                },
+                columnStyles: {
+                    0: { cellWidth: 15 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 20 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 20 },
+                    5: { cellWidth: 20 },
+                    6: { cellWidth: 20 },
+                    7: { cellWidth: 20 },
+                    8: { cellWidth: 25 }
+                },
+                margin: { left: 10, right: 10 }
+            });
+
+            // Add timestamp at bottom
+            pdf.setFontSize(10);
+            pdf.setTextColor(149, 165, 166);
+            pdf.text(`Generated on: ${new Date().toLocaleString()}`, 20, 280);
+
+            pdf.save('Energy_Charges_Report.pdf');
+            toggleExportOptions();
+        }
+
+        function exportToJPG() {
+            if (storedCalculations.length === 0) {
+                showError('No calculations stored for export.');
+                return;
+            }
+
+            // Create a temporary container for the report with A4 dimensions
+            const reportContainer = document.createElement('div');
+            reportContainer.style.cssText = `
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+                width: 794px;
+                height: 1123px;
+                background: white;
+                padding: 40px;
+                font-family: Arial, sans-serif;
+                box-sizing: border-box;
+            `;
+
+            const tableRows = storedCalculations.map((calc, index) => `
+                <tr style="border: 1px solid #dee2e6;">
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${index + 1}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.coalCost, 2)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.railwayFreight, 2)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.landedCost, 2)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.gcv, 0)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.landedCostMC, 3)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.shr, 0)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.scc, 3)}</td>
+                    <td style="padding: 8px 4px; text-align: center; font-size: 10px; border: 1px solid #dee2e6;">${formatNumber(calc.energyCharges, 6)}</td>
+                </tr>
+            `).join('');
+
+            reportContainer.innerHTML = `
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 32px; font-weight: 700;">Energy Charges Calculator</h1>
+                    <h2 style="color: #7f8c8d; margin: 0 0 30px 0; font-size: 18px; font-weight: 400;">Comprehensive Analysis Report</h2>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 11px; border: 1px solid #dee2e6;">
+                    <thead>
+                        <tr style="background: #5e6d77; color: white;">
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Sr.</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Coal Cost<br>(Rs/MT)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Railway Freight<br>(Rs/MT)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Landed Cost<br>(Rs/MT)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">GCV<br>(kcal/kg)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Landed Cost<br>(Rs/MCal)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">SHR<br>(kcal/kWh)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">SCC<br>(kg/kWh)</th>
+                            <th style="padding: 12px 8px; text-align: center; font-weight: bold; font-size: 9px; border: 1px solid #4a5861;">Energy Charges<br>(Rs/kWh)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; text-align: center;">
+                    <p style="color: #95a5a6; margin: 0; font-size: 12px;">Generated on ${new Date().toLocaleString()}</p>
+                </div>
+            `;
+
+            document.body.appendChild(reportContainer);
+
+            html2canvas(reportContainer, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: 'white',
+                width: 794,
+                height: 1123
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Energy_Charges_Report.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.8);
+                link.click();
+                
+                document.body.removeChild(reportContainer);
+                toggleExportOptions();
+            });
+        }
+
+        function exportToExcel() {
+            if (storedCalculations.length === 0) {
+                showError('No stored calculations to export. Please store some calculations first.');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Sr.', 'Coal Cost (Rs/MT)', 'Railway Freight (Rs/MT)', 'Landed Cost (Rs/MT)', 'GCV (kcal/kg)', 'Landed Cost (Rs/MCal)', 'SHR (kcal/kWh)', 'SCC (MT/MWh)', 'Energy Charges (Rs/kWh)', 'Date', 'Time'];
+            
+            const csvContent = [
+                headers.join(','),
+                ...storedCalculations.map((calc, index) => [
+                    index + 1,
+                    formatNumber(calc.coalCost, 2),
+                    formatNumber(calc.railwayFreight, 2), 
+                    formatNumber(calc.landedCost, 2),
+                    formatNumber(calc.gcv, 0),
+                    formatNumber(calc.landedCostMC, 3),
+                    formatNumber(calc.shr, 1),
+                    formatNumber(calc.scc, 3),
+                    formatNumber(calc.energyCharges, 6),
+                    calc.date,
+                    calc.time
+                ].join(','))
+            ].join('\n');
+
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'Energy_Charges_Data.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            toggleExportOptions();
+        }
+
+        // Event listeners
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calculate);
+            
+            // Restrict to positive numbers only
+            input.addEventListener('keydown', function(e) {
+                const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+                if (allowedKeys.includes(e.key)) return;
+                
+                if (e.key === '.' && this.value.includes('.')) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                if (e.key === '-' || e.key === '+' || e.key === 'e' || (!/^\d$/.test(e.key) && e.key !== '.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Close export dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('exportDropdown');
+            const exportButton = e.target.closest('.floating-btn');
+            
+            if (!exportButton && !dropdown.contains(e.target) && isExportDropdownOpen) {
+                toggleExportOptions();
+            }
+        });
+
+        // Close formula sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('formulaSidebar');
+            const formulaButton = e.target.closest('.floating-btn');
+            const closeButton = e.target.closest('.close-btn');
+            
+            if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !formulaButton && !closeButton) {
+                toggleFormulas();
+            }
+        });
+
+        // Initialize
+        // Load stored calculations from localStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            storedCalculations = JSON.parse(localStorage.getItem('energyCalculations') || '[]');
+            updateStorageCounter();
+            
+            // Check if MathJax is loaded and render formulas
+            setTimeout(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise().then(() => {
+                        console.log('Initial MathJax rendering completed');
+                    }).catch((err) => {
+                        console.log('Initial MathJax rendering error:', err);
+                        // Show fallback formulas if MathJax fails
+                        document.body.classList.add('no-mathjax');
+                    });
+                } else {
+                    // Show fallback formulas if MathJax is not available
+                    setTimeout(() => {
+                        if (!window.MathJax) {
+                            document.body.classList.add('no-mathjax');
+                            console.log('MathJax not loaded, showing fallback formulas');
+                        }
+                    }, 3000);
+                }
+            }, 1000);
+        });
+        updateStorageCounter();
+        
+        // Initialize instruction message
+        updateInstructionMessage();
+    </script>
+</body>
+</html>

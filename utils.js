@@ -66,8 +66,8 @@ function setupMenuListeners() {
                     document.getElementById('main-content').innerHTML = "<h2>Punjab Generation</h2><p>Error: Compact function not loaded. Please refresh the page.</p>";
                 }
             } else if (pageType === 'calculators') {
-                console.log("Calculators page requested - not implemented yet");
-                document.getElementById('main-content').innerHTML = "<h2>Calculators</h2><p>Coming Soon...</p>";
+                console.log("Calculators page requested");
+                showCalculatorsPage();
             } else if (pageType === 'settings') {
                 console.log("Settings page requested - not implemented yet");
                 document.getElementById('main-content').innerHTML = "<h2>Settings</h2><p>Coming Soon...</p>";
@@ -157,7 +157,6 @@ function setupMenuListeners() {
         });
     });
 
-
 // Enable Bootstrap 5 nested dropdowns (submenu support)
     document.querySelectorAll('.dropdown-submenu > .dropdown-toggle').forEach(function (element) {
         element.addEventListener('click', function (e) {
@@ -182,9 +181,6 @@ function setupMenuListeners() {
 
 }
 
-
-
-
 // Example stub functions for new pages/reports:
 function showDailyReportsPage() {
     document.getElementById('main-content').innerHTML = "<h2>Daily Reports</h2><p>Daily reports content goes here.</p>";
@@ -198,7 +194,6 @@ function showProgressReport(type) {
 }
 
 // Format a Google Sheets date string like Date(2025,3,1) to "April-2025"
-
 function formatMonthYear(cellValue) {
     // Handles Google Sheets date format: Date(YYYY,MM,DD)
     if (typeof cellValue === "string" && cellValue.startsWith("Date(")) {
@@ -215,7 +210,6 @@ function formatMonthYear(cellValue) {
 }
 
 // Format a Google Sheets date string like Date(2025,3,1) to "01-Apr-2025"
-
 function formatDate(cellValue) {
     // Handles Google Sheets date format: Date(YYYY,MM,DD)
     if (typeof cellValue === "string" && cellValue.startsWith("Date(")) {
@@ -243,6 +237,7 @@ function formatDateDMY(cellValue) {
     }
     return cellValue || "";
 }    
+
 function getMonthYearFromDate(cellValue) {
     // Handles both Date(YYYY,M,D) and dd-mm-yyyy
     if (typeof cellValue === "string" && cellValue.startsWith("Date(")) {
@@ -258,4 +253,197 @@ function getMonthYearFromDate(cellValue) {
         return `${month}-${year}`;
     }
     return cellValue;
+}
+
+// Professional Calculators Page - Simple list format
+function showCalculatorsPage() {
+    console.log("Loading Professional Calculators Suite...");
+    document.getElementById('main-content').innerHTML = `
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="text-center mb-4">
+                        <i class="bi bi-calculator-fill text-primary me-2"></i>
+                        Coal Calculators
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="list-group shadow-sm">
+                        <!-- Coal Scenario Calculator -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-primary">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-bar-chart-line text-primary me-3 fs-5"></i>
+                                <span class="fw-medium">Coal Scenario</span>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="window.open('Coal-Scenario.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Coal Linkage -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-success">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-link-45deg text-success me-3 fs-5"></i>
+                                <span class="fw-medium">Coal Linkage</span>
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="window.open('Coal Linkage.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Coal Linkage Advance -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-diagram-3 text-info me-3 fs-5"></i>
+                                <span class="fw-medium">Coal Linkage Advance</span>
+                            </div>
+                            <button class="btn btn-info btn-sm" onclick="window.open('Coal Linkage Advance.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Coal Requirement -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-warning">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calculator text-warning me-3 fs-5"></i>
+                                <span class="fw-medium">Coal Requirement</span>
+                            </div>
+                            <button class="btn btn-warning btn-sm" onclick="window.open('Coal Requirement Calculator.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Energy Charges -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-danger">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-lightning-charge text-danger me-3 fs-5"></i>
+                                <span class="fw-medium">Energy Charges</span>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="window.open('Energy Charges.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Cost Analysis of 2 Types of Coal -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clipboard-data text-info me-3 fs-5"></i>
+                                <span class="fw-medium">Cost Analysis of 2 Types of Coal</span>
+                            </div>
+                            <button class="btn btn-info btn-sm" onclick="window.open('Cost Analysis of 2 Types of Coal.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
+                        <!-- Blended Coal Analysis -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-primary">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-shuffle text-primary me-3 fs-5"></i>
+                                <span class="fw-medium">Blended Coal Analysis</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('Blended Coal Analysis')" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            </button>
+                        </div>
+
+                        <!-- Alternate Fuel Cost Economics -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-success">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-fuel-pump text-success me-3 fs-5"></i>
+                                <span class="fw-medium">Alternate Fuel Cost Economics</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('Alternate Fuel Cost Economics')" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            </button>
+                        </div>
+
+                        <!-- GCV Ash Moisture -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-moisture text-info me-3 fs-5"></i>
+                                <span class="fw-medium">GCV Ash Moisture</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('GCV Ash Moisture')" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            </button>
+                        </div>
+
+                        <!-- GCV Equilibrium ↔ GCV ARB -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-warning">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-arrow-left-right text-warning me-3 fs-5"></i>
+                                <span class="fw-medium">GCV Equilibrium ↔ GCV ARB</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('GCV Equilibrium ARB Converter')" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Info Footer -->
+                    <div class="alert alert-light border mt-4 text-center">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        <span class="text-muted">Professional coal management calculators for power plant operations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Coming Soon function for future calculators
+function showComingSoon(calculatorName) {
+    alert(`${calculatorName} calculator is coming soon! Currently under development.\n\nWe're working hard to bring you more professional calculators. Stay tuned for updates.`);
+}
+
+// Load Coal Scenario Calculator in new tab (preferred approach)
+async function loadCoalScenarioCalculator() {
+    console.log("Opening Coal Scenario Calculator in new tab...");
+    // Open the original HTML file in new tab for best experience
+    window.open('Coal-Scenario.html', '_blank');
+}
+
+// Compatibility function for any remaining references
+function showCoalScenarioCalculator() {
+    console.log("Redirecting to new tab approach...");
+    window.open('Coal-Scenario.html', '_blank');
+}
+
+// Load Coal Requirement Calculator in new tab
+async function loadCoalRequirementCalculator() {
+    console.log("Opening Coal Requirement Calculator in new tab...");
+    window.open('Coal Requirement Calculator.html', '_blank');
+}
+
+// Compatibility function for Coal Requirement Calculator
+function showCoalRequirementCalculator() {
+    console.log("Redirecting to Coal Requirement Calculator...");
+    window.open('Coal Requirement Calculator.html', '_blank');
+}
+
+// Load Energy Charges Calculator in new tab
+async function loadEnergyChargesCalculator() {
+    console.log("Opening Energy Charges Calculator in new tab...");
+    window.open('Energy Charges.html', '_blank');
+}
+
+// Compatibility function for Energy Charges Calculator
+function showEnergyChargesCalculator() {
+    console.log("Redirecting to Energy Charges Calculator...");
+    window.open('Energy Charges.html', '_blank');
+}
+
+// Load Cost Analysis of 2 Types of Coal Calculator in new tab
+async function loadCostAnalysisCalculator() {
+    console.log("Opening Cost Analysis of 2 Types of Coal Calculator in new tab...");
+    window.open('Cost Analysis of 2 Types of Coal.html', '_blank');
+}
+
+// Compatibility function for Cost Analysis Calculator
+function showCostAnalysisCalculator() {
+    console.log("Redirecting to Cost Analysis of 2 Types of Coal Calculator...");
+    window.open('Cost Analysis of 2 Types of Coal.html', '_blank');
 }

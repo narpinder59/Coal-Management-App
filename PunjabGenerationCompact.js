@@ -116,6 +116,39 @@ function showPunjabGenerationCompact() {
             border-radius: 10px;
             background-color: #28a745;
         }
+        
+        /* Header progress bar styles */
+        .header-progress {
+            float: right;
+            width: 40%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            margin-top: 6px;
+            margin-left: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+        
+        .header-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
         .custom-tooltip {
             position: absolute;
             top: -25px;
@@ -165,7 +198,7 @@ function showPunjabGenerationCompact() {
             gap: 1px;
             align-items: flex-start;
         }
-        .badge-container .capacity{font-size: 8px; margin-top: 2px; margin-left: 0px; margin-right: 0.5px; background-color: #6c757d; color: white;}
+        .badge-container .capacity{font-size: 8px; margin-top: 2px; margin-left: 0px; margin-right: 0.5px; background-color: #ffffffff; color: black;}
         
         /* Plant info column styling */
         .plant-info-column {
@@ -186,7 +219,7 @@ function showPunjabGenerationCompact() {
             font-size: 9px;
             font-weight: bold;
             margin-right: 2px;
-            height: 32px;
+            height: 42px !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -272,8 +305,11 @@ function showPunjabGenerationCompact() {
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header PSPCL">PSPCL
-                        <span class="percentage-badge" id="PSPCLThermalPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
-                        <span style="float:right;" class="textContent" id="PSPCLThermalText">NA</span>
+                        <div class="header-progress" id="PSPCLThermalProgressWrapper">
+                            <div class="header-progress-bar" id="PSPCLThermalProgressBar" style="width: 0%; background-color: #dc3545;"></div>
+                            <div class="header-progress-text" id="PSPCLThermalPercentage">0%</div>
+                        </div>
+                        <span style="float:right; margin-right: 10px;" class="textContent" id="PSPCLThermalText">NA</span>
                     </div>
                     <div class="card-body">
 
@@ -369,8 +405,11 @@ function showPunjabGenerationCompact() {
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">IPPs
-                        <span class="percentage-badge" id="IPPsPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
-                        <span style="float:right;" class="textContent" id="IPPsTotalText">NA</span>
+                        <div class="header-progress" id="IPPsProgressWrapper">
+                            <div class="header-progress-bar" id="IPPsProgressBar" style="width: 0%; background-color: #dc3545;"></div>
+                            <div class="header-progress-text" id="IPPsPercentage">0%</div>
+                        </div>
+                        <span style="float:right; margin-right: 10px;" class="textContent" id="IPPsTotalText">NA</span>
                     </div>
                     <div class="card-body">
 
@@ -432,8 +471,11 @@ function showPunjabGenerationCompact() {
             <div class="col-md-12" >
                 <div class="card">
                     <div class="card-header-PunjabTotal">Punjab Thermal
-                        <span class="percentage-badge" id="PunjabThermalPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
-                        <span style="float:right;" class="textContent" id="PunjabThermalTotalText">NA</span>
+                        <div class="header-progress" id="PunjabThermalProgressWrapper">
+                            <div class="header-progress-bar" id="PunjabThermalProgressBar" style="width: 0%; background-color: #dc3545;"></div>
+                            <div class="header-progress-text" id="PunjabThermalPercentage">0%</div>
+                        </div>
+                        <span style="float:right; margin-right: 10px;" class="textContent" id="PunjabThermalTotalText">NA</span>
                     </div>                    
                 </div>
             </div>
@@ -442,8 +484,11 @@ function showPunjabGenerationCompact() {
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">PSPCL Hydro
-                        <span class="percentage-badge" id="PunjabHydroPercentage" style="float:right; margin-left: 3px; height: 20px; font-size: 10px; padding: 2px 6px;">0%</span>
-                        <span style="float:right;" class="textContent" id="PunjabHydroTotalText">NA</span>
+                        <div class="header-progress" id="PunjabHydroProgressWrapper">
+                            <div class="header-progress-bar" id="PunjabHydroProgressBar" style="width: 0%; background-color: #dc3545;"></div>
+                            <div class="header-progress-text" id="PunjabHydroPercentage">0%</div>
+                        </div>
+                        <span style="float:right; margin-right: 10px;" class="textContent" id="PunjabHydroTotalText">NA</span>
                     </div>  
                     <div class="card-body">
 
@@ -878,15 +923,35 @@ function updatePercentage(elementId, value, maxValue) {
         const percentage = Math.round((safeValue / safeMaxValue) * 100);
         percentageElement.textContent = `${percentage}%`;
         
-        // Color coding based on percentage
-        if (percentage < 40) {
-            percentageElement.style.backgroundColor = '#dc3545'; // Red
-        } else if (percentage < 75) {
-            percentageElement.style.backgroundColor = '#ffc107'; // Yellow
-            percentageElement.style.color = '#000'; // Black text for yellow background
+        // Check if this is a header progress bar (has corresponding progress bar element)
+        const progressBarId = elementId.replace('Percentage', 'ProgressBar');
+        const progressBarElement = document.getElementById(progressBarId);
+        
+        if (progressBarElement) {
+            // Update progress bar width
+            progressBarElement.style.width = `${percentage}%`;
+            
+            // Color coding for header progress bars
+            let backgroundColor;
+            if (percentage < 40) {
+                backgroundColor = '#dc3545'; // Red
+            } else if (percentage < 75) {
+                backgroundColor = '#ffc107'; // Yellow
+            } else {
+                backgroundColor = '#28a745'; // Green
+            }
+            progressBarElement.style.backgroundColor = backgroundColor;
         } else {
-            percentageElement.style.backgroundColor = '#28a745'; // Green
-            percentageElement.style.color = '#fff'; // White text
+            // Legacy badge styling for non-header elements
+            if (percentage < 40) {
+                percentageElement.style.backgroundColor = '#dc3545'; // Red
+            } else if (percentage < 75) {
+                percentageElement.style.backgroundColor = '#ffc107'; // Yellow
+                percentageElement.style.color = '#000'; // Black text for yellow background
+            } else {
+                percentageElement.style.backgroundColor = '#0d6efd'; // Primary
+                percentageElement.style.color = '#fff'; // White text
+            }
         }
     } else {
         console.log('Percentage element with id "' + elementId + '" not found.');

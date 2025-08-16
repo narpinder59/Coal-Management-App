@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Navigation & Input Validation Fixes - Test Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .fix-section { margin: 20px 0; padding: 15px; border: 1px solid #007bff; border-radius: 5px; background: #f8f9fa; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #28a745; border-radius: 5px; background: #d4edda; }
+        .validation-section { margin: 20px 0; padding: 15px; border: 1px solid #dc3545; border-radius: 5px; background: #f8d7da; }
+        .code-block { background: #f1f1f1; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 2px; }
+        .kbd { background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace; border: 1px solid #adb5bd; }
+        .example { background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Coal Calculator - Navigation & Input Validation Fixes</h1>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #1 Fixed: Vertical Navigation Skipping Span Cells</h2>
+        <p><strong>Problem:</strong> Tab navigation stopped when encountering span cells (calculated values) in Table1.</p>
+        
+        <p><strong>Solution:</strong> Enhanced <span class="highlight">handleVerticalTabNavigation()</span> to:</p>
+        <ul>
+            <li>Skip rows that contain span cells (read-only calculated values)</li>
+            <li>Only focus on input fields that users can edit</li>
+            <li>Search through multiple rows to find the next valid input</li>
+            <li>Handle column boundaries properly when no valid inputs are found</li>
+        </ul>
+        
+        <div class="code-block">
+// Skip rows with span cells, find next input
+let searchRow = currentRow.nextElementSibling;
+while (searchRow) {
+    const targetCell = searchRow.children[currentColIndex];
+    if (targetCell && targetCell.querySelector('input')) {
+        nextInput = targetCell.querySelector('input');
+        break;
+    }
+    searchRow = searchRow.nextElementSibling;
+}
+        </div>
+        
+        <div class="example">
+            <strong>Example:</strong> In Table1, rows like "Generation (MU)" and "Coal Consumption (MT)" have span elements showing calculated values. Tab navigation now skips these and jumps to the next editable input field.
+        </div>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #2 Fixed: Empty Table2 Cells on Load and Addition</h2>
+        <p><strong>Problem:</strong> Table2 cells defaulted to '0' when sources or months were added.</p>
+        
+        <p><strong>Solution:</strong> Changed default values to empty strings:</p>
+        <ul>
+            <li>New source rows start with empty data cells</li>
+            <li>New month columns have empty cells for existing sources</li>
+            <li>Total cells still default to '0' for calculation purposes</li>
+            <li>Users can now start with a completely clean data entry experience</li>
+        </ul>
+        
+        <div class="code-block">
+// In addNewSource() function
+dataCell.textContent = ''; // Empty by default
+
+// In addCoalColumn() function  
+newCell.textContent = ''; // Empty by default
+        </div>
+    </div>
+    
+    <div class="validation-section">
+        <h2>🔧 Issue #3 Fixed: Single Decimal Point Validation</h2>
+        <p><strong>Problem:</strong> Table2 data cells allowed multiple decimal points (e.g., "123.45.67").</p>
+        
+        <p><strong>Solution:</strong> Implemented comprehensive number validation:</p>
+        <ul>
+            <li><strong>Keypress validation:</strong> Prevents invalid characters from being typed</li>
+            <li><strong>Paste validation:</strong> Validates pasted content before allowing it</li>
+            <li><strong>Single decimal rule:</strong> Only one decimal point allowed per number</li>
+            <li><strong>Negative numbers:</strong> Minus sign allowed only at the beginning</li>
+        </ul>
+        
+        <div class="code-block">
+function handleTable2NumberValidation(event) {
+    const char = String.fromCharCode(event.which);
+    const currentText = event.target.textContent || '';
+    
+    // Allow digits
+    if (/\d/.test(char)) return true;
+    
+    // Allow decimal point only if there isn't one already
+    if (char === '.' && !currentText.includes('.')) return true;
+    
+    // Allow negative sign only at the beginning
+    if (char === '-' && currentText.length === 0) return true;
+    
+    // Block all other characters
+    event.preventDefault();
+}
+        </div>
+        
+        <h3>Validation Examples:</h3>
+        <ul>
+            <li>✅ <strong>Valid:</strong> 123, 123.45, -456, -789.12</li>
+            <li>❌ <strong>Invalid:</strong> 123.45.67, 12.34.56, 1-23, ab.cd</li>
+        </ul>
+    </div>
+    
+    <div class="fix-section">
+        <h2>🔧 Issue #4 Fixed: Source Names Allow All Characters</h2>
+        <p><strong>Problem:</strong> Source names were restricted to numeric input only.</p>
+        
+        <p><strong>Solution:</strong> Applied validation selectively:</p>
+        <ul>
+            <li>Source name cells (first column): No input restrictions - accept all characters</li>
+            <li>Data cells (month columns): Number validation with single decimal point</li>
+            <li>Total cells: Read-only, automatically calculated</li>
+        </ul>
+        
+        <div class="code-block">
+// Apply validation only for non-source-name cells
+const isSourceNameCell = cell.cellIndex === 0;
+if (!isSourceNameCell) {
+    cell.addEventListener('keypress', handleTable2NumberValidation);
+    cell.addEventListener('paste', handleTable2Paste);
+}
+        </div>
+        
+        <div class="example">
+            <strong>Examples of valid source names:</strong>
+            <ul>
+                <li>"Coal Mine ABC-123"</li>
+                <li>"Primary Source (Main)"</li>
+                <li>"रेलवे कोल सप्लाई" (Unicode characters)</li>
+                <li>"Source #1 - High Quality"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Comprehensive Test Scenarios</h2>
+        
+        <h3>Scenario 1: Navigation Skip Test</h3>
+        <ol>
+            <li>Open Coal-Cal-Cleaned.html</li>
+            <li>Click on "Generation Capacity" input for August</li>
+            <li>Press <span class="kbd">Tab</span></li>
+            <li>✅ Should skip the calculated "Generation (MU)" span and jump to "PLF %" input</li>
+            <li>Continue tabbing through the column</li>
+            <li>✅ Should skip all calculated fields and only stop at editable inputs</li>
+        </ol>
+        
+        <h3>Scenario 2: Empty Cells Test</h3>
+        <ol>
+            <li>Fresh load: Table2 should have one source with empty data cells</li>
+            <li>Add new source: ✅ New row should have empty data cells</li>
+            <li>Add new month: ✅ New column should have empty cells for existing sources</li>
+            <li>Enter data and add another source: ✅ New source starts empty while existing data is preserved</li>
+        </ol>
+        
+        <h3>Scenario 3: Decimal Validation Test</h3>
+        <ol>
+            <li>Click on a Table2 data cell (not source name)</li>
+            <li>Try typing "123.45.67"</li>
+            <li>✅ Should only allow "123.45" (stops at second decimal)</li>
+            <li>Try typing letters: ✅ Should be blocked</li>
+            <li>Try copying/pasting "98.76.54": ✅ Should be rejected</li>
+            <li>Try copying/pasting "98.76": ✅ Should be accepted</li>
+        </ol>
+        
+        <h3>Scenario 4: Source Name Freedom Test</h3>
+        <ol>
+            <li>Click on source name cell (first column)</li>
+            <li>Try typing: "Coal Mine ABC-123 (Primary)"</li>
+            <li>✅ Should accept all characters including spaces, symbols, numbers</li>
+            <li>Try unicode characters: "कोयला खदान"</li>
+            <li>✅ Should accept non-English characters</li>
+            <li>Try special symbols: "Source #1 @ 100% Quality"</li>
+            <li>✅ Should accept all symbols and characters</li>
+        </ol>
+        
+        <h3>Scenario 5: Mixed Navigation and Validation Test</h3>
+        <ol>
+            <li>Add 3 months and 3 sources</li>
+            <li>Use tab navigation to move through Table1: ✅ Should skip calculated cells</li>
+            <li>Use tab navigation in Table2: ✅ Should move vertically through data cells</li>
+            <li>Enter various numbers in Table2 cells: ✅ Should validate decimal points</li>
+            <li>Edit source names freely: ✅ Should accept any characters</li>
+            <li>Delete a month and navigate: ✅ Navigation should still work correctly</li>
+        </ol>
+    </div>
+    
+    <div class="fix-section">
+        <h2>📋 Technical Implementation Summary</h2>
+        
+        <h3>Enhanced Functions:</h3>
+        <ul>
+            <li><code>handleVerticalTabNavigation()</code> - Now skips span cells and searches for valid inputs</li>
+            <li><code>addNewSource()</code> - Creates empty data cells instead of zeros</li>
+            <li><code>addCoalColumn()</code> - Creates empty Table2 cells for new months</li>
+            <li><code>addEventListenersToTable2()</code> - Selective validation based on cell type</li>
+        </ul>
+        
+        <h3>New Functions:</h3>
+        <ul>
+            <li><code>handleTable2NumberValidation()</code> - Real-time keypress validation</li>
+            <li><code>handleTable2Paste()</code> - Clipboard content validation</li>
+        </ul>
+        
+        <h3>Validation Rules:</h3>
+        <ul>
+            <li>✅ Source names: All characters allowed</li>
+            <li>✅ Data cells: Numbers only, single decimal point, negative numbers allowed</li>
+            <li>✅ Empty cells by default for clean data entry experience</li>
+            <li>✅ Paste validation prevents invalid data entry</li>
+        </ul>
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px;">
+        <a href="Coal-Cal-Cleaned.html" target="_blank" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            🚀 Test All Fixes in Coal Calculator
+        </a>
+    </p>
+</body>
+</html>

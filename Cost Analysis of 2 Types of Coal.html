@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Analysis of 2 Types of Coal Calculator</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .calculator-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        .instruction-message {
+            background: rgba(74, 144, 226, 0.2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 25px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+
+        .input-group:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group-prepend {
+            display: flex;
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .input-group-text1 {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            border: 1px solid #dee2e6;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            padding: 8px 12px;
+            font-weight: 500;
+            min-width: 180px;
+            width: 180px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            height: 42px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .input-group-text1:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: scale(1.02);
+        }
+
+        .input-group-text2 {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-right: none;
+            padding: 8px 12px;
+            font-weight: bold;
+            min-width: 80px;
+            width: 120px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            height: 42px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            color: #495057;
+            flex-shrink: 0;
+        }
+
+        .input-group-text2:hover {
+            background: #f8f9fa;
+            transform: scale(1.02);
+        }
+
+        .dual-input-container {
+            display: flex;
+            flex: 1;
+            gap: 1px;
+        }
+
+        .input-field {
+            border: 1px solid #dee2e6;
+            border-left: none;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+            background: rgba(255, 255, 255, 0.9);
+            flex: 1;
+            transition: all 0.3s ease;
+            outline: none;
+            height: 42px;
+            box-sizing: border-box;
+        }
+
+        .input-field:first-child {
+            border-radius: 0;
+        }
+
+        .input-field:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-field.single {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+            transform: scale(1.02);
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            margin: 25px 0;
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            padding: 12px 8px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .comparison-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .comparison-table .parameter-cell {
+            background: #f8f9fa;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 12px;
+        }
+
+        .summary-section {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .summary-item {
+            margin-bottom: 8px;
+            font-weight: 500;
+            align-content: center;
+            justify-content: center;
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            animation: shake 0.5s ease-out;
+            margin-bottom: 20px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            position: relative;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            color: white;
+        }
+
+        .storage-counter {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 24px;
+        }
+
+        .floating-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .export-dropdown {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .export-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .export-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .formula-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-left: 4px solid;
+            border-left-color: #4facfe;
+            border-image: linear-gradient(135deg, #4facfe, #00f2fe) 1;
+            box-shadow: -5px 0 20px rgba(79, 172, 254, 0.3);
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .formula-sidebar.active {
+            right: 0;
+        }
+
+        .formula-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .formula-title {
+            color: #333;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .formula-item {
+            margin-bottom: 15px;
+            padding: 5px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .formula-name {
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .formula-expression {
+            color: #333;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .formula-fallback {
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .no-mathjax .formula-expression {
+            display: none;
+        }
+
+        .no-mathjax .formula-fallback {
+            display: block;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+                min-height: 100vh;
+            }
+
+            .calculator-container {
+                margin-top: 60px;
+                padding: 15px;
+                width: calc(100vw - 20px);
+                max-width: calc(100vw - 20px);
+                box-sizing: border-box;
+                overflow-x: hidden;
+                min-height: calc(100vh - 80px);
+            }
+
+            .calculator-title {
+                font-size: 22px;
+                line-height: 1.3;
+            }
+
+            .calculator-subtitle {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .section-header {
+                font-size: 16px;
+                padding: 10px 15px;
+                margin: 15px 0 10px 0;
+            }
+
+            .input-group {
+                
+                margin-bottom: 12px;
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                flex-wrap: nowrap;
+            }
+
+            .input-group-prepend {
+                display: flex;
+            }
+
+            .input-group-text1 {
+                min-width: 0px;
+                width: 250px;
+                font-size: 0.8rem;
+                padding: 8px 6px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+            .input-group-text2 {
+                min-width: 100px;
+                width: 100px;
+                font-size: 0.75rem;
+                padding: 8px 6px;
+            }
+
+            .dual-input-container {
+                display: flex;
+                flex: 1;
+                gap: 1px;
+            }
+
+            .dual-input-container .input-field {
+                font-size: 14px;
+                padding: 12px 8px;
+                flex: 1 1 50%;
+                width: 50%;
+                min-width: 0;
+                max-width: none;
+            }
+
+            .input-field.single {
+                font-size: 14px;
+                padding: 12px 8px;
+                flex: 1;
+                width: 100%;
+            }
+
+            .input-field:first-child {
+                border-radius: 0;
+            }
+
+            .input-field:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
+            .input-field.single {
+                border-radius: 0 8px 8px 0;
+            }
+
+            .results-container {
+                padding: 15px;
+                margin: 20px 0;
+                overflow-x: auto;
+            }
+
+            .comparison-table {
+                font-size: 12px;
+                min-width: 100%;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+
+            .comparison-table .parameter-cell {
+                min-width: 120px;
+                font-size: 10px;
+                padding-left: 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .formula-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .back-button {
+                top: 15px;
+                left: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .export-dropdown {
+                position: fixed;
+                bottom: 140px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 10px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .export-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
+            .error-message,
+            .instruction-message {
+                font-size: 14px;
+                padding: 12px;
+                margin: 15px 0;
+            }
+
+            .summary-section {
+                padding: 12px;
+                margin-top: 15px;
+            }
+
+            .summary-item {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 5px;
+            }
+
+            .calculator-container {
+                margin-top: 50px;
+                padding: 10px;
+                width: calc(100vw - 10px);
+                max-width: calc(100vw - 10px);
+                min-height: calc(100vh - 60px);
+            }
+
+            .calculator-title {
+                font-size: 18px;
+                line-height: 1.2;
+            }
+
+            .calculator-subtitle {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+
+            .section-header {
+                font-size: 14px;
+                padding: 8px 12px;
+                margin: 12px 0 8px 0;
+            }
+
+            .input-group {
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                flex-wrap: nowrap;
+                margin-bottom: 10px;
+            }
+
+            .input-group-text1 {
+                min-width: 120px;
+                width: 120px;
+                font-size: 0.75rem;
+                padding: 6px 4px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+            .input-group-text2 {
+                min-width: 55px;
+                width: 55px;
+                font-size: 0.7rem;
+                padding: 6px 4px;
+            }
+
+            .dual-input-container {
+                display: flex;
+                flex: 1;
+                gap: 1px;
+            }
+
+            .dual-input-container .input-field {
+                font-size: 13px;
+                padding: 10px 6px;
+                flex: 1 1 50%;
+                width: 50%;
+                min-width: 0;
+                max-width: none;
+            }
+
+            .input-field.single {
+                font-size: 13px;
+                padding: 10px 6px;
+                flex: 1;
+                width: 100%;
+            }
+
+            .comparison-table {
+                font-size: 10px;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 6px 4px;
+                font-size: 9px;
+            }
+
+            .comparison-table .parameter-cell {
+                min-width: 100px;
+                font-size: 9px;
+                padding-left: 6px;
+            }
+
+            .back-button {
+                top: 10px;
+                left: 10px;
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .floating-actions {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+
+            .export-dropdown {
+                bottom: 120px;
+                padding: 8px;
+            }
+
+            .export-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()" title="Back to Calculators">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <!-- Main Calculator Container -->
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1 class="calculator-title">Coal Cost Analysis Calculator</h1>
+            <p class="calculator-subtitle">Compare costs between two types of coal</p>
+        </div>
+
+        <!-- Instruction Message -->
+        <div class="instruction-message" id="instruction-message">
+            <i class="fas fa-info-circle me-2"></i>
+            Fill all parameters to compare coal costs
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Results Container -->
+        <div class="results-container" id="resultsContainer">
+            <h3 class="results-title" id="resultsTitle">Cost Analysis Results</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th id="coal1Header">Coal Type 1</th>
+                        <th id="coal2Header">Coal Type 2</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+            <div class="summary-section" id="summarySection">
+                <!-- Summary results will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Coal Names Section -->
+        <div class="section-header">
+            <i class="fas fa-tags me-2"></i>
+            Coal Types
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Coal Names</span>
+                <span class="input-group-text2"></span>
+            </div>
+            <div class="dual-input-container">
+                <input type="text" class="input-field" id="coal1Name" data-allow-text="true" placeholder="Coal A Name">
+                <input type="text" class="input-field" id="coal2Name" data-allow-text="true" placeholder="Coal B Name">
+            </div>
+        </div>
+
+        <!-- Coal Properties Section -->
+        <div class="section-header">
+            <i class="fas fa-mountain me-2"></i>
+            Coal Properties
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Coal Cost</span>
+                <span class="input-group-text2">Rs/MT</span>
+            </div>
+            <div class="dual-input-container">
+                <input type="number" class="input-field" id="coal1Cost" step="0.01" min="0" placeholder="2400">
+                <input type="number" class="input-field" id="coal2Cost" step="0.01" min="0" placeholder="2600">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Railway Freight</span>
+                <span class="input-group-text2">Rs/MT</span>
+            </div>
+            <div class="dual-input-container">
+                <input type="number" class="input-field" id="coal1Freight" step="0.01" min="0" placeholder="2500">
+                <input type="number" class="input-field" id="coal2Freight" step="0.01" min="0" placeholder="2700">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">GCV</span>
+                <span class="input-group-text2">kcal/kg</span>
+            </div>
+            <div class="dual-input-container">
+                <input type="number" class="input-field" id="coal1GCV" step="0.01" min="0" placeholder="4300">
+                <input type="number" class="input-field" id="coal2GCV" step="0.01" min="0" placeholder="4500">
+            </div>
+        </div>
+
+        <!-- Plant Parameters Section -->
+        <div class="section-header">
+            <i class="fas fa-industry me-2"></i>
+            Plant Parameters
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Generation Capacity</span>
+                <span class="input-group-text2">MW</span>
+            </div>
+            <input type="number" class="input-field single" id="capacity" step="1" min="0" placeholder="2300">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">PLF</span>
+                <span class="input-group-text2">%</span>
+            </div>
+            <input type="number" class="input-field single" id="plf" step="0.01" min="0" max="100" placeholder="85">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Number of Days</span>
+                <span class="input-group-text2">Days</span>
+            </div>
+            <input type="number" class="input-field single" id="days" step="1" min="0" max="365" placeholder="365">
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Station Heat Rate</span>
+                <span class="input-group-text2">kcal/kWh</span>
+            </div>
+            <input type="number" class="input-field single" id="shr" step="0.01" min="0" placeholder="2700">
+        </div>
+
+        <!-- Cost Economics Section -->
+        <div class="section-header">
+            <i class="fas fa-calculator me-2"></i>
+            Cost Economics for the Coal Quantity to be used
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text1">Coal Quantity</span>
+                <span class="input-group-text2">MT</span>
+            </div>
+            <input type="number" class="input-field single" id="coalQuantity" step="1" min="0" placeholder="100000">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="storeCalculation()">
+                <i class="fas fa-save"></i>
+                Store Data
+                <span class="storage-counter" id="storageCounter">0</span>
+            </button>
+            <button class="btn btn-danger" onclick="clearData()">
+                <i class="fas fa-trash"></i>
+                Clear Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
+            <i class="fas fa-calculator"></i>
+        </button>
+        <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+
+    <!-- Export Dropdown -->
+    <div class="export-dropdown" id="exportDropdown">
+        <button class="export-btn" onclick="exportToPDF()">
+            <i class="fas fa-file-pdf text-danger"></i>
+            Export as PDF
+        </button>
+        <button class="export-btn" onclick="exportToJPG()">
+            <i class="fas fa-image text-primary"></i>
+            Export as JPG
+        </button>
+    </div>
+
+    <!-- Formula Sidebar -->
+    <div class="formula-sidebar" id="formulaSidebar">
+        <div class="formula-header">
+            <h2 class="formula-title">Formulas</h2>
+            <button class="close-btn" onclick="toggleFormulas()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Generation} = \text{Capacity} \times \frac{\text{PLF}}{100} \times 24 \times \text{Days}$$
+                <div class="formula-fallback">Generation = Capacity × (PLF ÷ 100) × 24 × Days</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Coal Required} = \frac{\text{Generation} \times \text{SHR}}{\text{GCV} \times 1000}$$
+                <div class="formula-fallback">Coal Required = (Generation × SHR) ÷ (GCV × 1000)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Landed Cost} = \text{Coal Cost} + \text{Railway Freight}$$
+                <div class="formula-fallback">Landed Cost = Coal Cost + Railway Freight</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Landed Cost (MCal)} = \frac{\text{Landed Cost (MT)}}{\text{GCV}}$$
+                <div class="formula-fallback">Landed Cost (MCal) = Landed Cost (MT) ÷ GCV</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Energy Charges} = \frac{\text{Landed Cost (MT)} \times \text{SHR}}{\text{GCV} \times 1000}$$
+                <div class="formula-fallback">Energy Charges = (Landed Cost × SHR) ÷ (GCV × 1000)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{SCC} = \frac{\text{SHR}}{\text{GCV}}$$
+                <div class="formula-fallback">SCC = SHR ÷ GCV</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Total Cost} = \text{Coal Required} \times \text{Landed Cost}$$
+            </div>
+        </div>
+    </div>
+
+    <!-- Include necessary libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        // Global variables
+        let storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+        let isExportDropdownOpen = false;
+        let inputs, results, errorMessage, storageCounter, instructionMessage;
+
+        // Initialize DOM elements after page loads
+        function initializeElements() {
+            inputs = {
+                coal1Name: document.getElementById('coal1Name'),
+                coal2Name: document.getElementById('coal2Name'),
+                coal1Cost: document.getElementById('coal1Cost'),
+                coal2Cost: document.getElementById('coal2Cost'),
+                coal1Freight: document.getElementById('coal1Freight'),
+                coal2Freight: document.getElementById('coal2Freight'),
+                coal1GCV: document.getElementById('coal1GCV'),
+                coal2GCV: document.getElementById('coal2GCV'),
+                capacity: document.getElementById('capacity'),
+                plf: document.getElementById('plf'),
+                days: document.getElementById('days'),
+                shr: document.getElementById('shr'),
+                coalQuantity: document.getElementById('coalQuantity')
+            };
+
+            results = {
+                container: document.getElementById('resultsContainer'),
+                title: document.getElementById('resultsTitle'),
+                coal1Header: document.getElementById('coal1Header'),
+                coal2Header: document.getElementById('coal2Header'),
+                tableBody: document.getElementById('comparisonTableBody'),
+                summarySection: document.getElementById('summarySection')
+            };
+
+            errorMessage = document.getElementById('errorMessage');
+            storageCounter = document.getElementById('storageCounter');
+            instructionMessage = document.getElementById('instruction-message');
+        }
+
+        // Utility functions
+        function formatNumber(num, decimals = 2) {
+            if (isNaN(num) || num === null || num === undefined) return '-';
+            return new Intl.NumberFormat('en-IN', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(num);
+        }
+
+        function showError(message, type = 'error') {
+            errorMessage.textContent = message;
+            
+            // Style based on message type
+            if (type === 'success') {
+                errorMessage.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
+                errorMessage.style.borderColor = '#28a745';
+                errorMessage.style.color = '#155724';
+            } else {
+                errorMessage.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                errorMessage.style.borderColor = '#dc3545';
+                errorMessage.style.color = '#721c24';
+            }
+            
+            errorMessage.style.display = 'block';
+            results.container.style.display = 'none';
+            instructionMessage.style.display = 'none';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+                instructionMessage.style.display = 'block';
+                // Reset to default error styling
+                errorMessage.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                errorMessage.style.borderColor = '#dc3545';
+                errorMessage.style.color = '#721c24';
+            }, type === 'success' ? 4000 : 3000); // Show success messages a bit longer
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function updateInstructionMessage() {
+            const values = getInputValues();
+            const textInputs = [values.coal1Name, values.coal2Name];
+            const numericInputs = [
+                values.coal1Cost, values.coal2Cost, values.coal1Freight, values.coal2Freight,
+                values.coal1GCV, values.coal2GCV, values.capacity, values.plf, values.days, values.shr
+            ];
+            
+            const textFilled = textInputs.every(v => v && v.trim() !== '');
+            const numericFilled = numericInputs.every(v => !isNaN(v) && v !== null);
+            
+            if (!textFilled || !numericFilled) {
+                instructionMessage.innerHTML = `
+                    <i class="fas fa-info-circle me-2"></i>
+                    Fill all parameters to compare coal costs
+                `;
+                instructionMessage.style.display = 'block';
+                instructionMessage.style.color = 'white';
+            } else {
+                instructionMessage.style.display = 'none';
+            }
+        }
+
+        function getInputValues() {
+            if (!inputs || !inputs.coal1Name) {
+                console.log('Inputs not initialized yet');
+                return {};
+            }
+            
+            return {
+                coal1Name: inputs.coal1Name.value.trim(),
+                coal2Name: inputs.coal2Name.value.trim(),
+                coal1Cost: parseFloat(inputs.coal1Cost.value) || NaN,
+                coal2Cost: parseFloat(inputs.coal2Cost.value) || NaN,
+                coal1Freight: parseFloat(inputs.coal1Freight.value) || NaN,
+                coal2Freight: parseFloat(inputs.coal2Freight.value) || NaN,
+                coal1GCV: parseFloat(inputs.coal1GCV.value) || NaN,
+                coal2GCV: parseFloat(inputs.coal2GCV.value) || NaN,
+                capacity: parseFloat(inputs.capacity.value) || NaN,
+                plf: parseFloat(inputs.plf.value) || NaN,
+                days: parseFloat(inputs.days.value) || NaN,
+                shr: parseFloat(inputs.shr.value) || NaN,
+                coalQuantity: parseFloat(inputs.coalQuantity.value) || NaN
+            };
+        }
+
+        function validateInputs(values) {
+            // Check for missing text inputs
+            if (!values.coal1Name || !values.coal2Name) {
+                showError('Please enter names for both coal types.');
+                return false;
+            }
+
+            // Check for negative or missing numeric values
+            const numericValues = [
+                values.coal1Cost, values.coal2Cost, values.coal1Freight, values.coal2Freight,
+                values.coal1GCV, values.coal2GCV, values.capacity, values.plf, values.days, values.shr,
+                values.coalQuantity
+            ];
+
+            if (numericValues.some(v => isNaN(v))) {
+                showError('Please fill in all numeric fields.');
+                return false;
+            }
+
+            if (numericValues.some(v => v < 0)) {
+                showError('Please enter valid non-negative values.');
+                return false;
+            }
+
+            if (values.plf > 100) {
+                showError('PLF cannot exceed 100%.');
+                return false;
+            }
+
+            if (values.days > 365) {
+                showError('Days cannot exceed 365.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function calculateComparison() {
+            const values = getInputValues();
+            
+            if (!validateInputs(values)) return null;
+
+            hideError();
+            updateInstructionMessage();
+
+            // Calculations
+            const generation = values.capacity * (values.plf / 10000) * 24 * values.days; // MWh
+            
+            // Coal 1 calculations
+            const coal1LandedCost = values.coal1Cost + values.coal1Freight;
+            const coal1Required = ((generation * values.shr) / (values.coal1GCV * 1000)) * 100000; // MT (multiplied by 1000)
+            const coal1LandedCostMC = coal1LandedCost / values.coal1GCV;
+            const coal1EnergyCharges = (coal1LandedCost * values.shr) / (values.coal1GCV * 1000);
+            const coal1SCC = values.shr / values.coal1GCV;
+            const coal1TotalCost = (coal1Required * coal1LandedCost / 10000000); // Crores 
+            
+            // Coal 2 calculations
+            const coal2LandedCost = values.coal2Cost + values.coal2Freight;
+            const coal2Required = ((generation * values.shr) / (values.coal2GCV * 1000)) * 100000; // MT (multiplied by 1000)
+            const coal2LandedCostMC = coal2LandedCost / values.coal2GCV;
+            const coal2EnergyCharges = (coal2LandedCost * values.shr) / (values.coal2GCV * 1000);
+            const coal2SCC = values.shr / values.coal2GCV;
+            const coal2TotalCost = (coal2Required * coal2LandedCost / 10000000); // Crores
+
+            // Calculate Fuel Cost for Coal 1 and Coal 2 (using coal quantity)
+            const fuelCost1 = (coal1Required * coal1LandedCost) / 100;
+            const fuelCost2 = (coal2Required * coal2LandedCost) / 100;
+
+            // Calculate Savings
+            const savingsCoal1 = fuelCost1 - fuelCost2;
+            const savingsCoal2 = fuelCost2 - fuelCost1;
+
+            // Calculate savings per MT using coal quantity
+            const savingsPerMTCoal1 = ((coal2LandedCost * (values.coal1GCV / values.coal2GCV)) - coal1LandedCost) * (values.coalQuantity || coal1Required) / 10000000;
+            const savingsPerMTCoal2 = ((coal1LandedCost * (values.coal2GCV / values.coal1GCV)) - coal2LandedCost) * (values.coalQuantity || coal2Required) / 10000000;
+
+            // Per unit cost reduction (difference between energy charges)
+            const perUnitReduction = Math.abs(coal1EnergyCharges - coal2EnergyCharges);
+
+            return {
+                values,
+                generation,
+                coal1: {
+                    landedCost: coal1LandedCost,
+                    required: coal1Required,
+                    landedCostMC: coal1LandedCostMC,
+                    energyCharges: coal1EnergyCharges,
+                    scc: coal1SCC,
+                    totalCost: coal1TotalCost,
+                    fuelCost: fuelCost1
+                },
+                coal2: {
+                    landedCost: coal2LandedCost,
+                    required: coal2Required,
+                    landedCostMC: coal2LandedCostMC,
+                    energyCharges: coal2EnergyCharges,
+                    scc: coal2SCC,
+                    totalCost: coal2TotalCost,
+                    fuelCost: fuelCost2
+                },
+                savings: {
+                    savingsCoal1,
+                    savingsCoal2,
+                    savingsPerMTCoal1,
+                    savingsPerMTCoal2,
+                    perUnitReduction,
+                    economicalCoal: fuelCost1 < fuelCost2 ? 'coal1' : 'coal2',
+                    totalSaving: Math.abs(savingsCoal1),
+                    coalQuantityUsed: values.coalQuantity || 0
+                }
+            };
+        }
+
+        function displayResults(calculation) {
+            if (!calculation) return;
+
+            const { values, generation, coal1, coal2, savings } = calculation;
+
+            // Update headers
+            results.coal1Header.textContent = values.coal1Name;
+            results.coal2Header.textContent = values.coal2Name;
+            results.title.textContent = `${values.coal1Name} vs ${values.coal2Name} Analysis`;
+
+            // Create table rows
+            const rows = [
+                ['Quantity Required (Lakh MT)', formatNumber(coal1.required / 100000, 2), formatNumber(coal2.required / 100000, 2)],
+                ['Landed Cost (Rs/MT)', formatNumber(coal1.landedCost, 2), formatNumber(coal2.landedCost, 2)],
+                ['Landed Cost (Rs/MCal)', formatNumber(coal1.landedCostMC, 3), formatNumber(coal2.landedCostMC, 3)],
+                ['Energy Charges (Rs/kWh)', formatNumber(coal1.energyCharges, 4), formatNumber(coal2.energyCharges, 4)],
+                ['SCC (kg/kWh)', formatNumber(coal1.scc, 3), formatNumber(coal2.scc, 3)],
+                ['Total Expenditure (Rs. Crore)', formatNumber(coal1.totalCost, 2), formatNumber(coal2.totalCost, 2)]
+            ];
+
+            results.tableBody.innerHTML = rows.map(row => `
+                <tr>
+                    <td class="parameter-cell">${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${row[2]}</td>
+                </tr>
+            `).join('');
+
+            // Determine economical coal and savings display
+            const economicalCoalName = savings.economicalCoal === 'coal1' ? values.coal1Name : values.coal2Name;
+            const otherCoalName = savings.economicalCoal === 'coal1' ? values.coal2Name : values.coal1Name;
+            const totalSavingAmount = (savings.economicalCoal === 'coal1' ? savings.savingsCoal2 : savings.savingsCoal1) / 100000;
+            const savingsPerMT = savings.economicalCoal === 'coal1' ? savings.savingsPerMTCoal1 : savings.savingsPerMTCoal2;
+            const coalQuantityDisplay = savings.coalQuantityUsed > 0 ? savings.coalQuantityUsed / 100000 : 0;
+
+            results.summarySection.innerHTML = `
+                <div class="summary-item section-header">
+                    <strong> ${economicalCoalName} </strong> coal is economical w.r.t. <strong> ${otherCoalName} </strong>
+                </div>
+                <div class="summary-item">
+                    Total Saving for using <strong>${economicalCoalName}</strong> coal: <strong>Rs. ${formatNumber(totalSavingAmount, 2)} Crore</strong>
+                </div>
+                ${coalQuantityDisplay > 0 ? `
+                <div class="summary-item">
+                    <strong>Rs. ${formatNumber(savingsPerMT, 2)} Crore</strong> per <strong>${formatNumber(coalQuantityDisplay, 2)} Lakh MT</strong>
+                </div>` : ''}
+                <div class="summary-item">
+                    Per Unit cost reduction: <strong>Rs. ${formatNumber(savings.perUnitReduction, 4)}</strong>
+                </div>
+                <div class="summary-item">
+                    Generation: <strong>${formatNumber(generation, 2)} Lakh Units</strong>
+                </div>
+            `;
+
+            results.container.style.display = 'block';
+        }
+
+        function calculate() {
+            const calculation = calculateComparison();
+            displayResults(calculation);
+            return calculation;
+        }
+
+        function storeCalculation() {
+            const calculation = calculate();
+            if (!calculation) return;
+
+            const timestamp = new Date().toLocaleString();
+            const storedData = {
+                timestamp,
+                ...calculation.values,
+                coal1Results: calculation.coal1,
+                coal2Results: calculation.coal2,
+                generation: calculation.generation
+            };
+
+            storedCalculations.push(storedData);
+            localStorage.setItem('coalAnalysisCalculations', JSON.stringify(storedCalculations));
+            updateStorageCounter();
+        }
+
+        function clearData() {
+            if (storedCalculations.length === 0) {
+                showError('No data to clear.');
+                return;
+            }
+
+            if (confirm('Are you sure you want to clear all stored calculations?')) {
+                storedCalculations = [];
+                localStorage.removeItem('coalAnalysisCalculations');
+                updateStorageCounter();
+            }
+        }
+
+        function updateStorageCounter() {
+            if (storageCounter) {
+                storageCounter.textContent = storedCalculations.length;
+            }
+        }
+
+        // Back Button Functionality
+        function goBack() {
+            // Try to go back to parent window if opened from main app
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // If opened from main app, switch focus back and close this tab
+                    window.opener.focus();
+                    // Call function to show calculators page in parent window
+                    if (typeof window.opener.showCalculatorsPage === 'function') {
+                        window.opener.showCalculatorsPage();
+                    }
+                    window.close();
+                } catch (e) {
+                    // If cross-origin or other security issues, fallback to alert
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            } else {
+                // If no parent window, try to navigate to main app
+                try {
+                    window.location.href = 'index.html#calculators';
+                } catch (e) {
+                    alert('Please use the browser back button to return to the main application.');
+                }
+            }
+        }
+
+        function toggleFormulas() {
+            const sidebar = document.getElementById('formulaSidebar');
+            sidebar.classList.toggle('active');
+            
+            if (sidebar.classList.contains('active')) {
+                setTimeout(() => {
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        MathJax.typesetPromise([sidebar]).then(() => {
+                            console.log('MathJax formulas rendered successfully');
+                        }).catch((err) => {
+                            console.log('MathJax rendering error:', err);
+                        });
+                    }
+                }, 100);
+            }
+        }
+
+        function toggleExportOptions() {
+            const dropdown = document.getElementById('exportDropdown');
+            isExportDropdownOpen = !isExportDropdownOpen;
+            dropdown.style.display = isExportDropdownOpen ? 'flex' : 'none';
+        }
+
+        function exportToPDF() {
+            if (storedCalculations.length === 0) {
+                showError('No data to export. Please store some calculations first.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4'); // A4 portrait format
+            
+            let yPosition = 20;
+            const pageWidth = 210; // A4 width in mm
+            const margin = 20;
+            const contentWidth = pageWidth - (2 * margin);
+            
+            // Compact Header
+            doc.setFillColor(79, 172, 254); // Theme blue color
+            doc.rect(0, 0, pageWidth, 20, 'F');
+            
+            // Title only
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Coal Analysis of Two Types of Coal', pageWidth/2, 12, { align: 'center' });
+            
+            yPosition = 30;
+            
+            // Total records info
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Total Analysis Records: ${storedCalculations.length}`, pageWidth/2, yPosition, { align: 'center' });
+            
+            yPosition += 10;
+            
+            // Process each stored calculation
+            storedCalculations.forEach((calc, index) => {
+                // Start each analysis on a new page (except the first one)
+                if (index > 0) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                // Analysis header
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, yPosition - 3, contentWidth, 10, 'F');
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(13);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Analysis ${index + 1}: ${calc.coal1Name} vs ${calc.coal2Name}`, margin + 3, yPosition + 3);
+                
+                yPosition += 12;
+                
+                // Input Parameters Section
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('INPUT PARAMETERS', margin, yPosition);
+                yPosition += 6;
+                
+                // Plant Parameters Table
+                const plantParams = [
+                    ['Generation Capacity', `${calc.capacity} MW`],
+                    ['Plant Load Factor (PLF)', `${calc.plf}%`],
+                    ['Number of Days', `${calc.days} Days`],
+                    ['Station Heat Rate (SHR)', `${calc.shr} kcal/kWh`],
+                    ['Coal Quantity (if specified)', calc.coalQuantity ? `${(calc.coalQuantity/100000).toFixed(2)} Lakh MT` : 'Not specified']
+                ];
+                
+                doc.autoTable({
+                    head: [['Parameter', 'Value']],
+                    body: plantParams,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    tableWidth: contentWidth,
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    headStyles: { fillColor: [79, 172, 254], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 249, 250] },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 6;
+                
+                // Coal Properties Comparison
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('COAL PROPERTIES COMPARISON', margin, yPosition);
+                yPosition += 6;
+                
+                const coalProps = [
+                    ['Coal Cost (Rs/MT)', `${calc.coal1Cost}`, `${calc.coal2Cost}`],
+                    ['Railway Freight (Rs/MT)', `${calc.coal1Freight}`, `${calc.coal2Freight}`],
+                    ['GCV (kcal/kg)', `${calc.coal1GCV}`, `${calc.coal2GCV}`],
+                    ['Landed Cost (Rs/MT)', 
+                        `${(calc.coal1Cost + calc.coal1Freight).toFixed(2)}`, 
+                        `${(calc.coal2Cost + calc.coal2Freight).toFixed(2)}`],
+                    ['Landed Cost (Rs/MCal)', 
+                        `${((calc.coal1Cost + calc.coal1Freight) / calc.coal1GCV).toFixed(3)}`, 
+                        `${((calc.coal2Cost + calc.coal2Freight) / calc.coal2GCV).toFixed(3)}`]
+                ];
+                
+                doc.autoTable({
+                    head: [['Parameter', calc.coal1Name, calc.coal2Name]],
+                    body: coalProps,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    tableWidth: contentWidth,
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    headStyles: { fillColor: [40, 167, 69], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 249, 250] },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 6;
+                
+                // Results Section
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('ANALYSIS RESULTS', margin, yPosition);
+                yPosition += 6;
+                
+                // Calculate generation
+                const generation = calc.capacity * (calc.plf / 10000) * 24 * calc.days;
+                
+                const results = [
+                    ['Generation (Lakh Units)', `${(generation).toFixed(2)}`],
+                    ['Coal Required (Lakh MT)', 
+                        `${(calc.coal1Results.required / 100000).toFixed(2)}`, 
+                        `${(calc.coal2Results.required / 100000).toFixed(2)}`],
+                    ['Energy Charges (Rs/kWh)', 
+                        `${calc.coal1Results.energyCharges.toFixed(4)}`, 
+                        `${calc.coal2Results.energyCharges.toFixed(4)}`],
+                    ['SCC (kg/kWh)', 
+                        `${calc.coal1Results.scc.toFixed(3)}`, 
+                        `${calc.coal2Results.scc.toFixed(3)}`],
+                    ['Total Expenditure (Rs. Crore)', 
+                        `${calc.coal1Results.totalCost.toFixed(2)}`, 
+                        `${calc.coal2Results.totalCost.toFixed(2)}`]
+                ];
+                
+                doc.autoTable({
+                    head: [['Parameter', calc.coal1Name, calc.coal2Name]],
+                    body: results,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    tableWidth: contentWidth,
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    headStyles: { fillColor: [220, 53, 69], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 249, 250] },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 6;
+                
+                // Economic Analysis
+                const economicalCoal = calc.coal1Results.totalCost < calc.coal2Results.totalCost ? calc.coal1Name : calc.coal2Name;
+                const savings = Math.abs(calc.coal1Results.totalCost - calc.coal2Results.totalCost);
+                const perUnitSaving = Math.abs(calc.coal1Results.energyCharges - calc.coal2Results.energyCharges);
+                
+                // Calculate coal quantity savings if specified
+                let coalQuantitySavings = 0;
+                let coalQuantityText = '';
+                if (calc.coalQuantity && calc.coalQuantity > 0) {
+                    const coal1LandedCost = calc.coal1Cost + calc.coal1Freight;
+                    const coal2LandedCost = calc.coal2Cost + calc.coal2Freight;
+                    const economicalLandedCost = economicalCoal === calc.coal1Name ? coal1LandedCost : coal2LandedCost;
+                    const otherLandedCost = economicalCoal === calc.coal1Name ? coal2LandedCost : coal1LandedCost;
+                    const economicalGCV = economicalCoal === calc.coal1Name ? calc.coal1GCV : calc.coal2GCV;
+                    const otherGCV = economicalCoal === calc.coal1Name ? calc.coal2GCV : calc.coal1GCV;
+                    
+                    // Calculate savings per MT based on equivalent energy
+                    coalQuantitySavings = ((otherLandedCost * (economicalGCV / otherGCV)) - economicalLandedCost) * calc.coalQuantity / 10000000; // in Crores
+                    coalQuantityText = `Rs. ${coalQuantitySavings.toFixed(2)} Crore for ${(calc.coalQuantity/100000).toFixed(2)} Lakh MT`;
+                }
+                
+                // Conclusion box - compact height
+                const boxHeight = calc.coalQuantity && calc.coalQuantity > 0 ? 28 : 22;
+                doc.setFillColor(40, 167, 69);
+                doc.rect(margin, yPosition - 2, contentWidth, boxHeight, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('ECONOMIC CONCLUSION', margin + 3, yPosition + 4);
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`• ${economicalCoal} coal is more economical`, margin + 3, yPosition + 10);
+                doc.text(`• Total Savings: Rs. ${savings.toFixed(2)} Crore`, margin + 3, yPosition + 15);
+                doc.text(`• Per Unit Cost Reduction: Rs. ${perUnitSaving.toFixed(4)}`, margin + 85, yPosition + 10);
+                doc.text(`• Generation: ${generation.toFixed(2)} Lakh Units`, margin + 85, yPosition + 15);
+                
+                // Add coal quantity savings if available
+                if (calc.coalQuantity && calc.coalQuantity > 0) {
+                    doc.text(`• Coal Quantity Savings: ${coalQuantityText}`, margin + 3, yPosition + 20);
+                }
+                
+                yPosition += boxHeight + 8;
+            });
+            
+            // Footer on last page
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Page ${i} of ${pageCount}`, pageWidth/2, 285, { align: 'center' });
+                doc.text('Generated by Coal Cost Analysis Calculator', pageWidth/2, 290, { align: 'center' });
+                
+                // Add report generation info to the last page
+                if (i === pageCount) {
+                    doc.text(`Report Generated: ${new Date().toLocaleString()}`, pageWidth/2, 295, { align: 'center' });
+                }
+            }
+
+            doc.save('Professional_Coal_Cost_Analysis_Report.pdf');
+            toggleExportOptions();
+        }
+
+        async function exportToJPG() {
+            if (storedCalculations.length === 0) {
+                showError('No data to export. Please store some calculations first.');
+                return;
+            }
+
+            try {
+                const pageWidth = 794; // A4 width at 96 DPI (210mm)
+                const pageHeight = 1123; // A4 height at 96 DPI (297mm)
+                const margin = 60;
+                const contentWidth = pageWidth - (2 * margin);
+                
+                // Create a temporary container for each page
+                const createPageElement = (pageContent, pageNumber, totalPages) => {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.style.cssText = `
+                        width: ${pageWidth}px;
+                        height: ${pageHeight}px;
+                        background: white;
+                        font-family: 'Segoe UI', sans-serif;
+                        position: relative;
+                        page-break-after: always;
+                        box-sizing: border-box;
+                        padding: 0;
+                        margin: 0;
+                        overflow: hidden;
+                    `;
+                    
+                    // Header
+                    const header = document.createElement('div');
+                    header.style.cssText = `
+                        width: 100%;
+                        height: 60px;
+                        background: linear-gradient(135deg, #4facfe, #00f2fe);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0;
+                        padding: 0;
+                    `;
+                    
+                    const title = document.createElement('h1');
+                    title.textContent = 'Coal Analysis of Two Types of Coal';
+                    title.style.cssText = `
+                        color: white;
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin: 0;
+                        text-align: center;
+                    `;
+                    header.appendChild(title);
+                    
+                    // Content container
+                    const content = document.createElement('div');
+                    content.style.cssText = `
+                        padding: ${margin}px;
+                        padding-top: 20px;
+                        height: ${pageHeight - 60 - 40}px; // Subtract header and footer
+                        overflow: hidden;
+                        box-sizing: border-box;
+                    `;
+                    content.innerHTML = pageContent;
+                    
+                    // Footer
+                    const footer = document.createElement('div');
+                    footer.style.cssText = `
+                        position: absolute;
+                        bottom: 10px;
+                        width: 100%;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666;
+                        line-height: 1.4;
+                    `;
+                    footer.innerHTML = `
+                        <div>Page ${pageNumber} of ${totalPages}</div>
+                        <div>Generated by Coal Cost Analysis Calculator</div>
+                        ${pageNumber === totalPages ? `<div>Report Generated: ${new Date().toLocaleString()}</div>` : ''}
+                    `;
+                    
+                    pageDiv.appendChild(header);
+                    pageDiv.appendChild(content);
+                    pageDiv.appendChild(footer);
+                    
+                    return pageDiv;
+                };
+                
+                // Create content for each analysis
+                const pages = [];
+                
+                // First page with overview
+                let overviewContent = `
+                    <div style="text-align: center; margin: 20px 0; font-size: 14px; color: #333;">
+                        Total Analysis Records: ${storedCalculations.length}
+                    </div>
+                `;
+                
+                storedCalculations.forEach((calc, index) => {
+                    // Calculate generation
+                    const generation = calc.capacity * (calc.plf / 10000) * 24 * calc.days;
+                    const economicalCoal = calc.coal1Results.totalCost < calc.coal2Results.totalCost ? calc.coal1Name : calc.coal2Name;
+                    const savings = Math.abs(calc.coal1Results.totalCost - calc.coal2Results.totalCost);
+                    const perUnitSaving = Math.abs(calc.coal1Results.energyCharges - calc.coal2Results.energyCharges);
+                    
+                    // Calculate coal quantity savings if specified
+                    let coalQuantitySavings = 0;
+                    let coalQuantityText = '';
+                    if (calc.coalQuantity && calc.coalQuantity > 0) {
+                        const coal1LandedCost = calc.coal1Cost + calc.coal1Freight;
+                        const coal2LandedCost = calc.coal2Cost + calc.coal2Freight;
+                        const economicalLandedCost = economicalCoal === calc.coal1Name ? coal1LandedCost : coal2LandedCost;
+                        const otherLandedCost = economicalCoal === calc.coal1Name ? coal2LandedCost : coal1LandedCost;
+                        const economicalGCV = economicalCoal === calc.coal1Name ? calc.coal1GCV : calc.coal2GCV;
+                        const otherGCV = economicalCoal === calc.coal1Name ? calc.coal2GCV : calc.coal1GCV;
+                        
+                        coalQuantitySavings = ((otherLandedCost * (economicalGCV / otherGCV)) - economicalLandedCost) * calc.coalQuantity / 10000000;
+                        coalQuantityText = `Rs. ${coalQuantitySavings.toFixed(2)} Crore for ${(calc.coalQuantity/100000).toFixed(2)} Lakh MT`;
+                    }
+                    
+                    const pageContent = `
+                        <div style="background: #f0f0f0; padding: 8px; margin: 0 0 15px 0; border-radius: 4px;">
+                            <h2 style="margin: 0; font-size: 18px; font-weight: bold; color: #333;">Analysis ${index + 1}: ${calc.coal1Name} vs ${calc.coal2Name}</h2>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 8px 0; color: #333;">INPUT PARAMETERS</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
+                                <thead>
+                                    <tr style="background: #4facfe; color: white;">
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Generation Capacity</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.capacity} MW</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Plant Load Factor (PLF)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.plf}%</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Number of Days</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.days} Days</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Station Heat Rate (SHR)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.shr} kcal/kWh</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Coal Quantity (if specified)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coalQuantity ? `${(calc.coalQuantity/100000).toFixed(2)} Lakh MT` : 'Not specified'}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 8px 0; color: #333;">COAL PROPERTIES COMPARISON</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
+                                <thead>
+                                    <tr style="background: #28a745; color: white;">
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">${calc.coal1Name}</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">${calc.coal2Name}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Coal Cost (Rs/MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Cost}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Cost}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Railway Freight (Rs/MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Freight}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Freight}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">GCV (kcal/kg)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1GCV}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2GCV}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Landed Cost (Rs/MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal1Cost + calc.coal1Freight).toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal2Cost + calc.coal2Freight).toFixed(2)}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Landed Cost (Rs/MCal)</td><td style="padding: 6px; border: 1px solid #ddd;">${((calc.coal1Cost + calc.coal1Freight) / calc.coal1GCV).toFixed(3)}</td><td style="padding: 6px; border: 1px solid #ddd;">${((calc.coal2Cost + calc.coal2Freight) / calc.coal2GCV).toFixed(3)}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 8px 0; color: #333;">ANALYSIS RESULTS</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
+                                <thead>
+                                    <tr style="background: #dc3545; color: white;">
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">${calc.coal1Name}</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">${calc.coal2Name}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Generation (Lakh Units)</td><td colspan="2" style="padding: 6px; border: 1px solid #ddd; text-align: center;">${generation.toFixed(2)}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Coal Required (Lakh MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal1Results.required / 100000).toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal2Results.required / 100000).toFixed(2)}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Energy Charges (Rs/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.energyCharges.toFixed(4)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.energyCharges.toFixed(4)}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">SCC (kg/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.scc.toFixed(3)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.scc.toFixed(3)}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Total Expenditure (Rs. Crore)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.totalCost.toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.totalCost.toFixed(2)}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="background: #28a745; color: white; padding: 12px; border-radius: 4px; margin-top: 15px;">
+                            <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 8px 0;">ECONOMIC CONCLUSION</h3>
+                            <div style="font-size: 13px; line-height: 1.4;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span>• ${economicalCoal} coal is more economical</span>
+                                    <span>• Per Unit Cost Reduction: Rs. ${perUnitSaving.toFixed(4)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span>• Total Savings: Rs. ${savings.toFixed(2)} Crore</span>
+                                    <span>• Generation: ${generation.toFixed(2)} Lakh Units</span>
+                                </div>
+                                ${calc.coalQuantity && calc.coalQuantity > 0 ? `<div>• Coal Quantity Savings: ${coalQuantityText}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    pages.push(createPageElement(pageContent, index + 1, storedCalculations.length));
+                });
+                
+                // Create a temporary container to hold all pages
+                const tempContainer = document.createElement('div');
+                tempContainer.style.cssText = 'position: absolute; top: -9999px; left: -9999px;';
+                document.body.appendChild(tempContainer);
+                
+                // Process each page and create JPG files
+                for (let i = 0; i < pages.length; i++) {
+                    tempContainer.appendChild(pages[i]);
+                    
+                    // Use html2canvas to convert page to image
+                    const canvas = await html2canvas(pages[i], {
+                        width: pageWidth,
+                        height: pageHeight,
+                        scale: 2, // Higher resolution
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true
+                    });
+                    
+                    // Download the image
+                    const link = document.createElement('a');
+                    const filename = storedCalculations.length > 1 
+                        ? `Professional_Coal_Analysis_Report_Page_${i + 1}.jpg`
+                        : 'Professional_Coal_Analysis_Report.jpg';
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/jpeg', 0.92);
+                    link.click();
+                    
+                    tempContainer.removeChild(pages[i]);
+                    
+                    // Add a small delay between downloads to prevent browser blocking
+                    if (i < pages.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                }
+                
+                // Clean up
+                document.body.removeChild(tempContainer);
+                
+                // Show success message
+                const message = storedCalculations.length > 1 
+                    ? `Successfully exported ${storedCalculations.length} JPG files (one per analysis)`
+                    : 'Successfully exported Professional Coal Analysis Report as JPG';
+                    
+                showError(message, 'success');
+                
+            } catch (error) {
+                console.error('Error exporting to JPG:', error);
+                showError('Error occurred while exporting to JPG. Please try again.');
+            }
+            
+            toggleExportOptions();
+        }
+
+        function setupEventListeners() {
+            // Event listeners
+            Object.values(inputs).forEach(input => {
+                if (!input) return;
+                
+                input.addEventListener('input', () => {
+                    updateInstructionMessage();
+                    calculate();
+                });
+                
+                // Restrict numeric inputs
+                if (input.type === 'number') {
+                    input.addEventListener('keydown', function(e) {
+                        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+                        if (allowedKeys.includes(e.key)) return;
+                        
+                        if (e.key === '.' && this.value.includes('.')) {
+                            e.preventDefault();
+                            return;
+                        }
+                        
+                        if (e.key === '-' || e.key === '+' || e.key === 'e' || (!/^\d$/.test(e.key) && e.key !== '.')) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+
+            // PLF limit enforcement
+            if (inputs.plf) {
+                inputs.plf.addEventListener('input', function() {
+                    if (parseFloat(this.value) > 100) {
+                        this.value = 100;
+                    }
+                });
+            }
+
+            // Days limit enforcement
+            if (inputs.days) {
+                inputs.days.addEventListener('input', function() {
+                    if (parseFloat(this.value) > 365) {
+                        this.value = 365;
+                    }
+                });
+            }
+
+            // Close export dropdown and formula sidebar when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('exportDropdown');
+                const formulaSidebar = document.getElementById('formulaSidebar');
+                const exportButton = e.target.closest('.floating-btn');
+                const formulaButton = e.target.closest('[onclick*="toggleFormulas"]');
+                
+                // Close export dropdown when clicking outside
+                if (!exportButton && dropdown && !dropdown.contains(e.target) && isExportDropdownOpen) {
+                    toggleExportOptions();
+                }
+                
+                // Close formula sidebar when clicking outside
+                if (!formulaButton && formulaSidebar && !formulaSidebar.contains(e.target) && formulaSidebar.classList.contains('active')) {
+                    toggleFormulas();
+                }
+            });
+        }
+
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeElements();
+            updateStorageCounter();
+            updateInstructionMessage();
+            setupEventListeners();
+            
+            // Ensure export dropdown is hidden on page load
+            const exportDropdown = document.getElementById('exportDropdown');
+            if (exportDropdown) {
+                exportDropdown.style.display = 'none';
+            }
+            
+            // MathJax initialization
+            setTimeout(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise().then(() => {
+                        console.log('Initial MathJax rendering completed');
+                    }).catch((err) => {
+                        console.log('Initial MathJax rendering error:', err);
+                        document.body.classList.add('no-mathjax');
+                    });
+                } else {
+                    setTimeout(() => {
+                        if (!window.MathJax) {
+                            document.body.classList.add('no-mathjax');
+                            console.log('MathJax not loaded, showing fallback formulas');
+                        }
+                    }, 3000);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

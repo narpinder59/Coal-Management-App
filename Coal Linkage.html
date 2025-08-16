@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Calculator</title>
+
+<!--JSPDF CDN-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js">    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Generate PDF  bby Including the jsPDF library in HTML -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Include Bootstrap CSS (you can use a CDN link) -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- Include a manifest file for PWA -->
+<link rel="manifest" href="/manifest.json">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Add this line to include Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!--Bootstrap Icons library-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Include jsPDF AutoTable library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+/* =============================================================================
+   COAL LINKAGE CALCULATOR - ESSENTIAL CSS ONLY
+   ============================================================================= */
+
+/* Main Layout */
+.main-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.calculator-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.calculator-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    text-align: center;
+    color: white;
+}
+
+.calculator-title {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calculator-content {
+    padding: 30px;
+}
+
+/* Results Area */
+.results-area {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.coal-badge, .rakes-badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    padding: 10px 15px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Section Titles */
+.section-title-simple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Input Groups - Fixed sizing and styling */
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: stretch;
+}
+
+.input-group-prepend {
+    display: flex;
+}
+
+.input-group-text1 {
+    background: linear-gradient(135deg, #495057, #343a40);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    min-width: 200px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.input-group-text2 {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    min-width: 50px;
+    width: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.input-group-text3 {
+    background: linear-gradient(135deg, #495057, #343a40);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    min-width: 200px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.input-group-text4 {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    min-width: 50px;
+    width: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.form-control {
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    flex: 1;
+    height: 42px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    font-size: 0.875rem;
+}
+
+.form-control:focus {
+    background: white;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+/* Quarter Grid */
+.quarters-grid-simple {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.quarter-inputCal1 {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    height: 40px;
+    line-height: 1.5;
+}
+
+.quarter-inputCal1:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    background: white;
+    outline: none;
+}
+
+/* Back to Calculators Button */
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+}
+
+.btn-outline-primary {
+    color: #667eea;
+    border: 2px solid #667eea;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-outline-primary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Formula Sidebar */
+.formula-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    z-index: 1050;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.formula-sidebar.show {
+    right: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+.formula-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+}
+
+/* Floating Icons */
+.floating-icons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.floating-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: move;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-icon:hover {
+    transform: scale(1.1);
+}
+
+.export-dropdown {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background: transparent;
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 60px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+}
+
+.export-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.export-dropdown button {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-dropdown button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.export-dropdown button:first-child {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.export-dropdown button:first-child:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.export-dropdown button:last-child {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    margin-bottom: 0;
+}
+
+.export-dropdown button:last-child:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Error Messages */
+#error-messageCal1 {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    display: none;
+}
+
+/* Bootstrap Grid System */
+.container-fluid {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px;
+    }
+    
+    .calculator-content {
+        padding: 20px;
+    }
+    
+    .calculator-title {
+        font-size: 1.8rem;
+        white-space: nowrap;
+    }
+    
+    .quarters-grid-simple {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .formula-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .floating-icons {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 160px;
+        width: 160px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Additional responsive design for mobile devices */
+@media (max-width: 576px) {
+    .calculator-title {
+        font-size: 1.5rem;
+        white-space: nowrap;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 140px;
+        width: 140px;
+        font-size: 0.75rem;
+        padding: 6px 8px;
+        height: 38px;
+    }
+    
+    .input-group-text2,
+    .input-group-text4 {
+        min-width: 40px;
+        width: 40px;
+        font-size: 0.75rem;
+        padding: 6px 8px;
+        height: 38px;
+    }
+    
+    .form-control,
+    .quarter-inputCal1 {
+        font-size: 0.875rem;
+        padding: 6px 8px;
+        height: 38px;
+    }
+    
+    .floating-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+}
+</style>
+
+</head>
+<body>
+    <!-- Back to Calculators Button -->
+    <div class="container-fluid">
+        <div class="row mb-3 mt-2">
+            <div class="col-12">
+                <button type="button" class="btn btn-outline-primary" onclick="goBackToCalculators()">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Calculators
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="calculator-card">
+            <!-- Header Section -->
+            <div class="calculator-header">
+                <h1 class="calculator-title">
+                    <i class="fas fa-calculator"></i> Coal Linkage Calculator
+                </h1>
+            </div>
+
+            <!-- Content Section -->
+            <div class="calculator-content">
+                <!-- Results Display -->
+                <div class="results-area" id="resultshow6" style="display: none;">
+                    <h5 style="margin-bottom: 10px; color: white; font-size: 1rem;">
+                        <i class="fas fa-chart-line"></i> Calculation Results
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge coal-badge">
+                            <i class="fas fa-weight-hanging"></i> <span id="coal-availability-result"></span>
+                        </span>
+                        <span class="badge rakes-badge">
+                            <i class="fas fa-train"></i> <span id="rakes-required-result"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Basic Parameters Section -->
+                <div class="section-title-simple">
+                    <i class="fas fa-cog"></i>
+                    Basic Parameters
+                </div>
+
+                    <!-- Annual Coal Quantity -->
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text1">Annual Coal Quantity</span>
+                            <span class="input-group-text2">MT</span>
+                        </div>
+                        <input type="number" class="form-control" step="0.01" min="0" id="acq-coal" placeholder="Enter ACQ value in MT" value="7000000" required>
+                    </div>
+
+                    <!-- Quantity in a Rake -->
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text1">Quantity in a Rake</span>
+                            <span class="input-group-text2">MT</span>
+                        </div>
+                        <input type="number" class="form-control" step="0.01" min="0" id="quantity-in-rake-cal" placeholder="Enter rake capacity" value="4000" required>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group input-group-sm mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text1">Start Date</span>
+                                </div>
+                                <input type="date" class="form-control" id="start-date-coal" value="2025-04-01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group input-group-sm mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text1">End Date</span>
+                                </div>
+                                <input type="date" class="form-control" id="end-date-coal" value="2025-08-12" required>
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Quarterly Distribution Section -->
+                <div class="section-title-simple">
+                    <i class="fas fa-calendar-alt"></i>
+                    Quarterly Distribution Percentages
+                </div>
+
+                <div class="quarters-grid-simple">
+                    <!-- Q1 (Apr-Jun) -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text3">Q1 (Apr-Jun)</span>
+                            <span class="input-group-text4">%</span>
+                        </div>
+                        <input type="number" class="form-control quarter-inputCal1" step="0.01" min="0" max="100" id="q1-percentage" value="25" placeholder="25" required>
+                    </div>
+
+                    <!-- Q2 (Jul-Sep) -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text3">Q2 (Jul-Sep)</span>
+                            <span class="input-group-text4">%</span>
+                        </div>
+                        <input type="number" class="form-control quarter-inputCal1" step="0.01" min="0" max="100" id="q2-percentage" value="22" placeholder="22" required>
+                    </div>
+
+                    <!-- Q3 (Oct-Dec) -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text3">Q3 (Oct-Dec)</span>
+                            <span class="input-group-text4">%</span>
+                        </div>
+                        <input type="number" class="form-control quarter-inputCal1" step="0.01" min="0" max="100" id="q3-percentage" value="25" placeholder="25" required>
+                    </div>
+
+                    <!-- Q4 (Jan-Mar) -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text3">Q4 (Jan-Mar)</span>
+                            <span class="input-group-text4">%</span>
+                        </div>
+                        <input type="number" class="form-control quarter-inputCal1" step="0.01" min="0" max="100" id="q4-percentage" value="28" placeholder="28" required>
+                    </div>
+                </div>
+
+                <!-- Error message -->
+                <div id="error-messageCal1" style="display: none; margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+
+<!--- HTML for inputs ends here-->        
+
+    </div>
+</div>
+
+<!-- Formula Sidebar -->
+<div id="formulaSidebar" class="formula-sidebar">
+    <div class="sidebar-header">
+        <h5><i class="fas fa-calculator"></i> Formulas</h5>
+        <button class="close-btn" onclick="closeFormulaSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="sidebar-content">
+        <div class="formula-item">
+            <h6>1. Quarterly Quantity</h6>
+            <p><strong>Q1 (April to June)</strong> = ACQ × 25%</p>
+            <p><strong>Q2 (July to Sept)</strong> = ACQ × 22%</p>
+            <p><strong>Q3 (Oct to Dec)</strong> = ACQ × 25%</p>
+            <p><strong>Q4 (Jan to March)</strong> = ACQ × 28%</p>
+        </div>
+        <div class="formula-item">
+            <h6>2. Monthly Quantity</h6>
+            <p>Monthly Quantity = Quarterly Quantity ÷ 3</p>
+        </div>
+        <div class="formula-item">
+            <h6>3. Daily Quantity</h6>
+            <p>Daily Quantity = Monthly Quantity ÷ Days in Month</p>
+        </div>
+        <div class="formula-item">
+            <h6>4. Selected Period Quantity</h6>
+            <p>Total = Sum of Daily Quantities × Days in Selected Period</p>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div id="sidebarOverlay" class="formula-overlay" onclick="closeFormulaSidebar()"></div>
+
+ 
+<!-- Include Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<!-- JavaScript for calculations -->
+<script>
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  function restrictNumericInput(input) {
+    // Prevent non-numeric and negative input on keydown
+    input.addEventListener('keydown', function (event) {
+      const allowedKeys = [
+        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+      ];
+      if (allowedKeys.includes(event.key)) return;
+
+      // Allow only one dot
+      if (event.key === "." && this.value.includes(".")) {
+        event.preventDefault();
+        return;
+      }
+      // Prevent minus, plus, 'e', and any non-digit except dot
+      if (
+        event.key === '-' || event.key === '+' || event.key === 'e' ||
+        (!/^\d$/.test(event.key) && event.key !== ".")
+      ) {
+        event.preventDefault();
+      }
+    });
+
+    // Prevent pasting non-numeric or negative values
+    input.addEventListener('paste', function (event) {
+      const paste = (event.clipboardData || window.clipboardData).getData('text');
+      if (!/^\d*\.?\d*$/.test(paste)) {
+        event.preventDefault();
+      }
+    });
+
+    // On blur, clear if not a valid non-negative number
+    input.addEventListener('blur', function () {
+      const value = parseFloat(this.value.trim());
+      if (isNaN(value) || value < 0) {
+        this.value = "";
+      }
+    });
+  }
+
+  // Apply to all inputs except those with data-allow-text="true"
+  function applyUniversalNumericRestriction() {
+    document.querySelectorAll('input:not([data-allow-text="true"])').forEach(input => {
+      restrictNumericInput(input);
+    });
+  }
+
+  // Initial application
+  applyUniversalNumericRestriction();
+
+  // If you dynamically add inputs, call applyUniversalNumericRestriction() again after adding them.
+});
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Prevent Enter key from submitting any form
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    });
+});
+
+
+
+
+function formatDate(date) {
+const options = { year: 'numeric', month: 'long', day: '2-digit' };
+return date.toLocaleDateString('en-In', options);
+}
+
+// Define the constant array
+const quarterPercentagesCal1 = [0.25, 0.22, 0.25, 0.28]; // Initialize with default values
+
+// Select all quarter input boxes, error message, and table labels
+const quarterInputsCal1 = document.querySelectorAll('.quarter-inputCal1');
+const errorMessageCal1 = document.getElementById('error-messageCal1');
+
+
+// Function to validate and update percentages
+function validateAndUpdatePercentagesCal1() {
+  let totalPercentageCal1 = 0;
+
+  // Loop through each input and update the constant array
+  quarterInputsCal1.forEach((input, index) => {
+    const value = parseFloat(input.value);
+    if (!isNaN(value)) {
+      totalPercentageCal1 += value; // Accumulate the total
+      quarterPercentagesCal1[index] = value / 100; // Store in array as a decimal
+
+          }
+  });
+
+const badgePercentageExceed = `
+    <div class="d-flex flex-wrap gap-1">
+        <span class="badge rounded-pill bg-danger text-white">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+            The total percentage cannot exceed 100%.
+        </span>
+    </div>
+`;
+
+const badgePercentageLess = `
+    <div class="d-flex flex-wrap gap-1">
+        <span class="badge rounded-pill bg-danger text-white">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+            The total percentage cannot be less than 100%.
+        </span>
+    </div>
+`;
+
+
+
+  // Check if the total percentage is valid
+  if (totalPercentageCal1 > 100) {
+    errorMessageCal1.style.display = 'block';
+    errorMessageCal1.innerHTML = badgePercentageExceed;
+  } else if (totalPercentageCal1 < 100) {
+    errorMessageCal1.style.display = 'block';
+    errorMessageCal1.innerHTML = badgePercentageLess;
+  } else {
+    errorMessageCal1.style.display = 'none';calculateCoalAvailability(); // Hide error message when valid
+  }
+
+}
+
+// Attach event listeners to all quarter input boxes
+quarterInputsCal1.forEach(input => {
+  input.addEventListener('input', validateAndUpdatePercentagesCal1);
+});
+
+// Initialize validation and update on page load
+validateAndUpdatePercentagesCal1();
+
+document.addEventListener('DOMContentLoaded', function () {
+    const coalAvailabilityInputs = [
+        document.getElementById("acq-coal"),
+        document.getElementById("quantity-in-rake-cal"),
+        document.getElementById("start-date-coal"),
+        document.getElementById("end-date-coal"),
+        document.getElementById("q1-percentage"),
+        document.getElementById("q2-percentage"),
+        document.getElementById("q3-percentage"),
+        document.getElementById("q4-percentage")
+    ];
+    coalAvailabilityInputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', calculateCoalAvailability);
+            input.addEventListener('change', calculateCoalAvailability); // for date pickers
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const acqCoalInput = document.getElementById('acq-coal');
+    const quantityInRakeCalInput = document.getElementById('quantity-in-rake-cal');
+
+    // Prevent minus sign for Annual Coal Quantity
+    acqCoalInput.addEventListener('keydown', function(event) {
+        if (event.key === '-' || event.key === 'Minus' || event.key === '+' || event.key === 'Plus') {
+            event.preventDefault();
+        }
+        
+    });
+
+    // Prevent minus sign for Quantity in a Rake
+    quantityInRakeCalInput.addEventListener('keydown', function(event) {
+        if (event.key === '-' || event.key === 'Minus'|| event.key === '+' || event.key === 'Plus') {
+            event.preventDefault();
+        }
+    });
+});
+function calculateCoalAvailability() {
+    const acqCal1 = parseFloat(document.getElementById("acq-coal").value);
+    const quantityInRakecal = parseFloat(document.getElementById("quantity-in-rake-cal").value);
+    const startCoalDateStr = document.getElementById("start-date-coal").value;
+    const endCoalDateStr = document.getElementById("end-date-coal").value;
+    const resultshow6 = document.getElementById('resultshow6');
+
+    
+    // Only show errors if the user has started entering any value
+    const anyInputStarted =
+        document.getElementById("acq-coal").value ||
+        document.getElementById("quantity-in-rake-cal").value ||
+        startCoalDateStr ||
+        endCoalDateStr;
+
+    // Badge warning HTMLs
+    const badgeMissing = `
+      <div class="d-flex flex-wrap gap-1">
+        <span class="badge rounded-pill bg-danger text-white">
+          <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+          Please enter values in all the fields.
+        </span>
+      </div>
+    `;
+    const badgeNegative = `
+      <div class="d-flex flex-wrap gap-1">
+        <span class="badge rounded-pill bg-danger text-white">
+          <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+          Please enter valid non-negative values.
+        </span>
+      </div>
+    `;
+    const badgeDate = `
+      <div class="d-flex flex-wrap gap-1">
+        <span class="badge rounded-pill bg-danger text-white">
+          <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+          Please enter valid date range.
+        </span>
+      </div>
+    `;
+
+    // Check for missing or negative inputs
+    const values = [acqCal1, quantityInRakecal];
+    const anyMissing = values.some(v => isNaN(v)) || !startCoalDateStr || !endCoalDateStr;
+    const anyNegative = values.some(v => v < 0);
+    const invalidDateRange = startCoalDateStr && endCoalDateStr && (new Date(startCoalDateStr) > new Date(endCoalDateStr));
+
+    // Only show errors if user started entering any value
+    if (anyInputStarted) {
+        if (anyMissing) {
+            resultshow6.style.display = 'block';
+            resultshow6.innerHTML = badgeMissing;
+            return;
+        }
+        if (anyNegative) {
+            resultshow6.style.display = 'block';
+            resultshow6.innerHTML = badgeNegative;
+            return;
+        }
+        if (invalidDateRange) {
+            resultshow6.style.display = 'block';
+            resultshow6.innerHTML = badgeDate;
+            return;
+        }
+    } else {
+        // Hide result if nothing is entered
+        resultshow6.style.display = 'none';
+        return;
+    }
+
+    // Prepare result badge HTML (reset to badge style)
+    resultshow6.style.display = 'block';
+    resultshow6.innerHTML = `
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge rounded-pill bg-success text-dark px-3 py-2">
+          <span id="coal-availability-result"></span>
+        </span>
+        <span class="badge rounded-pill bg-dark text-white px-3 py-2">
+          <span id="rakes-required-result"></span>
+        </span>
+      </div>
+    `;
+// Now get the new elements and update them
+const coalAvailabilityResult = document.getElementById("coal-availability-result");
+const rakesRequiredResult = document.getElementById("rakes-required-result");
+// --- FIX: Convert date strings to Date objects ---
+    const startCoalDate = new Date(startCoalDateStr);
+    const endCoalDate = new Date(endCoalDateStr);
+    // Perform coal availability calculation (ACQ is now in MT directly)
+    const quantities = [
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // January
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // February
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // March
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // April
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // May
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // June
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // July
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // August
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // September
+        (acqCal1 * quarterPercentagesCal1[2]) / 3, // October
+        (acqCal1 * quarterPercentagesCal1[2]) / 3, // November
+        (acqCal1 * quarterPercentagesCal1[2]) / 3  // December
+    ];
+
+let coalAvailability = new Array(12).fill(0);
+
+let currentDate = new Date(startCoalDate);
+
+while (currentDate <= endCoalDate) {
+    const currentMonth = currentDate.getMonth();
+    const daysInMonth = new Date(currentDate.getFullYear(), currentMonth + 1, 0).getDate();
+    const daysLeftInMonth = daysInMonth - currentDate.getDate() + 1;
+
+    const daysInPeriod = Math.min(daysLeftInMonth, (endCoalDate - currentDate) / (1000 * 60 * 60 * 24) + 1);
+    const quantityInMonth = (quantities[currentMonth] / daysInMonth) * daysInPeriod;
+    coalAvailability[currentMonth] += quantityInMonth;
+
+    currentDate.setDate(currentDate.getDate() + daysInPeriod);
+}
+
+const totalQuantity = coalAvailability.reduce((sum, quantity) => sum + quantity, 0);
+const totalQuantityformatted = formatIndianStyleNumber(totalQuantity);
+const rakesRequired = totalQuantity / quantityInRakecal;
+
+// Debug: Log the values to console
+console.log("Debug - Total Quantity:", totalQuantity);
+console.log("Debug - Quantity in Rake:", quantityInRakecal);
+console.log("Debug - Rakes Required (raw):", rakesRequired);
+console.log("Debug - Rakes Required (formatted):", formatIndianStyleNumber(rakesRequired));
+
+const formattedStartDate = formatDate(startCoalDate);
+const formattedEndDate = formatDate(endCoalDate);
+
+// After calculation, update the result spans as before:
+
+//coalAvailabilityResult.innerText = `Coal Quantity: From ${formattedStartDate} to ${formattedEndDate}: ${formatIndianStyleNumber(totalQuantity)} MT`;
+coalAvailabilityResult.innerText = `Coal Quantity: ${formatIndianStyleNumber(totalQuantity)} MT`;
+rakesRequiredResult.innerText = `Rakes: ${formatIndianStyleNumber(rakesRequired)}`;
+
+}
+
+
+function generatePDFForCoalAvailability() {
+    // Create a new jsPDF instance with A4 paper size
+    let doc = new jsPDF("p", "mm", "a4");
+    
+    // Professional color scheme
+    const primaryColor = [52, 73, 94];      // Dark blue-gray
+    const accentColor = [26, 188, 156];     // Teal
+    const lightGray = [245, 245, 245];
+    const mediumGray = [189, 195, 199];
+    const darkGray = [127, 140, 141];
+    
+    // Gather input values
+    const startCoalDate = new Date(document.getElementById("start-date-coal").value);
+    const endCoalDate = new Date(document.getElementById("end-date-coal").value);
+    const acqCal1 = parseFloat(document.getElementById("acq-coal").value);
+    const quantityInRakecal = parseFloat(document.getElementById("quantity-in-rake-cal").value);
+
+    // Validate inputs
+    if (isNaN(acqCal1) || isNaN(quantityInRakecal) || startCoalDate > endCoalDate) {
+        doc.setFontSize(12);
+        doc.setTextColor(220, 53, 69);
+        doc.text("Invalid input parameters. Please check your data.", 15, 40);
+        doc.save("CoalLinkage_Error.pdf");
+        return;
+    }
+
+    // Professional Header - Reduced height
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 25, 'F');
+    
+    // Main Title Section - Manual center calculation for proper alignment
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    
+    // Calculate text width and center position manually
+    const headerText = "Distribution of Annual Contracted Quantity (ACQ)";
+    const textWidth = doc.getTextWidth(headerText);
+    const pageWidth = 210;
+    const centerX = (pageWidth - textWidth) / 2;
+    
+    doc.text(headerText, centerX, 15);
+    
+    // Add accent line
+    doc.setFillColor(...accentColor);
+    doc.rect(0, 25, 210, 2, 'F');
+    
+    // Reset text color for body
+    doc.setTextColor(0, 0, 0);
+
+    // Perform coal availability calculation BEFORE Executive Summary
+    const quantities = [
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // January
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // February
+        (acqCal1 * quarterPercentagesCal1[3]) / 3, // March
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // April
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // May
+        (acqCal1 * quarterPercentagesCal1[0]) / 3, // June
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // July
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // August
+        (acqCal1 * quarterPercentagesCal1[1]) / 3, // September
+        (acqCal1 * quarterPercentagesCal1[2]) / 3, // October
+        (acqCal1 * quarterPercentagesCal1[2]) / 3, // November
+        (acqCal1 * quarterPercentagesCal1[2]) / 3  // December
+    ];
+
+    let coalAvailability = new Array(12).fill(0);
+    let currentDate = new Date(startCoalDate);
+
+    while (currentDate <= endCoalDate) {
+        const currentMonth = currentDate.getMonth();
+        const daysInMonth = new Date(currentDate.getFullYear(), currentMonth + 1, 0).getDate();
+        const daysLeftInMonth = daysInMonth - currentDate.getDate() + 1;
+        const daysInPeriod = Math.min(daysLeftInMonth, (endCoalDate - currentDate) / (1000 * 60 * 60 * 24) + 1);
+        const quantityInMonth = (quantities[currentMonth] / daysInMonth) * daysInPeriod;
+        coalAvailability[currentMonth] += quantityInMonth;
+        currentDate.setDate(currentDate.getDate() + daysInPeriod);
+    }
+
+    const totalQuantity = coalAvailability.reduce((sum, quantity) => sum + quantity, 0);
+    const rakesRequired = totalQuantity / quantityInRakecal;
+    
+    // Executive Summary Box - Reduced height and left-aligned heading
+    let currentY = 35;
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(15, currentY, 180, 30, 3, 3, 'F');
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("Summary", 20, currentY + 8);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    
+    // Other data in black
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Total ACQ: ${formatIndianStyleNumber(acqCal1)} MT`, 20, currentY + 15);
+    doc.text(`Rake Capacity: ${formatIndianStyleNumber(quantityInRakecal)} MT`, 105, currentY + 15);
+    
+    // Period-specific quantities in accent color
+    doc.setTextColor(...accentColor);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Analysis Period: ${formatDate(startCoalDate)} to ${formatDate(endCoalDate)}`, 20, currentY + 22);
+    doc.text(`Period Quantity: ${formatIndianStyleNumber(totalQuantity)} MT`, 20, currentY + 27);
+    doc.text(`Period Rakes: ${formatIndianStyleNumber(rakesRequired.toFixed(0))}`, 105, currentY + 27);
+    
+    currentY += 40;
+
+    // Professional Table Data
+    const monthNames = ["January", "February", "March", "April", "May", "June", 
+                       "July", "August", "September", "October", "November", "December"];
+    
+    const quarterData = [
+        { name: "Q1 (Apr-Jun)", percentage: quarterPercentagesCal1[0] * 100, months: [3,4,5] },
+        { name: "Q2 (Jul-Sep)", percentage: quarterPercentagesCal1[1] * 100, months: [6,7,8] },
+        { name: "Q3 (Oct-Dec)", percentage: quarterPercentagesCal1[2] * 100, months: [9,10,11] },
+        { name: "Q4 (Jan-Mar)", percentage: quarterPercentagesCal1[3] * 100, months: [0,1,2] }
+    ];
+
+    // Quarterly Distribution Table - Left aligned caption, reduced spacing
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("QUARTERLY DISTRIBUTION", 15, currentY);
+    currentY += 5;
+
+    const quarterTableData = quarterData.map(quarter => [
+        quarter.name,
+        `${quarter.percentage.toFixed(1)}%`,
+        formatIndianStyleNumber((acqCal1 * quarter.percentage / 100)),
+        formatIndianStyleNumber((acqCal1 * quarter.percentage / 100 / quantityInRakecal).toFixed(0))
+    ]);
+
+    // Add totals row for quarterly table
+    const totalQuarterQuantity = quarterTableData.reduce((sum, row) => sum + (acqCal1 * parseFloat(row[1]) / 100), 0);
+    const totalQuarterRakes = totalQuarterQuantity / quantityInRakecal;
+    quarterTableData.push([
+        "TOTAL",
+        "100.0%",
+        formatIndianStyleNumber(totalQuarterQuantity),
+        formatIndianStyleNumber(totalQuarterRakes.toFixed(0))
+    ]);
+
+    doc.autoTable({
+        startY: currentY,
+        head: [["Quarter", "Percentage", "Quantity (MT)", "Rakes Required"]],
+        body: quarterTableData,
+        theme: 'plain',
+        styles: {
+            fontSize: 8,
+            cellPadding: 2,
+            lineColor: mediumGray,
+            lineWidth: 0.5
+        },
+        headStyles: {
+            fillColor: primaryColor,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9,
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { cellWidth: 35, halign: 'left' },
+            1: { cellWidth: 25, halign: 'center' },
+            2: { cellWidth: 45, halign: 'right' },
+            3: { cellWidth: 35, halign: 'right' }
+        },
+        alternateRowStyles: {
+            fillColor: lightGray
+        },
+        didParseCell: function(data) {
+            if (data.row.index === quarterTableData.length - 1) {
+                data.cell.styles.fillColor = accentColor;
+                data.cell.styles.textColor = [255, 255, 255];
+                data.cell.styles.fontStyle = 'bold';
+            }
+        },
+        margin: { left: 15, right: 15 }
+    });
+
+    currentY = doc.lastAutoTable.finalY + 10;
+
+    // Monthly Breakdown Table - Left aligned caption, reduced spacing
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("MONTHLY BREAKDOWN", 15, currentY);
+    currentY += 5;
+
+    const monthlyTableData = monthNames.map((month, index) => [
+        month,
+        formatIndianStyleNumber(quantities[index]),
+        formatIndianStyleNumber((quantities[index] / quantityInRakecal).toFixed(0)),
+        formatIndianStyleNumber((quantities[index] / 30).toFixed(2)), // Per day quantity
+        formatIndianStyleNumber(((quantities[index] / 30) / quantityInRakecal).toFixed(2)), // Per day rakes
+        formatIndianStyleNumber(coalAvailability[index]),
+        formatIndianStyleNumber((coalAvailability[index] / quantityInRakecal).toFixed(0)) // Period rakes
+    ]);
+
+    // Add totals row for monthly table
+    const totalMonthlyQuantity = quantities.reduce((sum, qty) => sum + qty, 0);
+    const totalMonthlyRakes = totalMonthlyQuantity / quantityInRakecal;
+    const avgDailyQuantity = totalMonthlyQuantity / 365; // Average per day
+    const avgDailyRakes = avgDailyQuantity / quantityInRakecal;
+    const totalPeriodRakes = totalQuantity / quantityInRakecal;
+    monthlyTableData.push([
+        "TOTAL",
+        formatIndianStyleNumber(totalMonthlyQuantity),
+        formatIndianStyleNumber(totalMonthlyRakes.toFixed(0)),
+        formatIndianStyleNumber(avgDailyQuantity.toFixed(2)),
+        formatIndianStyleNumber(avgDailyRakes.toFixed(2)),
+        formatIndianStyleNumber(totalQuantity),
+        formatIndianStyleNumber(totalPeriodRakes.toFixed(0))
+    ]);
+
+    doc.autoTable({
+        startY: currentY,
+        head: [["Month", "Allocated (MT)", "Allocated Rakes", "Per Day (MT)", "Per Day Rakes", "Period Quantity (MT)", "Period Rakes"]],
+        body: monthlyTableData,
+        theme: 'plain',
+        styles: {
+            fontSize: 7,
+            cellPadding: 2,
+            lineColor: mediumGray,
+            lineWidth: 0.5
+        },
+        headStyles: {
+            fillColor: primaryColor,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 8,
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { cellWidth: 18, halign: 'left' },
+            1: { cellWidth: 25, halign: 'right' },
+            2: { cellWidth: 20, halign: 'right' },
+            3: { cellWidth: 20, halign: 'right' },
+            4: { cellWidth: 20, halign: 'right' },
+            5: { cellWidth: 25, halign: 'right' },
+            6: { cellWidth: 20, halign: 'right' }
+        },
+        alternateRowStyles: {
+            fillColor: lightGray
+        },
+        didParseCell: function(data) {
+            if (data.row.index === monthlyTableData.length - 1) {
+                data.cell.styles.fillColor = accentColor;
+                data.cell.styles.textColor = [255, 255, 255];
+                data.cell.styles.fontStyle = 'bold';
+            }
+        },
+        margin: { left: 15, right: 15 }
+    });
+
+    currentY = doc.lastAutoTable.finalY + 15;
+
+    // Footer - Fixed text cropping
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, currentY, 210, 15, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.text(`Report Generated: ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN')}`, 15, currentY + 8);
+
+    doc.save("CoalLinkage_Professional.pdf");
+}
+
+// Toggle Formula Sidebar Function
+function toggleFormulaSidebar() {
+    const sidebar = document.getElementById('formulaSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.add('show');
+    overlay.classList.add('show');
+    
+    // Prevent body scroll when sidebar is open
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFormulaSidebar() {
+    const sidebar = document.getElementById('formulaSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+    
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+// Toggle Export Menu Function
+function toggleExportMenu() {
+    const dropdown = document.getElementById('exportDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Close export menu when clicking outside
+document.addEventListener('click', function(event) {
+    const exportIcon = document.getElementById('exportFloatingIcon');
+    const dropdown = document.getElementById('exportDropdown');
+    
+    if (!exportIcon.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Initialize default dates on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set financial year dates
+    const startDate = document.getElementById('start-date-coal');
+    const endDate = document.getElementById('end-date-coal');
+    
+    // Financial year start: April 1, 2025
+    startDate.value = '2025-04-01';
+    // Current date: August 12, 2025
+    endDate.value = '2025-08-12';
+    
+    // Trigger calculation when page loads with default values
+    setTimeout(calculateCoalAvailability, 100);
+});
+
+// Close sidebar on Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeFormulaSidebar();
+    }
+});
+
+// Enhanced JPG Export Function
+async function exportToJPG() {
+    try {
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.innerHTML = `
+            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                        z-index: 9999; text-align: center;">
+                <div style="margin-bottom: 10px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #28a745;"></i>
+                </div>
+                <div style="color: #333; font-weight: 600;">Generating JPG Export...</div>
+            </div>
+        `;
+        document.body.appendChild(loadingDiv);
+
+        // Hide floating icon temporarily
+        const floatingIcons = document.querySelector('.floating-icons');
+        const originalDisplay = floatingIcons.style.display;
+        floatingIcons.style.display = 'none';
+
+        // Create a comprehensive capture element optimized for A4
+        const captureElement = document.createElement('div');
+        captureElement.style.cssText = `
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            width: 740px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        `;
+
+        // Header - Compact
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <div style="text-align: center; margin-bottom: 12px; padding: 12px; 
+                        background: linear-gradient(135deg, #343a40, #495057); 
+                        color: white; border-radius: 8px; box-shadow: 0 3px 12px rgba(0,0,0,0.2);">
+                <h2 style="margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">
+                    <i class="fas fa-calculator" style="margin-right: 8px; color: #28a745;"></i>
+                    Distribution of Annual Contracted Quantity (ACQ)
+                </h2>
+                <p style="margin: 3px 0 0 0; font-size: 11px; opacity: 0.9;">
+                    Professional Coal Linkage Analysis Report
+                </p>
+            </div>
+        `;
+
+        // Collect input values
+        const startDate = new Date(document.getElementById("start-date-coal").value);
+        const endDate = new Date(document.getElementById("end-date-coal").value);
+        const acq = parseFloat(document.getElementById("acq-coal").value);
+        const quantityInRake = parseFloat(document.getElementById("quantity-in-rake-cal").value);
+        
+        // Quarter percentages
+        const q1 = parseFloat(document.getElementById("q1-percentage").value) / 100;
+        const q2 = parseFloat(document.getElementById("q2-percentage").value) / 100;
+        const q3 = parseFloat(document.getElementById("q3-percentage").value) / 100;
+        const q4 = parseFloat(document.getElementById("q4-percentage").value) / 100;
+
+        // Calculate results
+        const quarters = [q1, q2, q3, q4];
+        const months = [
+            (acq * q4) / 3, (acq * q4) / 3, (acq * q4) / 3,  // Jan, Feb, Mar
+            (acq * q1) / 3, (acq * q1) / 3, (acq * q1) / 3,  // Apr, May, Jun
+            (acq * q2) / 3, (acq * q2) / 3, (acq * q2) / 3,  // Jul, Aug, Sep
+            (acq * q3) / 3, (acq * q3) / 3, (acq * q3) / 3   // Oct, Nov, Dec
+        ];
+
+        // Calculate period quantity
+        let totalQuantity = 0;
+        let currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            const currentMonth = currentDate.getMonth();
+            const daysInMonth = new Date(currentDate.getFullYear(), currentMonth + 1, 0).getDate();
+            const daysLeftInMonth = daysInMonth - currentDate.getDate() + 1;
+            const daysInPeriod = Math.min(daysLeftInMonth, (endDate - currentDate) / (1000 * 60 * 60 * 24) + 1);
+            const quantityInMonth = (months[currentMonth] / daysInMonth) * daysInPeriod;
+            totalQuantity += quantityInMonth;
+            currentDate.setDate(currentDate.getDate() + daysInPeriod);
+        }
+
+        const rakesRequired = totalQuantity / quantityInRake;
+
+        // Input Summary Section - Compact
+        const inputSummary = document.createElement('div');
+        inputSummary.innerHTML = `
+            <div style="background: linear-gradient(145deg, #ffffff, #f8f9fa); padding: 10px; border-radius: 8px; 
+                        margin-bottom: 10px; border-left: 3px solid #28a745; box-shadow: 0 3px 12px rgba(0,0,0,0.1);">
+                <h3 style="color: #28a745; margin-bottom: 8px; font-size: 12px; font-weight: 600;">
+                    <i class="fas fa-info-circle" style="margin-right: 6px;"></i>Input Parameters
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <div style="background: white; padding: 6px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                        <strong style="color: #495057; font-size: 9px;">Period:</strong><br>
+                        <span style="color: #28a745; font-weight: 600; font-size: 9px;">${formatDate(startDate)} to ${formatDate(endDate)}</span>
+                    </div>
+                    <div style="background: white; padding: 6px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                        <strong style="color: #495057; font-size: 9px;">ACQ:</strong><br>
+                        <span style="color: #28a745; font-weight: 600; font-size: 9px;">${formatIndianStyleNumber(acq)} MT</span>
+                    </div>
+                    <div style="background: white; padding: 6px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                        <strong style="color: #495057; font-size: 9px;">Rake Quantity:</strong><br>
+                        <span style="color: #28a745; font-weight: 600; font-size: 9px;">${formatIndianStyleNumber(quantityInRake)} MT</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Quarterly Distribution Table
+        const quarterTable = document.createElement('div');
+        quarterTable.innerHTML = `
+            <div style="background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; 
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #28a745; margin-bottom: 10px; font-size: 14px; font-weight: 600;">
+                    <i class="fas fa-chart-pie" style="margin-right: 6px;"></i>Quarterly Distribution
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; font-size: 9px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #343a40, #495057); color: white;">
+                                <th style="padding: 6px; text-align: left; font-weight: 600; font-size: 8px;">Quarter</th>
+                                <th style="padding: 6px; text-align: center; font-weight: 600; font-size: 8px;">%</th>
+                                <th style="padding: 6px; text-align: center; font-weight: 600; font-size: 8px;">Quantity (MT)</th>
+                                <th style="padding: 6px; text-align: center; font-weight: 600; font-size: 8px;">Rakes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 4px; border-bottom: 1px solid #dee2e6; font-size: 8px;">Q1 (Apr-Jun)</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${(q1*100).toFixed(1)}%</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${formatIndianStyleNumber(acq * q1)}</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${((acq * q1) / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px; border-bottom: 1px solid #dee2e6; font-size: 8px;">Q2 (Jul-Sep)</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${(q2*100).toFixed(1)}%</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${formatIndianStyleNumber(acq * q2)}</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${((acq * q2) / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 4px; border-bottom: 1px solid #dee2e6; font-size: 8px;">Q3 (Oct-Dec)</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${(q3*100).toFixed(1)}%</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${formatIndianStyleNumber(acq * q3)}</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${((acq * q3) / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px; border-bottom: 1px solid #dee2e6; font-size: 8px;">Q4 (Jan-Mar)</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${(q4*100).toFixed(1)}%</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${formatIndianStyleNumber(acq * q4)}</td>
+                                <td style="padding: 4px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 8px;">${((acq * q4) / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                            <tr style="background: linear-gradient(135deg, #28a745, #20c997); color: white; font-weight: bold;">
+                                <td style="padding: 4px; font-size: 8px; font-weight: bold;">TOTAL</td>
+                                <td style="padding: 4px; text-align: center; font-size: 8px;">100.0%</td>
+                                <td style="padding: 4px; text-align: center; font-size: 8px;">${formatIndianStyleNumber(acq)}</td>
+                                <td style="padding: 4px; text-align: center; font-size: 8px;">${(acq / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        // Monthly Distribution Table
+        const monthlyTable = document.createElement('div');
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthlyQuantities = [
+            (acq * q4) / 3, (acq * q4) / 3, (acq * q4) / 3,  // Jan, Feb, Mar
+            (acq * q1) / 3, (acq * q1) / 3, (acq * q1) / 3,  // Apr, May, Jun
+            (acq * q2) / 3, (acq * q2) / 3, (acq * q2) / 3,  // Jul, Aug, Sep
+            (acq * q3) / 3, (acq * q3) / 3, (acq * q3) / 3   // Oct, Nov, Dec
+        ];
+        
+        // Calculate period-specific quantities
+        let coalAvailability = new Array(12).fill(0);
+        let currentDateCopy = new Date(startDate);
+        while (currentDateCopy <= endDate) {
+            const currentMonth = currentDateCopy.getMonth();
+            const daysInMonth = new Date(currentDateCopy.getFullYear(), currentMonth + 1, 0).getDate();
+            const daysLeftInMonth = daysInMonth - currentDateCopy.getDate() + 1;
+            const daysInPeriod = Math.min(daysLeftInMonth, (endDate - currentDateCopy) / (1000 * 60 * 60 * 24) + 1);
+            const quantityInMonth = (monthlyQuantities[currentMonth] / daysInMonth) * daysInPeriod;
+            coalAvailability[currentMonth] += quantityInMonth;
+            currentDateCopy.setDate(currentDateCopy.getDate() + daysInPeriod);
+        }
+        
+        monthlyTable.innerHTML = `
+            <div style="background: white; padding: 12px; border-radius: 10px; margin-bottom: 15px; 
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #28a745; margin-bottom: 10px; font-size: 14px; font-weight: 600;">
+                    <i class="fas fa-calendar-alt" style="margin-right: 6px;"></i>Monthly Breakdown
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; font-size: 8px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #343a40, #495057); color: white;">
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Month</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Allocated (MT)</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Allocated Rakes</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Per Day (MT)</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Per Day Rakes</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Period Qty (MT)</th>
+                                <th style="padding: 4px; text-align: center; font-weight: 600; font-size: 7px;">Period Rakes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${monthNames.map((month, index) => `
+                                <tr style="${index % 2 === 0 ? 'background: #f8f9fa;' : ''}">
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px; font-weight: 600;">${month}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${formatIndianStyleNumber(monthlyQuantities[index])}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${(monthlyQuantities[index] / quantityInRake).toFixed(0)}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${formatIndianStyleNumber((monthlyQuantities[index] / 30).toFixed(2))}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${((monthlyQuantities[index] / 30) / quantityInRake).toFixed(2)}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${formatIndianStyleNumber(coalAvailability[index])}</td>
+                                    <td style="padding: 3px; text-align: center; border-bottom: 1px solid #dee2e6; font-size: 7px;">${(coalAvailability[index] / quantityInRake).toFixed(0)}</td>
+                                </tr>
+                            `).join('')}
+                            <tr style="background: linear-gradient(135deg, #28a745, #20c997); color: white; font-weight: bold;">
+                                <td style="padding: 3px; text-align: center; font-size: 7px; font-weight: bold;">TOTAL</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${formatIndianStyleNumber(monthlyQuantities.reduce((sum, qty) => sum + qty, 0))}</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${(monthlyQuantities.reduce((sum, qty) => sum + qty, 0) / quantityInRake).toFixed(0)}</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${formatIndianStyleNumber((monthlyQuantities.reduce((sum, qty) => sum + qty, 0) / 365).toFixed(2))}</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${((monthlyQuantities.reduce((sum, qty) => sum + qty, 0) / 365) / quantityInRake).toFixed(2)}</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${formatIndianStyleNumber(totalQuantity)}</td>
+                                <td style="padding: 3px; text-align: center; font-size: 7px;">${(totalQuantity / quantityInRake).toFixed(0)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        // Results Summary - Compact Design
+        const resultsSummary = document.createElement('div');
+        resultsSummary.innerHTML = `
+            <div style="background: linear-gradient(135deg, #28a745, #20c997); padding: 12px; border-radius: 10px; 
+                        color: white; text-align: center; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">
+                    <i class="fas fa-chart-line" style="margin-right: 8px;"></i>Final Results
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 10px; opacity: 0.9; margin-bottom: 3px;">Total Coal Quantity</div>
+                        <div style="font-size: 14px; font-weight: 700;">${formatIndianStyleNumber(totalQuantity)} MT</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 10px; opacity: 0.9; margin-bottom: 3px;">Total Rakes Required</div>
+                        <div style="font-size: 14px; font-weight: 700;">${rakesRequired.toFixed(0)} Rakes</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Footer - Compact
+        const footer = document.createElement('div');
+        footer.innerHTML = `
+            <div style="text-align: center; margin-top: 12px; padding: 8px; 
+                        background: linear-gradient(145deg, #f8f9fa, #e9ecef); 
+                        border-radius: 8px; color: #6c757d;">
+                <p style="margin: 0; font-size: 8px;">
+                    Generated on ${new Date().toLocaleString()} | 
+                    Coal Linkage Professional Calculator | 
+                    <i class="fas fa-leaf" style="color: #28a745;"></i> Powered by Advanced Analytics
+                </p>
+            </div>
+        `;
+
+        // Assemble the complete export element
+        captureElement.appendChild(header);
+        captureElement.appendChild(inputSummary);
+        captureElement.appendChild(quarterTable);
+        captureElement.appendChild(monthlyTable);
+        captureElement.appendChild(resultsSummary);
+        captureElement.appendChild(footer);
+
+        // Temporarily add to DOM for capture
+        captureElement.style.position = 'absolute';
+        captureElement.style.left = '-9999px';
+        captureElement.style.top = '0';
+        document.body.appendChild(captureElement);
+
+        // Capture with html2canvas - A4 optimized
+        const canvas = await html2canvas(captureElement, {
+            backgroundColor: '#ffffff',
+            scale: 1.3,
+            useCORS: true,
+            allowTaint: true,
+            width: 740,
+            height: captureElement.scrollHeight,
+            scrollX: 0,
+            scrollY: 0
+        });
+
+        // Clean up
+        document.body.removeChild(captureElement);
+        document.body.removeChild(loadingDiv);
+        floatingIcons.style.display = originalDisplay;
+
+        // Download the image
+        const link = document.createElement('a');
+        link.download = `Coal_Linkage_Analysis_${formatDate(startDate)}_to_${formatDate(endDate)}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.click();
+
+        // Success notification
+        const successDiv = document.createElement('div');
+        successDiv.innerHTML = `
+            <div style="position: fixed; top: 20px; right: 20px; background: #28a745; color: white; 
+                        padding: 15px 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                        z-index: 9999; animation: slideIn 0.3s ease;">
+                <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                JPG exported successfully!
+            </div>
+            <style>
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            </style>
+        `;
+        document.body.appendChild(successDiv);
+        setTimeout(() => document.body.removeChild(successDiv), 3000);
+
+    } catch (error) {
+        console.error('Error exporting JPG:', error);
+        
+        // Error notification
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `
+            <div style="position: fixed; top: 20px; right: 20px; background: #dc3545; color: white; 
+                        padding: 15px 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+                        z-index: 9999;">
+                <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                Error exporting JPG. Please try again.
+            </div>
+        `;
+        document.body.appendChild(errorDiv);
+        setTimeout(() => document.body.removeChild(errorDiv), 3000);
+    }
+}
+
+
+
+// Function to format numbers in Indian style
+function formatIndianStyleNumber(number) {
+    const formattedNumber = number.toLocaleString('en-IN', {
+        style: 'decimal',
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    });
+    return formattedNumber;
+}
+
+// Go back to calculators page
+function goBackToCalculators() {
+    // Try to go back to parent window if opened from main app
+    if (window.opener && !window.opener.closed) {
+        try {
+            // If opened from main app, switch focus back and close this tab
+            window.opener.focus();
+            // Call function to show calculators page in parent window
+            if (typeof window.opener.showCalculatorsPage === 'function') {
+                window.opener.showCalculatorsPage();
+            }
+            window.close();
+        } catch (e) {
+            // If cross-origin or other security issues, fallback to alert
+            alert('Please use the browser back button or close this tab to return to the main application.');
+        }
+    } else {
+        // If no parent window, try to navigate to main app
+        try {
+            window.location.href = 'index.html#calculators';
+        } catch (e) {
+            alert('Please use the browser back button to return to the main application.');
+        }
+    }
+}
+
+</script>
+
+<!-- Floating Icons for Formula and Export -->
+<div class="floating-icons">
+    <!-- Formula Icon -->
+    <button class="floating-icon" onclick="toggleFormulaSidebar()" title="View Formulas">
+        <i class="fas fa-calculator"></i>
+    </button>
+    
+    <!-- Export Icon with Dropdown -->
+    <div class="floating-icon" onclick="toggleExportMenu()" title="Export Options">
+        <i class="fas fa-download"></i>
+        <div class="export-dropdown" id="exportDropdown">
+            <button onclick="exportToJPG(); event.stopPropagation();" title="Export as JPG">
+                <i class="fas fa-image"></i>
+            </button>
+            <button onclick="generatePDFForCoalAvailability(); event.stopPropagation();" title="Export as PDF">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Formula Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleFormulaSidebar()"></div>
+<div class="formula-sidebar" id="formulaSidebar">
+    <div class="sidebar-header">
+        <h5><i class="fas fa-calculator"></i> Coal Linkage Formulas</h5>
+        <button onclick="toggleFormulaSidebar()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    </div>
+    <div class="sidebar-content">
+        <div class="formula-item">
+            <h6>Quarterly Coal Distribution</h6>
+            <p><strong>Q1:</strong> (Annual Coal Quantity ÷ 4) × Q1%</p>
+            <p><strong>Q2:</strong> (Annual Coal Quantity ÷ 4) × Q2%</p>
+            <p><strong>Q3:</strong> (Annual Coal Quantity ÷ 4) × Q3%</p>
+            <p><strong>Q4:</strong> (Annual Coal Quantity ÷ 4) × Q4%</p>
+        </div>
+        
+        <div class="formula-item">
+            <h6>Monthly Distribution</h6>
+            <p><strong>Each Quarter:</strong> Quarterly Amount ÷ 3 months</p>
+        </div>
+        
+        <div class="formula-item">
+            <h6>Rakes Calculation</h6>
+            <p><strong>Total Rakes:</strong> Annual Coal Quantity ÷ Quantity per Rake</p>
+            <p><strong>Quarterly Rakes:</strong> Quarterly Amount ÷ Quantity per Rake</p>
+            <p><strong>Monthly Rakes:</strong> Monthly Amount ÷ Quantity per Rake</p>
+        </div>
+        
+        <div class="formula-item">
+            <h6>Date Range Calculation</h6>
+            <p><strong>Financial Year:</strong> April 1st to March 31st</p>
+            <p><strong>Q1:</strong> Apr-Jun, <strong>Q2:</strong> Jul-Sep</p>
+            <p><strong>Q3:</strong> Oct-Dec, <strong>Q4:</strong> Jan-Mar</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

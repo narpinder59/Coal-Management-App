@@ -1,0 +1,4423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coal Calculator V1.0 - Cleaned</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* ==========================================================================
+           BUTTON HEIGHT REDUCTION - UNIVERSAL STYLING
+           ========================================================================== */
+        
+        /* Reduce all button heights globally */
+        .btn, button, input[type="button"], input[type="submit"], input[type="reset"] {
+            padding: 6px 12px !important;
+            min-height: 16px;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px !important;
+            min-height: 14px;
+        }
+        
+        .btn-lg {
+            padding: 8px 16px !important;
+            min-height: 20px;
+        }
+        
+        /* ==========================================================================
+           PROFESSIONAL TABLE STYLING - CLEAN AND MINIMAL
+           ========================================================================== */
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+            padding: 15px;
+        }
+        
+        /* Professional table styling with light gray theme */
+        table {
+            width: 100%;
+            border-collapse: collapse !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        th, td {
+            border: 1px solid #e9ecef !important;
+            padding: 8px 12px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            background-color: #ffffff !important;
+        }
+        
+        thead th {
+            background-color: #f8f9fa !important;
+            font-weight: 600 !important;
+            color: #495057 !important;
+            border-bottom: 2px solid #dee2e6 !important;
+        }
+        
+        /* STICKY COLUMNS - PROFESSIONAL STYLING */
+        #Table1 th:first-child, #Table1 td:first-child,
+        #Table2 th:first-child, #Table2 td:first-child {
+            position: sticky !important;
+            left: 0px !important;
+            z-index: 999 !important;
+            background-color: #f8f9fa !important;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1) !important;
+            min-width: 140px !important;
+            max-width: 160px !important;
+            background-clip: padding-box !important;
+            text-align: left !important;
+            padding: 8px 12px !important;
+        }
+        
+        #Table1 thead th:first-child, #Table2 thead th:first-child {
+            z-index: 1001 !important;
+            background-color: #e9ecef !important;
+            font-weight: 700 !important;
+            color: #212529 !important;
+            border-bottom: 2px solid #dee2e6 !important;
+            font-size: 16px !important;
+            text-align: left !important;
+            padding: 10px 12px !important;
+        }
+        
+        /* Consistent width for first columns */
+        #Table1 th:first-child, #Table1 td:first-child,
+        #Table2 th:first-child, #Table2 td:first-child {
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+        }
+        
+        /* Consistent width for all data columns (month columns) */
+        #Table1 th:not(:first-child):not(:last-child), #Table1 td:not(:first-child):not(:last-child),
+        #Table2 th:not(:first-child):not(:last-child), #Table2 td:not(:first-child):not(:last-child) {
+            width: 120px !important;
+            min-width: 120px !important;
+            max-width: 120px !important;
+        }
+        
+        /* Consistent width for total/last columns */
+        #Table1 th:last-child, #Table1 td:last-child,
+        #Table2 th:last-child, #Table2 td:last-child {
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
+        }
+        
+        /* Table fit to card body */
+        .card-body .table {
+            width: 100% !important;
+            margin: 0 !important;
+            table-layout: fixed !important;
+        }
+        
+        .card-body {
+            overflow-x: auto !important;
+        }
+        
+        /* Input field styling */
+        input[type="number"] {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 100%;
+            text-align: center;
+            background-color: #fff;
+        }
+        
+        input[type="number"]:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        
+        /* Toggle switch styling */
+        .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        /* Enhanced toggle switch styling - Mobile Compatible */
+        .form-check.form-switch {
+            display: flex !important;
+            align-items: center !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 15px !important;
+            padding: 4px 8px !important;
+            transition: all 0.3s ease !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            min-height: 28px !important;
+            position: relative !important;
+            margin: 0 !important;
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation !important;
+        }
+        
+        .form-check.form-switch:hover,
+        .form-check.form-switch:active,
+        .form-check.form-switch:focus {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .form-check.form-switch .form-check-input {
+            margin-right: 10px !important;
+            margin-top: 0 !important;
+            margin-left: 0 !important;
+            width: 22px !important;
+            height: 22px !important;
+            position: relative !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            display: none !important; /* Hide the toggle circle */
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+        
+        .form-check.form-switch .form-check-input:checked {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+        }
+        
+        .form-check.form-switch .form-check-input:checked + .form-check-label {
+            color: #fff !important;
+            font-weight: 500 !important;
+        }
+        
+        .form-check.form-switch .form-check-label {
+            margin-bottom: 0 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            font-size: 12px !important;
+            line-height: 1.2 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation !important;
+        }
+        
+        /* Active checkbox container with green background - Persistent Mobile Enhanced */
+        .form-check.form-switch.active-checkbox,
+        .form-check.form-switch[data-active="true"] {
+            background-color: #28a745 !important;
+            border-radius: 6px !important;
+            padding: 6px 10px !important;
+            margin: 2px !important;
+            transition: all 0.3s ease !important;
+            border: 1px solid #1e7e34 !important;
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation !important;
+        }
+        
+        .form-check.form-switch.active-checkbox:hover,
+        .form-check.form-switch.active-checkbox:active,
+        .form-check.form-switch.active-checkbox:focus,
+        .form-check.form-switch.active-checkbox:focus-within,
+        .form-check.form-switch[data-active="true"]:hover,
+        .form-check.form-switch[data-active="true"]:active,
+        .form-check.form-switch[data-active="true"]:focus,
+        .form-check.form-switch[data-active="true"]:focus-within {
+            background-color: #28a745 !important;
+            border-color: #1e7e34 !important;
+        }
+        
+        .form-check.form-switch.active-checkbox .form-check-label,
+        .form-check.form-switch[data-active="true"] .form-check-label {
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+        
+        .form-check.form-switch.active-checkbox .form-check-input:checked,
+        .form-check.form-switch[data-active="true"] .form-check-input:checked {
+            background-color: #fff !important;
+            border-color: #fff !important;
+        }
+
+        /* Force mobile-specific styling for active checkboxes - Enhanced Persistence */
+        @media (max-width: 768px) {
+            .form-check.form-switch.active-checkbox,
+            .form-check.form-switch[data-active="true"] {
+                background-color: #28a745 !important;
+                border-radius: 8px !important;
+                padding: 8px 12px !important;
+                margin: 3px !important;
+                transition: all 0.3s ease !important;
+                border: 2px solid #1e7e34 !important;
+                box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3) !important;
+                -webkit-transform: translateZ(0) !important;
+                transform: translateZ(0) !important;
+            }
+            
+            .form-check.form-switch.active-checkbox:hover,
+            .form-check.form-switch.active-checkbox:active,
+            .form-check.form-switch.active-checkbox:focus,
+            .form-check.form-switch.active-checkbox:focus-within,
+            .form-check.form-switch[data-active="true"]:hover,
+            .form-check.form-switch[data-active="true"]:active,
+            .form-check.form-switch[data-active="true"]:focus,
+            .form-check.form-switch[data-active="true"]:focus-within {
+                background-color: #28a745 !important;
+                border-color: #1e7e34 !important;
+                box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3) !important;
+            }
+            
+            .form-check.form-switch.active-checkbox .form-check-label,
+            .form-check.form-switch[data-active="true"] .form-check-label {
+                color: #ffffff !important;
+                font-weight: 700 !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+            }
+        }
+
+        /* Extra emphasis for very small mobile devices - Enhanced Persistence */
+        @media (max-width: 480px) {
+            .form-check.form-switch.active-checkbox,
+            .form-check.form-switch[data-active="true"] {
+                background-color: #28a745 !important;
+                border-radius: 10px !important;
+                padding: 10px 14px !important;
+                margin: 4px !important;
+                border: 3px solid #1e7e34 !important;
+                box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4) !important;
+            }
+            
+            .form-check.form-switch.active-checkbox:hover,
+            .form-check.form-switch.active-checkbox:active,
+            .form-check.form-switch.active-checkbox:focus,
+            .form-check.form-switch.active-checkbox:focus-within,
+            .form-check.form-switch[data-active="true"]:hover,
+            .form-check.form-switch[data-active="true"]:active,
+            .form-check.form-switch[data-active="true"]:focus,
+            .form-check.form-switch[data-active="true"]:focus-within {
+                background-color: #28a745 !important;
+                border-color: #1e7e34 !important;
+                box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4) !important;
+            }
+        }
+        
+        /* Warning System Styles */
+        #closingStockWarning {
+            margin: 15px 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        
+        .warnings-panel {
+            background: #fff;
+            border: 2px solid #f44336;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
+        }
+        
+        .warnings-panel h3 {
+            margin: 0 0 15px 0;
+            color: #d32f2f;
+            font-size: 1.1em;
+            border-bottom: 1px solid #ffcdd2;
+            padding-bottom: 8px;
+        }
+        
+        .warning-item {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            line-height: 1.4;
+        }
+        
+        .critical-warning {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .buffer-warning {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .summary-warning {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-left: 4px solid #388e3c;
+            font-weight: bold;
+        }
+        
+        .warning-note {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+        
+        /* Floating Warning Icon */
+        /* Warning Float Icon - Bottom Position with Drag Support */
+        .warning-float-icon {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            cursor: move;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .warning-float-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+        
+        .warning-float-icon.dragging {
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            opacity: 0.9;
+            z-index: 10000;
+        }
+        
+        .warning-float-icon.has-warnings {
+            background-color: #dc3545;
+        }
+        
+        /* Ensure warning button is always clickable */
+        .warning-float-icon * {
+            pointer-events: none;
+        }
+        
+        /* Prevent any overlay from blocking the warning button */
+        .warning-float-icon {
+            pointer-events: auto !important;
+        }
+        
+        /* Export Float Icon - Bottom Position with Drag Support */
+        .export-float-icon {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: move;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9997;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .export-float-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            background-color: #0056b3;
+        }
+        
+        .export-float-icon.dragging {
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            opacity: 0.9;
+            z-index: 10000;
+        }
+        
+        /* Export Menu */
+        .export-menu {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: #fff;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.3);
+            z-index: 9996;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+        
+        .export-menu.open {
+            left: 0;
+        }
+        
+        .export-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .export-menu-header h4 {
+            color: #007bff;
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .export-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .export-close-btn:hover {
+            color: #007bff;
+        }
+        
+        .export-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .export-section h5 {
+            color: #495057;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .export-options {
+            margin-bottom: 15px;
+        }
+        
+        .export-options label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .export-radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .export-radio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .export-btn-pdf {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .export-btn-pdf:hover {
+            background-color: #c82333;
+        }
+        
+        .export-btn-jpg {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .export-btn-jpg:hover {
+            background-color: #218838;
+        }
+        
+        .export-btn-excel {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .export-btn-excel:hover {
+            background-color: #138496;
+        }
+        
+        .export-progress {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .export-progress .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Warning Side Menu */
+        .warning-side-menu {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: #fff;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.3);
+            z-index: 9998;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+        
+        .warning-side-menu.open {
+            right: 0;
+        }
+        
+        .warning-side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .warning-side-menu-header h4 {
+            color: #dc3545;
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .warning-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .warning-close-btn:hover {
+            color: #dc3545;
+        }
+        
+        /* Warning Badge on Icon */
+        .warning-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Editable source names styling */
+        #Table2 tbody td[contenteditable="true"]:first-child {
+            background: #f8f9fa;
+            border: 1px dashed #dee2e6;
+            cursor: text;
+            transition: all 0.2s ease;
+        }
+        
+        #Table2 tbody td[contenteditable="true"]:first-child:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        #Table2 tbody td[contenteditable="true"]:first-child:focus {
+            background: #fff;
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        /* Dynamic link visual feedback */
+        .dynamic-link-active {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            transition: background-color 0.3s ease;
+        }
+        
+        .dynamic-link-pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Month selection and remove button styling */
+        .month-header {
+            position: relative;
+        }
+        
+        .month-select {
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+        }
+        
+        .remove-month-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .month-header:hover .remove-month-btn {
+            display: block;
+        }
+        
+        .remove-month-btn:hover {
+            background-color: #c82333;
+        }
+        
+        /* CARD HEADER PADDING OPTIMIZATION */
+        .card-header {
+            padding: 8px 12px !important;
+        }
+        
+        /* MOBILE RESPONSIVE IMPROVEMENTS */
+        /* Desktop and tablet default sizes for main columns */
+        #Table1 th:first-child, #Table1 td:first-child,
+        #Table2 th:first-child, #Table2 td:first-child {
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            padding: 6px 8px !important;
+            min-width: 120px !important;
+            max-width: 140px !important;
+        }
+        
+        /* Tablet size adjustments */
+        @media (max-width: 992px) and (min-width: 769px) {
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child {
+                font-size: 11px !important;
+            }
+            
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                font-size: 11px !important;
+            }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 0 !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            /* Enhanced sticky column behavior for mobile */
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child {
+                position: sticky !important;
+                left: 0px !important;
+                z-index: 1000 !important;
+                background-color: #f8f9fa !important;
+                box-shadow: 3px 0 6px rgba(0,0,0,0.15) !important;
+                font-size: 9px !important;
+                font-weight: 500 !important;
+                padding: 4px 6px !important;
+                width: 120px !important;
+                min-width: 120px !important;
+                max-width: 120px !important;
+                border-right: 2px solid #dee2e6 !important;
+            }
+            
+            /* Header sticky columns with higher specificity for mobile */
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                font-size: 9px !important;
+                z-index: 1002 !important;
+                background-color: #e9ecef !important;
+                font-weight: 600 !important;
+                color: #495057 !important;
+                border-bottom: 2px solid #dee2e6 !important;
+                border-right: 2px solid #dee2e6 !important;
+            }
+            
+            /* Adjust input fields for mobile */
+            input[type="number"] {
+                font-size: 11px !important;
+                padding: 2px 4px !important;
+            }
+            
+            /* Make contenteditable cells more mobile-friendly */
+            #Table2 td[contenteditable="true"] {
+                font-size: 11px !important;
+                padding: 6px 4px !important;
+                min-height: 30px !important;
+            }
+            
+            /* Ensure table maintains structure */
+            table {
+                table-layout: fixed !important;
+                min-width: 600px !important;
+                margin: 0 !important;
+            }
+        }
+        
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child {
+                font-size: 8px !important;
+                padding: 3px 4px !important;
+                width: 100px !important;
+                min-width: 100px !important;
+                max-width: 100px !important;
+            }
+            
+            /* Header sticky columns for extra small devices */
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                font-size: 8px !important;
+                font-weight: 600 !important;
+            }
+            
+            /* Consistent data column widths on extra small mobile */
+            #Table1 th:not(:first-child):not(:last-child), #Table1 td:not(:first-child):not(:last-child),
+            #Table2 th:not(:first-child):not(:last-child), #Table2 td:not(:first-child):not(:last-child) {
+                width: 75px !important;
+                min-width: 75px !important;
+                max-width: 75px !important;
+                font-size: 10px !important;
+                padding: 4px 2px !important;
+            }
+            
+            /* Consistent total column widths on extra small mobile */
+            #Table1 th:last-child, #Table1 td:last-child,
+            #Table2 th:last-child, #Table2 td:last-child {
+                width: 65px !important;
+                min-width: 65px !important;
+                max-width: 65px !important;
+                font-size: 10px !important;
+                padding: 4px 2px !important;
+            }
+            
+            input[type="number"] {
+                font-size: 10px !important;
+                padding: 1px 2px !important;
+            }
+            
+            /* Mobile warning system */
+            .warning-side-menu {
+                width: 100vw !important;
+                right: -100vw !important;
+                z-index: 10001 !important;
+            }
+            
+            .warning-side-menu.open {
+                right: 0 !important;
+                z-index: 10001 !important;
+            }
+            
+            .warning-float-icon {
+                width: 50px !important;
+                height: 50px !important;
+                right: 15px !important;
+                bottom: 100px !important;
+                font-size: 20px !important;
+                z-index: 10000 !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-user-select: none !important;
+                position: fixed !important;
+                cursor: move !important;
+            }
+            
+            .export-float-icon {
+                width: 50px !important;
+                height: 50px !important;
+                right: 15px !important;
+                bottom: 40px !important;
+                font-size: 20px !important;
+                z-index: 9999 !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-user-select: none !important;
+                position: fixed !important;
+                cursor: move !important;
+            }
+            
+            .export-menu {
+                width: 100vw !important;
+                left: -100vw !important;
+                z-index: 9998 !important;
+            }
+            
+            .export-menu.open {
+                left: 0 !important;
+                z-index: 9998 !important;
+            }
+            
+            .warning-badge {
+                width: 20px !important;
+                height: 20px !important;
+                font-size: 10px !important;
+            }
+            
+            /* Mobile card header optimization */
+            .card-header {
+                padding: 4px 8px !important;
+            }
+            
+            .card-header .row {
+                margin: 0 !important;
+                flex-direction: column !important;
+            }
+            
+            .card-header .col-md-6 {
+                padding: 0 !important;
+                margin-bottom: 2px !important;
+                max-width: 100% !important;
+                flex: none !important;
+            }
+            
+            .card-header .col-md-6:last-child {
+                margin-bottom: 0 !important;
+            }
+            
+            .card-header h5 {
+                font-size: 12px !important;
+                margin-bottom: 0 !important;
+                text-align: center !important;
+            }
+            
+            .card-header .d-flex {
+                flex-wrap: wrap !important;
+                gap: 1px !important;
+                justify-content: center !important;
+            }
+            
+            .card-header .btn-sm {
+                font-size: 8px !important;
+                padding: 1px 3px !important;
+                margin: 0 1px !important;
+                border-radius: 2px !important;
+            }
+            
+            .card-header .form-check.form-switch {
+                margin: 0 1px !important;
+                background-color: rgba(255, 255, 255, 0.15) !important;
+                border-radius: 12px !important;
+                padding: 2px 4px !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                min-height: 20px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            
+            .card-header .form-check.form-switch:hover {
+                background-color: rgba(255, 255, 255, 0.25) !important;
+            }
+            
+            .card-header .form-check.form-switch .form-check-input {
+                margin-right: 3px !important;
+                margin-left: 0 !important;
+                width: 12px !important;
+                height: 12px !important;
+                background-color: rgba(255, 255, 255, 0.4) !important;
+            }
+            
+            .card-header .form-check.form-switch .form-check-label {
+                font-size: 8px !important;
+                white-space: nowrap !important;
+                line-height: 1 !important;
+                color: rgba(255, 255, 255, 0.9) !important;
+            }
+            
+            .card-header .form-control {
+                font-size: 8px !important;
+                padding: 0 2px !important;
+                height: 14px !important;
+                width: 30px !important;
+                border: none !important;
+                background-color: rgba(255, 255, 255, 0.8) !important;
+                color: #333 !important;
+            }
+            
+            .card-header .input-group {
+                width: auto !important;
+                flex: none !important;
+            }
+            
+            .card-header .input-group-text {
+                font-size: 8px !important;
+                padding: 0 2px !important;
+                height: 14px !important;
+                border: none !important;
+                background-color: transparent !important;
+            }
+            
+            .card-header label {
+                font-size: 8px !important;
+                margin-bottom: 0 !important;
+            }
+            
+            .card-header span {
+                font-size: 8px !important;
+            }
+            
+            .card-header .d-flex.align-items-center {
+                gap: 1px !important;
+                background-color: rgba(255, 255, 255, 0.15) !important;
+                border-radius: 12px !important;
+                padding: 2px 4px !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                min-height: 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                margin: 0 1px !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .card-header .d-flex.align-items-center:hover {
+                background-color: rgba(255, 255, 255, 0.25) !important;
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+        }
+        
+        /* Extra extra small mobile devices - Ultra compact */
+        @media (max-width: 360px) {
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child {
+                font-size: 7px !important;
+                padding: 2px 3px !important;
+                width: 85px !important;
+                min-width: 85px !important;
+                max-width: 85px !important;
+                line-height: 1.1 !important;
+            }
+            
+            /* Header sticky columns for ultra small devices */
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                font-size: 7px !important;
+                font-weight: 600 !important;
+                line-height: 1.1 !important;
+            }
+            
+            /* Other columns for ultra small devices */
+            #Table1 th:not(:first-child):not(:last-child), #Table1 td:not(:first-child):not(:last-child),
+            #Table2 th:not(:first-child):not(:last-child), #Table2 td:not(:first-child):not(:last-child) {
+                width: 65px !important;
+                min-width: 65px !important;
+                max-width: 65px !important;
+                font-size: 9px !important;
+                padding: 3px 1px !important;
+            }
+            
+            #Table1 th:last-child, #Table1 td:last-child,
+            #Table2 th:last-child, #Table2 td:last-child {
+                width: 55px !important;
+                min-width: 55px !important;
+                max-width: 55px !important;
+                font-size: 9px !important;
+                padding: 3px 1px !important;
+            }
+        }
+        
+        /* Buffer stock input specific styling for compact appearance */
+        #daysToMaintainStock {
+            height: 16px !important;
+            padding: 1px 4px !important;
+            font-size: 12px !important;
+            line-height: 1 !important;
+            border-radius: 3px !important;
+            min-height: 16px !important;
+            max-height: 16px !important;
+        }
+        
+        /* Mobile specific styling for buffer input */
+        @media (max-width: 768px) {
+            #daysToMaintainStock {
+                height: 14px !important;
+                padding: 0 2px !important;
+                font-size: 10px !important;
+                width: 35px !important;
+                min-height: 14px !important;
+                max-height: 14px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #daysToMaintainStock {
+                height: 12px !important;
+                padding: 0 1px !important;
+                font-size: 9px !important;
+                width: 30px !important;
+                min-height: 12px !important;
+                max-height: 12px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Back to Calculators Button -->
+        <div class="row mb-3 mt-2">
+            <div class="col-12">
+                <button type="button" class="btn btn-outline-primary" onclick="goBackToCalculators()">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Calculators
+                </button>
+            </div>
+        </div>
+        
+        <h1 class="text-center mb-4">Coal Calculator V1.0 - Professional</h1>
+        
+        <!-- Power Plant Name Input -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-industry"></i></span>
+                    <input type="text" id="powerPlantName" class="form-control" placeholder="Enter Power Plant Name" value="">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Warning Message (Hidden - now in side menu) -->
+        <div id="closingStockWarning" style="display: none;"></div>
+        
+        <!-- Floating Warning Icon -->
+        <button class="warning-float-icon" id="warningFloatIcon">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span class="warning-badge" id="warningBadge" style="display: none;">0</span>
+        </button>
+        
+        <!-- Export Float Icon -->
+        <button class="export-float-icon" id="exportFloatIcon">
+            <i class="fas fa-download"></i>
+        </button>
+        
+        <!-- Export Menu -->
+        <div class="export-menu" id="exportMenu">
+            <div class="export-menu-header">
+                <h4><i class="fas fa-download me-2"></i>Export Options</h4>
+                <button class="export-close-btn" id="exportCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="export-section">
+                <h5>Table Selection</h5>
+                <div class="export-options">
+                    <div class="export-radio-group">
+                        <div class="export-radio-item">
+                            <input type="radio" id="exportTable1" name="tableSelection" value="table1" checked>
+                            <label for="exportTable1">Coal Scenario Only</label>
+                        </div>
+                        <div class="export-radio-item">
+                            <input type="radio" id="exportBothTables" name="tableSelection" value="both">
+                            <label for="exportBothTables">Both Tables</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="export-section">
+                <h5>Export Formats</h5>
+                <div class="export-buttons">
+                    <button class="export-btn export-btn-pdf" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf"></i>
+                        Export PDF
+                    </button>
+                    <button class="export-btn export-btn-jpg" onclick="exportToJPG()">
+                        <i class="fas fa-image"></i>
+                        Export JPG
+                    </button>
+                    <button class="export-btn export-btn-excel" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        Export Excel
+                    </button>
+                </div>
+                <div class="export-progress" id="exportProgress">
+                    <div class="spinner"></div>
+                    <span id="exportProgressText">Processing...</span>
+                </div>
+            </div>
+            
+            <div class="export-section">
+                <h5>Export Settings</h5>
+                <div class="export-options">
+                    <label>
+                        <input type="checkbox" id="includeTimestamp" checked>
+                        Include timestamp in filename
+                    </label>
+                    <label>
+                        <input type="checkbox" id="highQuality" checked>
+                        Ultra high quality (A4 optimized)
+                    </label>
+                    <label>
+                        <input type="checkbox" id="includeWarnings" checked>
+                        Include live warning cards
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Warning Side Menu -->
+        <div class="warning-side-menu" id="warningSideMenu">
+            <div class="warning-side-menu-header">
+                <h4><i class="fas fa-exclamation-triangle me-2"></i>Warnings</h4>
+                <button class="warning-close-btn" id="warningCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="warningMenuContent">
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <p>No warnings currently</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 1: Coal Scenario -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Coal Scenario at <span id="plantNameDisplay1">____</span>
+                        </h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-end align-items-center flex-wrap gap-2">
+                            <button id="addRowBtn" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus"></i> Add Month
+                            </button>
+                            <button id="clearValuesBtn" class="btn btn-warning btn-sm">
+                                <i class="fas fa-eraser"></i> Clear 
+                            </button>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="copyValuesCheckbox">
+                                <label class="form-check-label text-white small" for="copyValuesCheckbox"> <i class="fa-solid fa-clone"></i> Auto-copy Parameters</label>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <label class="text-white small me-1">Buffer Stock:</label>
+                                <input type="number" id="daysToMaintainStock" class="form-control form-control-sm" style="width: 50px;height: 24px; font-size: inherit; padding: 1px 2px;" value="10" min="1">
+                                <span class="text-white small ms-1">days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table id="Table1" class="table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <!-- Month columns will be added dynamically -->
+                        <th>Total/Avg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Generation Capacity (MW)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>PLF (%)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Units Generated (MU)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Specific Coal Consumption (kg/kWh)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Coal Requirement (MT)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Coal Available (MT)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Opening Stock (MT)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Closing Stock (MT)</strong></td><td class="total-cell">0</td></tr>
+                    <tr><td><strong>Closing Stock in Days</strong></td><td class="total-cell">0</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        
+        <!-- Card 2: Coal Sources -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-truck me-2"></i>Coal Sources for <span id="plantNameDisplay2">____</span>
+                        </h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-end align-items-center flex-wrap gap-2">
+                            <button id="addSourceBtn" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus"></i> Add Source
+                            </button>
+                            <button id="clearSourceValuesBtn" class="btn btn-warning btn-sm">
+                                <i class="fas fa-eraser"></i> Clear 
+                            </button>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label text-white small" for="copyQuantityCheckbox"> <i class="fa-solid fa-clone"></i> Auto-copy Quantities </label>
+                                <input class="form-check-input" type="checkbox" id="copyQuantityCheckbox">
+                            </div>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label text-white small" for="linkToMainTable"><i class="fa-solid fa-arrow-up-from-bracket"></i> Auto-link Tables </label> 
+                                <input class="form-check-input" type="checkbox" id="linkToMainTable" checked>
+                            </div>
+                            <button id="copyTotalsButton" class="btn btn-info btn-sm">
+                               <i class="fa-solid fa-file-arrow-up"></i> Copy Totals 
+                            </button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table id="Table2" class="table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <!-- Month columns will be added dynamically -->
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coalSourcesTableBody">
+                        <!-- Sources will be added dynamically -->
+                    </tbody>
+                    <tfoot>
+                        <tr id="totalRow">
+                            <td><strong>Total</strong></td>
+                            <td>0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================================================
+        // GLOBAL VARIABLES AND CONSTANTS
+        // ==========================================================================
+        
+        // DOM Elements
+        const coalTableBody = document.querySelector('#tbody');
+        const coalAddRowBtn = document.getElementById('addRowBtn');
+        const coalSourcesTableBody = document.getElementById('coalSourcesTableBody');
+        
+        // Application State
+        let monthColumns = []; // Array to store month information
+        let currentMonthCounter = new Date().getMonth() + 1; // Start with actual current month (1-12)
+        let currentYear = new Date().getFullYear() % 100; // Current year in 2-digit format (e.g., 25 for 2025)
+        
+        // ==========================================================================
+        // UTILITY FUNCTIONS
+        // ==========================================================================
+        
+        /**
+         * Go back to calculators page
+         */
+        function goBackToCalculators() {
+            // Try to go back to parent window if opened from main app
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // If opened from main app, switch focus back and close this tab
+                    window.opener.focus();
+                    // Call function to show calculators page in parent window
+                    if (typeof window.opener.showCalculatorsPage === 'function') {
+                        window.opener.showCalculatorsPage();
+                    }
+                    window.close();
+                } catch (e) {
+                    // If cross-origin or other security issues, fallback to alert
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            } else {
+                // If no parent window, try to navigate to main app
+                try {
+                    window.location.href = 'index.html#calculators';
+                } catch (e) {
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            }
+        }
+        
+        /**
+         * Get month name with year from number (1-12) and optional starting year
+         */
+        function getMonthName(monthNumber, year = null) {
+            const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ];
+            
+            if (year === null) {
+                // Use current year as base
+                year = currentYear;
+            }
+            
+            return `${months[monthNumber - 1]} ${year}`;
+        }
+        
+        /**
+         * Get month name with year considering sequence from starting month
+         */
+        function getMonthNameWithYear(monthNumber, startingMonth = null, startingYear = null) {
+            const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ];
+            
+            // Use current month and year as defaults
+            if (startingMonth === null) {
+                startingMonth = currentMonthCounter;
+            }
+            if (startingYear === null) {
+                startingYear = currentYear;
+            }
+            
+            // Calculate year offset based on how many months we've progressed
+            let yearOffset = 0;
+            if (monthNumber < startingMonth) {
+                yearOffset = 1; // We've wrapped to next year
+            }
+            
+            const displayYear = startingYear + yearOffset;
+            return `${months[monthNumber - 1]} ${displayYear}`;
+        }
+        
+        /**
+         * Get next month number (wraps around after December)
+         */
+        function getNextMonth(currentMonth) {
+            return currentMonth % 12 + 1;
+        }
+        
+        /**
+         * Restrict input to positive numbers only
+         */
+        function restrictToNumbers(event) {
+            const input = event.target;
+            let value = input.textContent;
+            
+            // Remove any non-numeric characters except dot
+            value = value.replace(/[^0-9.]/g, '');
+            
+            // Prevent negative values
+            if (value !== '' && parseFloat(value) < 0) {
+                value = '0';
+            }
+            
+            input.textContent = value;
+            
+            // Move cursor to end
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(input);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        
+        /**
+         * Get numeric value from cell content
+         */
+        function getNumericCellValue(cell) {
+            return parseFloat(cell.textContent.replace(/,/g, '').trim()) || 0;
+        }
+        
+        /**
+         * Generate month options for select dropdown
+         */
+        function generateMonthOptions(selectedMonth) {
+            const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ];
+            
+            let options = '';
+            
+            // First year (current year) - Jan to Dec
+            for (let i = 0; i < months.length; i++) {
+                const monthValue = i + 1;
+                const selected = monthValue === selectedMonth ? 'selected' : '';
+                const monthWithYear = `${months[i]} ${currentYear}`;
+                options += `<option value="${monthValue}" ${selected}>${monthWithYear}</option>`;
+            }
+            
+            // Second year (next year) - Jan to Dec
+            const nextYear = currentYear + 1;
+            for (let i = 0; i < months.length; i++) {
+                const monthValue = i + 1 + 12; // Add 12 to distinguish from first year
+                const monthWithYear = `${months[i]} ${nextYear}`;
+                options += `<option value="${monthValue}">${monthWithYear}</option>`;
+            }
+            
+            return options;
+        }
+        
+        /**
+         * Update all month columns when first month changes
+         */
+        /**
+         * Update all month columns when first month is changed
+         */
+        function updateAllMonthColumns() {
+            // Get the first month select value
+            const firstMonthSelect = document.querySelector('.month-select');
+            if (!firstMonthSelect) return;
+            
+            let selectedValue = parseInt(firstMonthSelect.value);
+            
+            // Convert value to actual month (1-12) and determine starting year
+            let startMonth, startYear;
+            if (selectedValue <= 12) {
+                startMonth = selectedValue;
+                startYear = currentYear;
+            } else {
+                startMonth = selectedValue - 12;
+                startYear = currentYear + 1;
+            }
+            
+            let currentMonth = startMonth;
+            let currentMonthYear = startYear;
+            
+            // Update month columns array with proper sequence
+            monthColumns.forEach((col, index) => {
+                col.monthNumber = currentMonth;
+                col.monthName = getMonthNameWithYear(currentMonth, startMonth, startYear);
+                
+                // Move to next month
+                currentMonth = getNextMonth(currentMonth);
+                // If we wrapped around to January, increment the year
+                if (currentMonth === 1 && index > 0) {
+                    currentMonthYear++;
+                }
+            });
+            
+            // Update all month headers in both tables
+            const table1Headers = document.querySelectorAll('#Table1 thead th.month-header');
+            const table2Headers = document.querySelectorAll('#Table2 thead th.month-header');
+            
+            currentMonth = startMonth;
+            currentMonthYear = startYear;
+            
+            for (let i = 0; i < table1Headers.length; i++) {
+                const monthName = getMonthNameWithYear(currentMonth, startMonth, startYear);
+                
+                // Update Table1 header
+                if (i === 0) {
+                    // First column: update the select element value only
+                    const select = table1Headers[i].querySelector('.month-select');
+                    if (select) {
+                        select.value = selectedValue; // Keep the original selected value
+                    }
+                } else {
+                    // Subsequent columns: update the text content and preserve remove button
+                    table1Headers[i].innerHTML = `
+                        ${monthName}
+                        <button class="remove-month-btn" onclick="removeMonthColumn(${i})" title="Remove ${monthName}">×</button>
+                    `;
+                }
+                
+                // Update Table2 header (always just text)
+                if (table2Headers[i]) {
+                    table2Headers[i].textContent = monthName;
+                }
+                
+                // Move to next month
+                currentMonth = getNextMonth(currentMonth);
+                // If we wrapped around to January, increment the year
+                if (currentMonth === 1 && i > 0) {
+                    currentMonthYear++;
+                }
+            }
+            
+            // Update the currentMonthCounter to be the next month after the last column
+            // This ensures new columns continue the sequence properly
+            if (monthColumns.length > 0) {
+                currentMonthCounter = getNextMonth(monthColumns[monthColumns.length - 1].monthNumber);
+            }
+            
+            // Recalculate everything
+            recalculateAllColumns();
+        }
+        
+        // ==========================================================================
+        // TABLE STRUCTURE MANAGEMENT
+        // ==========================================================================
+        
+        /**
+         * Add a new month column to both tables
+         */
+        function addCoalColumn() {
+            const table1 = document.getElementById('Table1');
+            const table2 = document.getElementById('Table2');
+            
+            if (!table1 || !table2) return;
+            
+            // Determine the month number for the new column
+            let monthNumber;
+            if (monthColumns.length === 0) {
+                // First column - use current month
+                monthNumber = currentMonthCounter;
+            } else {
+                // Subsequent columns - get next month after the last existing month
+                const lastMonth = monthColumns[monthColumns.length - 1].monthNumber;
+                monthNumber = getNextMonth(lastMonth);
+            }
+            
+            const monthName = getMonthNameWithYear(monthNumber);
+            
+            // Store month information
+            monthColumns.push({
+                monthNumber: monthNumber,
+                monthName: monthName
+            });
+            
+            // Add header to Table1 with month selector (only first month is selectable)
+            const table1Header = table1.querySelector('thead tr');
+            const table1TotalHeader = table1Header.lastElementChild;
+            const newTable1Header = document.createElement('th');
+            newTable1Header.className = 'month-header';
+            
+            if (monthColumns.length === 1) {
+                // First month - selectable
+                newTable1Header.innerHTML = `
+                    <select class="month-select" onchange="updateAllMonthColumns()">
+                        ${generateMonthOptions(monthNumber)}
+                    </select>
+                `;
+            } else {
+                // Subsequent months - display with remove button
+                newTable1Header.innerHTML = `
+                    ${monthName}
+                    <button class="remove-month-btn" onclick="removeMonthColumn(${monthColumns.length - 1})" title="Remove ${monthName}">×</button>
+                `;
+            }
+            
+            table1Header.insertBefore(newTable1Header, table1TotalHeader);
+            
+            // Add header to Table2 (simple text)
+            const table2Header = table2.querySelector('thead tr');
+            const table2TotalHeader = table2Header.lastElementChild;
+            const newTable2Header = document.createElement('th');
+            newTable2Header.className = 'month-header';
+            newTable2Header.textContent = monthName;
+            table2Header.insertBefore(newTable2Header, table2TotalHeader);
+            
+            // Add cells to Table1 body rows
+            const table1Rows = table1.querySelectorAll('tbody tr');
+            table1Rows.forEach((row, index) => {
+                const newCell = document.createElement('td');
+                const totalCell = row.lastElementChild;
+                
+                // Determine cell content based on row type
+                if (index === 0 || index === 1 || index === 3 || index === 5) {
+                    // Input rows: Generation Capacity, PLF, SCC, Coal Available
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '0';
+                    input.step = '0.01';
+                    input.value = '';
+                    newCell.appendChild(input);
+                } else if (index === 6 && monthColumns.length === 1) {
+                    // Opening Stock - only input for first month
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '0';
+                    input.step = '0.01';
+                    input.value = '';
+                    newCell.appendChild(input);
+                } else {
+                    // Calculated rows: Units Generated, Coal Consumption, Closing Stock, Stock in Days
+                    // Or Opening Stock for subsequent months
+                    const span = document.createElement('span');
+                    span.textContent = '0';
+                    newCell.appendChild(span);
+                }
+                
+                row.insertBefore(newCell, totalCell);
+            });
+            
+            // Add cells to Table2 body rows
+            const table2Rows = table2.querySelectorAll('tbody tr');
+            const copyValuesCheckbox = document.getElementById('copyValuesCheckbox');
+            const shouldAutofill = copyValuesCheckbox && copyValuesCheckbox.checked && monthColumns.length > 1;
+            
+            table2Rows.forEach(row => {
+                const newCell = document.createElement('td');
+                newCell.contentEditable = true;
+                
+                // If autofill is enabled and this is not the first month, copy from previous month
+                // This copies horizontally across months for the same source
+                if (shouldAutofill) {
+                    const previousCell = row.children[row.children.length - 2]; // Previous month cell (before total)
+                    newCell.textContent = previousCell.textContent || '';
+                } else {
+                    newCell.textContent = ''; // Empty by default
+                }
+                
+                const totalCell = row.lastElementChild;
+                row.insertBefore(newCell, totalCell);
+            });
+            
+            // Add cell to Table2 footer
+            const table2Footer = table2.querySelector('tfoot tr');
+            const newFooterCell = document.createElement('td');
+            newFooterCell.textContent = '0';
+            const footerTotalCell = table2Footer.lastElementChild;
+            table2Footer.insertBefore(newFooterCell, footerTotalCell);
+            
+            // Update calculations and event listeners
+            addEventListenersToTable1();
+            addEventListenersToTable2(); // Add vertical tab navigation for Table2
+            
+            // Handle Table1 autofill for new month
+            const copyTable1Checkbox = document.getElementById('copyValuesCheckbox');
+            if (copyTable1Checkbox && copyTable1Checkbox.checked && monthColumns.length > 1) {
+                // Copy values from previous month to new month in Table1
+                const table1Rows = table1.querySelectorAll('tbody tr');
+                const previousMonthColumnIndex = monthColumns.length - 1; // Previous month (0-based)
+                const newMonthColumnIndex = monthColumns.length; // New month (0-based)
+                
+                table1Rows.forEach((row, rowIndex) => {
+                    // Only copy to input rows
+                    const inputRows = [0, 1, 3, 5]; // Generation Capacity, PLF, SCC, Coal Available
+                    if (inputRows.includes(rowIndex)) {
+                        const previousCell = row.children[previousMonthColumnIndex];
+                        const newCell = row.children[newMonthColumnIndex];
+                        
+                        const previousInput = previousCell?.querySelector('input');
+                        const newInput = newCell?.querySelector('input');
+                        
+                        if (previousInput && newInput && previousInput.value !== '') {
+                            newInput.value = previousInput.value;
+                        }
+                    }
+                });
+            }
+            
+            updateTotals();
+            updateTotal();
+            recalculateAllColumns(); // Ensure closing stock calculations are updated
+        }
+        
+        /**
+         * Remove a month column from both tables
+         */
+        function removeMonthColumn(columnIndex) {
+            if (monthColumns.length <= 1) {
+                alert('Cannot remove the last remaining month column.');
+                return;
+            }
+            
+            if (columnIndex === 0) {
+                alert('Cannot remove the first month column. You can change its month using the dropdown.');
+                return;
+            }
+            
+            const monthName = monthColumns[columnIndex].monthName;
+            
+            // Ask for confirmation
+            if (!confirm(`Are you sure you want to remove the ${monthName} column? This action cannot be undone.`)) {
+                return;
+            }
+            
+            const table1 = document.getElementById('Table1');
+            const table2 = document.getElementById('Table2');
+            
+            const actualColumnIndex = columnIndex + 1; // +1 for parameter column
+            
+            // Remove from headers
+            table1.querySelector('thead tr').children[actualColumnIndex].remove();
+            table2.querySelector('thead tr').children[actualColumnIndex].remove();
+            
+            // Remove from Table1 body rows
+            table1.querySelectorAll('tbody tr').forEach(row => {
+                row.children[actualColumnIndex].remove();
+            });
+            
+            // Remove from Table2 body rows
+            table2.querySelectorAll('tbody tr').forEach(row => {
+                row.children[actualColumnIndex].remove();
+            });
+            
+            // Remove from Table2 footer
+            table2.querySelector('tfoot tr').children[actualColumnIndex].remove();
+            
+            // Remove from monthColumns array
+            monthColumns.splice(columnIndex, 1);
+            
+            // Recalculate month sequence for remaining columns
+            recalculateMonthSequence();
+            
+            // Update remove button onclick handlers for remaining columns
+            const headers = table1.querySelectorAll('thead th.month-header');
+            headers.forEach((header, index) => {
+                const removeBtn = header.querySelector('.remove-month-btn');
+                if (removeBtn) {
+                    removeBtn.setAttribute('onclick', `removeMonthColumn(${index})`);
+                }
+            });
+            
+            // Update calculations and event listeners
+            addEventListenersToTable1();
+            addEventListenersToTable2(); // Add vertical tab navigation for Table2
+            recalculateAllColumns();
+        }
+        
+        /**
+         * Recalculate month sequence after deletion to maintain proper sequence
+         */
+        function recalculateMonthSequence() {
+            if (monthColumns.length === 0) return;
+            
+            // Get the first month (which should remain unchanged)
+            const firstMonth = monthColumns[0].monthNumber;
+            let currentMonth = firstMonth;
+            
+            // Update all month columns to maintain sequence
+            monthColumns.forEach((col, index) => {
+                col.monthNumber = currentMonth;
+                col.monthName = getMonthNameWithYear(currentMonth, firstMonth);
+                currentMonth = getNextMonth(currentMonth);
+            });
+            
+            // Update headers in both tables
+            const table1Headers = document.querySelectorAll('#Table1 thead th.month-header');
+            const table2Headers = document.querySelectorAll('#Table2 thead th.month-header');
+            
+            currentMonth = firstMonth;
+            for (let i = 0; i < monthColumns.length; i++) {
+                const monthName = getMonthNameWithYear(currentMonth, firstMonth);
+                
+                // Update Table1 header
+                if (i === 0) {
+                    // First column: keep the select element
+                    const select = table1Headers[i].querySelector('.month-select');
+                    if (select) {
+                        select.value = currentMonth;
+                    }
+                } else {
+                    // Subsequent columns: update text and remove button
+                    table1Headers[i].innerHTML = `
+                        ${monthName}
+                        <button class="remove-month-btn" onclick="removeMonthColumn(${i})" title="Remove ${monthName}">×</button>
+                    `;
+                }
+                
+                // Update Table2 header
+                if (table2Headers[i]) {
+                    table2Headers[i].textContent = monthName;
+                }
+                
+                currentMonth = getNextMonth(currentMonth);
+            }
+            
+            // Update the currentMonthCounter for future additions
+            if (monthColumns.length > 0) {
+                currentMonthCounter = getNextMonth(monthColumns[monthColumns.length - 1].monthNumber);
+            }
+        }
+        
+        /**
+         * Add a new source row to Table2
+         * Sources should NOT auto-copy values - each should be manually entered
+         */
+        function addNewSource() {
+            const table2 = document.getElementById('Table2');
+            const tbody = table2.querySelector('tbody');
+            const headerRow = table2.querySelector('thead tr');
+            
+            const sourceRows = tbody.querySelectorAll('tr');
+            const sourceNumber = sourceRows.length + 1;
+            const monthColumnCount = headerRow.querySelectorAll('th').length - 2; // Exclude Source and Total
+            
+            const newRow = document.createElement('tr');
+            
+            // Source name cell
+            const sourceNameCell = document.createElement('td');
+            sourceNameCell.contentEditable = true;
+            sourceNameCell.textContent = `Source${sourceNumber}`; // Plain text instead of HTML
+            newRow.appendChild(sourceNameCell);
+
+            // Data cells for each month - always empty (no autofill for sources)
+            for (let i = 0; i < monthColumnCount; i++) {
+                const dataCell = document.createElement('td');
+                dataCell.contentEditable = true;
+                dataCell.textContent = ''; // Always empty - user must enter manually
+                newRow.appendChild(dataCell);
+            }
+
+            // Total cell
+            const totalCell = document.createElement('td');
+            totalCell.className = 'source-total';
+            totalCell.textContent = '0';
+            newRow.appendChild(totalCell);
+
+            tbody.appendChild(newRow);
+            addEventListenersToTable2(); // Add vertical tab navigation
+            updateTotal();
+        }        // ==========================================================================
+        // TABLE1 CALCULATIONS
+        // ==========================================================================
+        
+        /**
+         * Calculate values for a specific column in Table1
+         */
+        function calculateForColumn(columnIndex) {
+            const table1 = document.getElementById('Table1');
+            const rows = table1.querySelectorAll('tbody tr');
+            
+            // Get input values
+            const generationCapacity = parseFloat(rows[0].children[columnIndex + 1].querySelector('input').value) || 0;
+            const plf = parseFloat(rows[1].children[columnIndex + 1].querySelector('input').value) || 0;
+            const scc = parseFloat(rows[3].children[columnIndex + 1].querySelector('input').value) || 0;
+            const coalAvailable = parseFloat(rows[5].children[columnIndex + 1].querySelector('input').value) || 0;
+            
+            // Get opening stock
+            const openingStockCell = rows[6].children[columnIndex + 1];
+            const openingStockInput = openingStockCell.querySelector('input');
+            const openingStockSpan = openingStockCell.querySelector('span');
+            const openingStock = openingStockInput ? 
+                parseFloat(openingStockInput.value) || 0 : 
+                parseFloat(openingStockSpan?.textContent) || 0;
+            
+            // Get month information
+            const monthNumber = monthColumns[columnIndex].monthNumber;
+            const daysInMonth = new Date(new Date().getFullYear(), monthNumber, 0).getDate();
+            
+            // Calculate Units Generated (MW * 24hrs * PLF% * days / 1000)
+            const unitsGenerated = (generationCapacity * 24 * plf * daysInMonth) / 1000;
+            
+            // Calculate Coal Consumption (Units in MUs * SCC * 10)
+            const coalConsumption = unitsGenerated * scc * 10;
+            
+            // Calculate Closing Stock
+            const closingStock = coalAvailable + openingStock - coalConsumption;
+            
+            // Calculate Stock in Days
+            const dailyConsumption = coalConsumption / daysInMonth;
+            const stockInDays = dailyConsumption > 0 ? (closingStock / dailyConsumption) : 0;
+            
+            // Update display values with color coding for negative values
+            const unitsSpan = rows[2].children[columnIndex + 1].querySelector('span');
+            const coalConsumptionSpan = rows[4].children[columnIndex + 1].querySelector('span');
+            const closingStockSpan = rows[7].children[columnIndex + 1].querySelector('span');
+            const stockInDaysSpan = rows[8].children[columnIndex + 1].querySelector('span');
+            
+            // Update values
+            unitsSpan.textContent = unitsGenerated.toFixed(2);
+            coalConsumptionSpan.textContent = coalConsumption.toFixed(2);
+            closingStockSpan.textContent = closingStock.toFixed(2);
+            stockInDaysSpan.textContent = stockInDays.toFixed(2);
+            
+            // Apply color coding for negative calculated values
+            if (unitsGenerated < 0) {
+                unitsSpan.style.color = '#c62828';
+                unitsSpan.style.fontWeight = 'bold';
+            } else {
+                unitsSpan.style.color = '';
+                unitsSpan.style.fontWeight = '';
+            }
+            
+            if (coalConsumption < 0) {
+                coalConsumptionSpan.style.color = '#c62828';
+                coalConsumptionSpan.style.fontWeight = 'bold';
+            } else {
+                coalConsumptionSpan.style.color = '';
+                coalConsumptionSpan.style.fontWeight = '';
+            }
+            
+            // Color coding for closing stock with background
+            if (closingStock < 0) {
+                closingStockSpan.style.backgroundColor = '#ffebee';
+                closingStockSpan.style.color = '#c62828';
+                closingStockSpan.style.fontWeight = 'bold';
+                closingStockSpan.style.padding = '2px 4px';
+                closingStockSpan.style.borderRadius = '3px';
+            } else {
+                closingStockSpan.style.backgroundColor = '#e8f5e8';
+                closingStockSpan.style.color = '#2e7d32';
+                closingStockSpan.style.fontWeight = 'bold';
+                closingStockSpan.style.padding = '2px 4px';
+                closingStockSpan.style.borderRadius = '3px';
+            }
+            
+            if (stockInDays < 0) {
+                stockInDaysSpan.style.color = '#c62828';
+                stockInDaysSpan.style.fontWeight = 'bold';
+            } else if (stockInDays > 0) {
+                stockInDaysSpan.style.color = '#2e7d32';
+                stockInDaysSpan.style.fontWeight = 'bold';
+            } else {
+                stockInDaysSpan.style.color = '';
+                stockInDaysSpan.style.fontWeight = '';
+            }
+            
+            // Update opening stock of next column
+            if (columnIndex + 1 < monthColumns.length) {
+                const nextOpeningStockCell = rows[6].children[columnIndex + 2];
+                const nextOpeningStockSpan = nextOpeningStockCell.querySelector('span');
+                if (nextOpeningStockSpan) {
+                    nextOpeningStockSpan.textContent = closingStock.toFixed(2);
+                }
+            }
+        }
+        
+        /**
+         * Recalculate all columns in Table1 sequentially
+         * This ensures that each month's opening stock is correctly updated from previous month's closing stock
+         */
+        function recalculateAllColumns() {
+            // Calculate columns sequentially to ensure proper opening stock propagation
+            for (let i = 0; i < monthColumns.length; i++) {
+                calculateForColumn(i);
+                
+                // Force update of next month's opening stock before proceeding
+                // This ensures the chain of opening stock -> closing stock is maintained
+                if (i + 1 < monthColumns.length) {
+                    const table1 = document.getElementById('Table1');
+                    const rows = table1.querySelectorAll('tbody tr');
+                    
+                    // Get current month's closing stock
+                    const currentClosingStockSpan = rows[7].children[i + 1].querySelector('span');
+                    const currentClosingStock = parseFloat(currentClosingStockSpan?.textContent) || 0;
+                    
+                    // Update next month's opening stock
+                    const nextOpeningStockSpan = rows[6].children[i + 2].querySelector('span');
+                    if (nextOpeningStockSpan) {
+                        nextOpeningStockSpan.textContent = currentClosingStock.toFixed(2);
+                    }
+                }
+            }
+            // Apply color coding to all closing stock cells after recalculation
+            applyClosingStockColorCoding();
+            updateTotals();
+            updateTotal();
+            checkForNegativeClosingStock();
+        }
+        
+        /**
+         * Apply color coding to all closing stock cells and stock in days
+         */
+        function applyClosingStockColorCoding() {
+            const table1 = document.getElementById('Table1');
+            const rows = table1.querySelectorAll('tbody tr');
+            const closingStockRow = rows[7]; // Closing Stock row
+            const stockInDaysRow = rows[8]; // Stock in Days row
+            
+            // Apply color coding to each month's closing stock and stock in days
+            for (let colIndex = 1; colIndex <= monthColumns.length; colIndex++) {
+                // Closing Stock color coding
+                const closingStockSpan = closingStockRow.children[colIndex].querySelector('span');
+                if (closingStockSpan) {
+                    const closingStock = parseFloat(closingStockSpan.textContent) || 0;
+                    
+                    if (closingStock < 0) {
+                        closingStockSpan.style.backgroundColor = '#ffebee';
+                        closingStockSpan.style.color = '#c62828';
+                        closingStockSpan.style.fontWeight = 'bold';
+                        closingStockSpan.style.padding = '2px 4px';
+                        closingStockSpan.style.borderRadius = '3px';
+                    } else {
+                        closingStockSpan.style.backgroundColor = '#e8f5e8';
+                        closingStockSpan.style.color = '#2e7d32';
+                        closingStockSpan.style.fontWeight = 'bold';
+                        closingStockSpan.style.padding = '2px 4px';
+                        closingStockSpan.style.borderRadius = '3px';
+                    }
+                }
+                
+                // Stock in Days color coding
+                const stockInDaysSpan = stockInDaysRow.children[colIndex].querySelector('span');
+                if (stockInDaysSpan) {
+                    const stockInDays = parseFloat(stockInDaysSpan.textContent) || 0;
+                    
+                    if (stockInDays < 0) {
+                        stockInDaysSpan.style.color = '#c62828';
+                        stockInDaysSpan.style.fontWeight = 'bold';
+                    } else if (stockInDays > 0) {
+                        stockInDaysSpan.style.color = '#2e7d32';
+                        stockInDaysSpan.style.fontWeight = 'bold';
+                    } else {
+                        stockInDaysSpan.style.color = '';
+                        stockInDaysSpan.style.fontWeight = '';
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Update totals for Table1
+         */
+        function updateTotals() {
+            if (monthColumns.length === 0) return;
+            
+            const table1 = document.getElementById('Table1');
+            const rows = table1.querySelectorAll('tbody tr');
+            
+            // Calculate totals for each parameter across all months
+            for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                const row = rows[rowIndex];
+                const totalCell = row.children[row.children.length - 1]; // Last cell is total
+                let total = 0;
+                let validValues = 0; // Count of non-zero values for averages
+                
+                // Sum values across all month columns
+                for (let colIndex = 1; colIndex <= monthColumns.length; colIndex++) {
+                    const cell = row.children[colIndex];
+                    let value = 0;
+                    
+                    const input = cell.querySelector('input');
+                    const span = cell.querySelector('span');
+                    
+                    if (input) {
+                        value = parseFloat(input.value) || 0;
+                    } else if (span) {
+                        value = parseFloat(span.textContent) || 0;
+                    }
+                    
+                    total += value;
+                    if (value > 0) validValues++; // Count non-zero values for averages
+                }
+                
+                // Set appropriate total based on row type
+                if (rowIndex === 6) { // Opening Stock - show first month value
+                    const firstCell = row.children[1];
+                    const firstInput = firstCell.querySelector('input');
+                    const firstSpan = firstCell.querySelector('span');
+                    totalCell.textContent = firstInput ? 
+                        (parseFloat(firstInput.value) || 0).toFixed(2) : 
+                        (parseFloat(firstSpan?.textContent) || 0).toFixed(2);
+                } else if (rowIndex === 7) { // Closing Stock - show last month value
+                    const lastCell = row.children[monthColumns.length];
+                    const lastSpan = lastCell.querySelector('span');
+                    const closingValue = parseFloat(lastSpan?.textContent) || 0;
+                    totalCell.textContent = closingValue.toFixed(2);
+                    // Apply color coding for closing stock
+                    if (closingValue < 0) {
+                        totalCell.style.backgroundColor = '#ffebee';
+                        totalCell.style.color = '#c62828';
+                        totalCell.style.fontWeight = 'bold';
+                    } else {
+                        totalCell.style.backgroundColor = '#e8f5e8';
+                        totalCell.style.color = '#2e7d32';
+                        totalCell.style.fontWeight = 'bold';
+                    }
+                } else if (rowIndex === 8) { // Stock in Days - show last month value
+                    const lastCell = row.children[monthColumns.length];
+                    const lastSpan = lastCell.querySelector('span');
+                    const stockInDaysValue = parseFloat(lastSpan?.textContent) || 0;
+                    totalCell.textContent = stockInDaysValue.toFixed(2);
+                    // Apply color coding for stock in days
+                    if (stockInDaysValue < 0) {
+                        totalCell.style.color = '#c62828';
+                        totalCell.style.fontWeight = 'bold';
+                        totalCell.style.backgroundColor = '';
+                    } else if (stockInDaysValue > 0) {
+                        totalCell.style.color = '#2e7d32';
+                        totalCell.style.fontWeight = 'bold';
+                        totalCell.style.backgroundColor = '';
+                    } else {
+                        totalCell.style.color = '';
+                        totalCell.style.fontWeight = '';
+                        totalCell.style.backgroundColor = '';
+                    }
+                } else if (rowIndex === 1) { // PLF - use average instead of sum
+                    const average = validValues > 0 ? total / validValues : 0;
+                    totalCell.textContent = average.toFixed(2);
+                } else if (rowIndex === 3) { // Specific Coal Consumption - use average instead of sum
+                    const average = validValues > 0 ? total / validValues : 0;
+                    totalCell.textContent = average.toFixed(2);
+                } else {
+                    // Sum total for other rows
+                    totalCell.textContent = total.toFixed(2);
+                }
+            }
+        }
+        
+        // ==========================================================================
+        // TABLE2 CALCULATIONS
+        // ==========================================================================
+        
+        /**
+         * Update totals for Table2 (Coal Sources)
+         */
+        function updateTotal() {
+            const table = document.getElementById('Table2');
+            const headerRow = table.querySelector('thead tr');
+            const totalColumnIndex = headerRow.children.length - 1;
+            const rows = table.querySelectorAll('tbody tr');
+            const footerRow = table.querySelector('tfoot tr');
+            
+            // Calculate row totals
+            rows.forEach(row => {
+                let rowTotal = 0;
+                const cells = row.querySelectorAll('td');
+                
+                // Sum all source columns (skip first column which is Source name)
+                for (let i = 1; i < totalColumnIndex; i++) {
+                    const value = getNumericCellValue(cells[i]);
+                    rowTotal += value;
+                }
+                
+                // Update row total
+                const rowTotalCell = cells[totalColumnIndex];
+                if (rowTotalCell) {
+                    rowTotalCell.textContent = rowTotal.toFixed(2);
+                }
+            });
+            
+            // Calculate column totals
+            for (let colIndex = 1; colIndex < totalColumnIndex; colIndex++) {
+                let columnTotal = 0;
+                rows.forEach(row => {
+                    const cell = row.children[colIndex];
+                    if (cell) {
+                        columnTotal += getNumericCellValue(cell);
+                    }
+                });
+                
+                // Update footer column total
+                if (footerRow.children[colIndex]) {
+                    footerRow.children[colIndex].textContent = columnTotal.toFixed(2);
+                }
+            }
+            
+            // Calculate grand total
+            let grandTotal = 0;
+            rows.forEach(row => {
+                const totalCell = row.children[totalColumnIndex];
+                if (totalCell) {
+                    grandTotal += getNumericCellValue(totalCell);
+                }
+            });
+            
+            // Update grand total
+            const grandTotalCell = footerRow.children[totalColumnIndex];
+            if (grandTotalCell) {
+                grandTotalCell.textContent = grandTotal.toFixed(2);
+            }
+        }
+        
+        // ==========================================================================
+        // DYNAMIC LINKING FUNCTIONALITY
+        // ==========================================================================
+        
+        /**
+         * Copy Table2 footer totals to Table1 Coal Available row
+         * This is the main function for dynamic linking
+         */
+        function copyCoalAvailabilityToFirstTable() {
+            const table1 = document.getElementById('Table1');
+            const table2 = document.getElementById('Table2');
+            
+            if (!table1 || !table2) return;
+            
+            // Get Table2 footer row (contains month-wise totals)
+            const table2FooterRow = table2.querySelector('tfoot tr');
+            if (!table2FooterRow) return;
+            
+            const table2FooterCells = table2FooterRow.querySelectorAll('td');
+            
+            // Get Table1 Coal Available row (6th row, index 5)
+            const table1Body = table1.querySelector('tbody');
+            const table1Rows = table1Body.querySelectorAll('tr');
+            const coalAvailableRow = table1Rows[5]; // "Coal Available (MT)" row
+            
+            if (!coalAvailableRow) return;
+            
+            const coalAvailableCells = coalAvailableRow.querySelectorAll('td');
+            
+            // Copy month-wise totals from Table2 footer to Table1 Coal Available row
+            // Skip first cell (Source/Total label) and last cell (Grand Total)
+            let copiedCount = 0;
+            for (let i = 1; i < table2FooterCells.length - 1; i++) {
+                const monthTotal = table2FooterCells[i].textContent || '0';
+                
+                // Find corresponding cell in Table1 Coal Available row
+                if (i < coalAvailableCells.length - 1) { // Skip total column in Table1
+                    const coalAvailableCell = coalAvailableCells[i];
+                    
+                    // Check if it's an input field
+                    const inputElement = coalAvailableCell.querySelector('input');
+                    if (inputElement) {
+                        inputElement.value = monthTotal;
+                        copiedCount++;
+                        
+                        // Trigger input event to update calculations
+                        inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            }
+            
+            // Recalculate after copying values
+            if (copiedCount > 0) {
+                recalculateAllColumns();
+            }
+        }
+        
+        // ==========================================================================
+        // EVENT HANDLERS
+        // ==========================================================================
+        
+        /**
+         * Handle input changes in Table1
+         */
+        function handleInputChange(event) {
+            const input = event.target;
+            
+            // Validate input - only positive numbers
+            const value = input.value.trim();
+            if (value !== '' && (isNaN(value) || parseFloat(value) < 0)) {
+                input.value = '0';
+            }
+            
+            const td = input.closest('td');
+            const tr = td.closest('tr');
+            const table = tr.closest('table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const rowIndex = rows.indexOf(tr);
+            
+            // Find column index
+            const cells = Array.from(tr.querySelectorAll('td'));
+            const cellIndex = cells.indexOf(td);
+            const columnIndex = cellIndex - 1; // Subtract 1 for parameter column
+            
+            // Check if autofill is enabled
+            const copyValuesCheckbox = document.getElementById('copyValuesCheckbox');
+            if (copyValuesCheckbox && copyValuesCheckbox.checked && input.value !== '') {
+                // Autofill is enabled - copy values and recalculate all columns
+                copyValueToSubsequentColumns(rowIndex, columnIndex, input.value);
+                // Note: copyValueToSubsequentColumns now calls recalculateAllColumns() internally
+                
+                // Only check for warnings when Coal Available is changed
+                if (rowIndex === 5) {
+                    checkForNegativeClosingStock();
+                }
+            } else {
+                // Autofill is not enabled - calculate only the current column
+                if (columnIndex >= 0) {
+                    calculateForColumn(columnIndex);
+                    updateTotals();
+                    
+                    // Only check for negative closing stock warnings when Coal Available is changed
+                    // Row index 5 is Coal Available (MT)
+                    if (rowIndex === 5) {
+                        checkForNegativeClosingStock();
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Copy value to subsequent columns in the same row
+         */
+        function copyValueToSubsequentColumns(rowIndex, sourceColumnIndex, value) {
+            const table1 = document.getElementById('Table1');
+            const tbody = table1.querySelector('tbody');
+            const rows = tbody.querySelectorAll('tr');
+            const targetRow = rows[rowIndex];
+            
+            // Only copy to input rows
+            const inputRows = [0, 1, 3, 5]; // Generation Capacity, PLF, SCC, Coal Available
+            if (!inputRows.includes(rowIndex)) {
+                // For opening stock (row 6), allow calculation but don't copy to subsequent columns
+                // since subsequent months' opening stock is calculated from previous closing stock
+                if (rowIndex === 6) {
+                    // Just recalculate all columns to update the current month's calculations
+                    recalculateAllColumns();
+                }
+                return;
+            }
+            
+            // Copy to all subsequent columns (only copy values, don't calculate yet)
+            for (let colIndex = sourceColumnIndex + 1; colIndex < monthColumns.length; colIndex++) {
+                const targetCell = targetRow.children[colIndex + 1];
+                const targetInput = targetCell.querySelector('input');
+                if (targetInput) {
+                    targetInput.value = value;
+                }
+            }
+            
+            // Recalculate all columns sequentially to maintain proper opening stock chain
+            recalculateAllColumns();
+        }
+        
+        /**
+         * Add event listeners to all input fields in Table1
+         */
+        /**
+         * Add event listeners to Table1 inputs for calculations and vertical tab navigation
+         */
+        function addEventListenersToTable1() {
+            const table1 = document.getElementById('Table1');
+            const inputFields = table1.querySelectorAll('input');
+            
+            inputFields.forEach(input => {
+                // Remove existing listeners to prevent duplicates
+                input.removeEventListener('input', handleInputChange);
+                input.removeEventListener('keydown', handleVerticalTabNavigation);
+                input.removeEventListener('keypress', handleTable1NumberValidation);
+                
+                // Add new listeners
+                input.addEventListener('input', handleInputChange);
+                input.addEventListener('keydown', handleVerticalTabNavigation);
+                input.addEventListener('keypress', handleTable1NumberValidation);
+            });
+        }
+        
+        /**
+         * Handle number validation for Table1 inputs (no negative signs allowed)
+         */
+        function handleTable1NumberValidation(event) {
+            const char = String.fromCharCode(event.which);
+            
+            // Allow control keys (backspace, delete, arrow keys, etc.)
+            if (event.which <= 32) return true;
+            
+            // Allow digits
+            if (/\d/.test(char)) return true;
+            
+            // Allow decimal point
+            if (char === '.') return true;
+            
+            // Block negative sign and all other characters
+            event.preventDefault();
+            return false;
+        }
+        
+        /**
+         * Add event listeners to Table2 inputs for totals and vertical tab navigation
+         */
+        function addEventListenersToTable2() {
+            const table2 = document.getElementById('Table2');
+            const editableCells = table2.querySelectorAll('td[contenteditable="true"]');
+            
+            editableCells.forEach(cell => {
+                // Remove existing listeners to prevent duplicates
+                cell.removeEventListener('input', handleTable2Change);
+                cell.removeEventListener('keydown', handleVerticalTabNavigationTable2);
+                cell.removeEventListener('keypress', handleTable2NumberValidation);
+                cell.removeEventListener('paste', handleTable2Paste);
+                
+                // Add new listeners
+                cell.addEventListener('input', handleTable2Change);
+                cell.addEventListener('keydown', handleVerticalTabNavigationTable2);
+                
+                // Add validation only for data cells (not source name cells)
+                // Source name cells are in the first column and should accept any characters
+                const row = cell.closest('tr');
+                const cellIndex = Array.from(row.children).indexOf(cell);
+                const isSourceNameCell = cellIndex === 0; // First column is source names
+                
+                // Only apply number validation to data cells (columns 1 and beyond, excluding last total column)
+                if (!isSourceNameCell && !cell.classList.contains('source-total')) {
+                    cell.addEventListener('keypress', handleTable2NumberValidation);
+                    cell.addEventListener('paste', handleTable2Paste);
+                }
+            });
+        }
+        
+        /**
+         * Handle number validation for Table2 data cells (allow only one decimal)
+         */
+        function handleTable2NumberValidation(event) {
+            const char = String.fromCharCode(event.which);
+            const currentText = event.target.textContent || '';
+            
+            // Allow control keys (backspace, delete, arrow keys, etc.)
+            if (event.which <= 32) return true;
+            
+            // Allow digits
+            if (/\d/.test(char)) return true;
+            
+            // Allow decimal point only if there isn't one already
+            if (char === '.' && !currentText.includes('.')) return true;
+            
+            // Allow negative sign only at the beginning
+            if (char === '-' && currentText.length === 0) return true;
+            
+            // Block all other characters
+            event.preventDefault();
+            return false;
+        }
+        
+        /**
+         * Handle paste validation for Table2 data cells
+         */
+        function handleTable2Paste(event) {
+            event.preventDefault();
+            const paste = (event.clipboardData || window.clipboardData).getData('text');
+            
+            // Validate the pasted content
+            const validNumberPattern = /^-?\d*\.?\d*$/;
+            if (validNumberPattern.test(paste)) {
+                // Check for multiple decimal points
+                const decimalCount = (paste.match(/\./g) || []).length;
+                if (decimalCount <= 1) {
+                    event.target.textContent = paste;
+                    handleTable2Change();
+                }
+            }
+        }
+        
+        /**
+         * Handle vertical tab navigation for Table1 inputs
+         */
+        function handleVerticalTabNavigation(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                
+                const table1 = document.getElementById('Table1');
+                const currentInput = event.target;
+                const currentCell = currentInput.closest('td');
+                const currentRow = currentCell.closest('tr');
+                const currentColIndex = Array.from(currentRow.children).indexOf(currentCell);
+                
+                let nextInput;
+                
+                if (event.shiftKey) {
+                    // Shift+Tab: Move up, skip rows with span cells
+                    let searchRow = currentRow.previousElementSibling;
+                    while (searchRow) {
+                        const targetCell = searchRow.children[currentColIndex];
+                        if (targetCell && targetCell.querySelector('input')) {
+                            nextInput = targetCell.querySelector('input');
+                            break;
+                        }
+                        searchRow = searchRow.previousElementSibling;
+                    }
+                    
+                    if (!nextInput) {
+                        // Go to last input row, previous column
+                        const tbody = currentRow.parentNode;
+                        if (currentColIndex > 1) {
+                            for (let colIdx = currentColIndex - 1; colIdx >= 1; colIdx--) {
+                                let searchRow = tbody.lastElementChild;
+                                while (searchRow) {
+                                    const targetCell = searchRow.children[colIdx];
+                                    if (targetCell && targetCell.querySelector('input')) {
+                                        nextInput = targetCell.querySelector('input');
+                                        break;
+                                    }
+                                    searchRow = searchRow.previousElementSibling;
+                                }
+                                if (nextInput) break;
+                            }
+                        }
+                    }
+                } else {
+                    // Tab: Move down, skip rows with span cells
+                    let searchRow = currentRow.nextElementSibling;
+                    while (searchRow) {
+                        const targetCell = searchRow.children[currentColIndex];
+                        if (targetCell && targetCell.querySelector('input')) {
+                            nextInput = targetCell.querySelector('input');
+                            break;
+                        }
+                        searchRow = searchRow.nextElementSibling;
+                    }
+                    
+                    if (!nextInput) {
+                        // Go to first input row, next column
+                        const tbody = currentRow.parentNode;
+                        if (currentColIndex < currentRow.children.length - 1) {
+                            for (let colIdx = currentColIndex + 1; colIdx < currentRow.children.length; colIdx++) {
+                                let searchRow = tbody.firstElementChild;
+                                while (searchRow) {
+                                    const targetCell = searchRow.children[colIdx];
+                                    if (targetCell && targetCell.querySelector('input')) {
+                                        nextInput = targetCell.querySelector('input');
+                                        break;
+                                    }
+                                    searchRow = searchRow.nextElementSibling;
+                                }
+                                if (nextInput) break;
+                            }
+                        }
+                    }
+                }
+                
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select();
+                }
+            }
+        }
+        
+        /**
+         * Handle vertical tab navigation for Table2 editable cells
+         */
+        function handleVerticalTabNavigationTable2(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                
+                const table2 = document.getElementById('Table2');
+                const currentCell = event.target;
+                const currentRow = currentCell.closest('tr');
+                const currentColIndex = Array.from(currentRow.children).indexOf(currentCell);
+                
+                let nextCell;
+                
+                if (event.shiftKey) {
+                    // Shift+Tab: Move up
+                    const prevRow = currentRow.previousElementSibling;
+                    if (prevRow && prevRow.children[currentColIndex] && prevRow.children[currentColIndex].contentEditable === 'true') {
+                        nextCell = prevRow.children[currentColIndex];
+                    } else {
+                        // Go to last row, previous column
+                        const tbody = currentRow.parentNode;
+                        const lastRow = tbody.lastElementChild;
+                        if (currentColIndex > 1 && lastRow.children[currentColIndex - 1] && lastRow.children[currentColIndex - 1].contentEditable === 'true') {
+                            nextCell = lastRow.children[currentColIndex - 1];
+                        }
+                    }
+                } else {
+                    // Tab: Move down
+                    const nextRow = currentRow.nextElementSibling;
+                    if (nextRow && nextRow.children[currentColIndex] && nextRow.children[currentColIndex].contentEditable === 'true') {
+                        nextCell = nextRow.children[currentColIndex];
+                    } else {
+                        // Go to first row, next column
+                        const tbody = currentRow.parentNode;
+                        const firstRow = tbody.firstElementChild;
+                        if (currentColIndex < currentRow.children.length - 2 && firstRow.children[currentColIndex + 1] && firstRow.children[currentColIndex + 1].contentEditable === 'true') { // -2 to exclude total column
+                            nextCell = firstRow.children[currentColIndex + 1];
+                        }
+                    }
+                }
+                
+                if (nextCell) {
+                    nextCell.focus();
+                    // Select all text in contenteditable cell
+                    const range = document.createRange();
+                    range.selectNodeContents(nextCell);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }
+        
+        /**
+         * Handle Table2 changes and trigger dynamic linking if enabled
+         */
+        function handleTable2Change() {
+            // Update Table2 totals first
+            updateTotal();
+            
+            // Check if dynamic linking is enabled
+            const linkToggle = document.getElementById('linkToMainTable');
+            if (linkToggle && linkToggle.checked) {
+                // Copy totals to Table1 with small delay
+                setTimeout(() => {
+                    copyCoalAvailabilityToFirstTable();
+                }, 100);
+            }
+        }
+        
+        // ==========================================================================
+        // CLEAR FUNCTIONS
+        // ==========================================================================
+        
+        /**
+         * Clear all values in Table1
+         */
+        function clearValuesInTable1() {
+            const table1 = document.getElementById('Table1');
+            const inputCells = table1.querySelectorAll('input');
+            inputCells.forEach(input => {
+                input.value = '';
+            });
+            recalculateAllColumns();
+        }
+        
+        /**
+         * Clear all values in Table2
+         */
+        function clearValuesInTable2() {
+            const table2 = document.getElementById('Table2');
+            const editableCells = table2.querySelectorAll('tbody td[contenteditable="true"]:not(:first-child)');
+            editableCells.forEach(cell => {
+                cell.textContent = '';
+            });
+            updateTotal();
+        }
+        
+        // ==========================================================================
+        // STOCK WARNING SYSTEM
+        // ==========================================================================
+        
+        /**
+         * Check for negative closing stock and display warnings
+         */
+        /**
+         * Check for negative closing stock and show enhanced warnings with coal requirements
+         */
+        function checkForNegativeClosingStock() {
+            if (monthColumns.length === 0) return;
+            
+            const table1 = document.getElementById('Table1');
+            if (!table1) return;
+            
+            const rows = table1.querySelectorAll('tbody tr');
+            if (rows.length < 8) return;
+            
+            let warnings = [];
+            let negativeMonths = [];
+            const daysToMaintainStock = parseInt(document.getElementById('daysToMaintainStock')?.value) || 10;
+            
+            // Check each month for negative or low stock
+            for (let colIndex = 0; colIndex < monthColumns.length; colIndex++) {
+                const closingStockCell = rows[7].children[colIndex + 1];
+                const closingStockSpan = closingStockCell?.querySelector('span');
+                const closingStock = parseFloat(closingStockSpan?.textContent) || 0;
+                const monthName = monthColumns[colIndex].monthName;
+                
+                // Get monthly consumption for this column from row 4 (Coal Consumption MT/Month)
+                const consumptionCell = rows[4].children[colIndex + 1];
+                const consumptionSpan = consumptionCell?.querySelector('span');
+                const monthlyConsumption = parseFloat(consumptionSpan?.textContent) || 0;
+                
+                // Calculate daily consumption based on days in the month
+                const monthNumber = monthColumns[colIndex].monthNumber;
+                const daysInMonth = new Date(new Date().getFullYear(), monthNumber, 0).getDate();
+                const dailyConsumption = monthlyConsumption / daysInMonth;
+                
+                // Calculate buffer stock requirement for the selected days
+                const bufferStockRequired = dailyConsumption * daysToMaintainStock;
+                
+                if (closingStock < 0) {
+                    const shortfall = Math.abs(closingStock);
+                    negativeMonths.push({
+                        month: monthName,
+                        shortfall: shortfall,
+                        coalNeeded: shortfall + bufferStockRequired,
+                        bufferRequired: bufferStockRequired,
+                        dailyConsumption: dailyConsumption
+                    });
+                } else if (closingStock < bufferStockRequired && daysToMaintainStock > 0 && dailyConsumption > 0) {
+                    const additionalCoalNeeded = bufferStockRequired - closingStock;
+                    warnings.push(`
+                        <div class="warning-item buffer-warning">
+                            <strong>⚠️ Low Buffer Stock Warning - ${monthName}:</strong><br>
+                            Current Closing Stock: ${closingStock.toLocaleString()} MT<br>
+                            Daily Consumption: ${dailyConsumption.toLocaleString()} MT/day<br>
+                            Buffer Stock Required (${daysToMaintainStock} days): ${bufferStockRequired.toLocaleString()} MT<br>
+                            <strong>Additional Coal Needed: ${additionalCoalNeeded.toLocaleString()} MT</strong>
+                        </div>
+                    `);
+                }
+            }
+            
+            // Add critical negative stock warnings
+            negativeMonths.forEach(month => {
+                warnings.unshift(`
+                    <div class="warning-item critical-warning">
+                        <strong>🚨 CRITICAL STOCK-OUT ALERT - ${month.month}:</strong><br>
+                        Closing Stock: <span style="color: red; font-weight: bold;">-${month.shortfall.toLocaleString()} MT</span><br>
+                        Daily Consumption: ${month.dailyConsumption.toLocaleString()} MT/day<br>
+                        Coal Required to Avoid Stock-out: <strong>${month.shortfall.toLocaleString()} MT</strong><br>
+                        ${month.bufferRequired > 0 ? 
+                            `Additional Coal for Buffer Stock (${daysToMaintainStock} days): <strong>${month.bufferRequired.toLocaleString()} MT</strong><br>
+                            <span style="color: #d32f2f; font-weight: bold;">Total Coal Needed: ${month.coalNeeded.toLocaleString()} MT</span>` : ''}
+                    </div>
+                `);
+            });
+            
+            // Show summary if multiple issues
+            if (warnings.length > 1) {
+                const totalAdditionalCoal = negativeMonths.reduce((sum, month) => sum + month.coalNeeded, 0);
+                warnings.unshift(`
+                    <div class="warning-item summary-warning">
+                        <strong>📊 SUMMARY:</strong><br>
+                        Months with Stock Issues: ${warnings.length}<br>
+                        ${totalAdditionalCoal > 0 ? `<strong>Total Additional Coal Required: ${totalAdditionalCoal.toLocaleString()} MT</strong>` : ''}
+                    </div>
+                `);
+            }
+            
+            // Display warnings in side menu
+            updateWarningSystem(warnings);
+        }
+        
+        /**
+         * Update the floating warning system
+         */
+        function updateWarningSystem(warnings) {
+            const warningIcon = document.getElementById('warningFloatIcon');
+            const warningBadge = document.getElementById('warningBadge');
+            const warningMenuContent = document.getElementById('warningMenuContent');
+            
+            if (warnings.length > 0) {
+                // Show warning state
+                warningIcon.classList.add('has-warnings');
+                warningBadge.style.display = 'flex';
+                warningBadge.textContent = warnings.length;
+                
+                // Update menu content
+                warningMenuContent.innerHTML = `
+                    <div class="warnings-panel" style="border: none; padding: 0; box-shadow: none;">
+                        ${warnings.join('')}
+                        <div class="warning-note" style="margin-top: 15px;">
+                            <strong>💡 Tip:</strong> Increase coal sources in Table 2 or adjust consumption parameters to resolve these warnings.
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Show normal state
+                warningIcon.classList.remove('has-warnings');
+                warningBadge.style.display = 'none';
+                
+                // Show no warnings message
+                warningMenuContent.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-check-circle fa-3x mb-3" style="color: #28a745;"></i>
+                        <h5 style="color: #28a745;">All Good!</h5>
+                        <p>No warnings currently</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ==========================================================================
+        // INITIALIZATION
+        // ==========================================================================
+        
+        /**
+         * Copy values from current month to next months (for Table2 autofill)
+         * This copies values horizontally across months for the same source
+         */
+        function copyValuesToNextMonths(input) {
+            const currentRow = input.closest('tr');
+            const currentValue = input.textContent;
+            const currentCellIndex = Array.from(currentRow.children).indexOf(input);
+            
+            // Only copy if it's not the source name cell (first column) or total cell (last column)
+            if (currentCellIndex === 0 || input.classList.contains('source-total')) {
+                return;
+            }
+
+            // Copy value to NEXT month columns in the SAME row (same source)
+            const row = currentRow;
+            const totalCellIndex = row.children.length - 1; // Last cell is total
+            
+            // Copy to all subsequent months (from current+1 to before total)
+            for (let i = currentCellIndex + 1; i < totalCellIndex; i++) {
+                const nextCell = row.children[i];
+                if (nextCell && !nextCell.classList.contains('source-total')) {
+                    nextCell.textContent = currentValue;
+                }
+            }
+            
+            // Update totals after copying values
+            updateTotal();
+        }
+
+        /**
+         * Remove the function that copies values between sources (not needed anymore)
+         * Sources should always be manually entered by user
+         */
+
+        /**
+         * Remove autofill functionality for new sources
+         * Each source should be manually entered by user
+         */
+        function copyQuantityFromPreviousRow() {
+            // This function is now disabled - sources should not auto-copy
+            // Each source should have unique values entered manually by user
+            return;
+        }
+
+        /**
+         * Initialize tables with default structure
+         */
+        function initializeTables() {
+            addCoalColumn(); // Add first month only
+            addNewSource(); // Add first source row to Table2
+            addEventListenersToTable1();
+            addEventListenersToTable2(); // Add vertical tab navigation for Table2
+        }
+        
+        /**
+         * Main initialization when DOM is loaded
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tables
+            initializeTables();
+            
+            // Event Listeners for Controls
+            document.getElementById('addRowBtn').addEventListener('click', addCoalColumn);
+            document.getElementById('addSourceBtn').addEventListener('click', addNewSource);
+            
+            // Clear buttons
+            document.getElementById('clearValuesBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all values in Table1?')) {
+                    clearValuesInTable1();
+                }
+            });
+            
+            document.getElementById('clearSourceValuesBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all values in Table2?')) {
+                    clearValuesInTable2();
+                }
+            });
+            
+            // Copy totals button
+            document.getElementById('copyTotalsButton').addEventListener('click', () => {
+                copyCoalAvailabilityToFirstTable();
+            });
+            
+            // Days to maintain stock
+            document.getElementById('daysToMaintainStock').addEventListener('input', () => {
+                checkForNegativeClosingStock();
+            });
+            
+            // Table2 event listeners for dynamic linking
+            const coalSourcesTable = document.getElementById('coalSourcesTableBody');
+            
+            // Single consolidated event listener for Table2 changes
+            coalSourcesTable.addEventListener('input', function(event) {
+                // Only apply number restriction to data cells, not source name cells
+                const cell = event.target;
+                const row = cell.closest('tr');
+                const cellIndex = Array.from(row.children).indexOf(cell);
+                const isSourceNameCell = cellIndex === 0; // First column is source names
+                
+                if (!isSourceNameCell && !cell.classList.contains('source-total')) {
+                    restrictToNumbers(event); // Validate input only for data cells
+                }
+                
+                // Check if autofill is enabled and copy values to next months (same source)
+                const copyQuantityCheckbox = document.getElementById('copyQuantityCheckbox');
+                if (copyQuantityCheckbox && copyQuantityCheckbox.checked && !isSourceNameCell) {
+                    copyValuesToNextMonths(cell); // Copy to next months in same row
+                } else {
+                    handleTable2Change(); // Handle dynamic linking for all cells
+                }
+            });
+            
+            coalSourcesTable.addEventListener('paste', function(event) {
+                setTimeout(() => {
+                    handleTable2Change(); // Handle after paste
+                }, 50);
+            });
+            
+            // PLF validation (max 100%)
+            document.addEventListener('input', function(e) {
+                if (e.target.matches('#Table1 tbody tr:nth-child(2) input')) {
+                    const plfValue = parseFloat(e.target.value);
+                    if (plfValue > 100) {
+                        e.target.value = 100;
+                        alert('PLF cannot exceed 100%');
+                    }
+                }
+            });
+            
+            // Auto-fill functionality for Table1 - Enhanced Mobile Support
+            document.getElementById('copyValuesCheckbox').addEventListener('change', function() {
+                // Toggle active checkbox styling
+                toggleActiveCheckbox('copyValuesCheckbox');
+                
+                if (this.checked && monthColumns.length > 1) {
+                    // Copy values from first column to subsequent columns
+                    const table1 = document.getElementById('Table1');
+                    const inputRows = [0, 1, 3, 5]; // Rows with input fields
+                    
+                    inputRows.forEach(rowIndex => {
+                        const row = table1.querySelectorAll('tbody tr')[rowIndex];
+                        const firstInput = row.children[1].querySelector('input');
+                        if (firstInput && firstInput.value !== '') {
+                            copyValueToSubsequentColumns(rowIndex, 0, firstInput.value);
+                        }
+                    });
+                }
+            });
+
+            // Add mobile touch support
+            document.getElementById('copyValuesCheckbox').addEventListener('touchend', function() {
+                setTimeout(() => toggleActiveCheckbox('copyValuesCheckbox'), 50);
+            });
+            
+            // Auto-copy functionality for Table2 - Enhanced Mobile Support
+            document.getElementById('copyQuantityCheckbox').addEventListener('change', function() {
+                // Toggle active checkbox styling
+                toggleActiveCheckbox('copyQuantityCheckbox');
+            });
+
+            // Add mobile touch support
+            document.getElementById('copyQuantityCheckbox').addEventListener('touchend', function() {
+                setTimeout(() => toggleActiveCheckbox('copyQuantityCheckbox'), 50);
+            });
+            
+            // Auto-link functionality for Table2 - Enhanced Mobile Support
+            document.getElementById('linkToMainTable').addEventListener('change', function() {
+                // Toggle active checkbox styling
+                toggleActiveCheckbox('linkToMainTable');
+            });
+
+            // Add mobile touch support
+            document.getElementById('linkToMainTable').addEventListener('touchend', function() {
+                setTimeout(() => toggleActiveCheckbox('linkToMainTable'), 50);
+            });
+            
+            // Enhanced Function to toggle active checkbox styling - Persistent Mobile Compatible
+            function toggleActiveCheckbox(checkboxId) {
+                const checkbox = document.getElementById(checkboxId);
+                if (!checkbox) return;
+                
+                const container = checkbox.closest('.form-check.form-switch');
+                if (!container) return;
+                
+                // Force a small delay to ensure the checkbox state is updated
+                setTimeout(() => {
+                    if (checkbox.checked) {
+                        container.classList.add('active-checkbox');
+                        container.setAttribute('data-active', 'true');
+                        // Force persistent mobile styling update
+                        applyActiveStyle(container);
+                    } else {
+                        container.classList.remove('active-checkbox');
+                        container.removeAttribute('data-active');
+                        // Reset to default styling
+                        resetActiveStyle(container);
+                    }
+                    
+                    // Force a repaint for mobile browsers - Multiple methods
+                    container.style.display = 'none';
+                    container.offsetHeight; // Trigger reflow
+                    container.style.display = 'flex';
+                    
+                    // Additional force update for mobile
+                    if (window.innerWidth <= 768) {
+                        container.style.transform = 'translateZ(0)';
+                        setTimeout(() => {
+                            container.style.transform = '';
+                        }, 100);
+                    }
+                }, 10);
+            }
+
+            // Function to apply persistent active styling
+            function applyActiveStyle(container) {
+                container.style.backgroundColor = '#28a745 !important';
+                container.style.borderColor = '#1e7e34 !important';
+                container.style.borderRadius = '8px !important';
+                container.style.border = '2px solid #1e7e34 !important';
+                container.style.boxShadow = '0 2px 4px rgba(40, 167, 69, 0.3) !important';
+                container.style.setProperty('background-color', '#28a745', 'important');
+                container.style.setProperty('border-color', '#1e7e34', 'important');
+            }
+
+            // Function to reset active styling
+            function resetActiveStyle(container) {
+                container.style.backgroundColor = '';
+                container.style.borderColor = '';
+                container.style.borderRadius = '';
+                container.style.border = '';
+                container.style.boxShadow = '';
+                container.style.removeProperty('background-color');
+                container.style.removeProperty('border-color');
+            }
+
+            // Add persistent styling maintenance function
+            function maintainActiveStyles() {
+                const activeContainers = document.querySelectorAll('[data-active="true"]');
+                activeContainers.forEach(container => {
+                    if (container.classList.contains('active-checkbox')) {
+                        applyActiveStyle(container);
+                    }
+                });
+            }
+
+            // Monitor for style changes and maintain active styling
+            setInterval(maintainActiveStyles, 500);
+
+            // Add focus/blur event prevention
+            document.addEventListener('focusin', function(e) {
+                if (e.target.closest('.form-check.form-switch[data-active="true"]')) {
+                    const container = e.target.closest('.form-check.form-switch');
+                    setTimeout(() => applyActiveStyle(container), 10);
+                }
+            });
+
+            document.addEventListener('focusout', function(e) {
+                if (e.target.closest('.form-check.form-switch[data-active="true"]')) {
+                    const container = e.target.closest('.form-check.form-switch');
+                    setTimeout(() => applyActiveStyle(container), 10);
+                }
+            });
+
+            // Add click outside prevention
+            document.addEventListener('click', function(e) {
+                // Maintain active styling for all active checkboxes regardless of where user clicks
+                setTimeout(maintainActiveStyles, 10);
+            });
+            
+            // Enhanced initialize active states on page load - Mobile Compatible
+            function initializeActiveStates() {
+                const checkboxes = ['copyValuesCheckbox', 'copyQuantityCheckbox', 'linkToMainTable'];
+                
+                // Add a delay to ensure DOM is fully loaded
+                setTimeout(() => {
+                    checkboxes.forEach(checkboxId => {
+                        const checkbox = document.getElementById(checkboxId);
+                        if (checkbox) {
+                            // Add additional event listeners for mobile compatibility
+                            checkbox.addEventListener('click', function() {
+                                setTimeout(() => toggleActiveCheckbox(checkboxId), 50);
+                            });
+                            
+                            checkbox.addEventListener('touchstart', function() {
+                                setTimeout(() => toggleActiveCheckbox(checkboxId), 100);
+                            });
+                            
+                            // Initialize current state
+                            if (checkbox.checked) {
+                                toggleActiveCheckbox(checkboxId);
+                            }
+                        }
+                    });
+                }, 100);
+            }
+            
+            // Initialize active states with mobile support
+            initializeActiveStates();
+            
+            // Add a window load event for extra mobile compatibility
+            window.addEventListener('load', function() {
+                setTimeout(initializeActiveStates, 200);
+            });
+            
+            // Initial calculations
+            updateTotals();
+            updateTotal();
+            checkForNegativeClosingStock();
+        });
+        
+        // ==========================================================================
+        // POWER PLANT NAME FUNCTIONALITY
+        // ==========================================================================
+        
+        /**
+         * Update power plant name displays when input changes
+         */
+        function updatePowerPlantNameDisplays() {
+            const powerPlantInput = document.getElementById('powerPlantName');
+            const plantNameDisplay1 = document.getElementById('plantNameDisplay1');
+            const plantNameDisplay2 = document.getElementById('plantNameDisplay2');
+            
+            const plantName = powerPlantInput.value.trim();
+            const displayName = plantName || '____';
+            
+            plantNameDisplay1.textContent = displayName;
+            plantNameDisplay2.textContent = displayName;
+        }
+        
+        // Add event listener for power plant name input
+        document.addEventListener('DOMContentLoaded', function() {
+            const powerPlantInput = document.getElementById('powerPlantName');
+            if (powerPlantInput) {
+                powerPlantInput.addEventListener('input', updatePowerPlantNameDisplays);
+                powerPlantInput.addEventListener('blur', updatePowerPlantNameDisplays);
+                powerPlantInput.addEventListener('keyup', updatePowerPlantNameDisplays);
+            }
+            
+            // Warning system event listeners
+            const warningIcon = document.getElementById('warningFloatIcon');
+            const warningSideMenu = document.getElementById('warningSideMenu');
+            const warningCloseBtn = document.getElementById('warningCloseBtn');
+            
+            // Open warning menu - support both click and touch
+            function openWarningMenu(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Opening warning menu'); // Debug log
+                warningSideMenu.classList.add('open');
+                // Ensure button remains interactive
+                warningIcon.style.pointerEvents = 'auto';
+            }
+            
+            // Enhanced event listeners for mobile compatibility
+            if (warningIcon) {
+                warningIcon.addEventListener('click', openWarningMenu, { passive: false });
+                warningIcon.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    console.log('Touch start on warning icon'); // Debug log
+                }, { passive: false });
+                warningIcon.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Touch end - opening warning menu'); // Debug log
+                    warningSideMenu.classList.add('open');
+                }, { passive: false });
+            }
+            
+            // Close warning menu
+            function closeWarningMenu(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Closing warning menu'); // Debug log
+                warningSideMenu.classList.remove('open');
+            }
+            
+            if (warningCloseBtn) {
+                warningCloseBtn.addEventListener('click', closeWarningMenu);
+                warningCloseBtn.addEventListener('touchend', closeWarningMenu);
+            }
+            
+            // Export system event listeners
+            const exportIcon = document.getElementById('exportFloatIcon');
+            const exportMenu = document.getElementById('exportMenu');
+            const exportCloseBtn = document.getElementById('exportCloseBtn');
+            
+            // Open export menu
+            function openExportMenu(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Opening export menu'); // Debug log
+                exportMenu.classList.add('open');
+            }
+            
+            // Enhanced event listeners for mobile compatibility
+            if (exportIcon) {
+                exportIcon.addEventListener('click', openExportMenu, { passive: false });
+                exportIcon.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    console.log('Touch start on export icon'); // Debug log
+                }, { passive: false });
+                exportIcon.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Touch end - opening export menu'); // Debug log
+                    exportMenu.classList.add('open');
+                }, { passive: false });
+            }
+            
+            // Close export menu
+            function closeExportMenu(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Closing export menu'); // Debug log
+                exportMenu.classList.remove('open');
+            }
+            
+            if (exportCloseBtn) {
+                exportCloseBtn.addEventListener('click', closeExportMenu);
+                exportCloseBtn.addEventListener('touchend', closeExportMenu);
+            }
+            
+            // Close warning menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!warningSideMenu.contains(event.target) && !warningIcon.contains(event.target)) {
+                    warningSideMenu.classList.remove('open');
+                }
+                if (!exportMenu.contains(event.target) && !exportIcon.contains(event.target)) {
+                    exportMenu.classList.remove('open');
+                }
+            });
+            
+            // Close warning menu when touching outside (mobile)
+            document.addEventListener('touchend', function(event) {
+                if (!warningSideMenu.contains(event.target) && !warningIcon.contains(event.target)) {
+                    warningSideMenu.classList.remove('open');
+                }
+                if (!exportMenu.contains(event.target) && !exportIcon.contains(event.target)) {
+                    exportMenu.classList.remove('open');
+                }
+            });
+            
+            // Close warning menu with escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    warningSideMenu.classList.remove('open');
+                    exportMenu.classList.remove('open');
+                }
+            });
+        });
+        
+        // ==========================================================================
+        // EXPORT FUNCTIONALITY
+        // ==========================================================================
+        
+        /**
+         * Show export progress
+         */
+        function showExportProgress(message = 'Processing...') {
+            const progress = document.getElementById('exportProgress');
+            const progressText = document.getElementById('exportProgressText');
+            progressText.textContent = message;
+            progress.style.display = 'block';
+        }
+        
+        /**
+         * Hide export progress
+         */
+        function hideExportProgress() {
+            const progress = document.getElementById('exportProgress');
+            progress.style.display = 'none';
+        }
+        
+        /**
+         * Extract table data from HTML table
+         */
+        function extractTableData(tableElement) {
+            const data = [];
+            
+            // Extract headers
+            const headers = [];
+            const headerCells = tableElement.querySelectorAll('thead th');
+            headerCells.forEach(cell => {
+                // For month headers, get the actual text content or selected option
+                const select = cell.querySelector('select');
+                if (select) {
+                    headers.push(select.options[select.selectedIndex]?.text || cell.textContent.trim());
+                } else {
+                    let headerText = cell.textContent.trim();
+                    // Remove the × symbol from headers
+                    headerText = headerText.replace(/×/g, '').trim();
+                    headers.push(headerText);
+                }
+            });
+            
+            // Extract body rows
+            const bodyRows = [];
+            const rows = tableElement.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const rowData = [];
+                const cells = row.querySelectorAll('td');
+                cells.forEach(cell => {
+                    // Get text content, handling input fields and spans
+                    let cellValue = '';
+                    const input = cell.querySelector('input');
+                    const span = cell.querySelector('span');
+                    const select = cell.querySelector('select');
+                    
+                    if (input) {
+                        cellValue = input.value || '0';
+                    } else if (span) {
+                        cellValue = span.textContent.trim();
+                    } else if (select) {
+                        cellValue = select.options[select.selectedIndex]?.text || '';
+                    } else {
+                        cellValue = cell.textContent.trim();
+                    }
+                    
+                    // Try to convert to number for calculations
+                    const numValue = parseFloat(cellValue);
+                    if (!isNaN(numValue) && cellValue !== '' && !cellValue.includes('%') && !cellValue.includes('MW') && !cellValue.includes('MU') && !cellValue.includes('MT') && !cellValue.includes('kg/kWh')) {
+                        rowData.push(numValue);
+                    } else {
+                        rowData.push(cellValue);
+                    }
+                });
+                bodyRows.push(rowData);
+            });
+            
+            // Extract footer rows if they exist
+            const footerRows = [];
+            const footers = tableElement.querySelectorAll('tfoot tr');
+            footers.forEach(row => {
+                const rowData = [];
+                const cells = row.querySelectorAll('td');
+                cells.forEach(cell => {
+                    const cellValue = cell.textContent.trim();
+                    const numValue = parseFloat(cellValue);
+                    if (!isNaN(numValue) && cellValue !== '') {
+                        rowData.push(numValue);
+                    } else {
+                        rowData.push(cellValue);
+                    }
+                });
+                footerRows.push(rowData);
+            });
+            
+            return { headers, bodyRows, footerRows };
+        }
+        
+        /**
+         * Create professional HTML table for export
+         */
+        function createProfessionalTable(tableData, title, tableId) {
+            const { headers, bodyRows, footerRows } = tableData;
+            
+            // Generate dynamic title based on table ID
+            let dynamicTitle = title;
+            if (tableId === 'table1') {
+                const powerPlantName = document.getElementById('powerPlantName').value || 'Power Plant';
+                // Get first and last month from headers (excluding first header which is parameter name)
+                const monthHeaders = headers.slice(1, -1); // Remove first (parameter) and last (total) columns
+                if (monthHeaders.length > 0) {
+                    const startMonth = monthHeaders[0];
+                    const endMonth = monthHeaders[monthHeaders.length - 1];
+                    dynamicTitle = `Coal Scenario at ${powerPlantName} during ${startMonth} to ${endMonth}`;
+                }
+            } else if (tableId === 'table2') {
+                dynamicTitle = 'Coal Available from Different Sources';
+            }
+            
+            let tableHTML = `
+                <div style="margin-bottom: 25px; page-break-inside: avoid;">
+                    <h3 style="
+                        color: #2c3e50; 
+                        margin-bottom: 15px; 
+                        font-size: 16px; 
+                        font-weight: 600; 
+                        border-bottom: 2px solid #3498db; 
+                        padding-bottom: 5px;
+                        text-align: center;
+                    ">${dynamicTitle}</h3>
+                    <table style="
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 0 auto;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        font-size: 9px;
+                        box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+                        border-radius: 4px;
+                        overflow: hidden;
+                    ">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            `;
+            
+            // Add headers
+            headers.forEach((header, index) => {
+                const isFirstColumn = index === 0;
+                const isLastColumn = index === headers.length - 1;
+                tableHTML += `
+                    <th style="
+                        padding: 8px 4px;
+                        text-align: ${isFirstColumn ? 'left' : 'center'};
+                        font-weight: 600;
+                        font-size: 10px;
+                        border: 1px solid rgba(255,255,255,0.2);
+                        ${isFirstColumn ? 'min-width: 120px; padding-left: 8px;' : 'min-width: 60px;'}
+                        ${isLastColumn ? 'background-color: rgba(255,255,255,0.1);' : ''}
+                    ">${header}</th>
+                `;
+            });
+            
+            tableHTML += `
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add body rows
+            bodyRows.forEach((row, rowIndex) => {
+                const isEvenRow = rowIndex % 2 === 0;
+                tableHTML += `<tr style="background-color: ${isEvenRow ? '#f8f9fa' : '#ffffff'};">`;
+                
+                row.forEach((cell, cellIndex) => {
+                    const isFirstColumn = cellIndex === 0;
+                    const isLastColumn = cellIndex === row.length - 1;
+                    const isNumeric = typeof cell === 'number';
+                    const rowLabel = row[0]; // First column is the parameter name
+                    
+                    // Format numeric values based on parameter type
+                    let displayValue = cell;
+                    let cellColor = '#495057';
+                    
+                    if (isNumeric && cell !== 0) {
+                        // Check parameter type for specific formatting
+                        if (rowLabel && rowLabel.toLowerCase().includes('generation') && rowLabel.toLowerCase().includes('capacity')) {
+                            displayValue = cell.toString(); // No formatting for generation capacity
+                        } else if (rowLabel && (rowLabel.toLowerCase().includes('specific') && rowLabel.toLowerCase().includes('coal') && rowLabel.toLowerCase().includes('consumption')) || rowLabel.toLowerCase().includes('scc')) {
+                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }); // 3 decimal places for SCC
+                        } else if (rowLabel && rowLabel.toLowerCase().includes('stock') && cell < 0) {
+                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            cellColor = '#dc3545'; // Red color for negative stock
+                        } else {
+                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // 2 decimal places for all other values
+                        }
+                    }
+                    
+                    tableHTML += `
+                        <td style="
+                            padding: 6px 4px;
+                            border: 1px solid #dee2e6;
+                            text-align: ${isFirstColumn ? 'left' : 'center'};
+                            font-weight: ${isFirstColumn ? '600' : '400'};
+                            color: ${isFirstColumn ? '#2c3e50' : cellColor};
+                            font-size: 9px;
+                            ${isFirstColumn ? 'padding-left: 8px;' : ''}
+                            ${isLastColumn ? 'background-color: #e8f4f8; font-weight: 600;' : ''}
+                            ${isNumeric && !isFirstColumn ? 'font-family: monospace;' : ''}
+                        ">${displayValue}</td>
+                    `;
+                });
+                
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody>';
+            
+            // Add footer if exists
+            if (footerRows.length > 0) {
+                tableHTML += '<tfoot>';
+                footerRows.forEach(row => {
+                    tableHTML += `<tr style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); font-weight: bold; color: #2d3436;">`;
+                    row.forEach((cell, cellIndex) => {
+                        const isFirstColumn = cellIndex === 0;
+                        const isNumeric = typeof cell === 'number';
+                        
+                        let displayValue = cell;
+                        if (isNumeric && cell !== 0) {
+                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        }
+                        
+                        tableHTML += `
+                            <td style="
+                                padding: 8px 4px;
+                                border: 1px solid #ddd;
+                                text-align: ${isFirstColumn ? 'left' : 'center'};
+                                font-weight: bold;
+                                font-size: 10px;
+                                ${isFirstColumn ? 'padding-left: 8px;' : ''}
+                            ">${displayValue}</td>
+                        `;
+                    });
+                    tableHTML += '</tr>';
+                });
+                tableHTML += '</tfoot>';
+            }
+            
+            tableHTML += `
+                    </table>
+                </div>
+            `;
+            
+            return tableHTML;
+        }
+        
+        /**
+         * Extract current warning cards for export
+         */
+        function extractWarningCards() {
+            // Trigger the warning check to get current warnings
+            checkForNegativeClosingStock();
+            
+            // Get warnings from the warning menu content
+            const warningMenuContent = document.getElementById('warningMenuContent');
+            if (!warningMenuContent) {
+                return '<div style="margin-top: 15px; padding: 8px; background-color: #d4edda; border: 1px solid #28a745; border-radius: 3px; text-align: center;"><h5 style="margin: 0; color: #155724; font-size: 10px;">✅ No Warnings - All Stock Levels are Adequate</h5></div>';
+            }
+            
+            const warningsPanel = warningMenuContent.querySelector('.warnings-panel');
+            if (!warningsPanel) {
+                return '<div style="margin-top: 15px; padding: 8px; background-color: #d4edda; border: 1px solid #28a745; border-radius: 3px; text-align: center;"><h5 style="margin: 0; color: #155724; font-size: 10px;">✅ No Warnings - All Stock Levels are Adequate</h5></div>';
+            }
+            
+            // Extract warning content and convert to export-friendly format
+            const warningItems = warningsPanel.querySelectorAll('.warning-item');
+            if (warningItems.length === 0) {
+                return '<div style="margin-top: 15px; padding: 8px; background-color: #d4edda; border: 1px solid #28a745; border-radius: 3px; text-align: center;"><h5 style="margin: 0; color: #155724; font-size: 10px;">✅ No Warnings - All Stock Levels are Adequate</h5></div>';
+            }
+            
+            let warningHTML = `
+                <div style="margin-top: 15px; padding: 10px; background-color: #f8d7da; border: 1px solid #dc3545; border-radius: 3px;">
+                    <h5 style="margin: 0 0 8px 0; color: #721c24; font-size: 12px; font-weight: bold; text-align: center;">🚨 Stock Warnings & Alerts</h5>
+            `;
+            
+            warningItems.forEach(item => {
+                let content = item.innerHTML;
+                
+                // Convert to compact export-friendly styling
+                if (item.classList.contains('critical-warning')) {
+                    warningHTML += `
+                        <div style="margin-bottom: 6px; padding: 6px; background-color: #f5c6cb; border-left: 3px solid #dc3545; font-size: 8px; line-height: 1.2;">
+                            ${content}
+                        </div>
+                    `;
+                } else if (item.classList.contains('buffer-warning')) {
+                    warningHTML += `
+                        <div style="margin-bottom: 6px; padding: 6px; background-color: #fff3cd; border-left: 3px solid #ffc107; font-size: 8px; line-height: 1.2;">
+                            ${content}
+                        </div>
+                    `;
+                } else if (item.classList.contains('summary-warning')) {
+                    warningHTML += `
+                        <div style="margin-bottom: 6px; padding: 6px; background-color: #d1ecf1; border-left: 3px solid #17a2b8; font-size: 8px; line-height: 1.2; font-weight: bold;">
+                            ${content}
+                        </div>
+                    `;
+                } else {
+                    warningHTML += `
+                        <div style="margin-bottom: 6px; padding: 6px; background-color: #e2e3e5; border-left: 3px solid #6c757d; font-size: 8px; line-height: 1.2;">
+                            ${content}
+                        </div>
+                    `;
+                }
+            });
+            
+            // Add compact tip note
+            const tipNote = warningsPanel.querySelector('.warning-note');
+            if (tipNote) {
+                warningHTML += `
+                    <div style="margin-top: 8px; padding: 6px; background-color: #cce5ff; border-radius: 2px; font-size: 7px; color: #004085; line-height: 1.2;">
+                        ${tipNote.innerHTML}
+                    </div>
+                `;
+            }
+            
+            warningHTML += '</div>';
+            return warningHTML;
+        }
+        
+        /**
+         * Create report footer with generation time
+         */
+        function createReportFooter() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const timeStr = now.toLocaleTimeString('en-US');
+            
+            return `
+                <div style="margin-top: 15px; padding: 8px 0; border-top: 1px solid #dee2e6; text-align: right;">
+                    <p style="margin: 0; font-size: 10px; color: #6c757d; font-style: italic;">
+                        Report Generated: ${dateStr} at ${timeStr}
+                    </p>
+                </div>
+            `;
+        }
+        
+        /**
+         * Create critical warnings section
+         */
+        function createCriticalWarnings(table1Data, table2Data = null) {
+            const { bodyRows } = table1Data;
+            const warnings = [];
+            
+            // Check for critical issues in the data
+            bodyRows.forEach(row => {
+                const parameterName = row[0];
+                if (parameterName && parameterName.toLowerCase().includes('stock')) {
+                    // Check each month for negative stock
+                    for (let i = 1; i < row.length - 1; i++) { // Skip first (parameter) and last (total) columns
+                        const value = row[i];
+                        if (typeof value === 'number' && value < 0) {
+                            warnings.push(`⚠️ Critical: Negative coal stock detected in ${parameterName}`);
+                            break; // Only add one warning per parameter
+                        }
+                    }
+                }
+                
+                if (parameterName && parameterName.toLowerCase().includes('plf')) {
+                    // Check for very low PLF
+                    for (let i = 1; i < row.length - 1; i++) {
+                        const value = row[i];
+                        if (typeof value === 'number' && value < 30) {
+                            warnings.push(`⚠️ Warning: Very low PLF detected in ${parameterName} (${value}%)`);
+                            break;
+                        }
+                    }
+                }
+                
+                if (parameterName && parameterName.toLowerCase().includes('scc')) {
+                    // Check for high SCC
+                    for (let i = 1; i < row.length - 1; i++) {
+                        const value = row[i];
+                        if (typeof value === 'number' && value > 1.2) {
+                            warnings.push(`⚠️ Warning: High SCC detected in ${parameterName} (${value.toFixed(3)} kg/kWh)`);
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            if (warnings.length === 0) {
+                warnings.push('✅ No critical warnings detected');
+            }
+            
+            return `
+                <div style="margin-top: 15px; padding: 8px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 3px;">
+                    <h5 style="margin: 0 0 6px 0; color: #856404; font-size: 10px; font-weight: bold;">Critical Warnings & Alerts</h5>
+                    ${warnings.map(warning => `<p style="margin: 3px 0; color: #856404; font-size: 8px;">${warning}</p>`).join('')}
+                </div>
+            `;
+        }
+        
+        /**
+         * Create professional report header
+         */
+        function createProfessionalHeader() {
+            const powerPlantName = document.getElementById('powerPlantName').value || 'Power Plant';
+            
+            return `
+                <div style="text-align: center; margin-bottom: 15px; padding: 10px 0;">
+                    <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #2c3e50;">
+                        Coal Planning Report - ${powerPlantName}
+                    </h1>
+                </div>
+            `;
+        }
+        
+        /**
+         * Create summary section for report
+         */
+        function createSummarySection(table1Data, table2Data = null) {
+            const { bodyRows } = table1Data;
+            
+            // Calculate key metrics
+            let totalGeneration = 0;
+            let totalCoalRequired = 0;
+            let totalCoalAvailable = 0;
+            let avgPLF = 0;
+            let avgSCC = 0;
+            let finalClosingStock = 0;
+            let avgStockDays = 0;
+            
+            const monthCount = bodyRows[0]?.length - 2 || 0; // Exclude parameter name and total columns
+            
+            if (monthCount > 0) {
+                // Sum up values from the total column (last column)
+                totalGeneration = bodyRows[2]?.[bodyRows[2].length - 1] || 0;  // Units Generated
+                totalCoalRequired = bodyRows[4]?.[bodyRows[4].length - 1] || 0; // Coal Requirement
+                totalCoalAvailable = bodyRows[5]?.[bodyRows[5].length - 1] || 0; // Coal Available
+                avgPLF = bodyRows[1]?.[bodyRows[1].length - 1] || 0; // PLF
+                avgSCC = bodyRows[3]?.[bodyRows[3].length - 1] || 0; // SCC
+                finalClosingStock = bodyRows[7]?.[bodyRows[7].length - 1] || 0; // Closing Stock
+                avgStockDays = bodyRows[8]?.[bodyRows[8].length - 1] || 0; // Stock in Days
+            }
+            
+            return `
+                <div style="margin-bottom: 40px; padding: 25px; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; border-radius: 10px;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 600; text-align: center;">
+                        Executive Summary
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${totalGeneration.toLocaleString()}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Total Generation (MU)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${avgPLF.toFixed(1)}%</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Average PLF</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${totalCoalRequired.toLocaleString()}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Coal Required (MT)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${totalCoalAvailable.toLocaleString()}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Coal Available (MT)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${finalClosingStock.toLocaleString()}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Final Stock (MT)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold;">${avgStockDays.toFixed(1)}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Avg Stock Days</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        /**
+         * Get filename with timestamp if enabled
+         */
+        function getFilename(baseName, extension) {
+            const includeTimestamp = document.getElementById('includeTimestamp').checked;
+            const powerPlantName = document.getElementById('powerPlantName').value || 'Coal_Calculator';
+            const cleanPlantName = powerPlantName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            if (includeTimestamp) {
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
+                return `${cleanPlantName}_${baseName}_${timestamp}.${extension}`;
+            }
+            return `${cleanPlantName}_${baseName}.${extension}`;
+        }
+        
+        /**
+         * Export to PDF with professional tables
+         */
+        async function exportToPDF() {
+            try {
+                showExportProgress('Generating professional PDF report...');
+                
+                const { jsPDF } = window.jspdf;
+                const tableSelection = getSelectedTables();
+                const highQuality = document.getElementById('highQuality').checked;
+                const includeWarnings = document.getElementById('includeWarnings').checked;
+                
+                // Extract table data
+                const table1 = document.getElementById('Table1');
+                const table1Data = extractTableData(table1);
+                
+                let table2Data = null;
+                if (tableSelection === 'both') {
+                    const table2 = document.getElementById('Table2');
+                    table2Data = extractTableData(table2);
+                }
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                // Page 1: Tables Only
+                showExportProgress('Creating page 1 - Tables...');
+                const tablesContainer = document.createElement('div');
+                tablesContainer.style.cssText = `
+                    width: 794px;
+                    background: white;
+                    padding: 10px;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    position: absolute;
+                    top: -20000px;
+                    left: -20000px;
+                    line-height: 1.2;
+                `;
+                
+                // Build tables content for page 1
+                let tablesHTML = createProfessionalHeader();
+                tablesHTML += createProfessionalTable(table1Data, 'Coal Scenario Analysis', 'table1');
+                
+                if (tableSelection === 'both' && table2Data) {
+                    tablesHTML += createProfessionalTable(table2Data, 'Coal Sources Breakdown', 'table2');
+                }
+                
+                tablesHTML += createReportFooter();
+                
+                tablesContainer.innerHTML = tablesHTML;
+                document.body.appendChild(tablesContainer);
+                
+                // Render page 1
+                const tablesCanvas = await html2canvas(tablesContainer, {
+                    scale: highQuality ? 3 : 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: 794,
+                    height: tablesContainer.scrollHeight,
+                    logging: false
+                });
+                
+                document.body.removeChild(tablesContainer);
+                
+                // Add page 1 to PDF
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = pdfWidth - 16; // 8mm margin on each side
+                const tablesImgHeight = (tablesCanvas.height * imgWidth) / tablesCanvas.width;
+                
+                const tablesImgData = tablesCanvas.toDataURL('image/png', 1.0);
+                pdf.addImage(tablesImgData, 'PNG', 8, 8, imgWidth, tablesImgHeight);
+                
+                // Page 2: Warnings (if enabled)
+                if (includeWarnings) {
+                    showExportProgress('Creating page 2 - Warnings...');
+                    
+                    const warningsContainer = document.createElement('div');
+                    warningsContainer.style.cssText = `
+                        width: 794px;
+                        background: white;
+                        padding: 10px;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        position: absolute;
+                        top: -20000px;
+                        left: -20000px;
+                        line-height: 1.2;
+                    `;
+                    
+                    // Build warnings content for page 2
+                    let warningsHTML = `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: #2c3e50; margin: 0; font-size: 18px; font-weight: 600;">
+                                Coal Planning Report - Stock Warnings
+                            </h2>
+                            <p style="color: #7f8c8d; margin: 5px 0 0 0; font-size: 12px;">
+                                Generated on ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN')}
+                            </p>
+                        </div>
+                    `;
+                    warningsHTML += extractWarningCards();
+                    warningsHTML += createReportFooter();
+                    
+                    warningsContainer.innerHTML = warningsHTML;
+                    document.body.appendChild(warningsContainer);
+                    
+                    // Render page 2
+                    const warningsCanvas = await html2canvas(warningsContainer, {
+                        scale: highQuality ? 3 : 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        width: 794,
+                        height: warningsContainer.scrollHeight,
+                        logging: false
+                    });
+                    
+                    document.body.removeChild(warningsContainer);
+                    
+                    // Add page 2 to PDF
+                    pdf.addPage();
+                    const warningsImgHeight = (warningsCanvas.height * imgWidth) / warningsCanvas.width;
+                    const warningsImgData = warningsCanvas.toDataURL('image/png', 1.0);
+                    pdf.addImage(warningsImgData, 'PNG', 8, 8, imgWidth, warningsImgHeight);
+                }
+                
+                const filename = getFilename(tableSelection === 'both' ? 'Coal_Report' : 'Coal_Scenario', 'pdf');
+                pdf.save(filename);
+                
+                hideExportProgress();
+                alert('Professional PDF report generated successfully!' + (includeWarnings ? '\n• Page 1: Tables\n• Page 2: Warnings' : '\n• Single page: Tables only'));
+                
+            } catch (error) {
+                console.error('PDF export error:', error);
+                hideExportProgress();
+                alert('Error generating PDF report. Please try again.');
+            }
+        }
+        
+        /**
+         * Export to JPG with professional tables - Creates separate files
+         */
+        async function exportToJPG() {
+            try {
+                showExportProgress('Generating professional JPG reports...');
+                
+                const tableSelection = getSelectedTables();
+                const highQuality = document.getElementById('highQuality').checked;
+                const includeWarnings = document.getElementById('includeWarnings').checked;
+                
+                // Extract table data
+                const table1 = document.getElementById('Table1');
+                const table1Data = extractTableData(table1);
+                
+                let table2Data = null;
+                if (tableSelection === 'both') {
+                    const table2 = document.getElementById('Table2');
+                    table2Data = extractTableData(table2);
+                }
+                
+                // File 1: Tables
+                showExportProgress('Creating Tables report...');
+                const tablesContainer = document.createElement('div');
+                tablesContainer.style.cssText = `
+                    width: 794px;
+                    height: 1123px;
+                    background: white;
+                    padding: 10px 25px;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    position: absolute;
+                    top: -20000px;
+                    left: -20000px;
+                    line-height: 1.2;
+                    box-sizing: border-box;
+                `;
+                
+                // Build tables content
+                let tablesHTML = createProfessionalHeader();
+                tablesHTML += createProfessionalTable(table1Data, 'Coal Scenario Analysis', 'table1');
+                
+                if (tableSelection === 'both' && table2Data) {
+                    tablesHTML += createProfessionalTable(table2Data, 'Coal Sources Breakdown', 'table2');
+                }
+                
+                tablesHTML += createReportFooter();
+                
+                tablesContainer.innerHTML = tablesHTML;
+                document.body.appendChild(tablesContainer);
+                
+                // Generate tables image
+                const tablesCanvas = await html2canvas(tablesContainer, {
+                    scale: highQuality ? 3 : 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: 794,
+                    height: 1123,
+                    logging: false
+                });
+                
+                document.body.removeChild(tablesContainer);
+                
+                // Download tables file
+                const tablesLink = document.createElement('a');
+                tablesLink.download = getFilename((tableSelection === 'both' ? 'Coal_Report' : 'Coal_Scenario') + '_Tables', 'jpg');
+                tablesLink.href = tablesCanvas.toDataURL('image/jpeg', 0.95);
+                tablesLink.click();
+                
+                let downloadCount = 1;
+                let totalFiles = 1;
+                
+                // File 2: Warnings (if enabled)
+                if (includeWarnings) {
+                    totalFiles = 2;
+                    showExportProgress('Creating Warnings report...');
+                    
+                    const warningsContainer = document.createElement('div');
+                    warningsContainer.style.cssText = `
+                        width: 794px;
+                        height: 1123px;
+                        background: white;
+                        padding: 10px 25px;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        position: absolute;
+                        top: -20000px;
+                        left: -20000px;
+                        line-height: 1.2;
+                        box-sizing: border-box;
+                    `;
+                    
+                    // Build warnings content
+                    let warningsHTML = `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: #2c3e50; margin: 0; font-size: 18px; font-weight: 600;">
+                                Coal Planning Report - Stock Warnings
+                            </h2>
+                            <p style="color: #7f8c8d; margin: 5px 0 0 0; font-size: 12px;">
+                                Generated on ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN')}
+                            </p>
+                        </div>
+                    `;
+                    warningsHTML += extractWarningCards();
+                    warningsHTML += createReportFooter();
+                    
+                    warningsContainer.innerHTML = warningsHTML;
+                    document.body.appendChild(warningsContainer);
+                    
+                    // Generate warnings image
+                    const warningsCanvas = await html2canvas(warningsContainer, {
+                        scale: highQuality ? 3 : 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        width: 794,
+                        height: 1123,
+                        logging: false
+                    });
+                    
+                    document.body.removeChild(warningsContainer);
+                    
+                    // Download warnings file
+                    const warningsLink = document.createElement('a');
+                    warningsLink.download = getFilename((tableSelection === 'both' ? 'Coal_Report' : 'Coal_Scenario') + '_Warnings', 'jpg');
+                    warningsLink.href = warningsCanvas.toDataURL('image/jpeg', 0.95);
+                    warningsLink.click();
+                    
+                    downloadCount = 2;
+                }
+                
+                hideExportProgress();
+                alert(`Professional JPG reports generated successfully!\n• ${downloadCount} file${downloadCount > 1 ? 's' : ''} downloaded:\n  - Tables report\n${includeWarnings ? '  - Warnings report' : ''}`);
+                
+            } catch (error) {
+                console.error('JPG export error:', error);
+                hideExportProgress();
+                alert('Error generating JPG reports. Please try again.');
+            }
+        }
+        
+        /**
+         * Get selected tables for export
+         */
+        function getSelectedTables() {
+            const tableSelection = document.querySelector('input[name="tableSelection"]:checked').value;
+            return tableSelection;
+        }
+        
+        /**
+         * Enhanced Export to Excel with professional formatting
+         */
+        function exportToExcel() {
+            try {
+                showExportProgress('Generating professional Excel workbook...');
+                
+                const tableSelection = getSelectedTables();
+                const powerPlantName = document.getElementById('powerPlantName').value || 'Power Plant';
+                
+                // Create new workbook
+                const wb = XLSX.utils.book_new();
+                
+                // Helper function to convert table data to worksheet with professional formatting
+                function tableDataToWorksheet(tableData, sheetName) {
+                    const { headers, bodyRows, footerRows } = tableData;
+                    const data = [];
+                    
+                    // Add professional header
+                    data.push(['Coal Planning Report']);
+                    data.push([powerPlantName]);
+                    data.push([new Date().toLocaleDateString()]);
+                    data.push([`Generated by Coal Calculator V1.0`]);
+                    data.push([]); // Empty row for spacing
+                    data.push([sheetName]);
+                    data.push([]); // Empty row for spacing
+                    
+                    // Add table headers
+                    data.push(headers);
+                    
+                    // Add body data
+                    bodyRows.forEach((row, rowIndex) => {
+                        const formattedRow = row.map((cell, cellIndex) => {
+                            if (typeof cell === 'number' && cell !== 0) {
+                                const rowLabel = row[0]; // First column is the parameter name
+                                // Check if this is SCC (Specific Coal Consumption) - use 3 decimals
+                                if (rowLabel && (rowLabel.toLowerCase().includes('specific') && rowLabel.toLowerCase().includes('coal') && rowLabel.toLowerCase().includes('consumption')) || rowLabel.toLowerCase().includes('scc')) {
+                                    return parseFloat(cell.toFixed(3));
+                                } else {
+                                    return parseFloat(cell.toFixed(2));
+                                }
+                            }
+                            return cell;
+                        });
+                        data.push(formattedRow);
+                    });
+                    
+                    // Add footer data if exists
+                    if (footerRows.length > 0) {
+                        data.push([]); // Empty row for spacing
+                        footerRows.forEach(row => {
+                            const formattedRow = row.map(cell => {
+                                if (typeof cell === 'number' && cell !== 0) {
+                                    return parseFloat(cell.toFixed(2));
+                                }
+                                return cell;
+                            });
+                            data.push(formattedRow);
+                        });
+                    }
+                    
+                    const ws = XLSX.utils.aoa_to_sheet(data);
+                    
+                    // Set column widths for better readability
+                    const colWidths = [];
+                    if (headers.length > 0) {
+                        colWidths[0] = { width: 30 }; // First column (parameters) wider
+                        for (let i = 1; i < headers.length; i++) {
+                            colWidths[i] = { width: 15 }; // Data columns
+                        }
+                    }
+                    ws['!cols'] = colWidths;
+                    
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                }
+                
+                // Extract and add worksheets based on selection
+                const table1 = document.getElementById('Table1');
+                const table1Data = extractTableData(table1);
+                
+                if (tableSelection === 'table1') {
+                    tableDataToWorksheet(table1Data, 'Coal Scenario');
+                } else {
+                    const table2 = document.getElementById('Table2');
+                    const table2Data = extractTableData(table2);
+                    
+                    tableDataToWorksheet(table1Data, 'Coal Scenario');
+                    tableDataToWorksheet(table2Data, 'Coal Sources');
+                    
+                    // Add summary sheet for both tables
+                    const summaryData = [
+                        ['Executive Summary'],
+                        [powerPlantName],
+                        [new Date().toLocaleDateString()],
+                        [],
+                        ['Key Metrics Summary'],
+                        ['Total Generation (MU)', table1Data.bodyRows[2]?.[table1Data.bodyRows[2].length - 1] || 0],
+                        ['Average PLF (%)', table1Data.bodyRows[1]?.[table1Data.bodyRows[1].length - 1] || 0],
+                        ['Total Coal Required (MT)', table1Data.bodyRows[4]?.[table1Data.bodyRows[4].length - 1] || 0],
+                        ['Total Coal Available (MT)', table1Data.bodyRows[5]?.[table1Data.bodyRows[5].length - 1] || 0],
+                        ['Final Closing Stock (MT)', table1Data.bodyRows[7]?.[table1Data.bodyRows[7].length - 1] || 0],
+                        ['Average Stock Days', table1Data.bodyRows[8]?.[table1Data.bodyRows[8].length - 1] || 0]
+                    ];
+                    
+                    const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+                    summaryWs['!cols'] = [{ width: 25 }, { width: 20 }];
+                    XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+                }
+                
+                // Save the file
+                const filename = getFilename(tableSelection === 'both' ? 'Coal_Report' : 'Coal_Scenario', 'xlsx');
+                XLSX.writeFile(wb, filename);
+                
+                hideExportProgress();
+                alert('Professional Excel workbook generated successfully!');
+                
+            } catch (error) {
+                console.error('Excel export error:', error);
+                hideExportProgress();
+                alert('Error generating Excel workbook. Please try again.');
+            }
+        }
+        
+        // ==========================================================================
+        // FLOATING ICONS DRAG FUNCTIONALITY
+        // ==========================================================================
+        
+        /**
+         * Make floating icons draggable
+         */
+        function makeDraggable(element) {
+            let isDragging = false;
+            let dragOffset = { x: 0, y: 0 };
+            let clickStartTime = 0;
+            let hasMoved = false;
+            
+            // Function to get coordinates from mouse or touch event
+            function getCoordinates(e) {
+                if (e.type.includes('touch')) {
+                    return {
+                        x: e.touches[0]?.clientX || e.changedTouches[0]?.clientX,
+                        y: e.touches[0]?.clientY || e.changedTouches[0]?.clientY
+                    };
+                }
+                return { x: e.clientX, y: e.clientY };
+            }
+            
+            // Start drag
+            function startDrag(e) {
+                e.preventDefault();
+                clickStartTime = Date.now();
+                hasMoved = false;
+                
+                const coords = getCoordinates(e);
+                const rect = element.getBoundingClientRect();
+                
+                dragOffset.x = coords.x - rect.left;
+                dragOffset.y = coords.y - rect.top;
+                
+                isDragging = true;
+                element.classList.add('dragging');
+                
+                // Temporarily disable transitions during drag
+                element.style.transition = 'none';
+                
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', drag, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            }
+            
+            // Drag
+            function drag(e) {
+                if (!isDragging) return;
+                
+                e.preventDefault();
+                hasMoved = true;
+                
+                const coords = getCoordinates(e);
+                
+                let newX = coords.x - dragOffset.x;
+                let newY = coords.y - dragOffset.y;
+                
+                // Keep within viewport bounds
+                const maxX = window.innerWidth - element.offsetWidth;
+                const maxY = window.innerHeight - element.offsetHeight;
+                
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+                
+                // Position relative to bottom-right for consistency
+                const rightPos = window.innerWidth - newX - element.offsetWidth;
+                const bottomPos = window.innerHeight - newY - element.offsetHeight;
+                
+                element.style.right = rightPos + 'px';
+                element.style.bottom = bottomPos + 'px';
+                element.style.left = 'auto';
+                element.style.top = 'auto';
+            }
+            
+            // Stop drag
+            function stopDrag(e) {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                element.classList.remove('dragging');
+                
+                // Re-enable transitions
+                element.style.transition = 'all 0.3s ease';
+                
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchmove', drag);
+                document.removeEventListener('touchend', stopDrag);
+                
+                // If it was just a click (not a drag), trigger the button action
+                const clickDuration = Date.now() - clickStartTime;
+                if (!hasMoved && clickDuration < 300) {
+                    // Trigger click event after a small delay
+                    setTimeout(() => {
+                        if (element.id === 'exportFloatIcon') {
+                            toggleExportMenu();
+                        } else if (element.id === 'warningFloatIcon') {
+                            toggleWarningMenu();
+                        }
+                    }, 50);
+                }
+                
+                // Save position to localStorage
+                saveIconPosition(element);
+            }
+            
+            // Add event listeners
+            element.addEventListener('mousedown', startDrag);
+            element.addEventListener('touchstart', startDrag, { passive: false });
+        }
+        
+        /**
+         * Save icon position to localStorage
+         */
+        function saveIconPosition(element) {
+            const position = {
+                right: element.style.right,
+                bottom: element.style.bottom
+            };
+            localStorage.setItem(element.id + '_position', JSON.stringify(position));
+        }
+        
+        /**
+         * Load icon position from localStorage
+         */
+        function loadIconPosition(element) {
+            const savedPosition = localStorage.getItem(element.id + '_position');
+            if (savedPosition) {
+                try {
+                    const position = JSON.parse(savedPosition);
+                    if (position.right && position.bottom) {
+                        element.style.right = position.right;
+                        element.style.bottom = position.bottom;
+                        element.style.left = 'auto';
+                        element.style.top = 'auto';
+                    }
+                } catch (e) {
+                    console.log('Could not restore icon position for', element.id);
+                }
+            }
+        }
+        
+        /**
+         * Initialize draggable floating icons
+         */
+        function initializeDraggableIcons() {
+            const warningIcon = document.getElementById('warningFloatIcon');
+            const exportIcon = document.getElementById('exportFloatIcon');
+            
+            if (warningIcon) {
+                makeDraggable(warningIcon);
+                loadIconPosition(warningIcon);
+            }
+            
+            if (exportIcon) {
+                makeDraggable(exportIcon);
+                loadIconPosition(exportIcon);
+            }
+        }
+        
+        // Initialize draggable icons when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeDraggableIcons, 500); // Small delay to ensure everything is loaded
+        });
+        
+        // ==========================================================================
+        // END OF EXPORT FUNCTIONALITY
+        // ==========================================================================
+        
+        // ==========================================================================
+        // END OF SCRIPT
+        // ==========================================================================
+    </script>
+</body>
+</html>

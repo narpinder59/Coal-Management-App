@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Coal Calculator Fixes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .test-title { font-weight: bold; color: #333; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Coal Calculator V1.0 - Test Fixes</h1>
+    
+    <div class="test-section">
+        <div class="test-title">✅ Fixed Issues:</div>
+        <ul>
+            <li><strong>Month Selection Cascading Update:</strong> When you change the first month dropdown, all subsequent months now automatically update in the correct sequence</li>
+            <li><strong>Enhanced Warning System:</strong> The negative stock warning system now:
+                <ul>
+                    <li>Calculates daily consumption from monthly consumption and days in month</li>
+                    <li>Shows specific coal requirements to avoid stock-out</li>
+                    <li>Displays buffer stock requirements based on selected days</li>
+                    <li>Provides detailed breakdown of coal needed for each month</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">🔧 Technical Changes Made:</div>
+        <ul>
+            <li><strong>updateAllMonthColumns() Function:</strong> Fixed to properly update only the first month's select dropdown and subsequent months' text display</li>
+            <li><strong>checkForNegativeClosingStock() Function:</strong> Enhanced to calculate daily consumption from Table1 data and provide detailed coal requirement analysis</li>
+            <li><strong>Warning Display:</strong> Now shows daily consumption rates, buffer stock calculations, and total coal needed</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">🧪 How to Test:</div>
+        <ol>
+            <li><strong>Month Cascading Test:</strong>
+                <ul>
+                    <li>Open Coal-Cal-Cleaned.html</li>
+                    <li>Change the first month dropdown from the default</li>
+                    <li>Verify that subsequent months update automatically (e.g., if you select April, next should be May, then June)</li>
+                </ul>
+            </li>
+            <li><strong>Warning System Test:</strong>
+                <ul>
+                    <li>Enter some values in Table1 (Generation Capacity, PLF, SCC)</li>
+                    <li>Enter low or zero values in Table2 (Coal Sources)</li>
+                    <li>Adjust the "Days to maintain stock" value</li>
+                    <li>Check if detailed warnings appear showing coal requirements</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <div class="test-title">📋 Functionality Verified:</div>
+        <ul>
+            <li>✅ Month selection dropdown in first column</li>
+            <li>✅ Automatic month progression for subsequent columns</li>
+            <li>✅ Remove buttons for non-first months</li>
+            <li>✅ Enhanced warning system with coal requirement calculations</li>
+            <li>✅ Empty Table2 on startup with editable source names</li>
+            <li>✅ Professional styling and user experience</li>
+        </ul>
+    </div>
+    
+    <p><a href="Coal-Cal-Cleaned.html" target="_blank">🚀 Open Coal Calculator V1.0 - Professional</a></p>
+</body>
+</html>

@@ -1,0 +1,2715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coal Linkage Advanced Calculator - Professional</title>
+
+    <!-- CDN Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+/* Professional Glass-Morphism Design */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-container {
+    min-height: 100vh;
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px 0;
+}
+
+.calculator-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.calculator-title {
+    text-align: center;
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.calculator-subtitle {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    margin-bottom: 15px;
+    font-weight: 300;
+}
+
+.back-button {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+/* Input Groups - Professional Styling */
+.input-group {
+    margin-bottom: 0px;
+    display: flex;
+    align-items: stretch;
+}
+
+/* Error badge spacing */
+#input-error-badge {
+    margin: 8px 0;
+}
+
+/* Center input parameters content */
+.table-container .row {
+    justify-content: center;
+}
+
+.table-container .col-lg-6 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.input-group-prepend {
+    display: flex;
+}
+
+.input-group-text1 {
+    background: linear-gradient(135deg, #495057, #343a40);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    min-width: 200px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.input-group-text2 {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    min-width: 50px;
+    width: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.input-group-text3 {
+    background: linear-gradient(135deg, #495057, #343a40);
+    color: white;
+    border: 1px solid #dee2e6;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    min-width: 120px;
+    width: 120px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.input-group-text4 {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    min-width: 50px;
+    width: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.form-control {
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    flex: 1;
+    height: 42px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    font-size: 0.875rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    background: white;
+}
+
+/* Professional Buttons */
+.btn-professional {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    margin: 5px;
+}
+
+.btn-professional:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    color: white;
+}
+
+.btn-professional-green {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    margin: 5px;
+}
+
+.btn-professional-green:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.btn-professional-orange {
+    background: linear-gradient(135deg, #fd7e14, #e55a00);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
+    margin: 5px;
+}
+
+.btn-professional-orange:hover {
+    background: linear-gradient(135deg, #e55a00, #cc5200);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(253, 126, 20, 0.4);
+    color: white;
+}
+
+/* Professional Tables */
+.table-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    max-width: 100%;
+}
+
+.responsive-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    max-width: 100%;
+}
+
+.table-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 3px solid #28a745;
+    padding-bottom: 10px;
+}
+
+.CoalLinkageAdvance-table {
+    font-size: 0.9rem;
+    table-layout: fixed;
+    width: 100%;
+    min-width: 800px;
+    word-wrap: break-word;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.CoalLinkageAdvance-table th {
+    background: linear-gradient(135deg, #343a40, #495057);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px 8px;
+    border: none;
+    white-space: normal;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Sticky first column for all tables */
+.CoalLinkageAdvance-table th:first-child,
+.CoalLinkageAdvance-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 100;
+    background-color: #f8f9fa !important;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    border-right: 2px solid #dee2e6;
+    min-width: 80px;
+    max-width: 120px;
+}
+
+.CoalLinkageAdvance-table th:first-child {
+    background: linear-gradient(135deg, #343a40, #495057) !important;
+    color: white !important;
+    z-index: 101;
+}
+
+.CoalLinkageAdvance-table tr:hover td:first-child {
+    background-color: #e8f5e8 !important;
+}
+
+.CoalLinkageAdvance-table td {
+    padding: 6px 8px;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    background: white;
+    transition: background-color 0.3s ease;
+}
+
+.CoalLinkageAdvance-table td:first-child {
+    font-size: 0.95rem;
+    white-space: normal;
+    text-align: left;
+    font-weight: 600;
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.CoalLinkageAdvance-table tr:hover td {
+    background-color: #e8f5e8;
+}
+
+.CoalLinkageAdvance-table td[contenteditable="true"] {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    cursor: text;
+}
+
+.CoalLinkageAdvance-table td[contenteditable="true"]:focus {
+    background: #ffffff;
+    border: 2px solid #28a745;
+    outline: none;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+}
+
+/* Floating Icons */
+.floating-icons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.floating-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.floating-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Export Dropdown */
+.export-dropdown {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background: transparent;
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 60px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+}
+
+.export-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.export-dropdown button {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-dropdown button:hover {
+    transform: scale(1.1);
+}
+
+.export-dropdown button:first-child {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.export-dropdown button:first-child:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.export-dropdown button:last-child {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    margin-bottom: 0;
+}
+
+.export-dropdown button:last-child:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Formula Sidebar */
+.formula-sidebar {
+    position: fixed;
+    top: 0;
+    right: -600px;
+    width: 600px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1001;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+}
+
+.formula-sidebar.show {
+    right: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #28a745;
+}
+
+.sidebar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #343a40;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-sidebar:hover {
+    color: #343a40;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .calculator-container {
+        margin: 0 10px;
+        padding: 15px;
+    }
+    
+    .calculator-title {
+        font-size: 1.6rem;
+        text-align: center;
+    }
+    
+    .formula-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .floating-icons {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 140px;
+        width: 140px;
+        font-size: 0.8rem;
+    }
+    
+    .form-control {
+        width: 120px;
+        max-width: 120px;
+    }
+    
+    .table-container {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .table-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px;
+        overflow-x: hidden;
+    }
+    
+    .calculator-container {
+        margin: 0 5px;
+        padding: 10px;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .calculator-title {
+        font-size: 1.4rem;
+        line-height: 1.3;
+        text-align: center;
+    }
+    
+    .input-group {
+        margin-bottom: 8px;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 130px;
+        width: 130px;
+        font-size: 0.75rem;
+        padding: 8px 6px;
+    }
+    
+    .input-group-text2,
+    .input-group-text4 {
+        min-width: 35px;
+        width: 35px;
+        font-size: 0.75rem;
+        padding: 8px 4px;
+    }
+    
+    .form-control {
+        font-size: 0.85rem;
+        padding: 8px 6px;
+        width: 100px;
+        max-width: 100px;
+    }
+    
+    .table-container {
+        padding: 10px;
+        margin-bottom: 15px;
+        overflow-x: auto;
+    }
+    
+    .table-title {
+        font-size: 1rem;
+        text-align: center;
+    }
+    
+    .responsive-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .CoalLinkageAdvance-table {
+        font-size: 0.7rem;
+        min-width: 600px;
+        width: 100%;
+    }
+    
+    .CoalLinkageAdvance-table th,
+    .CoalLinkageAdvance-table td {
+        padding: 8px 4px;
+        white-space: nowrap;
+    }
+    
+    .CoalLinkageAdvance-table th {
+        font-size: 0.65rem;
+        line-height: 1.1;
+        white-space: normal !important;
+        word-wrap: break-word;
+        hyphens: auto;
+        padding: 6px 3px;
+    }
+    
+    .btn-professional-green {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-container {
+        padding: 5px;
+    }
+    
+    .calculator-container {
+        margin: 0;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .calculator-title {
+        font-size: 1.2rem;
+        line-height: 1.2;
+        margin-bottom: 15px;
+    }
+    
+    .back-button {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 120px;
+        width: 120px;
+        font-size: 0.7rem;
+        padding: 6px 4px;
+        height: 36px;
+    }
+    
+    .input-group-text2,
+    .input-group-text4 {
+        min-width: 30px;
+        width: 30px;
+        font-size: 0.7rem;
+        padding: 6px 2px;
+        height: 36px;
+    }
+    
+    .form-control {
+        font-size: 0.8rem;
+        padding: 6px 4px;
+        height: 36px;
+        width: 80px;
+        max-width: 80px;
+    }
+    
+    .form-control {
+        font-size: 0.8rem;
+        padding: 6px 4px;
+        height: 36px;
+    }
+    
+    .table-container {
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .table-title {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .CoalLinkageAdvance-table {
+        font-size: 0.65rem;
+        min-width: 500px;
+    }
+    
+    .CoalLinkageAdvance-table th,
+    .CoalLinkageAdvance-table td {
+        padding: 6px 3px;
+        min-width: 70px;
+    }
+    
+    .CoalLinkageAdvance-table th {
+        font-size: 0.6rem !important;
+        line-height: 1.1;
+        white-space: normal !important;
+        word-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    .floating-icons {
+        bottom: 10px;
+        right: 10px;
+        transform: scale(0.9);
+    }
+    
+    .btn-professional-green {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        width: 100%;
+    }
+}
+
+/* Table specific responsive improvements */
+@media (max-width: 768px) {
+    .table-responsive {
+        border: none;
+        border-radius: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .responsive-table-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+}
+
+/* Fix for small screens table overflow */
+@media (max-width: 480px) {
+    .CoalLinkageAdvance-table {
+        min-width: 450px;
+        font-size: 0.6rem;
+    }
+    
+    .CoalLinkageAdvance-table th:first-child,
+    .CoalLinkageAdvance-table td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 100;
+        min-width: 60px;
+        background-color: #f8f9fa !important;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    }
+    
+    .CoalLinkageAdvance-table th:first-child {
+        background: linear-gradient(135deg, #343a40, #495057) !important;
+        color: white !important;
+        z-index: 101;
+    }
+}
+</style>
+
+</head>
+<body>
+
+<div class="main-container">
+    <div class="calculator-container">
+        <!-- Back Button -->
+        <a href="javascript:void(0)" onclick="goBackToCalculators()" class="back-button">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Calculators
+        </a>
+
+        <!-- Header -->
+        <h1 class="calculator-title">
+            <i class="fas fa-chart-line me-3"></i>
+            Coal Linkage Advanced Calculator
+        </h1>      
+
+        <!-- Main Content Grid -->
+        <div class="row justify-content-center">
+            <!-- Input Section -->
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="table-container">
+                    <h3 class="table-title">
+                        <i class="fas fa-cogs me-2"></i>
+                        Input Parameters
+                    </h3>
+
+                    <div id="input-error-badge" style="display:none"></div>
+                    
+                    <!-- Annual Coal Quantity -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text1">Annual Coal Quantity</span>
+                            <span class="input-group-text2">MT</span>
+                        </div>
+                        <input type="number" class="form-control" step="0.01" min="0" id="acq-input" value="7000000" placeholder="7000000" required>
+                    </div>
+
+                    <!-- Quantity in a Rake -->
+                    <div class="input-group input-group-sm mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text1">Quantity in a Rake</span>
+                            <span class="input-group-text2">MT</span>
+                        </div>
+                        <input type="number" class="form-control" step="0.01" min="0" id="rake-quantity-input" value="4000" placeholder="4000" required>
+                    </div>
+
+                    <!-- Quarterly Percentages -->
+                    <div class="row" style="margin-bottom: 0px !important;">
+                        <!-- Q1 (Apr-Jun) -->
+                        <div class="col-md-6 mb-0">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text3">Q1 (Apr-Jun)</span>
+                                    <span class="input-group-text4">%</span>
+                                </div>
+                                <input type="number" class="form-control quarter-input" step="0.01" min="0" max="100" id="quarter-1" value="25" required>
+                            </div>
+                        </div>
+
+                        <!-- Q2 (Jul-Sep) -->
+                        <div class="col-md-6 mb-0">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text3">Q2 (Jul-Sep)</span>
+                                    <span class="input-group-text4">%</span>
+                                </div>
+                                <input type="number" class="form-control quarter-input" step="0.01" min="0" max="100" id="quarter-2" value="22" required>
+                            </div>
+                        </div>
+
+                        <!-- Q3 (Oct-Dec) -->
+                        <div class="col-md-6 mb-0">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text3">Q3 (Oct-Dec)</span>
+                                    <span class="input-group-text4">%</span>
+                                </div>
+                                <input type="number" class="form-control quarter-input" step="0.01" min="0" max="100" id="quarter-3" value="25" required>
+                            </div>
+                        </div>
+
+                        <!-- Q4 (Jan-Mar) -->
+                        <div class="col-md-6 mb-0">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text3">Q4 (Jan-Mar)</span>
+                                    <span class="input-group-text4">%</span>
+                                </div>
+                                <input type="number" class="form-control quarter-input" step="0.01" min="0" max="100" id="quarter-4" value="28" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-message" class="alert alert-warning" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> The total percentage cannot exceed 100%.
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <button id="copy-cells-btn" class="btn btn-professional-green">
+                            <i class="fas fa-copy me-2"></i>
+                            Copy to Actual Quantity
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="row mt-4">
+            <!-- Monthly Table -->
+            <div class="col-12">
+                <div class="table-container">
+                    <h3 class="table-title">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Monthly Values
+                    </h3>
+                    
+                    <div class="table-responsive">
+                        <table id="coal-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Allocated Quantity</th>
+                                    <th>Allocated Rakes</th>
+                                    <th>Actual Quantity <i class="bi bi-pencil-square ms-1"></i></th>
+                                    <th>Actual Rakes</th>
+                                    <th>%age (Actual / Allocated)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Apr</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>May</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Jun</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Jul</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Aug</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Sep</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Oct</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Nov</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Dec</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Jan</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Feb</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                                <tr><td>Mar</td><td></td><td></td><td contenteditable="true" class="actual-quantity"></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quarterly Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="table-container">
+                    <h3 class="table-title">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Quarterly Values
+                    </h3>
+                    
+                    <div class="table-responsive">
+                        <table id="quarterly-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
+                            <thead>
+                                <tr>
+                                    <th>Quarter</th>
+                                    <th>Allocated Quantity</th>
+                                    <th>Allocated Rakes</th>
+                                    <th>Actual Quantity</th>
+                                    <th>Actual Rakes</th>
+                                    <th>%age (Actual / Allocated)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td id="q1-label">Q1 (Apr-Jun) 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td id="q2-label">Q2 (Jul-Sep) 22%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td id="q3-label">Q3 (Oct-Dec) 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td id="q4-label">Q4 (Jan-Mar) 28%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Per Day Values Table -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="table-container">
+                    <h3 class="table-title">
+                        <i class="fas fa-calendar-day me-2 text-warning"></i>
+                        Per Day Values
+                    </h3>
+                    <div class="responsive-table-wrapper">
+                        <table id="per-day-table" class="table table-bordered table-hover table-striped text-center align-middle table-sm CoalLinkageAdvance-table">
+                            <thead class="table-gradient">
+                                <tr>
+                                    <th style="width: 15%;">Month</th>
+                                    <th style="width: 17%;">Allocated Quantity</th>
+                                    <th style="width: 17%;">Allocated Rakes</th>
+                                    <th style="width: 17%;">Actual Quantity</th>
+                                    <th style="width: 17%;">Actual Rakes</th>
+                                    <th style="width: 17%;">%age (Actual / Allocated)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Apr</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>May</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Jun</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Jul</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Aug</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Sep</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Oct</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Nov</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Dec</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Jan</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Feb</td><td></td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Mar</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Table -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="table-container">
+                    <h3 class="table-title">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Summary
+                    </h3>
+                    
+                    <div class="table-responsive">
+                        <table id="summary-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Allocated</th>
+                                    <th>Actual</th>
+                                    <th>Difference</th>
+                                    <th>%age Achievement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Total Quantity</td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Total Rakes</td><td></td><td></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Icons for Formula and Export -->
+<div class="floating-icons">
+    <!-- Formula Icon -->
+    <button class="floating-icon" onclick="toggleFormulaSidebar()" title="View Formula & Calculation Logic">
+        <i class="fas fa-calculator"></i>
+    </button>
+    
+    <!-- Export Icon with Dropdown -->
+    <div class="floating-icon" id="exportBtn" onclick="toggleExportMenu()" title="Export Options">
+        <i class="fas fa-download"></i>
+        <div class="export-dropdown" id="exportDropdown">
+            <button onclick="exportToJPG(); closeExportMenu(); event.stopPropagation();" title="Export as JPG">
+                <i class="fas fa-image"></i>
+            </button>
+            <button onclick="generatePDF(); closeExportMenu(); event.stopPropagation();" title="Export as PDF">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Formula Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeFormulaSidebar()"></div>
+<div class="formula-sidebar" id="formulaSidebar">
+    <div class="sidebar-header">
+        <h3 class="sidebar-title">
+            <i class="fas fa-calculator me-2"></i>
+            Calculation Formula & Logic
+        </h3>
+        <button class="close-sidebar" onclick="closeFormulaSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar-content">
+        <div class="alert alert-info">
+            <h6><i class="fas fa-lightbulb me-2"></i>Advanced Redistribution Logic</h6>
+            <p class="mb-0">When actual quantity in any month is changed (+/-), then remaining ACQ considering quantity in previous and current month, is redistributed proportionally among the remaining next months based on the respective quarterly percentages.</p>
+        </div>
+
+        <h5><i class="fas fa-cogs me-2"></i>Example Calculation:</h5>
+        <div class="example-box p-3 bg-light rounded">
+            <p><strong>Initial Setup:</strong></p>
+            <ul>
+                <li>ACQ = 70,00,000 MT</li>
+                <li>Q1 (25%) = 17,50,000 MT</li>
+                <li>Q2 (22%) = 15,40,000 MT</li>
+                <li>Q3 (25%) = 17,50,000 MT</li>
+                <li>Q4 (28%) = 19,60,000 MT</li>
+            </ul>
+
+            <p><strong>If Q1 = 0 MT:</strong></p>
+            <p>The ACQ of 17,50,000 from Q1 will be redistributed proportionally amongst Q2, Q3 & Q4.</p>
+            
+            <p><strong>Remaining Total ACQ:</strong></p>
+            <p>15,40,000 + 17,50,000 + 19,60,000 = 52,50,000</p>
+
+            <h6>Proportional Distribution:</h6>
+            
+            <div class="mb-3">
+                <strong>For Q2 (July, August, September):</strong>
+                <ul>
+                    <li>Percentage = 15,40,000 / 52,50,000 ≈ 0.2924 (29.24%)</li>
+                    <li>Additional ACQ = 17,50,000 × 0.2924 ≈ 5,10,667</li>
+                    <li>Each month gets: 5,10,667 / 3 ≈ 1,70,222 additional</li>
+                </ul>
+            </div>
+
+            <div class="mb-3">
+                <strong>For Q3 (October, November, December):</strong>
+                <ul>
+                    <li>Percentage = 17,50,000 / 52,50,000 ≈ 0.3333 (33.33%)</li>
+                    <li>Additional ACQ = 17,50,000 × 0.3333 ≈ 5,83,333</li>
+                    <li>Each month gets: 5,83,333 / 3 ≈ 1,94,444 additional</li>
+                </ul>
+            </div>
+
+            <div class="mb-3">
+                <strong>For Q4 (January, February, March):</strong>
+                <ul>
+                    <li>Percentage = 19,60,000 / 52,50,000 ≈ 0.3733 (37.33%)</li>
+                    <li>Additional ACQ = 17,50,000 × 0.3733 ≈ 6,52,000</li>
+                    <li>Each month gets: 6,52,000 / 3 ≈ 2,17,333 additional</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="alert alert-success mt-3">
+            <h6><i class="fas fa-check-circle me-2"></i>Key Features</h6>
+            <ul class="mb-0">
+                <li>Real-time calculation updates</li>
+                <li>Editable actual quantity values</li>
+                <li>Automatic percentage calculations</li>
+                <li>Professional PDF/JPG export</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--- HTML for inputs ends here-->        
+
+    <!-- Professional Features JavaScript -->
+    <script>
+        // Back Button Functionality
+        function goBackToCalculators() {
+            // Try to go back to parent window if opened from main app
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // If opened from main app, switch focus back and close this tab
+                    window.opener.focus();
+                    // Call function to show calculators page in parent window
+                    if (typeof window.opener.showCalculatorsPage === 'function') {
+                        window.opener.showCalculatorsPage();
+                    }
+                    window.close();
+                } catch (e) {
+                    // If cross-origin or other security issues, fallback to alert
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
+            } else {
+                // If no parent window, try to navigate to main app
+                try {
+                    window.location.href = 'index.html#calculators';
+                } catch (e) {
+                    alert('Please use the browser back button to return to the main application.');
+                }
+            }
+        }
+
+        // Floating Icons Functionality
+        function toggleFloatingIcons() {
+            const icons = document.querySelector('.floating-icons');
+            const dropdown = document.getElementById('floating-dropdown');
+            const overlay = document.getElementById('floating-overlay');
+            
+            if (dropdown.style.display === 'none' || !dropdown.style.display) {
+                dropdown.style.display = 'block';
+                overlay.style.display = 'block';
+                setTimeout(() => {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                    overlay.style.opacity = '1';
+                }, 10);
+            } else {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(20px)';
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    dropdown.style.display = 'none';
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        function closeFloatingDropdown() {
+            const dropdown = document.getElementById('floating-dropdown');
+            const overlay = document.getElementById('floating-overlay');
+            
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(20px)';
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                dropdown.style.display = 'none';
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // Formula Sidebar Functionality
+        function toggleFormulaSidebar() {
+            const sidebar = document.getElementById('formulaSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                overlay.style.display = 'none';
+            } else {
+                sidebar.classList.add('show');
+                overlay.style.display = 'block';
+            }
+        }
+
+        function closeFormulaSidebar() {
+            const sidebar = document.getElementById('formulaSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('show');
+            overlay.style.display = 'none';
+        }
+
+        // Export Menu Functionality
+        function toggleExportMenu() {
+            const dropdown = document.getElementById('exportDropdown');
+            
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            } else {
+                dropdown.classList.add('show');
+            }
+        }
+
+        function closeExportMenu() {
+            const dropdown = document.getElementById('exportDropdown');
+            dropdown.classList.remove('show');
+        }
+
+        // Close export menu and formula sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const exportBtn = event.target.closest('#exportBtn');
+            const exportDropdown = document.getElementById('exportDropdown');
+            const formulaSidebar = document.getElementById('formulaSidebar');
+            const formulaBtn = event.target.closest('[onclick*="toggleFormulaSidebar"]');
+            
+            // Close export menu if clicking outside
+            if (!exportBtn && exportDropdown && exportDropdown.classList.contains('show')) {
+                exportDropdown.classList.remove('show');
+            }
+            
+            // Close formula sidebar if clicking outside
+            if (!formulaBtn && formulaSidebar && formulaSidebar.classList.contains('show') && !formulaSidebar.contains(event.target)) {
+                closeFormulaSidebar();
+            }
+        });
+
+        // Ensure sticky columns work properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force sticky positioning for first columns
+            const tables = document.querySelectorAll('.CoalLinkageAdvance-table');
+            tables.forEach(table => {
+                const firstCells = table.querySelectorAll('th:first-child, td:first-child');
+                firstCells.forEach(cell => {
+                    cell.style.position = 'sticky';
+                    cell.style.left = '0';
+                    if (cell.tagName === 'TH') {
+                        cell.style.zIndex = '101';
+                    } else {
+                        cell.style.zIndex = '100';
+                    }
+                });
+            });
+        });
+
+        // Export Functions
+        function exportToPDF() {
+            closeFloatingDropdown();
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            // Add title
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Coal Linkage Advanced Calculator - Results', 20, 20);
+            
+            // Get all input values
+            const inputs = document.querySelectorAll('input[type="number"]');
+            let yPosition = 40;
+            
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'normal');
+            
+            inputs.forEach(input => {
+                if (input.value && input.value !== '0') {
+                    const label = input.closest('.input-group').querySelector('span').textContent;
+                    pdf.text(`${label}: ${input.value}`, 20, yPosition);
+                    yPosition += 8;
+                }
+            });
+            
+            // Get calculation results
+            const resultsTable = document.querySelector('table');
+            if (resultsTable) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Calculation Results:', 20, yPosition);
+                yPosition += 10;
+                
+                // Use autoTable for better table formatting
+                const tableData = [];
+                const rows = resultsTable.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        const rowData = [];
+                        cells.forEach(cell => {
+                            rowData.push(cell.textContent.trim());
+                        });
+                        tableData.push(rowData);
+                    }
+                });
+                
+                if (tableData.length > 0) {
+                    pdf.autoTable({
+                        head: [['Parameter', 'Value', 'Details']],
+                        body: tableData,
+                        startY: yPosition,
+                        theme: 'grid',
+                        headStyles: { fillColor: [52, 144, 220] },
+                        styles: { fontSize: 10 }
+                    });
+                }
+            }
+            
+            // Save the PDF
+            pdf.save('coal-linkage-advanced-results.pdf');
+        }
+
+        function exportToJPG() {
+            closeExportMenu();
+            
+            // Create a professional report container
+            const reportContainer = document.createElement('div');
+            reportContainer.style.cssText = `
+                width: 794px;
+                padding: 30px;
+                background: white;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                position: fixed;
+                top: -10000px;
+                left: -10000px;
+                box-sizing: border-box;
+            `;
+            
+            // Get input values
+            const acqValue = document.getElementById("acq-input").value || "0";
+            const rakeValue = document.getElementById("rake-quantity-input").value || "0";
+            
+            // Create report HTML
+            reportContainer.innerHTML = `
+                <div style="text-align: center; margin-bottom: 5px; border-bottom: 3px solid #343a40; padding-bottom: 5px;">
+                    <h1 style="color: #343a40; font-size: 22px; margin: 0; font-weight: bold;">ACQ Distribution Report</h1>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px; background: #f8f9fa; padding: 3px; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <div style="font-size: 13px; font-weight: 600; color: #495057;">
+                        <span style="color: #343a40;">Total ACQ:</span> ${formatNumber(parseFloat(acqValue))} MT
+                    </div>
+                    <div style="font-size: 13px; font-weight: 600; color: #495057;">
+                        <span style="color: #343a40;">Total Rake Quantity:</span> ${formatNumber(parseFloat(rakeValue))}
+                    </div>
+                </div>
+                
+                ${createTableHTML('Monthly Allocation', 'coal-table')}
+                ${createTableHTML('Quarterly Summary', 'quarterly-table')}
+                ${createTableHTML('Per Day Analysis', 'per-day-table')}
+                ${createTableHTML('Summary', 'summary-table')}
+                
+                <div style="text-align: right; margin-top: 5px; font-size: 10px; color: #6c757d;">
+                    Generated: ${new Date().toLocaleDateString('en-IN')}
+                </div>
+            `;
+            
+            document.body.appendChild(reportContainer);
+            
+            // Generate high-quality image
+            html2canvas(reportContainer, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: 794,
+                height: 1123,
+                logging: false,
+                allowTaint: false,
+                foreignObjectRendering: false
+            }).then(canvas => {
+                document.body.removeChild(reportContainer);
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `ACQ-Distribution-Report-${new Date().toISOString().split('T')[0]}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.click();
+            }).catch(error => {
+                document.body.removeChild(reportContainer);
+                console.error('Error generating JPG:', error);
+                alert('Error generating JPG report. Please try again.');
+            });
+        }
+        
+        // Helper function to create professional table HTML
+        function createTableHTML(title, tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return '';
+            
+            const rows = Array.from(table.rows);
+            if (rows.length === 0) return '';
+            
+            let tableHTML = `
+                <div style="margin-bottom: 5px;">
+                    <h3 style="color: #343a40; font-size: 14px; margin-bottom: 4px; font-weight: 600; border-bottom: 2px solid #dee2e6; padding-bottom: 4px;">
+                        <i class="fas fa-table" style="margin-right: 6px; color: #28a745;"></i>${title}
+                    </h3>
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden; font-size: 11px;">
+            `;
+            
+            // Add header
+            if (rows[0]) {
+                tableHTML += '<thead style="background: linear-gradient(135deg, #343a40, #495057);">';
+                tableHTML += '<tr>';
+                Array.from(rows[0].cells).forEach(cell => {
+                    tableHTML += `<th style="padding: 4px 6px; color: white; font-weight: 600; text-align: center; border-right: 1px solid #6c757d;">${cell.textContent.trim()}</th>`;
+                });
+                tableHTML += '</tr></thead>';
+            }
+            
+            // Add body rows
+            tableHTML += '<tbody>';
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const isQuarterRow = row.cells[0] && row.cells[0].textContent.trim().includes('Q');
+                const rowStyle = isQuarterRow ? 
+                    'background: #f8f9fa; font-weight: 600; color: #495057;' : 
+                    i % 2 === 0 ? 'background: #ffffff;' : 'background: #f8f9fa;';
+                
+                tableHTML += `<tr style="${rowStyle}">`;
+                Array.from(row.cells).forEach((cell, index) => {
+                    const alignment = index === 0 ? 'left' : 'center';
+                    const fontWeight = index === 0 || isQuarterRow ? '600' : '400';
+                    tableHTML += `<td style="padding: 4px 5px; border-right: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; text-align: ${alignment}; font-weight: ${fontWeight};">${cell.textContent.trim()}</td>`;
+                });
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody></table></div>';
+            
+            return tableHTML;
+        }
+
+        // Initialize page and all functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Coal Linkage Advanced Calculator - Professional loaded');
+            
+            // Initialize all calculator functionality
+            initializeCalculator();
+            
+            // Initialize redistribution functionality
+            initializeRedistribution();
+            
+            // Initialize additional functions
+            const acqInput = document.getElementById("acq-input");
+            const rakeInput = document.getElementById("rake-quantity-input");
+            
+            if (acqInput) acqInput.addEventListener("blur", validateInput);
+            if (rakeInput) rakeInput.addEventListener("blur", validateInput);
+            
+            // enforceACQLimit(); // Disabled to prevent duplicate input listeners
+            initializeQuarterValidation();
+        });
+
+        // Main calculator initialization function
+        function initializeCalculator() {
+            // Get all required elements
+            const acqInput = document.getElementById("acq-input");
+            const rakeInput = document.getElementById("rake-quantity-input");
+            const table = document.getElementById("coal-table");
+            const quarterlyTable = document.getElementById("quarterly-table");
+            const perDayTable = document.getElementById("per-day-table");
+            const copyButton = document.getElementById("copy-cells-btn");
+
+            // Initialize variables
+            let acq = 0;
+            let rakeQuantity = 0;
+
+            // Utility function for numeric input restriction
+            function restrictNumericInput(input) {
+                // Prevent non-numeric and negative input on keydown
+                input.addEventListener('keydown', function (event) {
+                    const allowedKeys = [
+                        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+                    ];
+                    if (allowedKeys.includes(event.key)) return;
+
+                    // Allow only one dot
+                    if (event.key === "." && this.value.includes(".")) {
+                        event.preventDefault();
+                        return;
+                    }
+                    // Prevent minus, plus, 'e', and any non-digit except dot
+                    if (
+                        event.key === '-' || event.key === '+' || event.key === 'e' ||
+                        (!/^\d$/.test(event.key) && event.key !== ".")
+                    ) {
+                        event.preventDefault();
+                    }
+                });
+
+                // Prevent pasting non-numeric or negative values
+                input.addEventListener('paste', function (event) {
+                    const paste = (event.clipboardData || window.clipboardData).getData('text');
+                    if (!/^\d*\.?\d*$/.test(paste)) {
+                        event.preventDefault();
+                    }
+                });
+
+                // On blur, clear if not a valid non-negative number
+                input.addEventListener('blur', function () {
+                    const value = parseFloat(this.value.trim());
+                    if (isNaN(value) || value < 0) {
+                        this.value = "";
+                    }
+                });
+            }
+
+            // Apply to all inputs except those with data-allow-text="true"
+            function applyUniversalNumericRestriction() {
+                document.querySelectorAll('input:not([data-allow-text="true"])').forEach(input => {
+                    restrictNumericInput(input);
+                });
+            }
+
+            // Apply initial restrictions
+            applyUniversalNumericRestriction();
+
+            // Prevent Enter key from submitting any form
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                    }
+                });
+            });
+
+            // Prevent minus sign from being entered
+            acqInput.addEventListener('keydown', function(event) {
+                if (event.key === '-' || event.key === 'Minus'|| event.key === '+' || event.key === 'Plus') {
+                    event.preventDefault();
+                }
+            });
+            
+            rakeInput.addEventListener('keydown', function(event) {
+                if (event.key === '-' || event.key === 'Minus'|| event.key === '+' || event.key === 'Plus') {
+                    event.preventDefault();
+                }
+            });
+
+            // Main calculator functions
+            function calculateQuarterlyAllocations() {
+                const acqValue = parseFloat(acqInput.value) || 0;
+                const rakeCapacity = parseFloat(rakeInput.value) || 0; // Quantity per rake (MT)
+                
+                if (acqValue === 0) return;
+
+                const rows = Array.from(table.rows).slice(1);
+                
+                // Get quarterly percentages
+                const quarterPercentages = [
+                    parseFloat(document.getElementById('quarter-1')?.value) || 0,
+                    parseFloat(document.getElementById('quarter-2')?.value) || 0,
+                    parseFloat(document.getElementById('quarter-3')?.value) || 0,
+                    parseFloat(document.getElementById('quarter-4')?.value) || 0
+                ];
+
+                console.log('Quarterly percentages:', quarterPercentages);
+
+                // Calculate allocated quantity for each month based on quarterly percentages
+                rows.forEach((row, index) => {
+                    const quarterIndex = Math.floor(index / 3); // 0-3 for Q1-Q4
+                    const quarterPercentage = quarterPercentages[quarterIndex];
+                    const quarterlyAllocation = (quarterPercentage / 100) * acqValue;
+                    const monthlyAllocation = quarterlyAllocation / 3; // Divide quarter allocation among 3 months
+                    const monthlyRakes = rakeCapacity > 0 ? (monthlyAllocation / rakeCapacity) : 0; // Number of rakes needed
+
+                    console.log(`Month ${index} (Q${quarterIndex + 1}): ${quarterPercentage}% -> ${monthlyAllocation.toFixed(2)} MT`);
+
+                    row.cells[1].textContent = formatNumber(monthlyAllocation);
+                    row.cells[2].textContent = monthlyRakes.toFixed(2);
+                });
+
+                updateQuarterlyTable();
+                updatePerDayValues();
+                updateSummaryTable();
+            }
+
+            // FIXED Copy button functionality
+            copyButton.addEventListener("click", function() {
+                console.log("Copy button clicked"); // Debug log
+                const rows = Array.from(table.rows).slice(1);
+                
+                rows.forEach(row => {
+                    const allocatedQuantity = row.cells[1].textContent;
+                    const allocatedRakes = row.cells[2].textContent;
+                    
+                    // Copy values to actual columns
+                    row.cells[3].textContent = allocatedQuantity;
+                    row.cells[4].textContent = allocatedRakes;
+                });
+
+                // Update all dependent calculations
+                updateQuarterlyTable();
+                updatePercentages();
+                updatePerDayValues();
+                updateSummaryTable();
+                
+                console.log("Copy operation completed"); // Debug log
+            });
+
+            // Input event listeners
+            acqInput.addEventListener("blur", function() {
+                calculateQuarterlyAllocations();
+                updatePercentages();
+            });
+
+            rakeInput.addEventListener("blur", function() {
+                calculateQuarterlyAllocations();
+                updatePercentages();
+            });
+
+            // Add event listeners for quarterly percentage inputs
+            const quarterInputs = ['quarter-1', 'quarter-2', 'quarter-3', 'quarter-4'];
+            quarterInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener("input", function() {
+                        updateQuarterlyLabels();
+                    });
+                    input.addEventListener("blur", function() {
+                        calculateQuarterlyAllocations();
+                        updatePercentages();
+                        updateSummaryTable();
+                    });
+                }
+            });
+
+        } // End of initializeCalculator function
+
+        // Helper function to format numbers with 2 decimal places and Indian locale
+        function formatNumber(number, decimals = 2) {
+            const fixedNumber = parseFloat(number).toFixed(decimals);
+            const parts = fixedNumber.split('.');
+            const integerPart = parts[0];
+            const decimalPart = parts[1];
+            
+            // Apply Indian numbering system
+            let formattedInteger = '';
+            const length = integerPart.length;
+            
+            if (length <= 3) {
+                formattedInteger = integerPart;
+            } else {
+                // First 3 digits from right
+                formattedInteger = integerPart.slice(-3);
+                let remaining = integerPart.slice(0, -3);
+                
+                // Add commas every 2 digits for the remaining part
+                while (remaining.length > 0) {
+                    if (remaining.length <= 2) {
+                        formattedInteger = remaining + ',' + formattedInteger;
+                        break;
+                    } else {
+                        formattedInteger = remaining.slice(-2) + ',' + formattedInteger;
+                        remaining = remaining.slice(0, -2);
+                    }
+                }
+            }
+            
+            return decimals > 0 ? formattedInteger + '.' + decimalPart : formattedInteger;
+        }
+
+        // Global update functions - accessible from anywhere
+        function updateQuarterlyTable() {
+            const table = document.getElementById("coal-table");
+            const quarterlyTable = document.getElementById("quarterly-table");
+            
+            if (!table || !quarterlyTable) return;
+            
+            const rows = Array.from(table.rows).slice(1);
+            const quarterlyRows = Array.from(quarterlyTable.rows).slice(1);
+
+            // Update quarterly labels with real-time percentages
+            updateQuarterlyLabels();
+
+            for (let i = 0; i < 4; i++) {
+                let allocatedQty = 0;
+                let allocatedRakes = 0;
+                let actualQty = 0;
+                let actualRakes = 0;
+
+                for (let j = i * 3; j < (i + 1) * 3; j++) {
+                    if (j < rows.length) {
+                        allocatedQty += parseFloat(rows[j].cells[1].textContent.replace(/,/g, '')) || 0;
+                        allocatedRakes += parseFloat(rows[j].cells[2].textContent.replace(/,/g, '')) || 0;
+                        actualQty += parseFloat(rows[j].cells[3].textContent.replace(/,/g, '')) || 0;
+                        actualRakes += parseFloat(rows[j].cells[4].textContent.replace(/,/g, '')) || 0;
+                    }
+                }
+
+                if (quarterlyRows[i]) {
+                    quarterlyRows[i].cells[1].textContent = formatNumber(allocatedQty, 0);
+                    quarterlyRows[i].cells[2].textContent = allocatedRakes.toFixed(2);
+                    quarterlyRows[i].cells[3].textContent = formatNumber(actualQty, 0);
+                    quarterlyRows[i].cells[4].textContent = actualRakes.toFixed(2);
+                    
+                    // Calculate percentage
+                    const percentage = allocatedQty > 0 ? (actualQty / allocatedQty) * 100 : 0;
+                    quarterlyRows[i].cells[5].textContent = `${percentage.toFixed(2)}%`;
+                }
+            }
+        }
+
+        function updateQuarterlyLabels() {
+            const quarterLabels = ['q1-label', 'q2-label', 'q3-label', 'q4-label'];
+            const quarterNames = ['Q1 (Apr-Jun)', 'Q2 (Jul-Sep)', 'Q3 (Oct-Dec)', 'Q4 (Jan-Mar)'];
+            const quarterInputs = ['quarter-1', 'quarter-2', 'quarter-3', 'quarter-4'];
+
+            quarterLabels.forEach((labelId, index) => {
+                const labelElement = document.getElementById(labelId);
+                const inputElement = document.getElementById(quarterInputs[index]);
+                
+                if (labelElement && inputElement) {
+                    const percentage = parseFloat(inputElement.value) || 0;
+                    labelElement.textContent = `${quarterNames[index]} ${percentage}%`;
+                }
+            });
+        }
+
+        function updateSummaryTable() {
+            const table = document.getElementById("coal-table");
+            const summaryTable = document.getElementById("summary-table");
+            
+            if (!table || !summaryTable) return;
+            
+            const rows = Array.from(table.rows).slice(1);
+            const summaryRows = Array.from(summaryTable.rows).slice(1);
+
+            let totalAllocatedQty = 0;
+            let totalAllocatedRakes = 0;
+            let totalActualQty = 0;
+            let totalActualRakes = 0;
+
+            // Calculate totals from monthly table
+            rows.forEach(row => {
+                totalAllocatedQty += parseFloat(row.cells[1].textContent.replace(/,/g, '')) || 0;
+                totalAllocatedRakes += parseFloat(row.cells[2].textContent.replace(/,/g, '')) || 0;
+                totalActualQty += parseFloat(row.cells[3].textContent.replace(/,/g, '')) || 0;
+                totalActualRakes += parseFloat(row.cells[4].textContent.replace(/,/g, '')) || 0;
+            });
+
+            // Update Total Quantity row
+            if (summaryRows[0]) {
+                summaryRows[0].cells[1].textContent = formatNumber(totalAllocatedQty, 0);
+                summaryRows[0].cells[2].textContent = formatNumber(totalActualQty, 0);
+                summaryRows[0].cells[3].textContent = formatNumber(totalActualQty - totalAllocatedQty, 0);
+                
+                const qtyPercentage = totalAllocatedQty > 0 ? (totalActualQty / totalAllocatedQty) * 100 : 0;
+                summaryRows[0].cells[4].textContent = `${qtyPercentage.toFixed(2)}%`;
+            }
+
+            // Update Total Rakes row
+            if (summaryRows[1]) {
+                summaryRows[1].cells[1].textContent = formatNumber(totalAllocatedRakes, 0);
+                summaryRows[1].cells[2].textContent = formatNumber(totalActualRakes, 0);
+                summaryRows[1].cells[3].textContent = formatNumber(totalActualRakes - totalAllocatedRakes, 0);
+                
+                const rakesPercentage = totalAllocatedRakes > 0 ? (totalActualRakes / totalAllocatedRakes) * 100 : 0;
+                summaryRows[1].cells[4].textContent = `${rakesPercentage.toFixed(2)}%`;
+            }
+        }
+
+        function updatePerDayValues() {
+            const acqInput = document.getElementById("acq-input");
+            const rakeInput = document.getElementById("rake-quantity-input");
+            const table = document.getElementById("coal-table");
+            const perDayTable = document.getElementById("per-day-table");
+            
+            if (!table || !perDayTable) return;
+            
+            const acqValue = parseFloat(acqInput?.value) || 0;
+            const rakeValue = parseFloat(rakeInput?.value) || 0;
+            const perDayRows = Array.from(perDayTable.rows).slice(1);
+            const monthlyRows = Array.from(table.rows).slice(1);
+
+            const daysInMonth = [30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 28, 31];
+
+            perDayRows.forEach((row, index) => {
+                if (index < monthlyRows.length && index < daysInMonth.length) {
+                    const allocatedQty = parseFloat(monthlyRows[index].cells[1].textContent.replace(/,/g, '')) || 0;
+                    const allocatedRakes = parseFloat(monthlyRows[index].cells[2].textContent.replace(/,/g, '')) || 0;
+                    const actualQty = parseFloat(monthlyRows[index].cells[3].textContent.replace(/,/g, '')) || 0;
+                    const actualRakes = parseFloat(monthlyRows[index].cells[4].textContent.replace(/,/g, '')) || 0;
+                    
+                    const days = daysInMonth[index];
+                    
+                    row.cells[1].textContent = (allocatedQty / days).toFixed(2);
+                    row.cells[2].textContent = (allocatedRakes / days).toFixed(2);
+                    row.cells[3].textContent = actualQty > 0 ? (actualQty / days).toFixed(2) : '0.00';
+                    row.cells[4].textContent = actualRakes > 0 ? (actualRakes / days).toFixed(2) : '0.00';
+                    
+                    // Calculate percentage
+                    const percentage = allocatedQty > 0 ? (actualQty / allocatedQty) * 100 : 0;
+                    row.cells[5].textContent = `${percentage.toFixed(2)}%`;
+                }
+            });
+        }
+
+        function updatePercentages() {
+            const table = document.getElementById("coal-table");
+            if (!table) return;
+            
+            const rows = Array.from(table.rows).slice(1);
+            rows.forEach(row => {
+                const allocatedQty = parseFloat(row.cells[1].textContent.replace(/,/g, '')) || 0;
+                const actualQty = parseFloat(row.cells[3].textContent.replace(/,/g, '')) || 0;
+                const percentage = allocatedQty > 0 ? (actualQty / allocatedQty) * 100 : 0;
+                row.cells[5].textContent = `${percentage.toFixed(2)}%`;
+            });
+            
+            // Update summary table when percentages change
+            updateSummaryTable();
+        }
+
+        // Initialize redistribution functionality
+        function initializeRedistribution() {
+            const table = document.getElementById('coal-table'); // Correct table ID
+            const acqInput = document.getElementById('acq-input');
+            const rakeInput = document.getElementById('rake-quantity-input');
+            
+            if (!table || !acqInput || !rakeInput) {
+                console.error('Required elements not found for redistribution');
+                return;
+            }
+            
+            console.log('Initializing redistribution functionality');
+
+            // Global variables for debouncing and preventing conflicts
+            let inputTimeout = null;
+            let isProcessingInput = false;
+            let lastTabTime = 0;
+            let isTabPressed = false;
+
+            // Function to select all text in a cell
+            function selectAllTextInCell(cell) {
+                try {
+                    const range = document.createRange();
+                    range.selectNodeContents(cell);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                } catch (error) {
+                    console.log('Text selection error:', error);
+                }
+            }
+
+            // Function to calculate actual rakes when actual quantity is entered
+            function updateActualRakesForRow(actualQuantityCell) {
+                const rakeCapacity = parseFloat(rakeInput.value) || 0;
+                if (rakeCapacity === 0) return;
+
+                const row = actualQuantityCell.closest('tr');
+                const cellContent = actualQuantityCell.textContent.trim();
+                
+                // Handle empty cells
+                if (cellContent === '') {
+                    row.cells[4].textContent = '0.00'; // Actual rakes
+                    row.cells[5].textContent = '0.00%'; // Percentage
+                    return;
+                }
+                
+                const actualQuantity = parseFloat(actualQuantityCell.textContent.replace(/,/g, '')) || 0;
+                const actualRakes = actualQuantity / rakeCapacity;
+                
+                // Update the actual rakes cell (column 4)
+                row.cells[4].textContent = actualRakes.toFixed(2);
+                
+                // Update percentage (column 5) - Actual/Allocated
+                const allocatedQuantity = parseFloat(row.cells[1].textContent.replace(/,/g, '')) || 0;
+                const percentage = allocatedQuantity > 0 ? (actualQuantity / allocatedQuantity) * 100 : 0;
+                row.cells[5].textContent = `${percentage.toFixed(2)}%`;
+            }
+
+            // Function to get quarter for a month (0-based month index)
+            function getQuarterForMonth(monthIndex) {
+                // April(0), May(1), June(2) = Q1
+                // July(3), August(4), September(5) = Q2  
+                // October(6), November(7), December(8) = Q3
+                // January(9), February(10), March(11) = Q4
+                return Math.floor(monthIndex / 3);
+            }
+
+            // Function to get quarterly percentage for a month
+            function getQuarterlyPercentage(monthIndex) {
+                const quarterIndex = getQuarterForMonth(monthIndex);
+                const quarterInputs = [
+                    document.getElementById('quarter-1'),
+                    document.getElementById('quarter-2'), 
+                    document.getElementById('quarter-3'),
+                    document.getElementById('quarter-4')
+                ];
+                
+                const value = parseFloat(quarterInputs[quarterIndex]?.value) || 0;
+                console.log(`Month ${monthIndex} is in quarter ${quarterIndex + 1}, percentage: ${value}%`);
+                return value;
+            }
+
+            // Function to redistribute actual quantities among remaining months
+            function redistributeActualQuantities(changedCell) {
+                console.log('Redistributing quantities...');
+                const acq = parseFloat(acqInput.value) || 0;
+                if (acq === 0) {
+                    console.log('ACQ is 0, no redistribution');
+                    return;
+                }
+
+                const table = document.getElementById('coal-table');
+                const rows = Array.from(table.rows).slice(1); // Skip header
+                
+                // Find the changed row index
+                let changedRowIndex = -1;
+                rows.forEach((row, index) => {
+                    if (row.cells[3] === changedCell) {
+                        changedRowIndex = index;
+                    }
+                });
+
+                if (changedRowIndex === -1) return;
+
+                // Parse and format the new value from the changed cell
+                let changedValue = parseFloat(changedCell.textContent.replace(/,/g, '')) || 0;
+                console.log('Changed month index:', changedRowIndex, 'Changed value:', changedValue);
+                
+                // Validate if the new value exceeds ACQ
+                if (changedValue > acq) {
+                    alert(`Actual quantity cannot exceed ACQ (${formatNumber(acq)} MT). Please enter a valid value.`);
+                    changedCell.textContent = '0';
+                    changedValue = 0;
+                }
+
+                // Update the changed cell with proper formatting
+                changedCell.textContent = formatNumber(changedValue);
+                
+                // If this cell is currently being edited (has focus), set cursor to end
+                if (document.activeElement === changedCell || changedCell.hasAttribute('data-in-input')) {
+                    setCursorToEnd(changedCell);
+                }
+                
+                updateActualRakesForRow(changedCell);
+
+                // Calculate total used quantity from current month and all previous months
+                let totalUsedQuantity = 0;
+                for (let i = 0; i <= changedRowIndex; i++) {
+                    const cellContent = rows[i].cells[3].textContent.trim();
+                    const actualValue = cellContent === '' ? 0 : (parseFloat(rows[i].cells[3].textContent.replace(/,/g, '')) || 0);
+                    totalUsedQuantity += actualValue;
+                    console.log(`Month ${i} quantity:`, actualValue);
+                }
+
+                console.log('Total used quantity (up to changed month):', totalUsedQuantity);
+
+                // Calculate remaining quantity to distribute among subsequent months
+                const remainingQuantity = acq - totalUsedQuantity;
+                console.log('Remaining quantity for subsequent months:', remainingQuantity);
+
+                if (remainingQuantity < 0) {
+                    alert(`Total actual quantities exceed ACQ. Please adjust values.`);
+                    return;
+                }
+
+                // Find subsequent months that should receive redistributed quantity
+                // (only months after the changed month)
+                const subsequentMonths = [];
+                let totalQuarterlyPercent = 0;
+                
+                for (let i = changedRowIndex + 1; i < rows.length; i++) {
+                    const quarterlyPercent = getQuarterlyPercentage(i);
+                    if (quarterlyPercent > 0) {
+                        subsequentMonths.push({
+                            row: rows[i],
+                            index: i,
+                            quarterlyPercent: quarterlyPercent
+                        });
+                        totalQuarterlyPercent += quarterlyPercent;
+                        console.log(`Subsequent month ${i} available for redistribution with ${quarterlyPercent}%`);
+                    }
+                }
+
+                console.log('Subsequent months to redistribute:', subsequentMonths.length);
+                console.log('Total quarterly percent for redistribution:', totalQuarterlyPercent);
+
+                // Redistribute remaining quantity proportionally among subsequent months
+                if (subsequentMonths.length > 0 && totalQuarterlyPercent > 0) {
+                    subsequentMonths.forEach(monthData => {
+                        const proportionalShare = (monthData.quarterlyPercent / totalQuarterlyPercent) * remainingQuantity;
+                        console.log(`Month ${monthData.index} gets proportional share:`, proportionalShare);
+                        
+                        // Update the actual quantity cell (column 3)
+                        monthData.row.cells[3].textContent = formatNumber(Math.max(0, proportionalShare));
+                        
+                        // If this is the currently active cell, set cursor to end
+                        if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
+                            setCursorToEnd(monthData.row.cells[3]);
+                        }
+                        
+                        // Update actual rakes and percentage for this row
+                        updateActualRakesForRow(monthData.row.cells[3]);
+                    });
+                } else if (subsequentMonths.length > 0) {
+                    // If no quarterly percentages, distribute equally among subsequent months
+                    const equalShare = remainingQuantity / subsequentMonths.length;
+                    subsequentMonths.forEach(monthData => {
+                        monthData.row.cells[3].textContent = formatNumber(Math.max(0, equalShare));
+                        
+                        // If this is the currently active cell, set cursor to end
+                        if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
+                            setCursorToEnd(monthData.row.cells[3]);
+                        }
+                        
+                        updateActualRakesForRow(monthData.row.cells[3]);
+                    });
+                }
+                
+                // Update all dependent calculations
+                updateQuarterlyTable();
+                updatePercentages();
+                updatePerDayValues();
+                updateSummaryTable();
+                
+                console.log('Redistribution completed');
+            }
+
+            // Function to set cursor to the end of a contenteditable element
+            function setCursorToEnd(element) {
+                setTimeout(() => {
+                    try {
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        
+                        if (element.firstChild) {
+                            range.setStart(element.firstChild, element.firstChild.textContent.length);
+                            range.setEnd(element.firstChild, element.firstChild.textContent.length);
+                        } else {
+                            range.selectNodeContents(element);
+                            range.collapse(false);
+                        }
+                        
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } catch (error) {
+                        console.warn("Could not set cursor position:", error);
+                    }
+                }, 0);
+            }
+
+            // Listen for changes in actual quantity cells - only on actual typing/input
+            table.addEventListener("input", function(event) {
+                if (event.target.classList.contains("actual-quantity")) {
+                    console.log("INPUT EVENT TRIGGERED - Actual quantity:", event.target.textContent);
+                    
+                    // Set processing flag to block tab navigation
+                    isProcessingInput = true;
+                    
+                    // Clear any existing timeout
+                    if (inputTimeout) {
+                        clearTimeout(inputTimeout);
+                    }
+                    
+                    // Store the fact that we're in an input event
+                    event.target.setAttribute('data-in-input', 'true');
+                    
+                    // Store cursor position before cleaning
+                    const selection = window.getSelection();
+                    let cursorPosition = 0;
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        cursorPosition = range.startOffset;
+                    }
+                    
+                    // Validate and clean input - only allow numbers and one decimal point
+                    let originalValue = event.target.textContent;
+                    let cleanedValue = originalValue.replace(/[^0-9.]/g, '');
+                    
+                    // Allow only one decimal point
+                    const decimalCount = (cleanedValue.match(/\./g) || []).length;
+                    if (decimalCount > 1) {
+                        // Remove extra decimal points, keep only the first one
+                        const firstDecimalIndex = cleanedValue.indexOf('.');
+                        cleanedValue = cleanedValue.substring(0, firstDecimalIndex + 1) + cleanedValue.substring(firstDecimalIndex + 1).replace(/\./g, '');
+                    }
+                    
+                    // Update the cell content only if it was actually modified
+                    if (cleanedValue !== originalValue) {
+                        event.target.textContent = cleanedValue;
+                        
+                        // Restore cursor position, but don't go beyond the cleaned content length
+                        const newCursorPosition = Math.min(cursorPosition, cleanedValue.length);
+                        
+                        // Set cursor position with debouncing
+                        inputTimeout = setTimeout(() => {
+                            try {
+                                const range = document.createRange();
+                                const selection = window.getSelection();
+                                
+                                if (event.target.firstChild) {
+                                    range.setStart(event.target.firstChild, newCursorPosition);
+                                    range.setEnd(event.target.firstChild, newCursorPosition);
+                                } else {
+                                    range.selectNodeContents(event.target);
+                                    range.collapse(false);
+                                }
+                                
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                            } catch (error) {
+                                console.warn("Could not set cursor position:", error);
+                            }
+                            // Clear processing flag after cursor positioning
+                            isProcessingInput = false;
+                        }, 50); // Increased delay for better debouncing
+                    }
+                    
+                    // Update rakes immediately while typing
+                    updateActualRakesForRow(event.target);
+                    
+                    // Update quarterly and per day tables to reflect changes (but don't redistribute on every keystroke)
+                    updateQuarterlyTable();
+                    updatePerDayValues();
+                    updateSummaryTable();
+                    
+                    // Remove the input flag after a short delay
+                    setTimeout(() => {
+                        event.target.removeAttribute('data-in-input');
+                        // Ensure processing flag is cleared even if cursor positioning fails
+                        if (isProcessingInput) {
+                            isProcessingInput = false;
+                        }
+                    }, 100);
+                }
+            });
+
+            // Handle keyboard events - Numeric validation, Tab navigation, and Enter
+            table.addEventListener("keydown", function(event) {
+                if (event.target.classList.contains("actual-quantity")) {
+                    // Handle Tab navigation (both forward and backward)
+                    if (event.key === "Tab") {
+                        event.preventDefault();
+                        
+                        // Prevent key repeat issues with long press
+                        const currentTime = Date.now();
+                        if (event.repeat || (currentTime - lastTabTime < 150)) {
+                            console.log("Tab ignored - too fast or repeat");
+                            return;
+                        }
+                        lastTabTime = currentTime;
+                        
+                        // Clear any pending input timeouts to prevent interference
+                        if (inputTimeout) {
+                            clearTimeout(inputTimeout);
+                            inputTimeout = null;
+                        }
+                        
+                        // Block tab navigation if input is being processed
+                        if (isProcessingInput) {
+                            console.log("Tab blocked - input processing in progress");
+                            return;
+                        }
+                        
+                        const cells = Array.from(table.querySelectorAll('.actual-quantity'));
+                        const currentIndex = cells.indexOf(event.target);
+                        
+                        if (event.shiftKey) {
+                            // Shift+Tab: Move backward, stop at first cell
+                            if (currentIndex > 0) {
+                                const prevCell = cells[currentIndex - 1];
+                                prevCell.focus();
+                                selectAllTextInCell(prevCell);
+                            }
+                        } else {
+                            // Tab: Move forward, stop at last cell
+                            if (currentIndex >= 0 && currentIndex < cells.length - 1) {
+                                const nextCell = cells[currentIndex + 1];
+                                nextCell.focus();
+                                selectAllTextInCell(nextCell);
+                            }
+                        }
+                        return;
+                    }
+                    
+                    // Handle Enter key
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        event.target.blur(); // This will trigger the blur event for redistribution
+                        return;
+                    }
+                    
+                    // Handle numeric validation
+                    const allowedKeys = [
+                        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Home", "End", "Escape"
+                    ];
+                    
+                    // Allow navigation and control keys
+                    if (allowedKeys.includes(event.key)) {
+                        return; // Allow these keys
+                    }
+                    
+                    // Allow numbers
+                    if (/^[0-9]$/.test(event.key)) {
+                        return; // Allow numbers
+                    }
+                    
+                    // Allow decimal point only if there isn't one already
+                    if (event.key === "." || event.key === ",") {
+                        const currentText = event.target.textContent;
+                        if (!currentText.includes(".")) {
+                            return; // Allow first decimal point
+                        }
+                    }
+                    
+                    // Block all other keys
+                    event.preventDefault();
+                }
+            });
+
+            // Handle key release to reset tab state
+            table.addEventListener("keyup", function(event) {
+                if (event.key === "Tab") {
+                    isTabPressed = false;
+                }
+            });
+
+            // Prevent paste of non-numeric content
+            table.addEventListener("paste", function(event) {
+                if (event.target.classList.contains("actual-quantity")) {
+                    event.preventDefault();
+                    
+                    // Get pasted text
+                    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+                    
+                    // Clean the pasted text to only allow numbers and one decimal
+                    let cleanText = pastedText.replace(/[^0-9.]/g, '');
+                    
+                    // Allow only one decimal point
+                    const decimalCount = (cleanText.match(/\./g) || []).length;
+                    if (decimalCount > 1) {
+                        const firstDecimalIndex = cleanText.indexOf('.');
+                        cleanText = cleanText.substring(0, firstDecimalIndex + 1) + cleanText.substring(firstDecimalIndex + 1).replace(/\./g, '');
+                    }
+                    
+                    // Insert the cleaned text
+                    if (cleanText) {
+                        event.target.textContent = cleanText;
+                        updateActualRakesForRow(event.target);
+                        
+                        // Place cursor at the end
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.selectNodeContents(event.target);
+                        range.collapse(false);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            });
+
+            // Only trigger redistribution on blur if there was actual content change
+            let originalValue = '';
+            table.addEventListener("focus", function(event) {
+                if (event.target.classList.contains("actual-quantity")) {
+                    // Store original value when focusing
+                    originalValue = event.target.textContent.trim();
+                    console.log("Focus - Original value:", originalValue);
+                    
+                    // Select all text when clicking on a cell
+                    setTimeout(() => {
+                        selectAllTextInCell(event.target);
+                    }, 50);
+                }
+            }, true);
+
+            table.addEventListener("blur", function(event) {
+                if (event.target.classList.contains("actual-quantity")) {
+                    console.log("BLUR EVENT TRIGGERED for cell:", event.target);
+                    const currentValue = event.target.textContent.trim();
+                    console.log("Original value:", originalValue, "Current value:", currentValue);
+                    
+                    // Only redistribute if the value actually changed
+                    if (currentValue !== originalValue) {
+                        console.log("BLUR EVENT - Value changed from", originalValue, "to", currentValue);
+                        
+                        if (currentValue !== '') {
+                            redistributeActualQuantities(event.target);
+                        } else {
+                            // If cell is empty, just update rakes and percentages for this cell
+                            updateActualRakesForRow(event.target);
+                            updateQuarterlyTable();
+                            updatePercentages();
+                            updatePerDayValues();
+                            updateSummaryTable();
+                        }
+                    } else {
+                        console.log("BLUR EVENT - No value change, no redistribution");
+                    }
+                }
+            }, true);
+            
+            console.log('Redistribution event listeners attached to coal-table');
+        }
+
+        // Additional calculator functions
+        function validateInput(event) {
+            const input = event.target;
+            const value = input.value.trim();
+            const resultContainer = document.getElementById('input-error-badge');
+
+            // Badge warning HTMLs
+            const badgeMissing = `
+                <span class="badge rounded-pill bg-danger text-white">
+                  <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                  Please enter a value.
+                </span>
+            `;
+            const badgeNegative = `
+                <span class="badge rounded-pill bg-danger text-white">
+                  <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                  Please enter a valid non-negative value.
+                </span>
+            `;
+
+            // Check for missing or negative input
+            if (value === "") {
+                if (resultContainer) {
+                    resultContainer.style.display = 'block';
+                    resultContainer.innerHTML = badgeMissing;
+                }
+                return;
+            }
+            if (!isNaN(value) && parseFloat(value) < 0) {
+                if (resultContainer) {
+                    resultContainer.style.display = 'block';
+                    resultContainer.innerHTML = badgeNegative;
+                }
+                return;
+            }
+
+            // Hide badge if input is valid
+            if (resultContainer) {
+                resultContainer.style.display = 'none';
+                resultContainer.innerHTML = '';
+            }
+        }
+
+        // ACQ enforcement for actual quantity cells
+        function enforceACQLimit() {
+            const acqInput = document.getElementById("acq-input");
+            
+            document.querySelectorAll('.actual-quantity').forEach((cell, index, cells) => {
+                cell.addEventListener('input', () => {
+                    const acq = parseInt(acqInput.value, 10);
+                    let total = 0;
+
+                    // Calculate the sum of the current cell and all preceding cells
+                    for (let i = 0; i <= index; i++) {
+                        const value = parseInt(cells[i].innerText, 10);
+                        if (!isNaN(value)) {
+                            total += value;
+                        }
+                    }
+
+                    const currentValue = parseInt(cell.innerText, 10);
+
+                    // If the sum exceeds ACQ, reset the current cell
+                    if (total > acq) {
+                        const previousTotal = total - currentValue;
+                        const maxAllowed = acq - previousTotal;
+                        cell.innerText = Math.max(0, maxAllowed);
+                    }
+                });
+            });
+        }
+
+        // Quarter percentage validation
+        function initializeQuarterValidation() {
+            const quarterPercentages = [0.25, 0.22, 0.25, 0.28];
+            const quarterInputs = document.querySelectorAll('.quarter-input');
+            const errorMessage = document.getElementById('error-message');
+            const quarterLabels = [
+                document.getElementById('q1-label'),
+                document.getElementById('q2-label'),
+                document.getElementById('q3-label'),
+                document.getElementById('q4-label'),
+            ];
+
+            function validateAndUpdatePercentages() {
+                let totalPercentage = 0;
+
+                quarterInputs.forEach((input, index) => {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value)) {
+                        totalPercentage += value;
+                        quarterPercentages[index] = value / 100;
+
+                        if (quarterLabels[index]) {
+                            quarterLabels[index].textContent = `Q${index + 1} (${["Apr-Jun", "Jul-Sep", "Oct-Dec", "Jan-Mar"][index]}) ${value}%`;
+                        }
+                    }
+                });
+
+                const badgePercentageExceed = `
+                    <span class="badge rounded-pill bg-danger text-white">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                        The total percentage cannot exceed 100%.
+                    </span>
+                `;
+
+                const badgePercentageLess = `
+                    <span class="badge rounded-pill bg-danger text-white">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                        The total percentage cannot be less than 100%.
+                    </span>
+                `;
+
+                if (totalPercentage > 100) {
+                    if (errorMessage) {
+                        errorMessage.style.display = 'block';
+                        errorMessage.innerHTML = badgePercentageExceed;
+                    }
+                } else if (totalPercentage < 100) {
+                    if (errorMessage) {
+                        errorMessage.style.display = 'block';
+                        errorMessage.innerHTML = badgePercentageLess;
+                    }
+                } else {
+                    if (errorMessage) {
+                        errorMessage.style.display = 'none';
+                        errorMessage.innerHTML = '';
+                    }
+                }
+                
+                // Update tables when quarter percentages change
+                updateQuarterlyTable();
+                updatePerDayValues();
+            }
+
+            // Add event listeners to quarter inputs
+            quarterInputs.forEach(input => {
+                input.addEventListener('input', validateAndUpdatePercentages);
+            });
+        }
+
+        // PDF Export functionality
+        function generatePDF() {
+            closeExportMenu();
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('portrait', 'mm', 'a4');
+            
+            // Get input values
+            const acqValue = document.getElementById("acq-input").value || "0";
+            const rakeValue = document.getElementById("rake-quantity-input").value || "0";
+            
+            // Set page margins
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 15;
+            
+            // Add professional header
+            doc.setFillColor(245, 245, 245);
+            doc.rect(0, 0, pageWidth, 25, 'F');
+            
+            doc.setTextColor(64, 64, 64);
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('ACQ Distribution Report', pageWidth/2, 15, { align: 'center' });
+            
+            // Add summary information box
+            doc.setTextColor(0, 0, 0);
+            doc.setFillColor(248, 249, 250);
+            doc.rect(margin, 30, pageWidth - 2*margin, 18, 'F');
+            doc.setDrawColor(40, 167, 69);
+            doc.setLineWidth(2);
+            doc.line(margin, 30, margin, 48);
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(52, 58, 64);
+            doc.text('Inputs:', margin + 3, 38);
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(73, 80, 87);
+            doc.text(`Total ACQ: ${formatNumber(parseFloat(acqValue))} MT`, margin + 3, 43);
+            doc.text(`Total Rake Quantity: ${formatNumber(parseFloat(rakeValue))}`, pageWidth/2 + 5, 43);
+            
+            let currentY = 55;
+            
+            // Generate Monthly Table
+            currentY = addCompactTable(doc, 'Monthly Allocation & Distribution', 'coal-table', currentY, pageWidth, margin);
+            
+            // Generate Quarterly Table
+            currentY = addCompactTable(doc, 'Quarterly Summary', 'quarterly-table', currentY, pageWidth, margin);
+            
+            // Generate Per Day Table
+            currentY = addCompactTable(doc, 'Per Day Analysis', 'per-day-table', currentY, pageWidth, margin);
+            
+            // Generate Summary Table
+            currentY = addCompactTable(doc, 'Summary', 'summary-table', currentY, pageWidth, margin);
+            
+            // Add footer with generation date on right side
+            doc.setFontSize(8);
+            doc.setTextColor(108, 117, 125);
+            doc.text(`Generated: ${new Date().toLocaleDateString('en-IN')}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+            
+            // Save the PDF
+            doc.save(`ACQ-Distribution-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+        
+        // Helper function to add compact tables to PDF for single page layout
+        function addCompactTable(doc, title, tableId, startY, pageWidth, margin) {
+            const table = document.getElementById(tableId);
+            if (!table) return startY;
+            
+            const rows = Array.from(table.rows);
+            if (rows.length === 0) return startY;
+            
+            // Add table title
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(52, 58, 64);
+            doc.text(title, margin, startY);
+            
+            // Add decorative line under title
+            doc.setDrawColor(222, 226, 230);
+            doc.setLineWidth(0.5);
+            doc.line(margin, startY + 1, pageWidth - margin, startY + 1);
+            
+            startY += 6;
+            
+            // Prepare table data
+            const headers = [];
+            const data = [];
+            
+            // Extract headers
+            if (rows[0]) {
+                Array.from(rows[0].cells).forEach(cell => {
+                    headers.push(cell.textContent.trim());
+                });
+            }
+            
+            // Extract data rows
+            for (let i = 1; i < rows.length; i++) {
+                const row = [];
+                Array.from(rows[i].cells).forEach(cell => {
+                    row.push(cell.textContent.trim());
+                });
+                data.push(row);
+            }
+            
+            // Calculate column widths based on table type
+            const tableWidth = pageWidth - 2 * margin;
+            let columnStyles = {};
+            
+            if (tableId === 'summary-table') {
+                // Summary table - 5 columns, fit to page width
+                const colWidth = tableWidth / 5;
+                columnStyles = {
+                    0: { halign: 'left', fontStyle: 'bold', cellWidth: colWidth },
+                    1: { halign: 'center', cellWidth: colWidth },
+                    2: { halign: 'center', cellWidth: colWidth },
+                    3: { halign: 'center', cellWidth: colWidth },
+                    4: { halign: 'center', cellWidth: colWidth }
+                };
+            } else {
+                // Monthly, Quarterly, Per Day tables - 6 columns, consistent widths
+                const colWidths = [
+                    tableWidth * 0.22,  // Month/Quarter name (22%)
+                    tableWidth * 0.156, // Allocated Qty (15.6%)
+                    tableWidth * 0.156, // Allocated Rakes (15.6%)
+                    tableWidth * 0.156, // Actual Qty (15.6%)
+                    tableWidth * 0.156, // Actual Rakes (15.6%)
+                    tableWidth * 0.156  // Percentage (15.6%)
+                ];
+                
+                columnStyles = {
+                    0: { halign: 'left', fontStyle: 'bold', cellWidth: colWidths[0] },
+                    1: { halign: 'center', cellWidth: colWidths[1] },
+                    2: { halign: 'center', cellWidth: colWidths[2] },
+                    3: { halign: 'center', cellWidth: colWidths[3] },
+                    4: { halign: 'center', cellWidth: colWidths[4] },
+                    5: { halign: 'center', cellWidth: colWidths[5] }
+                };
+            }
+            
+            // Create the compact table
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: startY,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [245, 245, 245],
+                    textColor: [64, 64, 64],
+                    fontStyle: 'bold',
+                    fontSize: 8,
+                    halign: 'center',
+                    valign: 'middle',
+                    cellPadding: 1
+                },
+                bodyStyles: {
+                    fontSize: 7,
+                    halign: 'center',
+                    valign: 'middle',
+                    cellPadding: 1
+                },
+                columnStyles: columnStyles,
+                alternateRowStyles: {
+                    fillColor: [248, 249, 250]
+                },
+                margin: { left: margin, right: margin },
+                tableWidth: tableWidth,
+                styles: {
+                    lineColor: [222, 226, 230],
+                    lineWidth: 0.1,
+                    cellPadding: 1
+                },
+                didParseCell: function(data) {
+                    // Highlight quarterly rows
+                    if (data.row.raw[0] && (
+                        data.row.raw[0].includes("Q1") ||
+                        data.row.raw[0].includes("Q2") ||
+                        data.row.raw[0].includes("Q3") ||
+                        data.row.raw[0].includes("Q4")
+                    )) {
+                        data.cell.styles.fillColor = [233, 236, 239];
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.textColor = [52, 58, 64];
+                    }
+                }
+            });
+            
+            return doc.lastAutoTable.finalY + 8;
+        }
+
+    </script>
+</body>
+</html>
