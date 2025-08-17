@@ -342,10 +342,10 @@ function showCalculatorsPage() {
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-primary">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-shuffle text-primary me-3 fs-5"></i>
-                                <span class="fw-medium">Blended Coal Analysis</span>
+                                <span class="fw-medium">Coal Blending Analysis</span>
                             </div>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('Blended Coal Analysis')" disabled>
-                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            <button class="btn btn-primary btn-sm" onclick="window.open('Coal Blending Analysis.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
                             </button>
                         </div>
 
@@ -353,10 +353,10 @@ function showCalculatorsPage() {
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-success">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-fuel-pump text-success me-3 fs-5"></i>
-                                <span class="fw-medium">Alternate Fuel Cost Economics</span>
+                                <span class="fw-medium">Alternate Fuel</span>
                             </div>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('Alternate Fuel Cost Economics')" disabled>
-                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            <button class="btn btn-success btn-sm" onclick="window.open('Alternate Fuel.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
                             </button>
                         </div>
 

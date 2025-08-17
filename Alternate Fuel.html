@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternate Fuel Cost Economics Calculator</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            startup: {
+                ready() {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax is loaded and ready!');
+                }
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #a9f3f3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            margin: 60px auto 20px auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .calculator-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid rgba(255, 255, 255, 0.6);
+            padding-left: 15px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .input-row {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .input-group-prepend {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .input-group-text1 {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            border: 1px solid #dee2e6;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            padding: 6px 12px;
+            font-weight: 500;
+            min-width: 180px;
+            width: 180px;
+            max-width: 180px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            height: 45px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text1:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+        }
+
+        .input-group-text2 {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-right: none;
+            padding: 6px 10px;
+            font-weight: bold;
+            min-width: 75px;
+            width: 75px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            height: 45px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text2:hover {
+            background: #f8f9fa;
+        }
+
+        .form-control {
+            flex: 1;
+            flex-shrink: 1;
+            flex-grow: 1;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            min-width: 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            outline: none;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: 45px;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #4a90e2;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border: none;
+        }
+
+        .results-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            color: #333;
+        }
+
+        .results-table tbody tr:nth-child(even) td {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .results-table tbody tr:hover td {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            display: none;
+        }
+
+        .instruction-message {
+            background: rgba(52, 73, 94, 0.9);
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(52, 73, 94, 0.8);
+        }
+
+        .result-badge {
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .result-badge.success {
+            background: rgba(39, 174, 96, 0.8);
+            color: #ffffff;
+            border: 1px solid #27ae60;
+        }
+
+        .result-badge.info {
+            background: rgba(52, 73, 94, 0.8);
+            color: #ffffff;
+            border: 1px solid #34495e;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(52, 73, 94, 0.9);
+            border: 1px solid #34495e;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-btn:hover {
+            background: rgba(52, 73, 94, 1);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .calculation-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .export-dropdown {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        .export-dropdown.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .export-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .export-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .formula-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-left: 4px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .formula-sidebar.active {
+            right: 0;
+        }
+
+        .formula-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .formula-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .formula-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-expression {
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.6;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .formula-fallback {
+            display: none;
+            color: #34495e;
+            font-size: 12px;
+            margin-top: 8px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .stored-calculations {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .stored-calc-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stored-calc-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .calc-summary .badge {
+            font-size: 10px;
+            padding: 4px 8px;
+        }
+
+        .calc-actions {
+            margin-top: 10px;
+        }
+        
+        .stored-calculation-summary {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .store-btn, .clear-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: 1px solid #20c997;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            border: 1px solid #fd7e14;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .store-btn:hover, .clear-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 20px;
+                margin: 60px 10px 20px 10px;
+            }
+
+            .input-group-text1 {
+                min-width: 120px;
+                width: 120px;
+                font-size: 0.8rem;
+            }
+
+            .input-group-text2 {
+                min-width: 60px;
+                width: 60px;
+                font-size: 0.7rem;
+            }
+
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .formula-sidebar {
+                width: 100%;
+                right: -100%;
+                padding: 15px 10px;
+            }
+
+            .results-table {
+                font-size: 12px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 8px 6px;
+            }
+
+            .back-button {
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                left: 10px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-title {
+                font-size: 24px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .input-group-prepend {
+                width: 100%;
+            }
+
+            .input-group-text1, .input-group-text2 {
+                border-radius: 8px 8px 0 0;
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .form-control {
+                border-radius: 0 0 8px 8px;
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()" title="Back to Calculators">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    <!-- Main Calculator Container -->
+    <div class="calculator-container">
+        <!-- Header -->
+        <div class="calculator-header">
+            <h1 class="calculator-title">Alternate Fuel Cost Economics Calculator</h1>
+        </div>
+
+        <!-- Error/Instruction Messages -->
+        <div class="error-message" id="errorMessage"></div>
+        <div class="instruction-message" id="instructionMessage">
+            <i class="fas fa-info-circle me-2"></i>
+            Please fill in all the required fields to see the alternate fuel cost analysis results
+        </div>
+
+        <!-- Linked Coal Properties Section -->
+        <h3 class="section-title">
+            <i class="fas fa-fire me-2"></i>Linked Coal Properties
+        </h3>
+
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Annual Coal Requirement</span>
+                        <span class="input-group-text2">MT</span>
+                    </div>
+                    <input type="number" class="form-control" id="acq-linked-coal" placeholder="0" step="0.01" min="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Landed Coal Cost</span>
+                        <span class="input-group-text2">Rs/MCal</span>
+                    </div>
+                    <input type="number" class="form-control" id="landed-cost-linked" placeholder="0" step="0.01" min="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">GCV Linked Coal</span>
+                        <span class="input-group-text2">kcal/kg</span>
+                    </div>
+                    <input type="number" class="form-control" id="gcv-linked-coal" placeholder="0" step="0.01" min="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternate Fuel Properties Section -->
+        <h3 class="section-title">
+            <i class="fas fa-leaf me-2"></i>Alternate Fuel Properties
+        </h3>
+
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Alternate Fuel %</span>
+                        <span class="input-group-text2">%</span>
+                    </div>
+                    <input type="number" class="form-control" id="alternate-fuel-percentage" placeholder="0" step="0.01" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Landed Fuel Cost</span>
+                        <span class="input-group-text2">Rs/MCal</span>
+                    </div>
+                    <input type="number" class="form-control" id="landed-cost-alternate" placeholder="0" step="0.01" min="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">GCV Alternate Fuel</span>
+                        <span class="input-group-text2">kcal/kg</span>
+                    </div>
+                    <input type="number" class="form-control" id="gcv-alternate-fuel" placeholder="0" step="0.01" min="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Plant Name Section -->
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text1">Plant Name</span>
+                        <span class="input-group-text2">Name</span>
+                    </div>
+                    <input type="text" class="form-control" id="plant-name" placeholder="Enter plant name" maxlength="50" data-allow-text="true">
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Plant Data Button -->
+        <div class="text-center">
+            <button class="store-btn" onclick="addPlantToAnalysis()" id="addPlantButton">
+                <i class="fas fa-plus me-2"></i>Add Plant to Analysis
+            </button>
+            <button class="clear-btn" onclick="clearAllInputs()">
+                <i class="fas fa-refresh me-2"></i>Clear Form
+            </button>
+            <button class="btn btn-warning" onclick="clearCurrentAnalysis()" style="margin: 10px; padding: 12px 20px; border-radius: 25px;">
+                <i class="fas fa-trash me-2"></i>Clear Analysis Table
+            </button>
+        </div>
+
+        <!-- Store Calculation Button -->
+        <div class="text-center" style="margin-top: 15px;">
+            <button class="store-btn" onclick="storeCalculation()" id="storeButton" disabled>
+                <i class="fas fa-save me-2"></i>Store Complete Analysis
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h3 class="section-title">
+                <i class="fas fa-chart-bar me-2"></i>Analysis Results
+            </h3>
+
+            <!-- Result Badges -->
+            <div id="badgeContainer" class="mb-3"></div>
+
+            <!-- Multi-Plant Analysis Table -->
+            <div class="table-responsive" style="max-height: 600px; overflow-x: auto;">
+                <table class="results-table table" id="multiPlantTable">
+                    <thead>
+                        <tr id="tableHeader">
+                            <th class="sticky-column" style="position: sticky; left: 0; background-color: #2c3e50; color: white; z-index: 10;">Parameter</th>
+                            <th style="min-width: 120px; background-color: #34495e; color: white;">Unit</th>
+                            <!-- Plant columns will be added dynamically -->
+                            <th class="total-column" style="background-color: #e74c3c; color: white;">Total/Average</th>
+                        </tr>
+                    </thead>
+                    <tbody id="multiPlantTableBody">
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Annual Coal Requirement</td>
+                            <td style="background-color: #ecf0f1;">MT</td>
+                            <td class="total-column total-acq" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Landed Linked Coal Cost</td>
+                            <td style="background-color: #ecf0f1;">Rs/MCal</td>
+                            <td class="total-column avg-landed-cost" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">GCV Linked Coal</td>
+                            <td style="background-color: #ecf0f1;">kcal/kg</td>
+                            <td class="total-column avg-gcv-linked" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Alternate Fuel %</td>
+                            <td style="background-color: #ecf0f1;">%</td>
+                            <td class="total-column avg-alt-fuel-pct" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Quantity of Linked Coal</td>
+                            <td style="background-color: #ecf0f1;">MT</td>
+                            <td class="total-column total-linked-coal-qty" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Quantity of Alternate Fuel</td>
+                            <td style="background-color: #ecf0f1;">MT</td>
+                            <td class="total-column total-alt-fuel-qty" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">Landed Alternate Fuel Cost</td>
+                            <td style="background-color: #ecf0f1;">Rs/MCal</td>
+                            <td class="total-column avg-alt-fuel-cost" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #ecf0f1; font-weight: bold;">GCV Alternate Fuel</td>
+                            <td style="background-color: #ecf0f1;">kcal/kg</td>
+                            <td class="total-column avg-gcv-alternate" style="background-color: #fadbd8; font-weight: bold;">-</td>
+                        </tr>
+                        <tr style="background-color: rgba(231, 76, 60, 0.1);">
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #e74c3c; color: white; font-weight: bold;">Additional Financial Liability</td>
+                            <td style="background-color: #e74c3c; color: white; font-weight: bold;">Rs Lakh</td>
+                            <td class="total-column total-liability" style="background-color: #c0392b; color: white; font-weight: bold;">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Stored Calculations -->
+        <div class="stored-calculations" id="storedCalculationsContainer" style="display: none;">
+            <h4 style="color: white; margin-bottom: 15px;">
+                <i class="fas fa-database me-2"></i>Stored Calculations
+            </h4>
+            <div id="storedCalculationsList"></div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="floating-btn" onclick="toggleStoredCalculations()" title="Stored Calculations">
+            <i class="fas fa-database"></i>
+            <span class="calculation-counter" id="calculationCounter">0</span>
+        </button>
+        <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
+            <i class="fas fa-calculator"></i>
+        </button>
+        <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+
+    <!-- Export Dropdown -->
+    <div class="export-dropdown" id="exportDropdown">
+        <button class="export-btn" onclick="exportToPDF()">
+            <i class="fas fa-file-pdf text-danger"></i>
+            Export as PDF
+        </button>
+        <button class="export-btn" onclick="exportToJPG()">
+            <i class="fas fa-image text-primary"></i>
+            Export as JPG
+        </button>
+    </div>
+
+    <!-- Formula Sidebar -->
+    <div class="formula-sidebar" id="formulaSidebar">
+        <div class="formula-header">
+            <h2 class="formula-title">Formulas</h2>
+            <button class="close-btn" onclick="toggleFormulas()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Quantity of Alternate Fuel} = \text{ACQ} \times \frac{\text{AF Percentage}}{100}$$
+                <div class="formula-fallback">Quantity of Alternate Fuel = ACQ × (AF Percentage ÷ 100)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Quantity of Linked Coal} = \text{ACQ} - \text{Quantity of Alternate Fuel}$$
+                <div class="formula-fallback">Quantity of Linked Coal = ACQ - Quantity of Alternate Fuel</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Energy Content} = \text{Quantity} \times \frac{\text{GCV}}{1000}$$
+                <div class="formula-fallback">Energy Content = Quantity × (GCV ÷ 1000)</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Total Cost} = \text{Energy Content} \times \text{Cost per MCal}$$
+                <div class="formula-fallback">Total Cost = Energy Content × Cost per MCal</div>
+            </div>
+        </div>
+
+        <div class="formula-item">
+            <div class="formula-expression">
+                $$\text{Additional Financial Liability} = \text{Total Cost (Mixed)} - \text{Total Cost (Linked Only)}$$
+                <div class="formula-fallback">Additional Financial Liability = Total Cost (Mixed) - Total Cost (Linked Only)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include necessary libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+                    
+                    <div class="collapse" id="aflFormula">
+                        <div class="card card-body mt-2 mb-1" style="width: fit-content;">
+                            <em style="font-size: smaller;"> <b>Additional Financial Liability :</b> (Annual Coal Requriement x Percentage of Alternate Fuel) x [(Landed Cost of Alternate Fuel x GCV of Alternate Fuel) - (Landed cost of Linked Coal x GCV of Linked Coal)] / 10^9</em>
+                        </div>
+                    </div>
+                    
+         
+<div class="table-responsive mt-2" id="aflTableContainer" style="display:none;">
+  <table class="table table-bordered table-sm text-center align-middle CoalLinkageAdvance-table" id="aflTable">
+    <thead class="table-dark">
+      <tr id="aflTableHeaderRow">
+        <th>Parameter</th>
+        <!-- Plant columns will be added by JS -->
+      </tr>
+    </thead>
+    <tbody id="aflTableBody">
+      <!-- Parameter rows will be added by JS -->
+    </tbody>
+    <tfoot id="aflTableFooter">
+      <!-- Totals will be added by JS -->
+    </tfoot>
+  </table>
+</div>
+
+
+
+
+                </div>
+          
+             
+
+
+<!--- HTML for inputs ends here-->        
+
+ 
+<!-- Include Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<!-- JavaScript for Professional Alternate Fuel Cost Economics -->
+<script>
+// Professional JavaScript with advanced features
+window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+        fontCache: 'global'
+    },
+    startup: {
+        ready() {
+            MathJax.startup.defaultReady();
+            console.log('MathJax is loaded and ready!');
+        }
+    }
+};
+
+// Global variables for professional features
+let storedCalculations = JSON.parse(localStorage.getItem('alternateFuelCalculations')) || [];
+let calculationCounter = parseInt(localStorage.getItem('alternateFuelCalculationCounter')) || 1;
+
+// Professional input validation
+document.addEventListener('DOMContentLoaded', function () {
+    function restrictNumericInput(input) {
+        input.addEventListener('keydown', function (event) {
+            const allowedKeys = [
+                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+            ];
+            if (allowedKeys.includes(event.key)) return;
+
+            if (event.key === "." && this.value.includes(".")) {
+                event.preventDefault();
+                return;
+            }
+            if (
+                event.key === '-' || event.key === '+' || event.key === 'e' ||
+                (!/^\d$/.test(event.key) && event.key !== ".")
+            ) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener('paste', function (event) {
+            const paste = (event.clipboardData || window.clipboardData).getData('text');
+            if (!/^\d*\.?\d*$/.test(paste)) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener('blur', function () {
+            const value = parseFloat(this.value.trim());
+            if (isNaN(value) || value < 0) {
+                this.value = "";
+            }
+        });
+    }
+
+    function applyUniversalNumericRestriction() {
+        document.querySelectorAll('input:not([data-allow-text="true"])').forEach(input => {
+            restrictNumericInput(input);
+        });
+    }
+
+    applyUniversalNumericRestriction();
+    
+    // Initialize professional features
+    initializeStoredCalculations();
+    setupEventListeners();
+    
+    // Prevent form submission on Enter
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    });
+});
+
+// Professional event listeners setup
+function setupEventListeners() {
+    const alternateFuelInputs = [
+        "acq-linked-coal", "landed-cost-linked", "gcv-linked-coal",
+        "alternate-fuel-percentage", "landed-cost-alternate", "gcv-alternate-fuel"
+    ];
+
+    alternateFuelInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', calculateAlternateFuelCostEconomics);
+            input.addEventListener('input', showAlternateFuelBadges);
+        }
+    });
+
+    // Enhanced input validation
+    alternateFuelInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keydown', function(e) {
+                if (
+                    [46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                    ((e.ctrlKey || e.metaKey) && [65, 67, 86, 88, 90].indexOf(e.keyCode) !== -1) ||
+                    (e.keyCode >= 35 && e.keyCode <= 39)
+                ) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+                    (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+                if (e.key === '-' || e.key === '+' || e.key === 'e') {
+                    e.preventDefault();
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (parseFloat(input.value) < 0) input.value = '';
+                
+                // Auto-correct percentage if over 100
+                if (id === 'alternate-fuel-percentage' && parseFloat(input.value) > 100) {
+                    input.value = 100;
+                }
+            });
+        }
+    });
+}
+
+// Professional calculation function with enhanced features
+function calculateAlternateFuelCostEconomics() {
+    console.log('calculateAlternateFuelCostEconomics called');
+    try {
+        // Get input values with error handling
+        const inputs = {
+            acqLinkedCoal: parseFloat(document.getElementById("acq-linked-coal").value) || 0,
+            landedCostLinked: parseFloat(document.getElementById("landed-cost-linked").value) || 0,
+            gcvLinkedCoal: parseFloat(document.getElementById("gcv-linked-coal").value) || 0,
+            alternateFuelPercentage: parseFloat(document.getElementById("alternate-fuel-percentage").value) || 0,
+            landedCostAlternate: parseFloat(document.getElementById("landed-cost-alternate").value) || 0,
+            gcvAlternateFuel: parseFloat(document.getElementById("gcv-alternate-fuel").value) || 0
+        };
+
+        console.log('Input values:', inputs);
+
+        // Validation
+        const requiredInputs = Object.values(inputs);
+        if (requiredInputs.some(val => isNaN(val) || val <= 0)) {
+            console.log('Validation failed - some inputs are invalid');
+            showErrorState();
+            return;
+        }
+
+        // Calculations with enhanced precision
+        const calculations = performAlternateFuelCalculations(inputs);
+        console.log('Calculations complete:', calculations);
+        
+        // Display results with professional formatting
+        displayResults(calculations, inputs);
+        
+        // Show success state
+        showSuccessState(calculations);
+        
+    } catch (error) {
+        console.error('Calculation error:', error);
+        showErrorState();
+    }
+}
+
+// Enhanced calculation engine
+function performAlternateFuelCalculations(inputs) {
+    const {
+        acqLinkedCoal, landedCostLinked, gcvLinkedCoal,
+        alternateFuelPercentage, landedCostAlternate, gcvAlternateFuel
+    } = inputs;
+
+    // Basic calculations
+    const afPercentage = alternateFuelPercentage / 100;
+    const quantityAlternateFuel = acqLinkedCoal * afPercentage;
+    const quantityLinkedCoal = acqLinkedCoal - quantityAlternateFuel;
+    const totalQuantityMixed = acqLinkedCoal;
+
+    // Energy content calculations (in Million Calories)
+    const energyContentLinked = (quantityLinkedCoal * gcvLinkedCoal) / 1000;
+    const energyContentAlternate = (quantityAlternateFuel * gcvAlternateFuel) / 1000;
+    const totalEnergyContent = energyContentLinked + energyContentAlternate;
+
+    // Cost calculations (in Crores)
+    const totalCostLinked = (energyContentLinked * landedCostLinked) / 10000000; // Convert to crores
+    const totalCostAlternate = (energyContentAlternate * landedCostAlternate) / 10000000; // Convert to crores
+    const totalCostMixed = totalCostLinked + totalCostAlternate;
+
+    // Cost calculation if only linked coal was used
+    const totalEnergyIfOnlyLinked = (acqLinkedCoal * gcvLinkedCoal) / 1000;
+    const totalCostIfOnlyLinked = (totalEnergyIfOnlyLinked * landedCostLinked) / 10000000;
+
+    // Additional financial liability (multiplied by 1000)
+    const additionalFinancialLiability = (totalCostMixed - totalCostIfOnlyLinked) * 1000;
+
+    // Weighted average cost per MCal
+    const weightedAvgCost = totalEnergyContent > 0 ? (totalCostMixed * 10000000) / totalEnergyContent : 0;
+
+    return {
+        quantityLinkedCoal, quantityAlternateFuel, totalQuantityMixed,
+        energyContentLinked, energyContentAlternate, totalEnergyContent,
+        totalCostLinked, totalCostAlternate, totalCostMixed,
+        additionalFinancialLiability, weightedAvgCost,
+        landedCostLinked, landedCostAlternate
+    };
+}
+
+// Professional results display
+function displayResults(calculations, inputs) {
+    const {
+        quantityLinkedCoal, quantityAlternateFuel, totalQuantityMixed,
+        energyContentLinked, energyContentAlternate, totalEnergyContent,
+        totalCostLinked, totalCostAlternate, totalCostMixed,
+        additionalFinancialLiability, weightedAvgCost,
+        landedCostLinked, landedCostAlternate
+    } = calculations;
+
+    // Update all display elements with professional formatting
+    updateElement("quantity-linked-coal", quantityLinkedCoal.toFixed(2));
+    updateElement("quantity-alternate-fuel", quantityAlternateFuel.toFixed(2));
+    updateElement("total-quantity-mixed", totalQuantityMixed.toFixed(2));
+
+    updateElement("cost-per-mcal-linked", landedCostLinked.toFixed(2));
+    updateElement("cost-per-mcal-alternate", landedCostAlternate.toFixed(2));
+    updateElement("weighted-avg-cost", weightedAvgCost.toFixed(2));
+
+    updateElement("energy-content-linked", energyContentLinked.toFixed(2));
+    updateElement("energy-content-alternate", energyContentAlternate.toFixed(2));
+    updateElement("total-energy-content", totalEnergyContent.toFixed(2));
+
+    updateElement("total-cost-linked", totalCostLinked.toFixed(2));
+    updateElement("total-cost-alternate", totalCostAlternate.toFixed(2));
+    updateElement("total-cost-mixed", totalCostMixed.toFixed(2));
+
+    updateElement("additional-financial-liability", additionalFinancialLiability.toFixed(2));
+}
+
+// Utility functions
+function updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.innerText = value;
+    }
+}
+
+function formatIndianStyleNumber(num) {
+    if (isNaN(num)) return "0";
+    return new Intl.NumberFormat('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0
+    }).format(num);
+}
+
+// Professional state management
+function showErrorState() {
+    updateElementDisplay('resultsContainer', 'none');
+    updateElementDisplay('instructionMessage', 'block');
+    // Remove the empty error message display
+    updateElementDisplay('errorMessage', 'none');
+    
+    // Disable the Store Calculation button when there are errors
+    const storeButton = document.getElementById('storeButton');
+    if (storeButton) {
+        storeButton.disabled = true;
+        console.log('Store button disabled due to errors');
+    }
+}
+
+function showSuccessState(calculations) {
+    updateElementDisplay('instructionMessage', 'none');
+    updateElementDisplay('errorMessage', 'none');
+    updateElementDisplay('resultsContainer', 'block');
+    
+    // Enable the Store Calculation button when calculations are successful
+    const storeButton = document.getElementById('storeButton');
+    if (storeButton) {
+        storeButton.disabled = false;
+        console.log('Store button enabled');
+    }
+    
+    // Update badges with professional formatting
+    const badgeContainer = document.getElementById('badgeContainer');
+    if (badgeContainer) {
+        badgeContainer.innerHTML = `
+            <div class="result-badge success">
+                Weighted Avg Cost: Rs. ${calculations.weightedAvgCost.toFixed(2)}/MCal
+            </div>
+            <div class="result-badge info">
+                Additional Liability: Rs. ${calculations.additionalFinancialLiability.toFixed(2)} Crore
+            </div>
+        `;
+    }
+}
+
+function updateElementDisplay(id, display) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.style.display = display;
+    }
+}
+
+function showAlternateFuelBadges() {
+    // This function can be used for additional badge functionality
+    calculateAlternateFuelCostEconomics();
+}
+
+// Professional stored calculations management
+function initializeStoredCalculations() {
+    updateStoredCalculationsDisplay();
+}
+
+// Manual store calculation function
+function storeCalculation() {
+    try {
+        console.log('storeCalculation() called for multi-plant analysis');
+        
+        // Check if there are plants in the analysis
+        if (plantAnalysisData.length === 0) {
+            showNotification('Please add plants to analysis before storing', 'warning');
+            return;
+        }
+
+        // Create analysis summary
+        const analysisName = prompt('Enter a name for this analysis:') || `Analysis ${new Date().toLocaleDateString('en-IN')}`;
+        
+        if (!analysisName.trim()) {
+            showNotification('Analysis name is required', 'warning');
+            return;
+        }
+
+        // Calculate totals for summary
+        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
+        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
+        const avgAlternateFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
+
+        // Create analysis object
+        const analysis = {
+            id: calculationCounter++,
+            type: 'multiPlantAnalysis',
+            timestamp: new Date().toISOString(),
+            date: new Date().toLocaleDateString('en-IN'),
+            time: new Date().toLocaleTimeString('en-IN'),
+            data: {
+                analysisName: analysisName.trim(),
+                plants: [...plantAnalysisData],
+                summary: {
+                    plantCount: plantAnalysisData.length,
+                    totalACQ: totalACQ,
+                    totalLiability: totalLiability,
+                    avgAlternateFuelPct: avgAlternateFuelPct
+                }
+            }
+        };
+
+        // Store the analysis
+        storedCalculations.unshift(analysis);
+        if (storedCalculations.length > 10) {
+            storedCalculations = storedCalculations.slice(0, 10);
+        }
+
+        localStorage.setItem('alternateFuelCalculations', JSON.stringify(storedCalculations));
+        localStorage.setItem('alternateFuelCalculationCounter', calculationCounter.toString());
+        
+        updateStoredCalculationsDisplay();
+
+        showNotification(`Multi-plant analysis "${analysis.data.analysisName}" stored successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error storing analysis:', error);
+        showNotification('Error storing analysis', 'warning');
+    }
+}
+
+function updateStoredCalculationsDisplay() {
+    const container = document.getElementById('storedCalculationsList');
+    const counter = document.getElementById('calculationCounter');
+    
+    if (!container) return;
+    
+    // Update counter
+    if (counter) {
+        counter.textContent = storedCalculations.length;
+        counter.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+    }
+    
+    if (storedCalculations.length === 0) {
+        container.innerHTML = '<p class="text-muted" style="color: rgba(255,255,255,0.7);">No stored calculations yet.</p>';
+        return;
+    }
+    
+    container.innerHTML = storedCalculations.map(calc => {
+        // Handle multi-plant analysis
+        if (calc.type === 'multiPlantAnalysis') {
+            const plantNames = calc.data.plants.map(p => p.plantName).join(', ');
+            const plantCount = calc.data.plants.length;
+            const avgAltFuel = (calc.data.summary.avgAlternateFuelPct || 0).toFixed(1);
+            
+            return `
+                <div class="stored-calc-item" data-calc-id="${calc.id}">
+                    <div class="calc-header">
+                        <strong style="color: white;">${calc.data.analysisName}</strong>
+                        <small class="text-muted" style="color: rgba(255,255,255,0.7);">${calc.date} ${calc.time}</small>
+                    </div>
+                    <div class="calc-summary" style="margin: 8px 0;">
+                        <span class="badge bg-info" style="margin-right: 5px;">Plants: ${plantCount}</span>
+                        <span class="badge bg-primary" style="margin-right: 5px;">Avg AF: ${avgAltFuel}%</span>
+                        <span class="badge bg-success">Total: Rs.${calc.data.summary.totalLiability}Cr</span>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin: 5px 0;">
+                        <strong>Plants:</strong> ${plantNames}
+                    </div>
+                    <div class="calc-actions" style="display: flex; gap: 10px;">
+                        <button class="btn btn-sm btn-outline-light" onclick="loadMultiPlantAnalysis(${calc.id})" style="font-size: 12px;">
+                            <i class="fas fa-upload"></i> Load
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStoredAnalysis(${calc.id})" style="font-size: 12px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Handle legacy single calculations for backward compatibility
+            const altFuelPct = calc.inputs?.alternateFuelPercentage || 0;
+            const liability = calc.results?.additionalFinancialLiability || 0;
+            
+            return `
+                <div class="stored-calc-item" data-calc-id="${calc.id}">
+                    <div class="calc-header">
+                        <strong style="color: white;">Alternate Fuel Analysis</strong>
+                        <small class="text-muted" style="color: rgba(255,255,255,0.7);">${calc.date || 'N/A'} ${calc.time || 'N/A'}</small>
+                    </div>
+                    <div class="calc-summary" style="margin: 8px 0;">
+                        <span class="badge bg-primary" style="margin-right: 5px;">AF: ${altFuelPct}%</span>
+                        <span class="badge bg-success">Liability: Rs.${liability.toFixed(2)}Cr</span>
+                    </div>
+                    <div class="calc-actions" style="display: flex; gap: 10px;">
+                        <button class="btn btn-sm btn-outline-light" onclick="loadCalculation(${calc.id})" style="font-size: 12px;">
+                            <i class="fas fa-upload"></i> Load
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCalculation(${calc.id})" style="font-size: 12px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }).join('');
+}
+
+function loadCalculation(calcId) {
+    const calc = storedCalculations.find(c => c.id === calcId);
+    if (!calc) return;
+    
+    // Load all input values with proper mapping
+    const inputMapping = {
+        'acqLinkedCoal': 'acq-linked-coal',
+        'landedCostLinked': 'landed-cost-linked',
+        'gcvLinkedCoal': 'gcv-linked-coal',
+        'alternateFuelPercentage': 'alternate-fuel-percentage',
+        'landedCostAlternate': 'landed-cost-alternate',
+        'gcvAlternateFuel': 'gcv-alternate-fuel'
+    };
+    
+    Object.entries(calc.inputs).forEach(([key, value]) => {
+        const elementId = inputMapping[key];
+        if (elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = value;
+            }
+        }
+    });
+    
+    // Recalculate
+    calculateAlternateFuelCostEconomics();
+    
+    // Hide stored calculations
+    toggleStoredCalculations();
+    
+    // Show success notification
+    showNotification('Calculation loaded successfully!', 'success');
+}
+
+// Load multi-plant analysis
+function loadMultiPlantAnalysis(analysisId) {
+    const analysis = storedCalculations.find(c => c.id === analysisId);
+    if (!analysis || analysis.type !== 'multiPlantAnalysis') return;
+    
+    // Check if analysis has plants
+    if (!analysis.data.plants || analysis.data.plants.length === 0) {
+        showNotification('No plant data found in this analysis', 'warning');
+        return;
+    }
+    
+    // Debug: Log the complete analysis structure
+    console.log('=== LOADING ANALYSIS DEBUG ===');
+    console.log('Analysis ID:', analysisId);
+    console.log('Analysis Name:', analysis.data.analysisName);
+    console.log('Total plants stored:', analysis.data.plants.length);
+    console.log('Complete plant data:');
+    analysis.data.plants.forEach((plant, index) => {
+        console.log(`Plant ${index + 1}:`, {
+            name: plant.name,
+            inputs: plant.inputs,
+            acq: plant.inputs?.acqLinkedCoal,
+            altFuelPct: plant.inputs?.alternateFuelPercentage
+        });
+    });
+    console.log('=== END DEBUG ===');
+    
+    // Show available plants to user and let them choose
+    const plantNames = analysis.data.plants.map((plant, index) => `${index + 1}. ${plant.name} (ACQ: ${plant.inputs?.acqLinkedCoal || 'N/A'}, AF%: ${plant.inputs?.alternateFuelPercentage || 'N/A'})`).join('\n');
+    
+    let choice;
+    if (analysis.data.plants.length === 1) {
+        // If only one plant, load it automatically
+        choice = "1";
+        console.log('Auto-loading single plant:', analysis.data.plants[0].name);
+    } else {
+        // If multiple plants, let user choose
+        choice = prompt(`Analysis: ${analysis.data.analysisName}\n\nAvailable plants:\n${plantNames}\n\nEnter plant number to load (1-${analysis.data.plants.length}):`);
+        
+        if (choice === null) return; // User cancelled
+    }
+    
+    const plantIndex = parseInt(choice) - 1;
+    if (isNaN(plantIndex) || plantIndex < 0 || plantIndex >= analysis.data.plants.length) {
+        showNotification('Invalid plant number selected', 'warning');
+        return;
+    }
+    
+    const selectedPlant = analysis.data.plants[plantIndex];
+    console.log('Selected plant for loading:', selectedPlant);
+    
+    // Set input values for the selected plant
+    const inputMapping = {
+        'acqLinkedCoal': 'acq-linked-coal',
+        'landedCostLinked': 'landed-cost-linked',
+        'gcvLinkedCoal': 'gcv-linked-coal',
+        'alternateFuelPercentage': 'alternate-fuel-percentage',
+        'landedCostAlternate': 'landed-cost-alternate',
+        'gcvAlternateFuel': 'gcv-alternate-fuel'
+    };
+    
+    // Load plant name
+    document.getElementById('plant-name').value = selectedPlant.name || '';
+    console.log('Loaded plant name:', selectedPlant.name);
+    
+    // Load plant inputs
+    Object.entries(selectedPlant.inputs || {}).forEach(([key, value]) => {
+        const elementId = inputMapping[key];
+        if (elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = value;
+                console.log(`Loaded ${key}: ${value} into ${elementId}`);
+            }
+        }
+    });
+    
+    // Hide stored calculations
+    toggleStoredCalculations();
+    
+    // Show success notification
+    showNotification(`Plant "${selectedPlant.name}" data loaded. Current analysis table is preserved.`, 'success');
+}
+
+function deleteCalculation(calcId) {
+    storedCalculations = storedCalculations.filter(c => c.id !== calcId);
+    localStorage.setItem('alternateFuelCalculations', JSON.stringify(storedCalculations));
+    updateStoredCalculationsDisplay();
+    showNotification('Calculation deleted', 'warning');
+}
+
+// Delete multi-plant analysis
+function deleteStoredAnalysis(analysisId) {
+    const analysis = storedCalculations.find(c => c.id === analysisId);
+    if (analysis && confirm(`Are you sure you want to delete "${analysis.data.analysisName}"?`)) {
+        storedCalculations = storedCalculations.filter(c => c.id !== analysisId);
+        localStorage.setItem('alternateFuelCalculations', JSON.stringify(storedCalculations));
+        updateStoredCalculationsDisplay();
+        showNotification('Multi-plant analysis deleted', 'warning');
+    }
+}
+
+// Professional UI functions
+function toggleFormulas() {
+    const sidebar = document.getElementById('formulaSidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+}
+
+function toggleExportOptions() {
+    const dropdown = document.getElementById('exportDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+function toggleStoredCalculations() {
+    const container = document.getElementById('storedCalculationsContainer');
+    if (container) {
+        const isVisible = container.style.display !== 'none';
+        container.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+// Store for plant data
+let plantAnalysisData = [];
+
+// Add plant to multi-plant analysis
+function addPlantToAnalysis() {
+    // Get plant name
+    const plantName = document.getElementById("plant-name").value.trim();
+    if (!plantName) {
+        showNotification('Please enter a plant name', 'warning');
+        return;
+    }
+    
+    // Check if plant already exists
+    if (plantAnalysisData.some(plant => plant.name === plantName)) {
+        showNotification('Plant name already exists. Please use a different name.', 'warning');
+        return;
+    }
+    
+    // Get input values
+    const inputs = {
+        acqLinkedCoal: parseFloat(document.getElementById("acq-linked-coal").value) || 0,
+        landedCostLinked: parseFloat(document.getElementById("landed-cost-linked").value) || 0,
+        gcvLinkedCoal: parseFloat(document.getElementById("gcv-linked-coal").value) || 0,
+        alternateFuelPercentage: parseFloat(document.getElementById("alternate-fuel-percentage").value) || 0,
+        landedCostAlternate: parseFloat(document.getElementById("landed-cost-alternate").value) || 0,
+        gcvAlternateFuel: parseFloat(document.getElementById("gcv-alternate-fuel").value) || 0
+    };
+    
+    // Validate inputs
+    const requiredInputs = Object.values(inputs);
+    if (requiredInputs.some(val => val <= 0)) {
+        showNotification('Please fill all fields with valid values', 'warning');
+        return;
+    }
+    
+    // Calculate results for this plant
+    const calculations = performAlternateFuelCalculations(inputs);
+    
+    // Store plant data
+    const plantData = {
+        name: plantName,
+        inputs: inputs,
+        calculations: calculations
+    };
+    
+    plantAnalysisData.push(plantData);
+    
+    // Update the table
+    updateMultiPlantTable();
+    
+    // Clear inputs for next plant
+    document.getElementById("plant-name").value = '';
+    const inputFields = ['acq-linked-coal', 'landed-cost-linked', 'gcv-linked-coal', 
+                        'alternate-fuel-percentage', 'landed-cost-alternate', 'gcv-alternate-fuel'];
+    inputFields.forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    
+    // Enable store button if we have plants
+    document.getElementById('storeButton').disabled = false;
+    
+    showNotification(`Plant "${plantName}" added successfully!`, 'success');
+}
+
+// Update the multi-plant analysis table
+function updateMultiPlantTable() {
+    const headerRow = document.getElementById('tableHeader');
+    const tableBody = document.getElementById('multiPlantTableBody');
+    
+    // Clear existing plant columns (keep parameter and unit columns, and total column)
+    const existingPlantHeaders = headerRow.querySelectorAll('.plant-column');
+    existingPlantHeaders.forEach(header => header.remove());
+    
+    // Add plant columns to header
+    const totalColumn = headerRow.querySelector('.total-column');
+    plantAnalysisData.forEach((plant, index) => {
+        const th = document.createElement('th');
+        th.className = 'plant-column';
+        th.style.minWidth = '120px';
+        th.style.backgroundColor = '#3498db';
+        th.style.color = 'white';
+        th.textContent = plant.name;
+        headerRow.insertBefore(th, totalColumn);
+    });
+    
+    // Update data rows
+    const rows = tableBody.querySelectorAll('tr');
+    
+    // ACQ row
+    updateDataRow(rows[0], 'acqLinkedCoal', 'MT');
+    
+    // Landed Cost row
+    updateDataRow(rows[1], 'landedCostLinked', 'Rs/MCal');
+    
+    // GCV Linked row
+    updateDataRow(rows[2], 'gcvLinkedCoal', 'kcal/kg');
+    
+    // Alternate Fuel % row
+    updateDataRow(rows[3], 'alternateFuelPercentage', '%');
+    
+    // Quantity of Linked Coal row (calculated)
+    updateDataRow(rows[4], 'quantityLinkedCoal', 'MT', true);
+    
+    // Quantity of Alternate Fuel row (calculated)
+    updateDataRow(rows[5], 'quantityAlternateFuel', 'MT', true);
+    
+    // Landed Fuel Cost row
+    updateDataRow(rows[6], 'landedCostAlternate', 'Rs/MCal');
+    
+    // GCV Alternate row
+    updateDataRow(rows[7], 'gcvAlternateFuel', 'kcal/kg');
+    
+    // Additional Financial Liability row
+    updateDataRow(rows[8], 'additionalFinancialLiability', 'Rs Crore', true);
+    
+    // Show results container
+    updateElementDisplay('resultsContainer', 'block');
+    updateElementDisplay('instructionMessage', 'none');
+}
+
+// Helper function to update data rows
+function updateDataRow(row, dataKey, unit, isCalculation = false) {
+    // Clear existing plant data cells
+    const existingCells = row.querySelectorAll('.plant-data');
+    existingCells.forEach(cell => cell.remove());
+    
+    const totalCell = row.querySelector('.total-column');
+    let total = 0;
+    let count = plantAnalysisData.length;
+    
+    // Add plant data cells
+    plantAnalysisData.forEach(plant => {
+        const td = document.createElement('td');
+        td.className = 'plant-data';
+        td.style.textAlign = 'center';
+        td.style.backgroundColor = '#ebf3fd';
+        
+        let value;
+        if (isCalculation) {
+            value = plant.calculations[dataKey];
+        } else {
+            value = plant.inputs[dataKey];
+        }
+        
+        td.textContent = value.toFixed(2);
+        total += value;
+        
+        row.insertBefore(td, totalCell);
+    });
+    
+    // Update total/average
+    if (count > 0) {
+        if (dataKey === 'additionalFinancialLiability' || 
+            dataKey === 'acqLinkedCoal' || 
+            dataKey === 'quantityLinkedCoal' || 
+            dataKey === 'quantityAlternateFuel') {
+            totalCell.textContent = total.toFixed(2); // Sum for liability, ACQ, and quantities
+        } else if (dataKey === 'landedCostLinked' || dataKey === 'gcvLinkedCoal') {
+            // Weighted average w.r.t. quantity of linked coal
+            let weightedSum = 0;
+            let totalWeight = 0;
+            plantAnalysisData.forEach(plant => {
+                const weight = plant.calculations.quantityLinkedCoal;
+                const value = plant.inputs[dataKey];
+                weightedSum += value * weight;
+                totalWeight += weight;
+            });
+            const weightedAverage = totalWeight > 0 ? weightedSum / totalWeight : 0;
+            totalCell.textContent = weightedAverage.toFixed(2);
+        } else if (dataKey === 'landedCostAlternate' || dataKey === 'gcvAlternateFuel') {
+            // Weighted average w.r.t. quantity of alternate fuel
+            let weightedSum = 0;
+            let totalWeight = 0;
+            plantAnalysisData.forEach(plant => {
+                const weight = plant.calculations.quantityAlternateFuel;
+                const value = plant.inputs[dataKey];
+                weightedSum += value * weight;
+                totalWeight += weight;
+            });
+            const weightedAverage = totalWeight > 0 ? weightedSum / totalWeight : 0;
+            totalCell.textContent = weightedAverage.toFixed(2);
+        } else {
+            totalCell.textContent = (total / count).toFixed(2); // Simple average for others
+        }
+    }
+}
+
+function clearAllInputs() {
+    if (confirm('Are you sure you want to clear all inputs and analysis data?')) {
+        const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+        inputs.forEach(input => {
+            if (!input.hasAttribute('data-keep-value')) {
+                input.value = '';
+            }
+        });
+        
+        // Clear plant analysis data
+        plantAnalysisData = [];
+        
+        // Reset table to initial state
+        const headerRow = document.getElementById('tableHeader');
+        const existingPlantHeaders = headerRow.querySelectorAll('.plant-column');
+        existingPlantHeaders.forEach(header => header.remove());
+        
+        // Clear all plant data cells
+        const tableBody = document.getElementById('multiPlantTableBody');
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const plantCells = row.querySelectorAll('.plant-data');
+            plantCells.forEach(cell => cell.remove());
+            
+            // Reset total cells
+            const totalCell = row.querySelector('.total-column');
+            if (totalCell) {
+                totalCell.textContent = '-';
+            }
+        });
+        
+        // Hide results and disable store button
+        showErrorState();
+        document.getElementById('storeButton').disabled = true;
+        
+        showNotification('All inputs and analysis data cleared', 'info');
+    }
+}
+
+// Clear only the analysis table (keep input form)
+function clearCurrentAnalysis() {
+    if (confirm('Are you sure you want to clear the current analysis table? Input form will be preserved.')) {
+        // Clear plant analysis data
+        plantAnalysisData = [];
+        
+        // Reset table to initial state
+        const headerRow = document.getElementById('tableHeader');
+        const existingPlantHeaders = headerRow.querySelectorAll('.plant-column');
+        existingPlantHeaders.forEach(header => header.remove());
+        
+        // Clear all plant data cells
+        const tableBody = document.getElementById('multiPlantTableBody');
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const plantCells = row.querySelectorAll('.plant-data');
+            plantCells.forEach(cell => cell.remove());
+            
+            // Reset total cells
+            const totalCell = row.querySelector('.total-column');
+            if (totalCell) {
+                totalCell.textContent = '-';
+            }
+        });
+        
+        // Hide results and disable store button
+        showErrorState();
+        document.getElementById('storeButton').disabled = true;
+        
+        showNotification('Analysis table cleared. Input form preserved.', 'info');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} notification-toast`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Professional PDF Export
+function exportToPDF() {
+    try {
+        // Check if multi-plant analysis exists
+        if (plantAnalysisData.length === 0) {
+            showNotification('Please add plants to analysis before exporting PDF', 'warning');
+            return;
+        }
+
+        console.log('Starting PDF export for multi-plant analysis...');
+        
+        // Create a new jsPDF instance
+        let doc = new jsPDF("l", "mm", "a4"); // Landscape for wider table
+        
+        // Header
+        doc.setFontSize(18);
+        doc.setFont(undefined, 'bold');
+        doc.text('Multi-Plant Alternate Fuel Cost Economics Analysis', 20, 20);
+        
+        // Timestamp and analysis info
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 20, 30);
+        doc.text(`Total Plants: ${plantAnalysisData.length}`, 20, 36);
+        
+        // Prepare multi-plant table data
+        const tableData = [];
+        const plantNames = plantAnalysisData.map(plant => plant.name);
+        
+        // Table headers
+        const headers = ['Parameter', 'Unit', ...plantNames, 'Total/Avg'];
+        
+        // Table rows data
+        const rows = [
+            ['Annual Coal Requirement', 'MT'],
+            ['Landed Linked Coal Cost', 'Rs/MCal'],
+            ['GCV Linked Coal', 'kcal/kg'],
+            ['Alternate Fuel %', '%'],
+            ['Quantity of Linked Coal', 'MT'],
+            ['Quantity of Alternate Fuel', 'MT'],
+            ['Landed Alternate Fuel Cost', 'Rs/MCal'],
+            ['GCV Alternate Fuel', 'kcal/kg'],
+            ['Additional Financial Liability', 'Rs Lakh']
+        ];
+        
+        // Add plant data to each row
+        rows.forEach((row, rowIndex) => {
+            const paramNames = [
+                'acqLinkedCoal', 'landedCostLinked', 'gcvLinkedCoal', 'alternateFuelPercentage',
+                'quantityLinkedCoal', 'quantityAlternateFuel', 'landedCostAlternate', 
+                'gcvAlternateFuel', 'additionalFinancialLiability'
+            ];
+            
+            const paramName = paramNames[rowIndex];
+            const isCalculation = ['quantityLinkedCoal', 'quantityAlternateFuel', 'additionalFinancialLiability'].includes(paramName);
+            
+            let total = 0;
+            let count = plantAnalysisData.length;
+            
+            // Add each plant's data
+            plantAnalysisData.forEach(plant => {
+                const value = isCalculation ? plant.calculations[paramName] : plant.inputs[paramName];
+                row.push(value.toFixed(2));
+                total += value;
+            });
+            
+            // Add total/average column
+            if (['additionalFinancialLiability', 'acqLinkedCoal', 'quantityLinkedCoal', 'quantityAlternateFuel'].includes(paramName)) {
+                row.push(total.toFixed(2)); // Sum
+            } else if (paramName === 'landedCostLinked' || paramName === 'gcvLinkedCoal') {
+                // Weighted average by linked coal quantity
+                let weightedSum = 0;
+                let totalWeight = 0;
+                plantAnalysisData.forEach(plant => {
+                    const weight = plant.calculations.quantityLinkedCoal;
+                    const value = plant.inputs[paramName];
+                    weightedSum += value * weight;
+                    totalWeight += weight;
+                });
+                const weightedAvg = totalWeight > 0 ? weightedSum / totalWeight : 0;
+                row.push(weightedAvg.toFixed(2));
+            } else if (paramName === 'landedCostAlternate' || paramName === 'gcvAlternateFuel') {
+                // Weighted average by alternate fuel quantity
+                let weightedSum = 0;
+                let totalWeight = 0;
+                plantAnalysisData.forEach(plant => {
+                    const weight = plant.calculations.quantityAlternateFuel;
+                    const value = plant.inputs[paramName];
+                    weightedSum += value * weight;
+                    totalWeight += weight;
+                });
+                const weightedAvg = totalWeight > 0 ? weightedSum / totalWeight : 0;
+                row.push(weightedAvg.toFixed(2));
+            } else {
+                row.push((total / count).toFixed(2)); // Simple average
+            }
+        });
+        
+        // Create the table
+        doc.autoTable({
+            startY: 45,
+            head: [headers],
+            body: rows,
+            theme: 'grid',
+            styles: { 
+                fontSize: 8,
+                cellPadding: 2,
+                overflow: 'linebreak'
+            },
+            headStyles: { 
+                fillColor: [52, 152, 219],
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', fillColor: [241, 245, 249] }, // Parameter column
+                1: { fillColor: [241, 245, 249] }, // Unit column
+                [headers.length - 1]: { fontStyle: 'bold', fillColor: [255, 243, 224] } // Total/Avg column
+            },
+            alternateRowStyles: {
+                fillColor: [249, 250, 251]
+            }
+        });
+        
+        // Summary information
+        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
+        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
+        const avgAltFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
+        
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('Analysis Summary', 20, doc.lastAutoTable.finalY + 15);
+        
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            body: [
+                ['Total Plants Analyzed', `${plantAnalysisData.length}`],
+                ['Total Annual Coal Requirement', `${totalACQ.toFixed(2)} MT`],
+                ['Average Alternate Fuel Percentage', `${avgAltFuelPct.toFixed(2)}%`],
+                ['Total Additional Financial Liability', `Rs ${totalLiability.toFixed(2)} Lakh`]
+            ],
+            theme: 'grid',
+            styles: { fontSize: 10 },
+            columnStyles: {
+                0: { fontStyle: 'bold', fillColor: [248, 249, 250] }
+            }
+        });
+        
+        // Footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.text(`Page ${i} of ${pageCount}`, 20, 200);
+            doc.text('Multi-Plant Analysis - Professional Alternate Fuel Cost Economics Tool', 150, 200);
+        }
+        
+        doc.save(`Multi_Plant_Alternate_Fuel_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+        showNotification('Multi-plant PDF exported successfully!', 'success');
+        
+    } catch (error) {
+        console.error('PDF export error:', error);
+        showNotification('Error exporting PDF: ' + error.message, 'warning');
+    }
+}
+
+// Professional Multi-Plant JPG Export
+function exportToJPG() {
+    console.log('exportToJPG function called - Multi-plant version');
+    
+    try {
+        // Check if multi-plant analysis exists
+        if (plantAnalysisData.length === 0) {
+            showNotification('Please add plants to analysis before exporting JPG', 'warning');
+            return;
+        }
+
+        console.log('Starting JPG export process for multi-plant analysis...');
+        showNotification('Generating multi-plant JPG report...', 'info');
+
+        // Create a temporary container for the multi-plant table
+        const reportContainer = document.createElement('div');
+        reportContainer.id = 'tempReportContainer';
+        reportContainer.style.cssText = `
+            position: fixed;
+            top: 50px;
+            left: 50px;
+            width: 1200px;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            color: #333;
+            box-sizing: border-box;
+            z-index: 10000;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: visible;
+        `;
+        
+        // Create multi-plant table HTML
+        let tableHTML = `
+            <div style="margin-bottom: 30px;">
+                <h1 style="color: #2c3e50; font-size: 24px; margin-bottom: 10px; font-weight: bold; text-align: center;">
+                    Multi-Plant Alternate Fuel Cost Economics Analysis
+                </h1>
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 20px;">
+                    Generated on: ${new Date().toLocaleString('en-IN')} | Total Plants: ${plantAnalysisData.length}
+                </p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+                    <thead>
+                        <tr style="background: #3498db; color: white;">
+                            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Parameter</th>
+                            <th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold;">Unit</th>`;
+        
+        // Add plant name headers
+        plantAnalysisData.forEach(plant => {
+            tableHTML += `<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; min-width: 100px;">${plant.name}</th>`;
+        });
+        
+        tableHTML += `<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; background: #f39c12;">Total/Avg</th></tr></thead><tbody>`;
+        
+        // Table rows
+        const rows = [
+            ['Annual Coal Requirement', 'MT', 'acqLinkedCoal', false],
+            ['Landed Linked Coal Cost', 'Rs/MCal', 'landedCostLinked', false],
+            ['GCV Linked Coal', 'kcal/kg', 'gcvLinkedCoal', false],
+            ['Alternate Fuel %', '%', 'alternateFuelPercentage', false],
+            ['Quantity of Linked Coal', 'MT', 'quantityLinkedCoal', true],
+            ['Quantity of Alternate Fuel', 'MT', 'quantityAlternateFuel', true],
+            ['Landed Alternate Fuel Cost', 'Rs/MCal', 'landedCostAlternate', false],
+            ['GCV Alternate Fuel', 'kcal/kg', 'gcvAlternateFuel', false],
+            ['Additional Financial Liability', 'Rs Lakh', 'additionalFinancialLiability', true]
+        ];
+        
+        rows.forEach(([paramName, unit, dataKey, isCalculation], rowIndex) => {
+            const isEvenRow = rowIndex % 2 === 0;
+            const bgColor = isEvenRow ? '#f8f9fa' : '#ffffff';
+            
+            tableHTML += `<tr style="background: ${bgColor};">`;
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #ecf0f1;">${paramName}</td>`;
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; background: #ecf0f1;">${unit}</td>`;
+            
+            let total = 0;
+            let count = plantAnalysisData.length;
+            
+            // Add plant data
+            plantAnalysisData.forEach(plant => {
+                const value = isCalculation ? plant.calculations[dataKey] : plant.inputs[dataKey];
+                tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${value.toFixed(2)}</td>`;
+                total += value;
+            });
+            
+            // Add total/average
+            let totalValue;
+            if (['additionalFinancialLiability', 'acqLinkedCoal', 'quantityLinkedCoal', 'quantityAlternateFuel'].includes(dataKey)) {
+                totalValue = total.toFixed(2); // Sum
+            } else if (dataKey === 'landedCostLinked' || dataKey === 'gcvLinkedCoal') {
+                // Weighted average by linked coal quantity
+                let weightedSum = 0;
+                let totalWeight = 0;
+                plantAnalysisData.forEach(plant => {
+                    const weight = plant.calculations.quantityLinkedCoal;
+                    const value = plant.inputs[dataKey];
+                    weightedSum += value * weight;
+                    totalWeight += weight;
+                });
+                totalValue = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : '0.00';
+            } else if (dataKey === 'landedCostAlternate' || dataKey === 'gcvAlternateFuel') {
+                // Weighted average by alternate fuel quantity
+                let weightedSum = 0;
+                let totalWeight = 0;
+                plantAnalysisData.forEach(plant => {
+                    const weight = plant.calculations.quantityAlternateFuel;
+                    const value = plant.inputs[dataKey];
+                    weightedSum += value * weight;
+                    totalWeight += weight;
+                });
+                totalValue = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : '0.00';
+            } else {
+                totalValue = (total / count).toFixed(2); // Simple average
+            }
+            
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; background: #fff3cd;">${totalValue}</td>`;
+            tableHTML += `</tr>`;
+        });
+        
+        // Summary section
+        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
+        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
+        const avgAltFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
+        
+        tableHTML += `</tbody></table>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h2 style="color: #2c3e50; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Analysis Summary</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <tr style="background: #f8f9fa;">
+                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Plants Analyzed</td>
+                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${plantAnalysisData.length}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Annual Coal Requirement</td>
+                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${totalACQ.toFixed(2)} MT</td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Average Alternate Fuel Percentage</td>
+                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${avgAltFuelPct.toFixed(2)}%</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Additional Financial Liability</td>
+                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #e74c3c;">Rs ${totalLiability.toFixed(2)} Lakh</td>
+                    </tr>
+                </table>
+            </div>`;
+        
+        reportContainer.innerHTML = tableHTML;
+        document.body.appendChild(reportContainer);
+        
+        // Use html2canvas to capture the content
+        setTimeout(() => {
+            html2canvas(reportContainer, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                width: reportContainer.scrollWidth,
+                height: reportContainer.scrollHeight
+            }).then(canvas => {
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `Multi_Plant_Alternate_Fuel_Analysis_${new Date().toISOString().split('T')[0]}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                
+                // Remove temporary container
+                document.body.removeChild(reportContainer);
+                
+                showNotification('Multi-plant JPG exported successfully!', 'success');
+            }).catch(error => {
+                console.error('html2canvas error:', error);
+                document.body.removeChild(reportContainer);
+                showNotification('Error generating JPG: ' + error.message, 'warning');
+            });
+            
+        }, 200);
+        
+    } catch (error) {
+        console.error('JPG export error:', error);
+        showNotification('Error in JPG export function: ' + error.message, 'warning');
+    }
+}
+
+// Helper functions for PDF export
+function getInputDataForPDF() {
+    const inputs = [
+        ['Annual Coal Requirement', 'acq-linked-coal', '', 'MT'],
+        ['Landed Linked Coal Cost', 'landed-cost-linked', 'landed-cost-alternate', 'Rs/MCal'],
+        ['GCV', 'gcv-linked-coal', 'gcv-alternate-fuel', 'kcal/kg'],
+        ['Alternate Fuel %', '', 'alternate-fuel-percentage', '%']
+    ];
+    
+    return inputs.map(([param, id1, id2, unit]) => {
+        const val1 = id1 ? (document.getElementById(id1)?.value || '-') : '-';
+        const val2 = id2 ? (document.getElementById(id2)?.value || '-') : '-';
+        return [param, val1, val2, unit];
+    });
+}
+
+function getResultsDataForPDF() {
+    const results = [
+        ['Quantity Required', 'quantity-linked-coal', 'quantity-alternate-fuel', 'total-quantity-mixed', 'MT'],
+        ['Cost per MCal', 'cost-per-mcal-linked', 'cost-per-mcal-alternate', 'weighted-avg-cost', 'Rs/MCal'],
+        ['Total Energy Content', 'energy-content-linked', 'energy-content-alternate', 'total-energy-content', 'MCal'],
+        ['Total Cost', 'total-cost-linked', 'total-cost-alternate', 'total-cost-mixed', 'Rs Crore']
+    ];
+    
+    return results.map(([param, id1, id2, id3, unit]) => {
+        const val1 = document.getElementById(id1)?.innerText || '-';
+        const val2 = document.getElementById(id2)?.innerText || '-';
+        const val3 = document.getElementById(id3)?.innerText || '-';
+        return [param, val1, val2, val3, unit];
+    });
+}
+
+// Back Button Functionality
+function goBack() {
+    // Try to go back to parent window if opened from main app
+    if (window.opener && !window.opener.closed) {
+        try {
+            // If opened from main app, switch focus back and close this tab
+            window.opener.focus();
+            // Call function to show calculators page in parent window
+            if (typeof window.opener.showCalculatorsPage === 'function') {
+                window.opener.showCalculatorsPage();
+            }
+            window.close();
+        } catch (e) {
+            // If cross-origin or other security issues, fallback to alert
+            alert('Please use the browser back button or close this tab to return to the main application.');
+        }
+    } else {
+        // If no parent window, try to navigate to main app
+        try {
+            window.location.href = 'index.html#calculators';
+        } catch (e) {
+            alert('Please use the browser back button to return to the main application.');
+        }
+    }
+}
+
+// Close export dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('exportDropdown');
+    const formulaSidebar = document.getElementById('formulaSidebar');
+    const button = event.target.closest('.floating-btn');
+    
+    // Close export dropdown if clicking outside
+    if (dropdown && !dropdown.contains(event.target) && !button) {
+        dropdown.classList.remove('active');
+    }
+    
+    // Close formula sidebar if clicking outside
+    if (formulaSidebar && !formulaSidebar.contains(event.target) && !button) {
+        const isFormulaButton = button && button.querySelector('.fa-calculator');
+        if (!isFormulaButton) {
+            formulaSidebar.classList.remove('active');
+        }
+    }
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch(event.key) {
+            case 'p':
+                event.preventDefault();
+                exportToPDF();
+                break;
+            case 's':
+                event.preventDefault();
+                exportToJPG();
+                break;
+            case 'f':
+                event.preventDefault();
+                toggleFormulas();
+                break;
+        }
+    }
+});
+
+console.log('Professional Alternate Fuel Cost Economics loaded successfully!');
+</script>
+</body>
+</html>
