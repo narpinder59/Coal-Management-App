@@ -360,25 +360,14 @@ function showCalculatorsPage() {
                             </button>
                         </div>
 
-                        <!-- GCV Ash Moisture -->
+                        <!-- GCV Analysis Suite -->
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
                             <div class="d-flex align-items-center">
-                                <i class="bi bi-moisture text-info me-3 fs-5"></i>
-                                <span class="fw-medium">GCV Ash Moisture</span>
+                                <i class="fas fa-flask text-info me-3 fs-5"></i>
+                                <span class="fw-medium">GCV Analysis Suite</span>
                             </div>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('GCV Ash Moisture')" disabled>
-                                <i class="bi bi-hourglass-split me-1"></i>Soon
-                            </button>
-                        </div>
-
-                        <!-- GCV Equilibrium ↔ GCV ARB -->
-                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-warning">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-arrow-left-right text-warning me-3 fs-5"></i>
-                                <span class="fw-medium">GCV Equilibrium ↔ GCV ARB</span>
-                            </div>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="showComingSoon('GCV Equilibrium ARB Converter')" disabled>
-                                <i class="bi bi-hourglass-split me-1"></i>Soon
+                            <button class="btn btn-info btn-sm" onclick="window.open('GCV Ash Moisture.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
                             </button>
                         </div>
                     </div>

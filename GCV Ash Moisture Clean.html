@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional GCV Analysis Suite</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Container */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .page-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Back Button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Calculator Tabs */
+        .calculator-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .calculator-tab {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .calculator-tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-tab:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        /* Calculator Content */
+        .calculator-content {
+            display: none;
+        }
+
+        .calculator-content.active {
+            display: block;
+        }
+
+        /* Calculated Result Badge Styles */
+        .result-badge {
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: white;
+            min-width: 300px;
+        }
+        
+        .result-badge.success {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(25, 135, 84, 0.2));
+            border-color: rgba(40, 167, 69, 0.4);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-badge.success:hover {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.4), rgba(25, 135, 84, 0.3));
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(40, 167, 69, 0.2);
+        }
+
+        /* Section Styling */
+        .section-title {
+            color: white;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .instruction-message {
+            background: rgba(33, 136, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(33, 136, 255, 0.3);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            display: none;
+        }
+
+        /* Input Styling */
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-color: #28a745;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #218838, #1ea775);
+        }
+
+        /* Results Section */
+        .results-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .results-container.success {
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .floating-btn {
+            position: fixed;
+            right: 30px;
+            bottom: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .floating-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-btn:nth-child(1) { bottom: 200px; }
+        .floating-btn:nth-child(2) { bottom: 140px; }
+        .floating-btn:nth-child(3) { bottom: 80px; }
+        .floating-btn:nth-child(4) { bottom: 20px; }
+
+        @media (max-width: 768px) {
+            .glass-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .calculator-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()" title="Back to Dashboard">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </button>
+
+    <div class="container-fluid">
+        <div class="glass-container">
+            <h1 class="page-title">
+                <i class="fas fa-flask me-3"></i>
+                Professional GCV Analysis Suite
+            </h1>
+
+            <!-- Calculator Tabs -->
+            <div class="calculator-tabs">
+                <div class="calculator-tab active" onclick="switchCalculator('calc1')">
+                    <i class="fas fa-calculator me-2"></i>GCV/Ash/Moisture Calculator
+                </div>
+                <div class="calculator-tab" onclick="switchCalculator('calc2')">
+                    <i class="fas fa-exchange-alt me-2"></i>GCV Conversion Calculator
+                </div>
+            </div>
+
+            <!-- Calculator 1: GCV/Ash/Moisture Calculator -->
+            <div id="calc1" class="calculator-content active">
+                <div class="instruction-message">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Instructions:</strong> Enter any two values to calculate the third. All calculations are based on standard coal analysis formulas.
+                </div>
+
+                <div class="error-message" id="error1">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorText1"></span>
+                </div>
+
+                <!-- Calculated Result Display for Calculator 1 -->
+                <div class="results-container" id="calcResult1" style="display: none; margin-bottom: 20px;">
+                    <h5 class="section-title" style="font-size: 1.1rem; margin-bottom: 15px;">
+                        <i class="fas fa-calculator me-2"></i>Calculated Parameter
+                    </h5>
+                    <div id="calcResultDisplay1"></div>
+                </div>
+
+                <div class="input-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit me-2"></i>Input Parameters
+                    </h3>
+                    
+                    <div class="input-row">
+                        <label class="input-label">GCV [kcal/kg]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="gcvInput" 
+                                   placeholder="Enter GCV value" step="0.01" 
+                                   oninput="calculateFromInputs()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label class="input-label">Ash Content [%]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="ashInput" 
+                                   placeholder="Enter ash content" step="0.01" min="0" max="100"
+                                   oninput="calculateFromInputs()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label class="input-label">Moisture Content [%]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="moistureInput" 
+                                   placeholder="Enter moisture content" step="0.01" min="0" max="100"
+                                   oninput="calculateFromInputs()">
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn primary" onclick="calculateFromInputs()">
+                            <i class="fas fa-calculator me-2"></i>Calculate
+                        </button>
+                        <button class="action-btn" onclick="clearCalculator1()">
+                            <i class="fas fa-eraser me-2"></i>Clear
+                        </button>
+                        <button class="action-btn" onclick="saveCalculation('calc1')">
+                            <i class="fas fa-save me-2"></i>Save Result
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Display -->
+                <div class="results-container success" id="results1" style="display: none;">
+                    <h5 class="section-title">
+                        <i class="fas fa-chart-bar me-2"></i>Analysis Results
+                    </h5>
+                    <div id="resultDisplay1"></div>
+                </div>
+            </div>
+
+            <!-- Calculator 2: GCV Conversion Calculator -->
+            <div id="calc2" class="calculator-content">
+                <div class="instruction-message">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Instructions:</strong> Enter any three values to calculate the fourth. Choose between GCV ARB to Equilibrated conversion or vice versa.
+                </div>
+
+                <div class="error-message" id="error2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorText2"></span>
+                </div>
+
+                <!-- Calculated Result Display for Calculator 2 -->
+                <div class="results-container" id="calcResult2" style="display: none; margin-bottom: 20px;">
+                    <h5 class="section-title" style="font-size: 1.1rem; margin-bottom: 15px;">
+                        <i class="fas fa-calculator me-2"></i>Calculated Parameter
+                    </h5>
+                    <div id="calcResultDisplay2"></div>
+                </div>
+
+                <div class="input-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit me-2"></i>Input Parameters
+                    </h3>
+                    
+                    <div class="input-row">
+                        <label class="input-label">GCV ARB [kcal/kg]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="gcvArbInput" 
+                                   placeholder="Enter GCV ARB value" step="0.01" 
+                                   oninput="calculateConversion()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label class="input-label">GCV Equilibrated [kcal/kg]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="gcvEqInput" 
+                                   placeholder="Enter GCV Equilibrated value" step="0.01" 
+                                   oninput="calculateConversion()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label class="input-label">Moisture ARB [%]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="moistureArbInput" 
+                                   placeholder="Enter Moisture ARB" step="0.01" min="0" max="100"
+                                   oninput="calculateConversion()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label class="input-label">Moisture Equilibrated [%]:</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="moistureEqInput" 
+                                   placeholder="Enter Moisture Equilibrated" step="0.01" min="0" max="100"
+                                   oninput="calculateConversion()">
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn primary" onclick="calculateConversion()">
+                            <i class="fas fa-exchange-alt me-2"></i>Calculate Conversion
+                        </button>
+                        <button class="action-btn" onclick="clearCalculator2()">
+                            <i class="fas fa-eraser me-2"></i>Clear
+                        </button>
+                        <button class="action-btn" onclick="saveCalculation('calc2')">
+                            <i class="fas fa-save me-2"></i>Save Result
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Display -->
+                <div class="results-container success" id="results2" style="display: none;">
+                    <h5 class="section-title">
+                        <i class="fas fa-chart-bar me-2"></i>Conversion Results
+                    </h5>
+                    <div id="resultDisplay2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons">
+        <button class="floating-btn" onclick="exportToPDF()" title="Export to PDF">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+        <button class="floating-btn" onclick="exportToJPG()" title="Export to JPG">
+            <i class="fas fa-image"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+// Professional GCV Analysis Suite - JavaScript
+// Back Button Functionality
+function goBack() {
+    // Try to go back to parent window if opened from main app
+    if (window.opener && !window.opener.closed) {
+        try {
+            // If opened from main app, switch focus back and close this tab
+            window.opener.focus();
+            // Call function to show calculators page in parent window
+            if (typeof window.opener.showCalculatorsPage === 'function') {
+                window.opener.showCalculatorsPage();
+            }
+            window.close();
+        } catch (e) {
+            // If cross-origin or other security issues, fallback to alert
+            alert('Please use the browser back button or close this tab to return to the main application.');
+        }
+    } else {
+        // If no parent window, try to navigate to main app
+        try {
+            window.location.href = 'index.html#calculators';
+        } catch (e) {
+            alert('Please use the browser back button to return to the main application.');
+        }
+    }
+}
+
+// Global Variables
+let currentCalculator = 'calc1';
+let calculationHistory = {
+    calc1: [],
+    calc2: []
+};
+
+// Tab Switching
+function switchCalculator(calc) {
+    // Hide all calculator contents
+    document.querySelectorAll('.calculator-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active from all tabs
+    document.querySelectorAll('.calculator-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected calculator
+    const targetCalc = document.getElementById(calc);
+    if (targetCalc) {
+        targetCalc.classList.add('active');
+    }
+    
+    // Set active tab
+    if (event && event.target) {
+        event.target.closest('.calculator-tab').classList.add('active');
+    }
+    
+    currentCalculator = calc;
+}
+
+// Error Display Functions
+function showError(calcNumber, message) {
+    const errorDiv = document.getElementById(`error${calcNumber}`);
+    const errorText = document.getElementById(`errorText${calcNumber}`);
+    errorText.textContent = message;
+    errorDiv.style.display = 'block';
+}
+
+function hideError(calcNumber) {
+    document.getElementById(`error${calcNumber}`).style.display = 'none';
+}
+
+// Calculator 1: GCV/Ash/Moisture Calculator
+function calculateFromInputs() {
+    hideError(1);
+    
+    const gcv = parseFloat(document.getElementById('gcvInput').value) || null;
+    const ash = parseFloat(document.getElementById('ashInput').value) || null;
+    const moisture = parseFloat(document.getElementById('moistureInput').value) || null;
+    
+    // Count filled inputs
+    const inputs = [gcv, ash, moisture];
+    const filledCount = inputs.filter(v => v !== null && !isNaN(v)).length;
+    
+    if (filledCount === 0) {
+        document.getElementById('calcResult1').style.display = 'none';
+        document.getElementById('results1').style.display = 'none';
+        return;
+    }
+    
+    if (filledCount === 1) {
+        showError(1, "Please enter at least 2 values to calculate the third.");
+        document.getElementById('calcResult1').style.display = 'none';
+        document.getElementById('results1').style.display = 'none';
+        return;
+    }
+    
+    if (filledCount === 3) {
+        showError(1, "All values are entered. Please clear one input to calculate it.");
+        document.getElementById('calcResult1').style.display = 'none';
+        document.getElementById('results1').style.display = 'none';
+        return;
+    }
+    
+    // Validation
+    if (ash !== null && (ash < 0 || ash > 100)) {
+        showError(1, "Ash content must be between 0 and 100%");
+        return;
+    }
+    
+    if (moisture !== null && (moisture < 0 || moisture > 100)) {
+        showError(1, "Moisture content must be between 0 and 100%");
+        return;
+    }
+    
+    if (gcv !== null && gcv < 0) {
+        showError(1, "GCV cannot be negative");
+        return;
+    }
+    
+    let result = {};
+    let calculatedValue = null;
+    let calculatedParam = '';
+    
+    // Calculate missing parameter
+    if (gcv === null && ash !== null && moisture !== null) {
+        // Calculate GCV using modified Dulong formula
+        calculatedValue = 8080 - (140 * ash) - (120 * moisture);
+        calculatedParam = 'GCV';
+        
+        if (calculatedValue < 0) {
+            showError(1, `Calculated ${calculatedParam} cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcv: calculatedValue,
+            ash: ash,
+            moisture: moisture,
+            calculated: 'GCV'
+        };
+    } else if (ash === null && gcv !== null && moisture !== null) {
+        // Calculate Ash
+        calculatedValue = (8080 - gcv - (120 * moisture)) / 140;
+        calculatedParam = 'Ash';
+        
+        if (calculatedValue < 0) {
+            showError(1, `Calculated ${calculatedParam} cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue > 100) {
+            showError(1, `Calculated Ash content exceeds 100% (${calculatedValue.toFixed(2)}%). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcv: gcv,
+            ash: calculatedValue,
+            moisture: moisture,
+            calculated: 'Ash'
+        };
+    } else if (moisture === null && gcv !== null && ash !== null) {
+        // Calculate Moisture
+        calculatedValue = (8080 - gcv - (140 * ash)) / 120;
+        calculatedParam = 'Moisture';
+        
+        if (calculatedValue < 0) {
+            showError(1, `Calculated ${calculatedParam} cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue > 100) {
+            showError(1, `Calculated Moisture content exceeds 100% (${calculatedValue.toFixed(2)}%). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcv: gcv,
+            ash: ash,
+            moisture: calculatedValue,
+            calculated: 'Moisture'
+        };
+    }
+    
+    // Display calculated parameter in badge above inputs
+    displayCalculatedParameter1(result);
+    displayResults1(result);
+}
+
+function displayCalculatedParameter1(result) {
+    const calcResultDiv = document.getElementById('calcResultDisplay1');
+    const calcResultContainer = document.getElementById('calcResult1');
+    
+    let icon = '';
+    let unit = '';
+    
+    if (result.calculated === 'GCV') {
+        icon = 'fas fa-fire';
+        unit = 'kcal/kg';
+    } else if (result.calculated === 'Ash') {
+        icon = 'fas fa-mountain';
+        unit = '%';
+    } else if (result.calculated === 'Moisture') {
+        icon = 'fas fa-tint';
+        unit = '%';
+    }
+    
+    calcResultDiv.innerHTML = `
+        <div class="result-badge success" style="font-size: 16px;">
+            <i class="${icon} me-2"></i>
+            Calculated ${result.calculated}: ${result[result.calculated.toLowerCase()].toFixed(2)} ${unit}
+            <i class="fas fa-star ms-2" title="Calculated Value"></i>
+        </div>
+    `;
+    
+    calcResultContainer.style.display = 'block';
+}
+
+function displayResults1(result) {
+    const resultDiv = document.getElementById('resultDisplay1');
+    const resultsContainer = document.getElementById('results1');
+    
+    let statusClass = 'success';
+    let statusIcon = 'fas fa-check-circle';
+    let statusText = 'Calculation Complete';
+    
+    // Determine quality assessment
+    if (result.gcv < 3000) {
+        statusClass = 'danger';
+        statusIcon = 'fas fa-exclamation-triangle';
+        statusText = 'Low Quality Coal';
+    } else if (result.gcv < 4500) {
+        statusClass = 'warning';
+        statusIcon = 'fas fa-info-circle';
+        statusText = 'Medium Quality Coal';
+    } else if (result.gcv >= 4500) {
+        statusClass = 'success';
+        statusIcon = 'fas fa-thumbs-up';
+        statusText = 'High Quality Coal';
+    }
+    
+    resultDiv.innerHTML = `
+        <div class="result-item">
+            <span><i class="fas fa-fire me-2"></i>GCV (Gross Calorific Value)</span>
+            <span class="result-value">${result.gcv.toFixed(2)} kcal/kg</span>
+        </div>
+        <div class="result-item">
+            <span><i class="fas fa-mountain me-2"></i>Ash Content</span>
+            <span class="result-value">${result.ash.toFixed(2)}%</span>
+        </div>
+        <div class="result-item">
+            <span><i class="fas fa-tint me-2"></i>Moisture Content</span>
+            <span class="result-value">${result.moisture.toFixed(2)}%</span>
+        </div>
+        <div class="result-item" style="border-left: 4px solid #28a745;">
+            <span><i class="${statusIcon} me-2"></i>${statusText}</span>
+            <span class="result-value" style="color: #28a745;">✓ Analyzed</span>
+        </div>
+    `;
+    
+    resultsContainer.style.display = 'block';
+}
+
+// Calculator 2: GCV Conversion Calculator
+function calculateConversion() {
+    hideError(2);
+    
+    const gcvArb = parseFloat(document.getElementById('gcvArbInput').value) || null;
+    const gcvEq = parseFloat(document.getElementById('gcvEqInput').value) || null;
+    const moistureArb = parseFloat(document.getElementById('moistureArbInput').value) || null;
+    const moistureEq = parseFloat(document.getElementById('moistureEqInput').value) || null;
+    
+    // Count filled inputs
+    const inputs = [gcvArb, gcvEq, moistureArb, moistureEq];
+    const filledCount = inputs.filter(v => v !== null && !isNaN(v)).length;
+    
+    if (filledCount === 0) {
+        document.getElementById('calcResult2').style.display = 'none';
+        document.getElementById('results2').style.display = 'none';
+        return;
+    }
+    
+    if (filledCount < 3) {
+        showError(2, "Please enter at least 3 values to calculate the fourth.");
+        document.getElementById('calcResult2').style.display = 'none';
+        document.getElementById('results2').style.display = 'none';
+        return;
+    }
+    
+    if (filledCount === 4) {
+        showError(2, "All values are entered. Please clear one input to calculate it.");
+        document.getElementById('calcResult2').style.display = 'none';
+        document.getElementById('results2').style.display = 'none';
+        return;
+    }
+    
+    // Validation
+    if (moistureArb !== null && (moistureArb < 0 || moistureArb > 100)) {
+        showError(2, "Moisture ARB must be between 0 and 100%");
+        return;
+    }
+    
+    if (moistureEq !== null && (moistureEq < 0 || moistureEq > 100)) {
+        showError(2, "Moisture Equilibrated must be between 0 and 100%");
+        return;
+    }
+    
+    if (gcvArb !== null && gcvArb < 0) {
+        showError(2, "GCV ARB cannot be negative");
+        return;
+    }
+    
+    if (gcvEq !== null && gcvEq < 0) {
+        showError(2, "GCV Equilibrated cannot be negative");
+        return;
+    }
+    
+    // Additional validation: Total Moisture (ARB) should be >= Equilibrated Moisture
+    if (moistureArb !== null && moistureEq !== null && moistureArb < moistureEq) {
+        showError(2, "Total Moisture (ARB) cannot be less than Equilibrated Moisture");
+        return;
+    }
+    
+    // Additional validation: GCV ARB should be >= GCV Equilibrated
+    if (gcvArb !== null && gcvEq !== null && gcvArb < gcvEq) {
+        showError(2, "GCV ARB cannot be less than GCV Equilibrated");
+        return;
+    }
+    
+    let result = {};
+    let calculatedValue = null;
+    
+    // Calculate missing parameter
+    if (gcvArb === null && gcvEq !== null && moistureArb !== null && moistureEq !== null) {
+        // Calculate GCV ARB
+        calculatedValue = (gcvEq * (100 - moistureArb)) / (100 - moistureEq);
+        
+        if (calculatedValue < 0) {
+            showError(2, `Calculated GCV ARB cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcvArb: calculatedValue,
+            gcvEq: gcvEq,
+            moistureArb: moistureArb,
+            moistureEq: moistureEq,
+            calculated: 'GCV ARB'
+        };
+    } else if (gcvEq === null && gcvArb !== null && moistureArb !== null && moistureEq !== null) {
+        // Calculate GCV Equilibrated
+        calculatedValue = (gcvArb * (100 - moistureEq)) / (100 - moistureArb);
+        
+        if (calculatedValue < 0) {
+            showError(2, `Calculated GCV Equilibrated cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcvArb: gcvArb,
+            gcvEq: calculatedValue,
+            moistureArb: moistureArb,
+            moistureEq: moistureEq,
+            calculated: 'GCV Equilibrated'
+        };
+    } else if (moistureArb === null && gcvArb !== null && gcvEq !== null && moistureEq !== null) {
+        // Calculate Moisture ARB (Total Moisture)
+        calculatedValue = 100 - ((gcvArb / gcvEq) * (100 - moistureEq));
+        
+        if (calculatedValue < 0) {
+            showError(2, `Calculated Moisture ARB cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue > 100) {
+            showError(2, `Calculated Moisture ARB exceeds 100% (${calculatedValue.toFixed(2)}%). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue < moistureEq) {
+            showError(2, `Calculated Total Moisture (${calculatedValue.toFixed(2)}%) cannot be less than Equilibrated Moisture (${moistureEq}%). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcvArb: gcvArb,
+            gcvEq: gcvEq,
+            moistureArb: calculatedValue,
+            moistureEq: moistureEq,
+            calculated: 'Moisture ARB'
+        };
+    } else if (moistureEq === null && gcvArb !== null && gcvEq !== null && moistureArb !== null) {
+        // Calculate Moisture Equilibrated
+        calculatedValue = 100 - ((gcvEq / gcvArb) * (100 - moistureArb));
+        
+        if (calculatedValue < 0) {
+            showError(2, `Calculated Moisture Equilibrated cannot be negative (${calculatedValue.toFixed(2)}). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue > 100) {
+            showError(2, `Calculated Moisture Equilibrated exceeds 100% (${calculatedValue.toFixed(2)}%). Please check your input values.`);
+            return;
+        }
+        
+        if (calculatedValue > moistureArb) {
+            showError(2, `Calculated Equilibrated Moisture (${calculatedValue.toFixed(2)}%) cannot be more than Total Moisture (${moistureArb}%). Please check your input values.`);
+            return;
+        }
+        
+        result = {
+            gcvArb: gcvArb,
+            gcvEq: gcvEq,
+            moistureArb: moistureArb,
+            moistureEq: calculatedValue,
+            calculated: 'Moisture Equilibrated'
+        };
+    }
+    
+    // Display calculated parameter in badge above inputs
+    displayCalculatedParameter2(result);
+    displayResults2(result);
+}
+
+function displayCalculatedParameter2(result) {
+    const calcResultDiv = document.getElementById('calcResultDisplay2');
+    const calcResultContainer = document.getElementById('calcResult2');
+    
+    let icon = '';
+    let unit = '';
+    let displayValue = 0;
+    
+    if (result.calculated === 'GCV ARB') {
+        icon = 'fas fa-fire';
+        unit = 'kcal/kg';
+        displayValue = result.gcvArb;
+    } else if (result.calculated === 'GCV Equilibrated') {
+        icon = 'fas fa-balance-scale';
+        unit = 'kcal/kg';
+        displayValue = result.gcvEq;
+    } else if (result.calculated === 'Moisture ARB') {
+        icon = 'fas fa-tint';
+        unit = '%';
+        displayValue = result.moistureArb;
+    } else if (result.calculated === 'Moisture Equilibrated') {
+        icon = 'fas fa-tint';
+        unit = '%';
+        displayValue = result.moistureEq;
+    }
+    
+    calcResultDiv.innerHTML = `
+        <div class="result-badge success" style="font-size: 16px;">
+            <i class="${icon} me-2"></i>
+            Calculated ${result.calculated}: ${displayValue.toFixed(2)} ${unit}
+            <i class="fas fa-star ms-2" title="Calculated Value"></i>
+        </div>
+    `;
+    
+    calcResultContainer.style.display = 'block';
+}
+
+function displayResults2(result) {
+    const resultDiv = document.getElementById('resultDisplay2');
+    const resultsContainer = document.getElementById('results2');
+    
+    resultDiv.innerHTML = `
+        <div class="result-item">
+            <span><i class="fas fa-fire me-2"></i>GCV ARB</span>
+            <span class="result-value">${result.gcvArb.toFixed(2)} kcal/kg</span>
+        </div>
+        <div class="result-item">
+            <span><i class="fas fa-balance-scale me-2"></i>GCV Equilibrated</span>
+            <span class="result-value">${result.gcvEq.toFixed(2)} kcal/kg</span>
+        </div>
+        <div class="result-item">
+            <span><i class="fas fa-tint me-2"></i>Moisture ARB</span>
+            <span class="result-value">${result.moistureArb.toFixed(2)}%</span>
+        </div>
+        <div class="result-item">
+            <span><i class="fas fa-tint me-2"></i>Moisture Equilibrated</span>
+            <span class="result-value">${result.moistureEq.toFixed(2)}%</span>
+        </div>
+        <div class="result-item" style="border-left: 4px solid #17a2b8;">
+            <span><i class="fas fa-check-circle me-2"></i>Conversion Complete</span>
+            <span class="result-value" style="color: #17a2b8;">✓ Calculated</span>
+        </div>
+    `;
+    
+    resultsContainer.style.display = 'block';
+}
+
+// Clear Functions
+function clearCalculator1() {
+    document.getElementById('gcvInput').value = '';
+    document.getElementById('ashInput').value = '';
+    document.getElementById('moistureInput').value = '';
+    document.getElementById('calcResult1').style.display = 'none';
+    document.getElementById('results1').style.display = 'none';
+    hideError(1);
+}
+
+function clearCalculator2() {
+    document.getElementById('gcvArbInput').value = '';
+    document.getElementById('gcvEqInput').value = '';
+    document.getElementById('moistureArbInput').value = '';
+    document.getElementById('moistureEqInput').value = '';
+    document.getElementById('calcResult2').style.display = 'none';
+    document.getElementById('results2').style.display = 'none';
+    hideError(2);
+}
+
+// Save Functions
+function saveCalculation(calcType) {
+    alert(`Calculation saved! (Feature coming soon)`);
+}
+
+// Export Functions
+function exportToPDF() {
+    alert('PDF Export feature coming soon!');
+}
+
+function exportToJPG() {
+    alert('JPG Export feature coming soon!');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Professional GCV Analysis Suite initialized successfully!');
+});
+
+    </script>
+</body>
+</html>
