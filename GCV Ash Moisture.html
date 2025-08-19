@@ -33,6 +33,23 @@
             font-size: 2.5rem;
             font-weight: 300;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .page-title:hover {
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .page-title i {
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         /* Back Button */
@@ -48,6 +65,7 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             font-weight: 500;
+            z-index: 1000; /* High z-index to appear above other elements */
         }
 
         .back-button:hover {
@@ -71,15 +89,36 @@
             padding: 15px 25px;
             border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculator-tab:hover::before {
+            left: 100%;
         }
 
         .calculator-tab.active {
             background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            border: 3px solid transparent;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), 
+                              linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -175,7 +214,14 @@
             border-radius: 10px;
             color: white;
             padding: 12px 15px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .form-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .form-control:focus {
@@ -204,13 +250,45 @@
             border-radius: 10px;
             padding: 12px 25px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .action-btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .action-btn.primary {
             background: linear-gradient(135deg, #28a745, #20c997);
             border-color: #28a745;
+        }
+
+        .action-btn.clear {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border-color: #df6975;
+            color: white;
+        }
+
+        .action-btn.save {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-color: #52bc6b;
+            color: white;
         }
 
         .action-btn:hover {
@@ -221,6 +299,18 @@
 
         .action-btn.primary:hover {
             background: linear-gradient(135deg, #218838, #1ea775);
+        }
+
+        .action-btn.clear:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .action-btn.save:hover {
+            background: linear-gradient(135deg, #218838, #1ea775);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
         }
 
         /* Results Section */
@@ -273,8 +363,8 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
-        .floating-btn:nth-child(1) { bottom: 200px; }
-        .floating-btn:nth-child(2) { bottom: 140px; }
+        .floating-btn:nth-child(1) { bottom: 220px; }
+        .floating-btn:nth-child(2) { bottom: 150px; }
         .floating-btn:nth-child(3) { bottom: 80px; }
 
         .storage-counter {
@@ -453,10 +543,381 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Animation Classes */
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-fadeInDown {
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+
+        .animate-fadeInLeft {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .animate-fadeInRight {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .animate-scaleIn {
+            animation: scaleIn 0.8s ease-out forwards;
+        }
+
+        .animate-bounceIn {
+            animation: bounceIn 1s ease-out forwards;
+        }
+
+        /* Initial hidden state for animated elements */
+        .animate-on-load {
+            opacity: 0;
+        }
+
+        /* Staggered animation delays */
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .animate-delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        .animate-delay-6 {
+            animation-delay: 0.6s;
+        }
+
+        /* Night Mode Toggle Switch */
+        .night-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .night-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toggle-icon {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        body.night-mode .glass-container {
+            background: rgba(30, 30, 60, 0.3);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        body.night-mode .page-title {
+            color: #e8e8f0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        body.night-mode .calculator-tab {
+            background: rgba(40, 40, 80, 0.4);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            color: #d0d0d8;
+        }
+
+        body.night-mode .calculator-tab.active {
+            background: linear-gradient(135deg, rgba(30, 120, 180, 0.4), rgba(40, 80, 160, 0.3));
+            color: #ffffff;
+        }
+
+        body.night-mode .input-section {
+            background: rgba(25, 25, 50, 0.4);
+        }
+
+        body.night-mode .form-control {
+            background: rgba(40, 40, 80, 0.3);
+            border: 1px solid rgba(80, 80, 120, 0.4);
+            color: #e0e0e8;
+        }
+
+        body.night-mode .form-control:focus {
+            background: rgba(50, 50, 90, 0.4);
+            border-color: rgba(100, 150, 200, 0.6);
+            box-shadow: 0 0 15px rgba(100, 150, 200, 0.2);
+        }
+
+        body.night-mode .form-control::placeholder {
+            color: rgba(180, 180, 200, 0.6);
+        }
+
+        body.night-mode .input-label {
+            color: #d0d0d8;
+        }
+
+        body.night-mode .section-title {
+            color: #e0e0e8;
+        }
+
+        body.night-mode .results-container {
+            background: rgba(25, 25, 50, 0.4);
+        }
+
+        body.night-mode .result-item {
+            background: rgba(40, 40, 80, 0.3);
+            color: #e0e0e8;
+        }
+
+        body.night-mode .result-badge {
+            background: linear-gradient(135deg, rgba(60, 60, 100, 0.4), rgba(40, 40, 80, 0.3));
+            color: #ffffff;
+        }
+
+        body.night-mode .action-btn {
+            background: rgba(50, 50, 90, 0.3);
+            color: #e0e0e8;
+            border: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .action-btn:hover {
+            background: rgba(60, 60, 110, 0.4);
+        }
+
+        body.night-mode .floating-btn {
+            background: rgba(40, 40, 80, 0.4);
+            color: #e0e0e8;
+        }
+
+        body.night-mode .export-dropdown {
+            background: rgba(30, 30, 60, 0.5);
+            border: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .export-btn {
+            background: rgba(50, 50, 90, 0.3);
+            border: 1px solid rgba(80, 80, 120, 0.3);
+            color: #d0d0d8;
+        }
+
+        body.night-mode .export-btn:hover {
+            background: rgba(60, 60, 110, 0.4);
+            color: #ffffff;
+        }
+
+        body.night-mode .formula-card {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .formula-card-header h5 {
+            color: #e0e0e8;
+        }
+
+        body.night-mode .formula-section {
+            background: rgba(40, 40, 80, 0.3);
+            border: 1px solid rgba(80, 80, 120, 0.3);
+        }
+
+        body.night-mode .formula-section h6 {
+            color: #d0d0d8;
+        }
+
+        body.night-mode .formula-section li {
+            color: #c0c0c8;
+        }
+
+        body.night-mode .analysis-table-container {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .analysis-table {
+            background: rgba(40, 40, 80, 0.3);
+        }
+
+        body.night-mode .analysis-table th,
+        body.night-mode .analysis-table td {
+            color: #e0e0e8;
+            border-bottom: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .analysis-table th {
+            background: rgba(50, 50, 90, 0.4);
+        }
+
+        body.night-mode .analysis-table tbody tr:hover {
+            background: rgba(60, 60, 110, 0.3);
+        }
+
+        body.night-mode .back-button {
+            background: rgba(40, 40, 80, 0.4);
+            color: #e0e0e8;
+        }
+
+        body.night-mode .back-button:hover {
+            background: rgba(60, 60, 110, 0.5);
+        }
+
+        body.night-mode .night-mode-toggle {
+            background: rgba(40, 40, 80, 0.4);
+            border: 1px solid rgba(80, 80, 120, 0.4);
+        }
+
+        body.night-mode .night-mode-toggle:hover {
+            background: rgba(50, 50, 90, 0.5);
+        }
+
         @media (max-width: 768px) {
+            * {
+                box-sizing: border-box;
+            }
+            
             body {
                 padding: 0;
                 margin: 0;
+                overflow-x: hidden;
+                width: 100vw;
+            }
+            
+            .container-fluid {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                max-width: 100vw;
                 overflow-x: hidden;
             }
             
@@ -467,6 +928,7 @@
                 width: calc(100vw - 20px);
                 max-width: none;
                 box-sizing: border-box;
+                overflow-x: hidden;
             }
             
             .page-title {
@@ -480,6 +942,9 @@
                 flex-direction: column;
                 gap: 8px;
                 margin-bottom: 20px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .calculator-tab {
@@ -487,6 +952,17 @@
                 font-size: 14px;
                 text-align: center;
                 border-radius: 10px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                word-wrap: break-word;
+            }
+            
+            .calculator-content {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
             }
             
             .back-button {
@@ -500,32 +976,55 @@
                 padding: 20px 15px;
                 border-radius: 12px;
                 margin-bottom: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
             }
             
             .section-title {
                 font-size: 1.2rem;
                 margin-bottom: 15px;
+                word-wrap: break-word;
             }
             
             .input-row {
                 margin-bottom: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .input-group {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .input-label {
                 font-size: 14px;
                 margin-bottom: 6px;
+                word-wrap: break-word;
             }
             
             .form-control {
                 padding: 12px;
                 font-size: 16px;
                 border-radius: 8px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                margin: 0;
+                overflow: hidden;
             }
             
             .action-buttons {
                 flex-direction: column;
                 gap: 10px;
                 margin-top: 20px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .action-btn {
@@ -533,12 +1032,18 @@
                 padding: 14px 20px;
                 font-size: 16px;
                 border-radius: 8px;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .results-container {
                 padding: 20px 15px;
                 border-radius: 12px;
                 margin-top: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
             }
             
             .result-badge {
@@ -557,8 +1062,8 @@
                 font-size: 1rem;
             }
             
-            .floating-btn:nth-child(1) { bottom: 170px; }
-            .floating-btn:nth-child(2) { bottom: 115px; }
+            .floating-btn:nth-child(1) { bottom: 190px; }
+            .floating-btn:nth-child(2) { bottom: 125px; }
             .floating-btn:nth-child(3) { bottom: 60px; }
             
             .export-dropdown {
@@ -679,24 +1184,80 @@
                 padding: 12px;
                 border-radius: 8px;
                 margin-bottom: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+            
+            .night-mode-toggle {
+                position: fixed;
+                top: 10px;
+                right: 5px;
+                padding: 4px 6px;
+                border-radius: 20px;
+                transform: scale(0.75);
+                z-index: 1001;
+                max-width: calc(100vw - 15px);
+                box-sizing: border-box;
+            }
+            
+            .toggle-switch {
+                width: 30px;
+                height: 16px;
+            }
+            
+            .toggle-switch::before {
+                width: 12px;
+                height: 12px;
+                top: 2px;
+                left: 2px;
+            }
+            
+            .toggle-switch.active::before {
+                transform: translateX(14px);
+            }
+            
+            .toggle-label {
+                font-size: 10px;
+                display: none;
+            }
+            
+            .toggle-icon {
+                font-size: 11px;
+            }
+            
+            .page-title {
+                margin-top: 50px !important;
+                font-size: 1.8rem !important;
+                padding-top: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="goBack()" title="Back to Dashboard">
+    <!-- Night Mode Toggle -->
+    <div class="night-mode-toggle animate-on-load animate-fadeInRight">
+        <i class="fas fa-sun toggle-icon" id="dayIcon"></i>
+        <div class="toggle-switch" id="nightModeSwitch" onclick="toggleNightMode()"></div>
+        <i class="fas fa-moon toggle-icon" id="nightIcon"></i>
+        <span class="toggle-label" id="toggleLabel">Day Mode</span>
+    </div>
+
+    <button class="back-button animate-on-load animate-fadeInLeft" onclick="goBack()" title="Back to Dashboard">
         <i class="fas fa-arrow-left"></i>
     </button>
 
     <div class="container-fluid">
-        <div class="glass-container">
-            <h1 class="page-title">
+        <div class="glass-container animate-on-load animate-scaleIn animate-delay-1">
+            <h1 class="page-title animate-on-load animate-fadeInDown animate-delay-2">
                 <i class="fas fa-flask me-3"></i>
-                Professional GCV Analysis Suite
+                GCV Analysis Suite
             </h1>
 
             <!-- Calculator Tabs -->
-            <div class="calculator-tabs">
+            <div class="calculator-tabs animate-on-load animate-fadeInUp animate-delay-3">
                 <div class="calculator-tab active" onclick="switchCalculator('calc1')">
                     <i class="fas fa-calculator me-2"></i>GCV/Ash/Moisture Calculator
                 </div>
@@ -706,7 +1267,7 @@
             </div>
 
             <!-- Calculator 1: GCV/Ash/Moisture Calculator -->
-            <div id="calc1" class="calculator-content active">
+            <div id="calc1" class="calculator-content active animate-on-load animate-fadeInUp animate-delay-4">
                 <div class="error-message" id="error1">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <span id="errorText1"></span>
@@ -720,7 +1281,7 @@
                     <div id="calcResultDisplay1"></div>
                 </div>
 
-                <div class="input-section">
+                <div class="input-section animate-on-load animate-fadeInUp animate-delay-5">
                     <h3 class="section-title">
                         <i class="fas fa-edit me-2"></i>Input Parameters
                     </h3>
@@ -730,7 +1291,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvInput" 
                                    placeholder="Enter GCV value" step="0.01" 
-                                   oninput="calculateFromInputs()">
+                                   oninput="debouncedCalculateFromInputs()">
                         </div>
                     </div>
 
@@ -739,7 +1300,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="ashInput" 
                                    placeholder="Enter ash content" step="0.01" min="0" max="100"
-                                   oninput="calculateFromInputs()">
+                                   oninput="debouncedCalculateFromInputs()">
                         </div>
                     </div>
 
@@ -748,15 +1309,15 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="moistureInput" 
                                    placeholder="Enter moisture content" step="0.01" min="0" max="100"
-                                   oninput="calculateFromInputs()">
+                                   oninput="debouncedCalculateFromInputs()">
                         </div>
                     </div>
 
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="clearCalculator1()">
+                        <button class="action-btn clear" onclick="clearCalculator1()">
                             <i class="fas fa-eraser me-2"></i>Clear
                         </button>
-                        <button class="action-btn" onclick="saveCalculation('calc1')">
+                        <button class="action-btn save" onclick="saveCalculation('calc1')">
                             <i class="fas fa-save me-2"></i>Save Result
                         </button>
                     </div>
@@ -764,7 +1325,7 @@
             </div>
 
             <!-- Calculator 2: GCV Conversion Calculator -->
-            <div id="calc2" class="calculator-content">
+            <div id="calc2" class="calculator-content animate-on-load animate-fadeInUp animate-delay-4">
                 <div class="error-message" id="error2">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <span id="errorText2"></span>
@@ -788,7 +1349,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvEqInput" 
                                    placeholder="Enter GCV Equilibrated value" step="0.01" 
-                                   oninput="calculateConversion()">
+                                   oninput="debouncedCalculateConversion()">
                         </div>
                     </div>
 
@@ -797,7 +1358,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="moistureArbInput" 
                                    placeholder="Enter Total Moisture" step="0.01" min="0" max="100"
-                                   oninput="calculateConversion()">
+                                   oninput="debouncedCalculateConversion()">
                         </div>
                     </div>
                     
@@ -806,7 +1367,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="moistureEqInput" 
                                    placeholder="Enter Inherent Moisture" step="0.01" min="0" max="100"
-                                   oninput="calculateConversion()">
+                                   oninput="debouncedCalculateConversion()">
                         </div>
                     </div>                    
                         
@@ -815,15 +1376,15 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvArbInput" 
                                    placeholder="Enter GCV ARB value" step="0.01" 
-                                   oninput="calculateConversion()">
+                                   oninput="debouncedCalculateConversion()">
                         </div>
                     </div>
 
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="clearCalculator2()">
+                        <button class="action-btn clear" onclick="clearCalculator2()">
                             <i class="fas fa-eraser me-2"></i>Clear
                         </button>
-                        <button class="action-btn" onclick="saveCalculation('calc2')">
+                        <button class="action-btn save" onclick="saveCalculation('calc2')">
                             <i class="fas fa-save me-2"></i>Save Result
                         </button>
                     </div>
@@ -834,14 +1395,14 @@
 
     <!-- Floating Action Buttons -->
     <div class="floating-buttons">
-        <button class="floating-btn" onclick="toggleFormulaCard()" title="View Formulas">
-            <i class="fas fa-calculator"></i>
+        <button class="floating-btn animate-on-load animate-bounceIn animate-delay-6" onclick="toggleFormulaCard()" title="View Formulas">
+            f<sub>x</sub>
         </button>
-        <button class="floating-btn" onclick="viewStoredCalculations()" title="View Analysis Results">
+        <button class="floating-btn animate-on-load animate-bounceIn animate-delay-5" onclick="viewStoredCalculations()" title="View Analysis Results">
             <i class="fas fa-database"></i>
             <span class="storage-counter" id="storageCounter">0</span>
         </button>
-        <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
+        <button class="floating-btn animate-on-load animate-bounceIn animate-delay-4" onclick="toggleExportOptions()" title="Export Options">
             <i class="fas fa-download"></i>
         </button>
     </div>
@@ -927,6 +1488,86 @@ let calculationHistory = {
     calc1: [],
     calc2: []
 };
+
+// Night Mode Variables
+let isNightMode = false;
+
+// Night Mode Functions
+function toggleNightMode() {
+    isNightMode = !isNightMode;
+    const body = document.body;
+    const toggleSwitch = document.getElementById('nightModeSwitch');
+    const toggleLabel = document.getElementById('toggleLabel');
+    const dayIcon = document.getElementById('dayIcon');
+    const nightIcon = document.getElementById('nightIcon');
+    
+    if (isNightMode) {
+        body.classList.add('night-mode');
+        toggleSwitch.classList.add('active');
+        toggleLabel.textContent = 'Night Mode';
+        dayIcon.style.opacity = '0.5';
+        nightIcon.style.opacity = '1';
+        // Save preference to localStorage
+        localStorage.setItem('nightMode', 'true');
+    } else {
+        body.classList.remove('night-mode');
+        toggleSwitch.classList.remove('active');
+        toggleLabel.textContent = 'Day Mode';
+        dayIcon.style.opacity = '1';
+        nightIcon.style.opacity = '0.5';
+        // Save preference to localStorage
+        localStorage.setItem('nightMode', 'false');
+    }
+}
+
+// Load night mode preference on page load
+function loadNightModePreference() {
+    const savedMode = localStorage.getItem('nightMode');
+    if (savedMode === 'true') {
+        // Set night mode without animation on page load
+        isNightMode = false; // Set to false first so toggle will work
+        toggleNightMode();
+    } else {
+        // Ensure day mode icons are properly set
+        const dayIcon = document.getElementById('dayIcon');
+        const nightIcon = document.getElementById('nightIcon');
+        if (dayIcon && nightIcon) {
+            dayIcon.style.opacity = '1';
+            nightIcon.style.opacity = '0.5';
+        }
+    }
+}
+
+// Debounced input handlers to prevent cursor jumping
+let inputTimeout1, inputTimeout2;
+
+function debouncedCalculateFromInputs() {
+    clearTimeout(inputTimeout1);
+    inputTimeout1 = setTimeout(() => {
+        calculateFromInputs();
+    }, 300); // 300ms delay to allow for complete decimal input
+}
+
+function debouncedCalculateConversion() {
+    clearTimeout(inputTimeout2);
+    inputTimeout2 = setTimeout(() => {
+        calculateConversion();
+    }, 300); // 300ms delay to allow for complete decimal input
+}
+
+// Input event handler that preserves cursor position
+function handleNumberInput(inputElement, calculationFunction) {
+    const cursorPosition = inputElement.selectionStart;
+    const value = inputElement.value;
+    
+    // Store cursor position
+    setTimeout(() => {
+        inputElement.setSelectionRange(cursorPosition, cursorPosition);
+    }, 0);
+    
+    // Call the appropriate calculation function with debouncing
+    calculationFunction();
+}
 
 // Tab Switching
 function switchCalculator(calc) {
@@ -1114,8 +1755,7 @@ function displayCalculatedParameter1(result) {
     calcResultDiv.innerHTML = `
         <div class="result-badge success" style="font-size: 16px;">
             <i class="${icon} me-2"></i>
-            Calculated ${result.calculated}: ${result[result.calculated.toLowerCase()].toFixed(2)} ${unit}
-            <i class="fas fa-star ms-2" title="Calculated Value"></i>
+            ${result.calculated}: ${result[result.calculated.toLowerCase()].toFixed(2)} ${unit}
         </div>
     `;
     
@@ -1355,8 +1995,7 @@ function displayCalculatedParameter2(result) {
     calcResultDiv.innerHTML = `
         <div class="result-badge success" style="font-size: 16px;">
             <i class="${icon} me-2"></i>
-            Calculated ${result.calculated}: ${displayValue.toFixed(2)} ${unit}
-            <i class="fas fa-star ms-2" title="Calculated Value"></i>
+            ${result.calculated}: ${displayValue.toFixed(2)} ${unit}
         </div>
     `;
     
@@ -1394,21 +2033,39 @@ function saveCalculation(calcType) {
             return;
         }
         
-        const gcv = parseFloat(document.getElementById('gcvInput').value) || null;
-        const ash = parseFloat(document.getElementById('ashInput').value) || null;
-        const moisture = parseFloat(document.getElementById('moistureInput').value) || null;
+        const gcvInput = parseFloat(document.getElementById('gcvInput').value) || null;
+        const ashInput = parseFloat(document.getElementById('ashInput').value) || null;
+        const moistureInput = parseFloat(document.getElementById('moistureInput').value) || null;
         
-        // Determine which value was calculated
+        // Determine which value was calculated and get the calculated values
         let calculatedField = '';
-        if (gcv === null) calculatedField = 'GCV';
-        else if (ash === null) calculatedField = 'Ash';
-        else if (moisture === null) calculatedField = 'Moisture';
+        let gcvValue, ashValue, moistureValue;
+        
+        if (gcvInput === null) {
+            calculatedField = 'GCV';
+            // Calculate GCV from the other two values
+            gcvValue = ((154 * (100 - (moistureInput + (1.1 * ashInput)))) - (108 * moistureInput)) / 1.8;
+            ashValue = ashInput;
+            moistureValue = moistureInput;
+        } else if (ashInput === null) {
+            calculatedField = 'Ash';
+            // Calculate Ash from the other two values
+            gcvValue = gcvInput;
+            ashValue = ((100 - (((gcvInput * 1.8) + (108 * moistureInput)) / 154)) - moistureInput) / 1.1;
+            moistureValue = moistureInput;
+        } else if (moistureInput === null) {
+            calculatedField = 'Moisture';
+            // Calculate Moisture from the other two values
+            gcvValue = gcvInput;
+            ashValue = ashInput;
+            moistureValue = (15400 - (169.4 * ashInput) - (1.8 * gcvInput)) / 262;
+        }
         
         resultData = {
             type: 'GCV/Ash/Moisture Calculator',
-            gcv: document.querySelector('#resultDisplay1 .result-value').textContent.split(' ')[0],
-            ash: document.querySelectorAll('#resultDisplay1 .result-value')[1].textContent.split('%')[0],
-            moisture: document.querySelectorAll('#resultDisplay1 .result-value')[2].textContent.split('%')[0],
+            gcv: gcvValue.toFixed(2),
+            ash: ashValue.toFixed(2),
+            moisture: moistureValue.toFixed(2),
             calculatedField: calculatedField,
             timestamp: new Date().toLocaleString()
         };
@@ -1422,23 +2079,46 @@ function saveCalculation(calcType) {
             return;
         }
         
-        const gcvArb = parseFloat(document.getElementById('gcvArbInput').value) || null;
-        const gcvEq = parseFloat(document.getElementById('gcvEqInput').value) || null;
-        const moistureArb = parseFloat(document.getElementById('moistureArbInput').value) || null;
-        const moistureEq = parseFloat(document.getElementById('moistureEqInput').value) || null;
+        const gcvArbInput = parseFloat(document.getElementById('gcvArbInput').value) || null;
+        const gcvEqInput = parseFloat(document.getElementById('gcvEqInput').value) || null;
+        const moistureArbInput = parseFloat(document.getElementById('moistureArbInput').value) || null;
+        const moistureEqInput = parseFloat(document.getElementById('moistureEqInput').value) || null;
         
         let calculatedField = '';
-        if (gcvArb === null) calculatedField = 'GCV ARB';
-        else if (gcvEq === null) calculatedField = 'GCV Equilibrated';
-        else if (moistureArb === null) calculatedField = 'Total Moisture';
-        else if (moistureEq === null) calculatedField = 'Inherent Moisture';
+        let gcvArbValue, gcvEqValue, moistureArbValue, moistureEqValue;
+        
+        if (gcvArbInput === null) {
+            calculatedField = 'GCV ARB';
+            gcvArbValue = (gcvEqInput * (100 - moistureArbInput)) / (100 - moistureEqInput);
+            gcvEqValue = gcvEqInput;
+            moistureArbValue = moistureArbInput;
+            moistureEqValue = moistureEqInput;
+        } else if (gcvEqInput === null) {
+            calculatedField = 'GCV Equilibrated';
+            gcvArbValue = gcvArbInput;
+            gcvEqValue = (gcvArbInput * (100 - moistureEqInput)) / (100 - moistureArbInput);
+            moistureArbValue = moistureArbInput;
+            moistureEqValue = moistureEqInput;
+        } else if (moistureArbInput === null) {
+            calculatedField = 'Total Moisture';
+            gcvArbValue = gcvArbInput;
+            gcvEqValue = gcvEqInput;
+            moistureArbValue = 100 - ((gcvArbInput / gcvEqInput) * (100 - moistureEqInput));
+            moistureEqValue = moistureEqInput;
+        } else if (moistureEqInput === null) {
+            calculatedField = 'Inherent Moisture';
+            gcvArbValue = gcvArbInput;
+            gcvEqValue = gcvEqInput;
+            moistureArbValue = moistureArbInput;
+            moistureEqValue = 100 - ((gcvEqInput / gcvArbInput) * (100 - moistureArbInput));
+        }
         
         resultData = {
             type: 'GCV Conversion Calculator',
-            gcvArb: document.querySelector('#resultDisplay2 .result-value').textContent.split(' ')[0],
-            gcvEq: document.querySelectorAll('#resultDisplay2 .result-value')[1].textContent.split(' ')[0],
-            moistureArb: document.querySelectorAll('#resultDisplay2 .result-value')[2].textContent.split('%')[0],
-            moistureEq: document.querySelectorAll('#resultDisplay2 .result-value')[3].textContent.split('%')[0],
+            gcvArb: gcvArbValue.toFixed(2),
+            gcvEq: gcvEqValue.toFixed(2),
+            moistureArb: moistureArbValue.toFixed(2),
+            moistureEq: moistureEqValue.toFixed(2),
             calculatedField: calculatedField,
             timestamp: new Date().toLocaleString()
         };
@@ -1505,11 +2185,11 @@ function viewStoredCalculations() {
         <table class="analysis-table">
             <thead>
                 <tr>
-                    <th>S.No</th>
+                    <th style="text-align: center;">S.No</th>
                     <th>Calculator Type</th>
-                    <th>GCV (kcal/kg)</th>
-                    <th>Ash (%)</th>
-                    <th>Moisture (%)</th>
+                    <th style="text-align: center;">GCV<br><small>(kcal/kg)</small></th>
+                    <th style="text-align: center;">Ash<br><small>(%)</small></th>
+                    <th style="text-align: center;">Moisture<br><small>(%)</small></th>
                     <th>Calculated Field</th>
                 </tr>
             </thead>
@@ -1518,19 +2198,16 @@ function viewStoredCalculations() {
     
     savedCalculations.reverse().forEach((calc, index) => {
         const serialNo = index + 1;
-        const timestamp = new Date(calc.timestamp).toLocaleString();
         
         if (calc.type === 'GCV/Ash/Moisture Calculator') {
             tableHTML += `
                 <tr>
                     <td data-label="S.No" style="text-align: center; font-weight: 600;">${serialNo}</td>
                     <td data-label="Type"><i class="fas fa-calculator me-2 text-info"></i>GCV/Ash/Moisture</td>
-                    <td data-label="GCV" style="text-align: center; font-weight: 600;">${calc.gcv} kcal/kg</td>
-                    <td data-label="Ash" style="text-align: center; font-weight: 600;">${calc.ash}%</td>
-                    <td data-label="Moisture" style="text-align: center; font-weight: 600;">${calc.moisture}%</td>
-                    <td data-label="TM/IM" style="text-align: center; color: rgba(255, 255, 255, 0.5);">N/A</td>
+                    <td data-label="GCV" style="text-align: center; font-weight: 600;">${calc.gcv}</td>
+                    <td data-label="Ash" style="text-align: center; font-weight: 600;">${calc.ash}</td>
+                    <td data-label="Moisture" style="text-align: center; font-weight: 600;">${calc.moisture}</td>
                     <td data-label="Calculated" style="color: #28a745; font-weight: 600;"><i class="fas fa-star me-1"></i>${calc.calculatedField}</td>
-                    <td data-label="Date" style="text-align: center; font-size: 12px;">${timestamp}</td>
                 </tr>
             `;
         } else if (calc.type === 'GCV Conversion Calculator') {
@@ -1538,12 +2215,10 @@ function viewStoredCalculations() {
                 <tr>
                     <td data-label="S.No" style="text-align: center; font-weight: 600;">${serialNo}</td>
                     <td data-label="Type"><i class="fas fa-exchange-alt me-2 text-warning"></i>GCV Conversion</td>
-                    <td data-label="GCV" style="text-align: center; font-weight: 600;">${calc.gcvArb} / ${calc.gcvEq} kcal/kg</td>
+                    <td data-label="GCV" style="text-align: center; font-weight: 600;">ARB: ${calc.gcvArb}<br>Eq: ${calc.gcvEq}</td>
                     <td data-label="Ash" style="text-align: center; color: rgba(255, 255, 255, 0.5);">N/A</td>
-                    <td data-label="Moisture" style="text-align: center; color: rgba(255, 255, 255, 0.5);">N/A</td>
-                    <td data-label="TM/IM" style="text-align: center; font-weight: 600;">${calc.moistureArb}% / ${calc.moistureEq}%</td>
+                    <td data-label="Moisture" style="text-align: center; font-weight: 600;">TM: ${calc.moistureArb}<br>IM: ${calc.moistureEq}</td>
                     <td data-label="Calculated" style="color: #17a2b8; font-weight: 600;"><i class="fas fa-star me-1"></i>${calc.calculatedField}</td>
-                    <td data-label="Date" style="text-align: center; font-size: 12px;">${timestamp}</td>
                 </tr>
             `;
         }
@@ -1592,9 +2267,48 @@ function clearAllCalculations() {
     }
 }
 
-// Initialize storage counter on page load
+// Initialize storage counter on page load and trigger animations
 document.addEventListener('DOMContentLoaded', function() {
     updateStorageCounter();
+    
+    // Load night mode preference
+    loadNightModePreference();
+    
+    // Trigger entrance animations
+    const animatedElements = document.querySelectorAll('.animate-on-load');
+    
+    // Add a slight delay to ensure smooth rendering
+    setTimeout(() => {
+        animatedElements.forEach(element => {
+            element.style.opacity = '1';
+            
+            // Add the appropriate animation class based on existing classes
+            if (element.classList.contains('animate-fadeInUp')) {
+                element.style.animation = element.style.animation || 'fadeInUp 0.8s ease-out forwards';
+            } else if (element.classList.contains('animate-fadeInDown')) {
+                element.style.animation = element.style.animation || 'fadeInDown 0.8s ease-out forwards';
+            } else if (element.classList.contains('animate-fadeInLeft')) {
+                element.style.animation = element.style.animation || 'fadeInLeft 0.8s ease-out forwards';
+            } else if (element.classList.contains('animate-fadeInRight')) {
+                element.style.animation = element.style.animation || 'fadeInRight 0.8s ease-out forwards';
+            } else if (element.classList.contains('animate-scaleIn')) {
+                element.style.animation = element.style.animation || 'scaleIn 0.8s ease-out forwards';
+            } else if (element.classList.contains('animate-bounceIn')) {
+                element.style.animation = element.style.animation || 'bounceIn 1s ease-out forwards';
+            }
+        });
+    }, 100);
+    
+    // Add a welcome effect to the page title
+    setTimeout(() => {
+        const pageTitle = document.querySelector('.page-title');
+        if (pageTitle) {
+            pageTitle.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                pageTitle.style.transform = 'scale(1)';
+            }, 200);
+        }
+    }, 1200);
 });
 
 function toggleFormulaCard() {
@@ -1660,7 +2374,7 @@ function exportToPDF() {
                 index + 1,
                 'GCV Conversion',
                 `ARB: ${calc.gcvArb}\nEq: ${calc.gcvEq}`,
-                '-',
+                'N/A',
                 `TM: ${calc.moistureArb}\nIM: ${calc.moistureEq}`,
                 calc.calculatedField
             ]);
@@ -1707,7 +2421,7 @@ function exportToJPG() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Set canvas size for A4 aspect ratio
+    // Set canvas size for A4 portrait mode (same as PDF)
     canvas.width = 2480; // A4 width at 300 DPI
     canvas.height = 3508; // A4 height at 300 DPI
     
@@ -1725,13 +2439,19 @@ function exportToJPG() {
     ctx.font = '32px Arial';
     ctx.fillText(`Total Records: ${savedCalculations.length} | Generated: ${new Date().toLocaleString()}`, 100, 200);
     
-    // Table styling
+    // Table styling (adjusted for portrait A4 - full width, no timestamp)
     const startY = 300;
-    const rowHeight = 60;
-    const colWidths = [150, 400, 300, 200, 300, 300];
-    const tableWidth = colWidths.reduce((a, b) => a + b, 0);
+    const rowHeight = 100; // Increased for larger fonts
+    const availableWidth = canvas.width - 200; // Full width minus margins
+    const colWidths = [120, 420, 480, 200, 480, 380]; // 6 columns, no timestamp
+    const tableWidth = availableWidth; // Use full available width
     
-    // Table headers
+    // Scale column widths to fit exactly
+    const totalCols = colWidths.reduce((a, b) => a + b, 0);
+    const scaleFactor = availableWidth / totalCols;
+    colWidths.forEach((width, i) => colWidths[i] = Math.floor(width * scaleFactor));
+    
+    // Updated table headers without timestamp
     const headers = ['S.No', 'Calculator Type', 'GCV (kcal/kg)', 'Ash (%)', 'Moisture (%)', 'Calculated Field'];
     
     // Draw header
@@ -1739,17 +2459,20 @@ function exportToJPG() {
     ctx.fillRect(100, startY, tableWidth, rowHeight);
     
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 28px Arial';
+    ctx.font = 'bold 32px Arial'; // Larger font for headers
     
     let xPos = 100;
     headers.forEach((header, i) => {
-        ctx.fillText(header, xPos + 10, startY + 40);
+        // Center text in column
+        const textWidth = ctx.measureText(header).width;
+        const centerX = xPos + (colWidths[i] - textWidth) / 2;
+        ctx.fillText(header, centerX, startY + 60);
         xPos += colWidths[i];
     });
     
     // Draw rows
     ctx.fillStyle = '#2c3e50';
-    ctx.font = '24px Arial';
+    ctx.font = '28px Arial'; // Larger font for data rows
     
     savedCalculations.reverse().forEach((calc, index) => {
         const yPos = startY + (index + 1) * rowHeight;
@@ -1761,7 +2484,7 @@ function exportToJPG() {
         ctx.fillStyle = '#2c3e50';
         
         let xPos = 100;
-        const rowData = [];
+        let rowData = []; // Changed from const to let
         
         if (calc.type === 'GCV/Ash/Moisture Calculator') {
             rowData = [
@@ -1777,14 +2500,67 @@ function exportToJPG() {
                 index + 1,
                 'GCV Conversion',
                 `ARB:${calc.gcvArb} Eq:${calc.gcvEq}`,
-                '-',
+                'N/A',
                 `TM:${calc.moistureArb} IM:${calc.moistureEq}`,
                 calc.calculatedField
             ];
         }
         
         rowData.forEach((data, i) => {
-            ctx.fillText(String(data), xPos + 10, yPos + 40);
+            // Handle text rendering with larger fonts
+            const text = String(data);
+            const maxWidth = colWidths[i] - 20;
+            
+            if (ctx.measureText(text).width > maxWidth) {
+                // Handle long text with wrapping
+                const words = text.split(' ');
+                let line = '';
+                let lineY = yPos + 35;
+                const lineHeight = 30;
+                
+                for (let n = 0; n < words.length; n++) {
+                    let testLine = line + words[n] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    
+                    if (metrics.width > maxWidth && n > 0) {
+                        // Center text in column
+                        const textWidth = ctx.measureText(line).width;
+                        const centerX = xPos + (colWidths[i] - textWidth) / 2;
+                        ctx.fillText(line, centerX, lineY);
+                        line = words[n] + ' ';
+                        lineY += lineHeight;
+                        if (lineY > yPos + rowHeight - 15) break;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                if (lineY <= yPos + rowHeight - 15) {
+                    const textWidth = ctx.measureText(line).width;
+                    const centerX = xPos + (colWidths[i] - textWidth) / 2;
+                    ctx.fillText(line, centerX, lineY);
+                }
+            } else {
+                // Check if it's multi-line content
+                if (text.includes('ARB:') && text.includes('Eq:')) {
+                    const parts = text.split(' ');
+                    const centerX1 = xPos + (colWidths[i] - ctx.measureText(parts[0]).width) / 2;
+                    const centerX2 = xPos + (colWidths[i] - ctx.measureText(parts[1]).width) / 2;
+                    ctx.fillText(parts[0], centerX1, yPos + 40);
+                    ctx.fillText(parts[1], centerX2, yPos + 75);
+                } else if (text.includes('TM:') && text.includes('IM:')) {
+                    const parts = text.split(' ');
+                    const centerX1 = xPos + (colWidths[i] - ctx.measureText(parts[0]).width) / 2;
+                    const centerX2 = xPos + (colWidths[i] - ctx.measureText(parts[1]).width) / 2;
+                    ctx.fillText(parts[0], centerX1, yPos + 40);
+                    ctx.fillText(parts[1], centerX2, yPos + 75);
+                } else {
+                    // Center single line text
+                    const textWidth = ctx.measureText(text).width;
+                    const centerX = xPos + (colWidths[i] - textWidth) / 2;
+                    ctx.fillText(text, centerX, yPos + 60);
+                }
+            }
+            
             xPos += colWidths[i];
         });
     });

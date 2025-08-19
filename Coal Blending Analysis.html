@@ -9,8 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome - Primary CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <!-- Font Awesome - Fallback CDN -->
+    <link href="https://use.fontawesome.com/releases/v6.5.0/css/all.css" rel="stylesheet" crossorigin="anonymous">
     <!-- MathJax -->
     <script>
         window.MathJax = {
@@ -39,6 +41,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            transition: background 0.5s ease, color 0.3s ease;
         }
 
         .back-button {
@@ -793,9 +796,331 @@
             }
         }
         
+        /* Night Mode Toggle Styles */
+        .night-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-label {
+            font-size: 16px;
+            user-select: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: #4dabf7;
+            border-color: #4dabf7;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .calculator-container {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .calculator-header {
+            background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+            border-radius: 15px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            margin-bottom: 10px !important;
+            padding: 20px !important;
+        }
+
+        body.night-mode .calculator-title {
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.night-mode .calculator-subtitle {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        body.night-mode .section-title {
+            color: #ffffff !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        body.night-mode .input-section {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .input-label {
+            color: #b0b0b0 !important;
+        }
+
+        body.night-mode .form-control {
+            background: rgba(40, 40, 60, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .form-control:focus {
+            background: rgba(50, 50, 70, 0.9) !important;
+            border-color: #4dabf7 !important;
+            box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25) !important;
+        }
+
+        body.night-mode .btn-primary {
+            background: linear-gradient(135deg, #4263eb, #364fc7) !important;
+            border-color: #364fc7 !important;
+        }
+
+        body.night-mode .btn-primary:hover {
+            background: linear-gradient(135deg, #364fc7, #3b82f6) !important;
+            border-color: #3b82f6 !important;
+        }
+
+        body.night-mode .results-section {
+            background: rgba(26, 26, 46, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .results-grid .col-md-4 {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .result-item h6 {
+            color: #b0b0b0 !important;
+        }
+
+        body.night-mode .result-value {
+            color: #ffffff !important;
+        }
+
+        body.night-mode .back-button {
+            background: rgba(26, 26, 46, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .back-button:hover {
+            background: rgba(40, 40, 60, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        body.night-mode .export-btn {
+            background: rgba(26, 26, 46, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .export-btn:hover {
+            background: rgba(40, 40, 60, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        body.night-mode .error-message {
+            background: rgba(220, 53, 69, 0.2) !important;
+            border: 1px solid rgba(220, 53, 69, 0.4) !important;
+            color: #f8d7da !important;
+        }
+
+        body.night-mode .instruction-message {
+            background: rgba(13, 202, 240, 0.2) !important;
+            border: 1px solid rgba(13, 202, 240, 0.4) !important;
+            color: #b6effb !important;
+        }
+
+        body.night-mode .night-mode-toggle {
+            background: rgba(26, 26, 46, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Fallback icons in case Font Awesome doesn't load */
+        .fa-file-pdf::before { content: "📄"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-image::before { content: "🖼️"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-fire::before { content: "🔥"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-industry::before { content: "🏭"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-chart-bar::before { content: "📊"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-arrow-left::before { content: "←"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-info-circle::before { content: "ℹ️"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .fa-tag::before { content: "🏷️"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        
+        /* Enhanced export button styling */
+        .export-btn {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            transition: all 0.3s ease !important;
+            min-height: 40px !important;
+        }
+
+        .export-btn .fas,
+        .export-btn .fa {
+            font-size: 16px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Enhanced Entrance Animations */
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes zoomInRotate {
+            from { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+            to { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes flipInX {
+            from { opacity: 0; transform: perspective(400px) rotateX(90deg); }
+            40% { transform: perspective(400px) rotateX(-20deg); }
+            60% { opacity: 1; transform: perspective(400px) rotateX(10deg); }
+            80% { transform: perspective(400px) rotateX(-5deg); }
+            to { opacity: 1; transform: perspective(400px) rotateX(0deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Animation Classes */
+        .animate-slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .animate-slide-in-up {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .animate-slide-in-down {
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        .animate-zoom-in {
+            animation: zoomIn 0.6s ease-out;
+        }
+
+        .animate-zoom-in-rotate {
+            animation: zoomInRotate 0.7s ease-out;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        .animate-flip-in-x {
+            animation: flipInX 0.8s ease-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 0.6s ease-out;
+        }
+
+        /* Staggered animation delays */
+        .animate-delay-1 { animation-delay: 0.1s; animation-fill-mode: both; opacity: 0; }
+        .animate-delay-2 { animation-delay: 0.2s; animation-fill-mode: both; opacity: 0; }
+        .animate-delay-3 { animation-delay: 0.3s; animation-fill-mode: both; opacity: 0; }
+        .animate-delay-4 { animation-delay: 0.4s; animation-fill-mode: both; opacity: 0; }
+        .animate-delay-5 { animation-delay: 0.5s; animation-fill-mode: both; opacity: 0; }
+        .animate-delay-6 { animation-delay: 0.6s; animation-fill-mode: both; opacity: 0; }
+        
     </style>
 </head>
 <body>
+    <!-- Night Mode Toggle -->
+    <div class="night-mode-toggle">
+        <span class="toggle-label">🌙</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="nightModeToggle">
+            <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">☀️</span>
+    </div>
+
     <!-- Back Button -->
     <button class="back-button" onclick="goBack()" title="Back to Calculators">
         <i class="fas fa-arrow-left"></i>
@@ -806,7 +1131,6 @@
         <!-- Header -->
         <div class="calculator-header">
             <h1 class="calculator-title">Blended Coal Analysis Calculator</h1>
-            <p class="calculator-subtitle">Professional tool for analyzing blended coal economics and performance</p>
         </div>
 
         <!-- Error/Instruction Messages -->
@@ -817,11 +1141,12 @@
         </div>
 
         <!-- Coal Properties Section -->
-        <h3 class="section-title">
-            <i class="fas fa-fire me-2"></i>Coal Properties
-        </h3>
+        <div id="coalPropertiesSection">
+            <h3 class="section-title">
+                <i class="fas fa-fire me-2"></i>Coal Properties
+            </h3>
 
-        <div class="input-section">
+            <div class="input-section">
             <div class="input-row">
                 <label class="input-label">
                     <i class="fas fa-tag me-2"></i>Coal Source Names
@@ -862,11 +1187,13 @@
                 </div>
             </div>
         </div>
+        </div> <!-- End coalPropertiesSection -->
 
         <!-- Plant Parameters Section -->
-        <h3 class="section-title">
-            <i class="fas fa-industry me-2"></i>Plant Parameters
-        </h3>
+        <div id="plantParametersSection">
+            <h3 class="section-title">
+                <i class="fas fa-industry me-2"></i>Plant Parameters
+            </h3>
 
         <div class="input-section">
             <div class="input-row">
@@ -924,6 +1251,7 @@
                 <i class="fas fa-refresh me-2"></i>Clear Form
             </button>
         </div>
+        </div> <!-- End plantParametersSection -->
 
         <!-- Results Section -->
         <div class="results-container" id="resultsContainer" style="display: none;">
@@ -1015,9 +1343,14 @@
 
         <!-- Stored Calculations -->
         <div class="stored-calculations" id="storedCalculationsContainer" style="display: none;">
-            <h4 style="color: white; margin-bottom: 15px;">
-                <i class="fas fa-database me-2"></i>Stored Calculations
-            </h4>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 style="color: white; margin: 0;">
+                    <i class="fas fa-database me-2"></i>Stored Calculations
+                </h4>
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="clearAllStoredData()" title="Clear All Stored Data">
+                    <i class="fas fa-trash-alt me-1"></i>Clear All
+                </button>
+            </div>
             <div id="storedCalculationsList"></div>
         </div>
     </div>
@@ -1253,6 +1586,79 @@ document.addEventListener('DOMContentLoaded', function () {
     }); // End forEach for blendedInputs
     } // End setupEventListeners function
     
+    // Night Mode Functionality
+    function initializeNightMode() {
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        const body = document.body;
+        
+        // Check saved preference
+        const isNightMode = localStorage.getItem('nightMode') === 'true';
+        if (isNightMode) {
+            body.classList.add('night-mode');
+            nightModeToggle.checked = true;
+        }
+        
+        // Toggle functionality
+        nightModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('night-mode');
+                localStorage.setItem('nightMode', 'true');
+            } else {
+                body.classList.remove('night-mode');
+                localStorage.setItem('nightMode', 'false');
+            }
+        });
+    }
+
+    // Animation System
+    function initializeAnimations() {
+        const elements = [
+            { selector: '.calculator-header', animation: 'animate-slide-in-down', delay: 0 },
+            { selector: '.night-mode-toggle', animation: 'animate-slide-in-right', delay: 1 },
+            { selector: '.back-button', animation: 'animate-slide-in-left', delay: 1 },
+            { selector: '#coalPropertiesSection', animation: 'animate-slide-in-left', delay: 2 },
+            { selector: '#plantParametersSection', animation: 'animate-slide-in-right', delay: 3 },
+            { selector: '#resultsContainer', animation: 'animate-zoom-in-rotate', delay: 4 },
+            { selector: '.error-message', animation: 'animate-bounce-in', delay: 2 },
+            { selector: '.instruction-message', animation: 'animate-flip-in-x', delay: 3 }
+        ];
+
+        elements.forEach(({ selector, animation, delay }) => {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.classList.add(animation, `animate-delay-${delay}`);
+            }
+        });
+
+        // Animate input sections when they come into view
+        const inputSections = document.querySelectorAll('.input-section');
+        inputSections.forEach((section, index) => {
+            const animationClass = index % 2 === 0 ? 'animate-slide-in-left' : 'animate-slide-in-right';
+            section.classList.add(animationClass, `animate-delay-${Math.min(index + 2, 6)}`);
+        });
+
+        // Animate buttons when results are shown
+        const exportButtons = document.querySelectorAll('.export-btn');
+        exportButtons.forEach((btn, index) => {
+            btn.classList.add('animate-pulse', `animate-delay-${index + 1}`);
+        });
+    }
+
+    // Enhanced results animation
+    function animateResults() {
+        const resultItems = document.querySelectorAll('.result-item');
+        resultItems.forEach((item, index) => {
+            setTimeout(() => {
+                item.classList.add('animate-slide-in-up');
+            }, index * 100);
+        });
+    }
+
+    // Initialize all systems
+    setupEventListeners();
+    initializeNightMode();
+    initializeAnimations();
+    
     // Initialize stored calculations display and counter
     updateStoredCalculationsDisplay();
 }); // End DOMContentLoaded
@@ -1451,6 +1857,15 @@ function showSuccessState(calculations) {
     const resultsContainer = document.getElementById('resultsContainer');
     if (resultsContainer) {
         resultsContainer.style.display = 'block';
+        // Trigger results animation
+        setTimeout(() => {
+            const resultItems = document.querySelectorAll('.result-item');
+            resultItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('animate-slide-in-up');
+                }, index * 50);
+            });
+        }, 100);
     }
     
     // Hide instruction message and error message
@@ -1912,214 +2327,305 @@ function exportToJPG() {
             return;
         }
 
-        showNotification('Generating image...', 'info');
+        showNotification('Generating high-quality image...', 'info');
         
         // Get coal names
         const coalAName = document.getElementById('coalA-blending-name').value || 'Indigenous Coal';
         const coalBName = document.getElementById('coalB-blending-name').value || 'Imported Coal';
         
-        // Create A4 size container with proper dimensions and CSS isolation
+        // Create A4 portrait container with professional layout
         const exportContainer = document.createElement('div');
         exportContainer.style.cssText = `
-            background: white !important;
+            background: #ffffff !important;
             width: 794px !important;
             min-height: 1123px !important;
-            max-width: none !important;
-            padding: 40px !important;
+            padding: 25px !important;
             margin: 0 auto !important;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-            color: #333 !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            color: #2c3e50 !important;
             box-sizing: border-box !important;
             position: relative !important;
             border: none !important;
             border-radius: 0 !important;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            animation: none !important;
-            transform: none !important;
-            overflow: visible !important;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1) !important;
         `;
         
-        // Add CSS reset for all child elements to prevent inheritance
-        const styleReset = document.createElement('style');
-        styleReset.textContent = `
-            .export-container-temp * {
-                box-sizing: border-box !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                border: none !important;
-                background: transparent !important;
-                color: inherit !important;
-                font-family: inherit !important;
-                font-size: inherit !important;
-                font-weight: inherit !important;
-                line-height: inherit !important;
-                text-align: inherit !important;
-                text-decoration: none !important;
-                list-style: none !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                backdrop-filter: none !important;
-                animation: none !important;
-                transform: none !important;
-                transition: none !important;
-                outline: none !important;
-                max-width: none !important;
-                min-width: auto !important;
-            }
-            .export-container-temp table {
-                width: 100% !important;
-                max-width: none !important;
-                table-layout: fixed !important;
-                border-collapse: collapse !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .export-container-temp th,
-            .export-container-temp td {
-                border: 1px solid #ddd !important;
-                margin: 0 !important;
-                background: transparent !important;
-            }
+        // Professional header section
+        const headerSection = document.createElement('div');
+        headerSection.style.cssText = `
+            text-align: center !important;
+            padding-bottom: 20px !important;
+            border-bottom: 3px solid #3498db !important;
+            margin-bottom: 25px !important;
         `;
-        document.head.appendChild(styleReset);
-        exportContainer.className = 'export-container-temp';
         
-        // Add title with A4 optimized sizing
         const title = document.createElement('h1');
         title.textContent = 'Coal Blending Analysis Report';
-        title.style.cssText = 'text-align: center; color: #2c5aa0; margin: 0 0 15px 0; font-size: 24px; font-weight: bold; line-height: 1.2;';
-        exportContainer.appendChild(title);
+        title.style.cssText = `
+            color: #2c5aa0 !important;
+            margin: 0 0 10px 0 !important;
+            font-size: 26px !important;
+            font-weight: bold !important;
+            letter-spacing: 1px !important;
+        `;
         
-        // Add timestamp
         const timestamp = document.createElement('p');
         timestamp.textContent = `Generated on: ${new Date().toLocaleString('en-IN')}`;
-        timestamp.style.cssText = 'text-align: center; color: #666; margin: 0 0 25px 0; font-size: 12px;';
-        exportContainer.appendChild(timestamp);
-        
-        // Create Coal Properties Table - A4 optimized with full width
-        const coalPropertiesSection = document.createElement('div');
-        coalPropertiesSection.innerHTML = `
-            <h2 style="color: #2c5aa0 !important; margin: 0 0 10px 0 !important; font-size: 16px !important; font-weight: bold !important;">Coal Properties</h2>
-            <table style="width: 100% !important; max-width: none !important; border-collapse: collapse !important; margin-bottom: 20px !important; font-size: 10px !important; table-layout: fixed !important;">
-                <thead>
-                    <tr style="background-color: #343a40 !important; color: white !important;">
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: left !important; font-size: 10px !important; width: 35% !important;">Parameter</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 25% !important;">${coalAName}</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 25% !important;">${coalBName}</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 15% !important;">Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${createCoalPropertiesTableRows()}
-                </tbody>
-            </table>
+        timestamp.style.cssText = `
+            color: #7f8c8d !important;
+            margin: 5px 0 !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
         `;
+        
+        headerSection.appendChild(title);
+        headerSection.appendChild(timestamp);
+        exportContainer.appendChild(headerSection);
+        
+        // Optimized table styling function with full width utilization
+        const getTableStyle = () => `
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-bottom: 22px !important;
+            font-size: 11px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            table-layout: fixed !important;
+        `;
+        
+        const getHeaderStyle = () => `
+            background: linear-gradient(135deg, #34495e, #2c3e50) !important;
+            color: white !important;
+            padding: 10px 6px !important;
+            text-align: center !important;
+            font-weight: bold !important;
+            font-size: 10px !important;
+            word-wrap: break-word !important;
+        `;
+        
+        const getCellStyle = (isEven = false) => `
+            border: 1px solid #ecf0f1 !important;
+            padding: 8px 6px !important;
+            text-align: center !important;
+            font-size: 10px !important;
+            background: ${isEven ? '#f8f9fa' : 'white'} !important;
+            color: #2c3e50 !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+        `;
+        
+        const getSectionTitleStyle = () => `
+            color: #2c5aa0 !important;
+            margin: 18px 0 10px 0 !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            padding: 6px 0 !important;
+            border-left: 4px solid #3498db !important;
+            padding-left: 10px !important;
+        `;
+
+        // Coal Properties Table with improved layout
+        const coalPropertiesSection = document.createElement('div');
+        const coalPropsTitle = document.createElement('h2');
+        coalPropsTitle.textContent = 'Coal Properties';
+        coalPropsTitle.style.cssText = getSectionTitleStyle();
+        
+        const coalPropsTable = document.createElement('table');
+        coalPropsTable.style.cssText = getTableStyle();
+        
+        // Use same data as PDF
+        const coalPropertiesData = getCoalPropertiesDataForPDF();
+        const coalPropsRows = coalPropertiesData.map((row, index) => {
+            const isEven = index % 2 === 0;
+            return `
+                <tr>
+                    <td style="${getCellStyle(isEven)} width: 40% !important; font-weight: 600 !important; text-align: left !important; padding-left: 12px !important;">${row[0]}</td>
+                    <td style="${getCellStyle(isEven)} width: 25% !important;">${row[1]}</td>
+                    <td style="${getCellStyle(isEven)} width: 25% !important;">${row[2]}</td>
+                    <td style="${getCellStyle(isEven)} width: 10% !important; font-style: italic !important; color: #7f8c8d !important; font-size: 9px !important;">${row[3]}</td>
+                </tr>
+            `;
+        }).join('');
+        
+        coalPropsTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="${getHeaderStyle()} width: 40% !important;">Parameter</th>
+                    <th style="${getHeaderStyle()} width: 25% !important;">${coalAName}</th>
+                    <th style="${getHeaderStyle()} width: 25% !important;">${coalBName}</th>
+                    <th style="${getHeaderStyle()} width: 10% !important;">Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${coalPropsRows}
+            </tbody>
+        `;
+        
+        coalPropertiesSection.appendChild(coalPropsTitle);
+        coalPropertiesSection.appendChild(coalPropsTable);
         exportContainer.appendChild(coalPropertiesSection);
 
-        // Create Plant Parameters Table - A4 optimized with full width
-        const plantParametersSection = document.createElement('div');
-        plantParametersSection.innerHTML = `
-            <h2 style="color: #2c5aa0 !important; margin: 0 0 10px 0 !important; font-size: 16px !important; font-weight: bold !important;">Plant Parameters</h2>
-            <table style="width: 100% !important; max-width: none !important; border-collapse: collapse !important; margin-bottom: 20px !important; font-size: 10px !important; table-layout: fixed !important;">
-                <thead>
-                    <tr style="background-color: #343a40 !important; color: white !important;">
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: left !important; font-size: 10px !important; width: 50% !important;">Parameter</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 30% !important;">Value</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 20% !important;">Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${createPlantParametersTableRows()}
-                </tbody>
-            </table>
-        `;
-        exportContainer.appendChild(plantParametersSection);
+        // Plant Parameters Table
+        const plantParamsSection = document.createElement('div');
+        const plantParamsTitle = document.createElement('h2');
+        plantParamsTitle.textContent = 'Plant Parameters';
+        plantParamsTitle.style.cssText = getSectionTitleStyle();
         
-        // Create Analysis Results Table - A4 optimized with full width
-        const resultsSection = document.createElement('div');
-        resultsSection.innerHTML = `
-            <h2 style="color: #2c5aa0 !important; margin: 0 0 10px 0 !important; font-size: 16px !important; font-weight: bold !important;">Analysis Results</h2>
-            <table style="width: 100% !important; max-width: none !important; border-collapse: collapse !important; margin-bottom: 20px !important; font-size: 10px !important; table-layout: fixed !important;">
-                <thead>
-                    <tr style="background-color: #343a40 !important; color: white !important;">
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: left !important; font-size: 10px !important; width: 28% !important;">Parameter</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 18% !important;">${coalAName}</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 18% !important;">${coalBName}</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 18% !important;">Blended Coal</th>
-                        <th style="border: 1px solid #ddd !important; padding: 6px !important; text-align: center !important; font-size: 10px !important; width: 18% !important;">Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${createAnalysisResultsTableRows()}
-                </tbody>
-            </table>
+        const plantParamsTable = document.createElement('table');
+        plantParamsTable.style.cssText = getTableStyle();
+        
+        // Use same data as PDF
+        const plantParametersData = getPlantParametersDataForPDF();
+        const plantParamsRows = plantParametersData.map((row, index) => {
+            const isEven = index % 2 === 0;
+            return `
+                <tr>
+                    <td style="${getCellStyle(isEven)} width: 60% !important; font-weight: 600 !important; text-align: left !important; padding-left: 12px !important;">${row[0]}</td>
+                    <td style="${getCellStyle(isEven)} width: 25% !important;">${row[1]}</td>
+                    <td style="${getCellStyle(isEven)} width: 15% !important; font-style: italic !important; color: #7f8c8d !important; font-size: 9px !important;">${row[2]}</td>
+                </tr>
+            `;
+        }).join('');
+        
+        plantParamsTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="${getHeaderStyle()} width: 60% !important;">Parameter</th>
+                    <th style="${getHeaderStyle()} width: 25% !important;">Value</th>
+                    <th style="${getHeaderStyle()} width: 15% !important;">Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${plantParamsRows}
+            </tbody>
         `;
+        
+        plantParamsSection.appendChild(plantParamsTitle);
+        plantParamsSection.appendChild(plantParamsTable);
+        exportContainer.appendChild(plantParamsSection);
+        
+        // Analysis Results Table with compact design
+        const resultsSection = document.createElement('div');
+        const resultsTitle = document.createElement('h2');
+        resultsTitle.textContent = 'Analysis Results';
+        resultsTitle.style.cssText = getSectionTitleStyle();
+        
+        const resultsTable = document.createElement('table');
+        resultsTable.style.cssText = getTableStyle();
+        
+        // Use same data as PDF
+        const resultsData = getResultsDataForPDF();
+        const resultsRows = resultsData.map((row, index) => {
+            const isEven = index % 2 === 0;
+            return `
+                <tr>
+                    <td style="${getCellStyle(isEven)} width: 32% !important; font-weight: 600 !important; text-align: left !important; font-size: 9px !important; padding-left: 8px !important;">${row[0]}</td>
+                    <td style="${getCellStyle(isEven)} width: 17% !important; font-size: 9px !important;">${row[1]}</td>
+                    <td style="${getCellStyle(isEven)} width: 17% !important; font-size: 9px !important;">${row[2]}</td>
+                    <td style="${getCellStyle(isEven)} width: 17% !important; font-weight: bold !important; background: ${isEven ? '#e8f4fd' : '#f0f8ff'} !important; color: #2c5aa0 !important; font-size: 9px !important;">${row[3]}</td>
+                    <td style="${getCellStyle(isEven)} width: 17% !important; font-style: italic !important; color: #7f8c8d !important; font-size: 8px !important;">${row[4]}</td>
+                </tr>
+            `;
+        }).join('');
+        
+        resultsTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="${getHeaderStyle()} width: 32% !important;">Parameter</th>
+                    <th style="${getHeaderStyle()} width: 17% !important;">${coalAName}</th>
+                    <th style="${getHeaderStyle()} width: 17% !important;">${coalBName}</th>
+                    <th style="${getHeaderStyle()} width: 17% !important;">Blended</th>
+                    <th style="${getHeaderStyle()} width: 17% !important;">Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${resultsRows}
+            </tbody>
+        `;
+        
+        resultsSection.appendChild(resultsTitle);
+        resultsSection.appendChild(resultsTable);
         exportContainer.appendChild(resultsSection);
         
-        // Create Key Findings Table - A4 optimized with full width
+        // Key Findings - Enhanced presentation
         const findingsSection = document.createElement('div');
+        const findingsTitle = document.createElement('h2');
+        findingsTitle.textContent = 'Key Findings';
+        findingsTitle.style.cssText = getSectionTitleStyle();
+        
         const comparisonResult = parseFloat(document.getElementById('comparison-result')?.innerText || '0');
         const additionalLiability = document.getElementById('additionalFinancialLiabilityImported-result')?.innerText || '0';
         
-        findingsSection.innerHTML = `
-            <h2 style="color: #2c5aa0 !important; margin: 0 0 10px 0 !important; font-size: 16px !important; font-weight: bold !important;">Key Findings</h2>
-            <table style="width: 100% !important; max-width: none !important; border-collapse: collapse !important; margin-bottom: 15px !important; font-size: 11px !important; table-layout: fixed !important;">
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid #ddd !important; padding: 8px !important; background-color: #f8f9fa !important; font-weight: bold !important; width: 50% !important; text-align: left !important;">Increase in Per Unit Cost</td>
-                        <td style="border: 1px solid #ddd !important; padding: 8px !important; width: 50% !important; text-align: center !important;">Rs. ${comparisonResult.toFixed(4)}/kWh</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd !important; padding: 8px !important; background-color: #f8f9fa !important; font-weight: bold !important; text-align: left !important;">Additional Financial Liability</td>
-                        <td style="border: 1px solid #ddd !important; padding: 8px !important; text-align: center !important;">Rs. ${additionalLiability}</td>
-                    </tr>
-                </tbody>
-            </table>
+        const findingsTable = document.createElement('table');
+        findingsTable.style.cssText = getTableStyle();
+        findingsTable.innerHTML = `
+            <tbody>
+                <tr>
+                    <td style="${getCellStyle()} width: 50% !important; font-weight: bold !important; text-align: left !important; background: #e8f4fd !important; color: #2c5aa0 !important;">Increase in Per Unit Cost</td>
+                    <td style="${getCellStyle()} width: 50% !important; font-weight: bold !important; color: #e74c3c !important;">Rs. ${comparisonResult.toFixed(4)}/kWh</td>
+                </tr>
+                <tr>
+                    <td style="${getCellStyle(true)} width: 50% !important; font-weight: bold !important; text-align: left !important; background: #e8f4fd !important; color: #2c5aa0 !important;">Additional Financial Liability</td>
+                    <td style="${getCellStyle(true)} width: 50% !important; font-weight: bold !important; color: #e74c3c !important;">Rs. ${additionalLiability}</td>
+                </tr>
+            </tbody>
         `;
+        
+        findingsSection.appendChild(findingsTitle);
+        findingsSection.appendChild(findingsTable);
         exportContainer.appendChild(findingsSection);
         
-        // Add footer
-        const footer = document.createElement('p');
-        footer.textContent = 'Generated by Professional Coal Blending Analysis Tool';
-        footer.style.cssText = 'text-align: center; color: #666; font-size: 9px; margin-top: 15px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);';
+        // Professional footer
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+            position: absolute !important;
+            bottom: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            text-align: center !important;
+            color: #95a5a6 !important;
+            font-size: 12px !important;
+            border-top: 1px solid #ecf0f1 !important;
+            padding-top: 10px !important;
+            width: calc(100% - 60px) !important;
+        `;
+        footer.innerHTML = `
+            <strong>Professional Coal Blending Analysis Tool</strong><br>
+            <small>Advanced Energy Economics & Environmental Analysis</small>
+        `;
         exportContainer.appendChild(footer);
         
-        // Temporarily add to body for rendering
+        // Add to DOM temporarily
         document.body.appendChild(exportContainer);
         
-        // High quality A4 rendering
+        // High-quality rendering
         html2canvas(exportContainer, {
-            scale: 3, // Higher scale for better quality
+            scale: 2.5,
             useCORS: true,
             backgroundColor: '#ffffff',
             logging: false,
             allowTaint: false,
-            imageTimeout: 0,
-            width: 794,  // A4 width at 96 DPI
-            height: 1123, // A4 height at 96 DPI
-            windowWidth: 794,
-            windowHeight: 1123,
-            removeContainer: false
+            imageTimeout: 15000,
+            width: 794,
+            height: 1123,
         }).then(canvas => {
-            // Remove temporary container and styles
+            // Clean up DOM
             document.body.removeChild(exportContainer);
-            document.head.removeChild(styleReset);
             
+            // Create download
             const link = document.createElement('a');
-            link.download = `Coal_Blending_Analysis_${coalAName}_vs_${coalBName}_${new Date().toISOString().split('T')[0]}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.download = `Coal_Blending_Analysis_${coalAName.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${coalBName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            showNotification('JPG exported successfully!', 'success');
+            
+            showNotification('High-quality JPG exported successfully!', 'success');
         }).catch(error => {
-            // Remove temporary container and styles on error
+            console.error('Canvas rendering error:', error);
+            // Clean up on error
             if (document.body.contains(exportContainer)) {
                 document.body.removeChild(exportContainer);
             }
-            if (document.head.contains(styleReset)) {
-                document.head.removeChild(styleReset);
-            }
-            console.error('html2canvas error:', error);
             showNotification('Error generating image. Please try again.', 'error');
         });
     } catch (error) {
@@ -2128,6 +2634,7 @@ function exportToJPG() {
     }
 }
 
+// Helper functions for optimized table creation
 // Helper functions for PDF export with separate table structures
 function getCoalPropertiesDataForPDF() {
     const coalProperties = [
@@ -2320,6 +2827,48 @@ document.addEventListener('keydown', function(event) {
         }
     }
 });
+
+// Clear All Stored Data Function
+function clearAllStoredData() {
+    if (confirm('Are you sure you want to clear all stored calculation data? This action cannot be undone.')) {
+        try {
+            // Clear localStorage
+            localStorage.removeItem('coalBlendingCalculations');
+            
+            // Update display
+            updateStoredCalculationsDisplay();
+            updateStoredCalculationsCounter();
+            
+            // Show success message
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 500;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            toast.innerHTML = '<i class="fas fa-check-circle me-2"></i>All stored data cleared successfully!';
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error clearing stored data:', error);
+            alert('Error clearing stored data. Please try again.');
+        }
+    }
+}
 
 console.log('Professional Coal Blending Analysis loaded successfully!');
 </script>

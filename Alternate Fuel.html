@@ -97,8 +97,8 @@
 
         .calculator-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -160,9 +160,9 @@
             border-radius: 12px 0 0 12px;
             padding: 6px 12px;
             font-weight: 500;
-            min-width: 180px;
-            width: 180px;
-            max-width: 180px;
+            min-width: 240px;
+            width: 240px;
+            max-width: 240px;
             text-align: center;
             display: flex;
             align-items: center;
@@ -186,8 +186,9 @@
             border-right: none;
             padding: 6px 10px;
             font-weight: bold;
-            min-width: 75px;
-            width: 75px;
+            min-width: 80px;
+            width: 80px;
+            max-width: 80px;
             text-align: center;
             display: flex;
             align-items: center;
@@ -398,6 +399,542 @@
             }
         }
         
+        /* Night Mode Toggle Styles */
+        .night-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .calculator-container {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .calculator-header {
+            background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+            border-radius: 15px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            margin-bottom: 10px !important;
+            padding: 5px !important;
+        }
+
+        body.night-mode .calculator-title {
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.night-mode .section-title {
+            color: #ffffff !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+            border-left: 4px solid rgba(255, 255, 255, 0.8) !important;
+        }
+
+        body.night-mode .input-section {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .form-group label {
+            color: #b0b0b0 !important;
+        }
+
+        body.night-mode .form-control {
+            background: rgba(40, 40, 60, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .form-control:focus {
+            background: rgba(50, 50, 70, 0.9) !important;
+            border-color: #4dabf7 !important;
+            box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25) !important;
+        }
+
+        body.night-mode .input-group-text1 {
+            background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .input-group-text1:hover {
+            background: linear-gradient(135deg, #40407a, #4263eb) !important;
+        }
+
+        body.night-mode .input-group-text2 {
+            background: rgba(40, 40, 60, 0.9) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            font-weight: bold !important;
+        }
+
+        body.night-mode .input-group-text2:hover {
+            background: rgba(50, 50, 70, 0.9) !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .btn-primary {
+            background: linear-gradient(135deg, #4263eb, #364fc7) !important;
+            border-color: #364fc7 !important;
+        }
+
+        body.night-mode .btn-primary:hover {
+            background: linear-gradient(135deg, #364fc7, #3b82f6) !important;
+            border-color: #3b82f6 !important;
+        }
+
+        body.night-mode .results-section {
+            background: rgba(26, 26, 46, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .results-header {
+            background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .results-grid .col-md-6 {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .result-item h6 {
+            color: #b0b0b0 !important;
+        }
+
+        body.night-mode .result-value {
+            color: #ffffff !important;
+        }
+
+        body.night-mode .back-button {
+            background: rgba(26, 26, 46, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .back-button:hover {
+            background: rgba(40, 40, 60, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        body.night-mode .export-btn {
+            background: rgba(26, 26, 46, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .export-btn:hover {
+            background: rgba(40, 40, 60, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        body.night-mode .analysis-table {
+            background: rgba(26, 26, 46, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .analysis-table th {
+            background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .analysis-table td {
+            background: rgba(40, 40, 60, 0.6) !important;
+            color: #e0e0e0 !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .plant-data {
+            background: rgba(40, 40, 60, 0.6) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .error-message {
+            background: rgba(220, 53, 69, 0.2) !important;
+            border: 1px solid rgba(220, 53, 69, 0.4) !important;
+            color: #f8d7da !important;
+        }
+
+        body.night-mode .instruction-message {
+            background: rgba(13, 202, 240, 0.2) !important;
+            border: 1px solid rgba(13, 202, 240, 0.4) !important;
+            color: #b6effb !important;
+        }
+
+        /* Formula Sidebar Night Mode Styles */
+        body.night-mode .formula-sidebar {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border-left: 4px solid rgba(77, 171, 247, 0.6) !important;
+            backdrop-filter: blur(20px) !important;
+        }
+
+        body.night-mode .formula-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        body.night-mode .formula-title {
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.night-mode .close-btn {
+            background: rgba(40, 40, 60, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .close-btn:hover {
+            background: rgba(77, 171, 247, 0.3) !important;
+            border-color: #4dabf7 !important;
+        }
+
+        body.night-mode .formula-item {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .formula-expression {
+            color: #e0e0e0 !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+            font-weight: 600 !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: pre-wrap !important;
+            word-break: break-after !important;
+        }
+
+        body.night-mode .formula-fallback {
+            color: #b0b0b0 !important;
+            font-weight: 500 !important;
+        }
+
+        body.night-mode .stored-calculations {
+            background: rgba(40, 40, 60, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .stored-calc-item {
+            background: rgba(26, 26, 46, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        body.night-mode .stored-calc-item:hover {
+            background: rgba(77, 171, 247, 0.2) !important;
+            border-color: #4dabf7 !important;
+            transform: translateY(-2px) !important;
+        }
+
+        body.night-mode .calc-header {
+            color: #ffffff !important;
+        }
+
+        body.night-mode .calc-details {
+            color: #b0b0b0 !important;
+        }
+
+        body.night-mode .calc-actions button {
+            background: rgba(40, 40, 60, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.night-mode .calc-actions button:hover {
+            background: rgba(77, 171, 247, 0.3) !important;
+            border-color: #4dabf7 !important;
+        }
+
+        /* Night Mode Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .night-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+            }
+            
+            .toggle-label {
+                font-size: 12px;
+            }
+            
+            .toggle-switch {
+                width: 40px;
+                height: 20px;
+            }
+            
+            .toggle-slider:before {
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+            }
+            
+            input:checked + .toggle-slider:before {
+                transform: translateX(20px);
+            }
+        }
+
+        /* Animation Styles */
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromTop {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rotateIn {
+            0% {
+                transform: rotate(-10deg) scale(0.9);
+                opacity: 0;
+            }
+            100% {
+                transform: rotate(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flipIn {
+            0% {
+                transform: rotateY(-90deg);
+                opacity: 0;
+            }
+            100% {
+                transform: rotateY(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(0.9);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulseGrow {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.02);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Animation Classes */
+        .animate-slide-left {
+            animation: slideInFromLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-slide-right {
+            animation: slideInFromRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-slide-top {
+            animation: slideInFromTop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-slide-bottom {
+            animation: slideInFromBottom 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-zoom-in {
+            animation: zoomIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-rotate-in {
+            animation: rotateIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-flip-in {
+            animation: flipIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .animate-pulse-grow {
+            animation: pulseGrow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        /* Staggered Animation Delays */
+        .delay-0 { animation-delay: 0ms; }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+        .delay-500 { animation-delay: 500ms; }
+        .delay-600 { animation-delay: 600ms; }
+        .delay-700 { animation-delay: 700ms; }
+        .delay-800 { animation-delay: 800ms; }
+        .delay-900 { animation-delay: 900ms; }
+        .delay-1000 { animation-delay: 1000ms; }
+        .delay-1100 { animation-delay: 1100ms; }
+        .delay-1200 { animation-delay: 1200ms; }
+
+        /* Notification Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+        }
+        
         .export-btn {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -478,6 +1015,54 @@
             line-height: 1.6;
             font-weight: 600;
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            word-break: break-after;
+        }
+
+        /* Formula wrapping specifically after equals sign */
+        .formula-expression::after {
+            content: '';
+        }
+        
+        .formula-expression {
+            /* Allow breaking after = sign */
+            word-break: normal;
+        }
+        
+        /* Custom formula display for better wrapping */
+        .formula-expression .equals-break {
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* MathJax formula styling and wrapping */
+        .formula-expression .MathJax {
+            max-width: 100% !important;
+            overflow-wrap: break-word !important;
+        }
+
+        .formula-expression .MathJax_Display {
+            text-align: left !important;
+            margin: 0.5em 0 !important;
+        }
+
+        /* Responsive formula display */
+        @media (max-width: 400px) {
+            .formula-sidebar {
+                width: 350px !important;
+            }
+            
+            .formula-expression {
+                font-size: 12px !important;
+                line-height: 1.5 !important;
+            }
+            
+            .formula-fallback {
+                font-size: 11px !important;
+                line-height: 1.4 !important;
+            }
         }
 
         .formula-fallback {
@@ -560,34 +1145,94 @@
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
         }
 
+        .store-btn-small, .clear-btn-small {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: 1px solid #20c997;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px 3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+            font-size: 13px;
+        }
+
+        .btn-small {
+            padding: 6px 12px !important;
+            margin: 5px 3px !important;
+            border-radius: 6px !important;
+            font-size: 13px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+
         .clear-btn {
             background: linear-gradient(135deg, #dc3545, #fd7e14);
             border: 1px solid #fd7e14;
             box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
         }
 
-        .store-btn:hover, .clear-btn:hover {
+        .clear-btn-small {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            border: 1px solid #fd7e14;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .store-btn:hover, .clear-btn:hover, .store-btn-small:hover, .clear-btn-small:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Mobile Responsive Design */
         @media (max-width: 768px) {
+            * {
+                box-sizing: border-box;
+            }
+            
+            body {
+                padding: 10px;
+                overflow-x: hidden;
+            }
+            
             .calculator-container {
-                padding: 20px;
-                margin: 60px 10px 20px 10px;
+                padding: 20px 15px;
+                margin: 60px 5px 20px 5px;
+                width: calc(100vw - 10px);
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .input-group {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             .input-group-text1 {
-                min-width: 120px;
-                width: 120px;
-                font-size: 0.8rem;
+                min-width: 140px;
+                width: 140px;
+                max-width: 140px;
+                font-size: 0.75rem;
+                padding: 6px 8px;
+                line-height: 1.2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .input-group-text2 {
                 min-width: 60px;
                 width: 60px;
-                font-size: 0.7rem;
+                max-width: 60px;
+                font-size: 0.65rem;
+                padding: 6px 4px;
+            }
+            
+            .form-control {
+                flex: 1;
+                min-width: 0;
+                width: auto;
+                box-sizing: border-box;
             }
 
             .floating-actions {
@@ -609,11 +1254,15 @@
 
             .results-table {
                 font-size: 12px;
+                width: 100%;
+                table-layout: auto;
             }
 
             .results-table th,
             .results-table td {
-                padding: 8px 6px;
+                padding: 8px 4px;
+                font-size: 11px;
+                white-space: nowrap;
             }
 
             .back-button {
@@ -626,63 +1275,132 @@
         }
 
         @media (max-width: 480px) {
+            .calculator-container {
+                padding: 15px 10px;
+                margin: 60px 2px 20px 2px;
+                width: calc(100vw - 4px);
+            }
+            
             .calculator-title {
-                font-size: 24px;
+                font-size: 20px;
+                line-height: 1.3;
             }
 
             .input-group {
-                flex-direction: column;
+                flex-direction: row;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
             }
 
             .input-group-prepend {
-                width: 100%;
+                flex-shrink: 0;
+                display: flex;
+                max-width: 65%;
             }
 
-            .input-group-text1, .input-group-text2 {
-                border-radius: 8px 8px 0 0;
-                width: 100%;
-                min-width: 100%;
+            .input-group-text1 {
+                border-radius: 8px 0 0 8px;
+                width: 160px;
+                min-width: 120px;
+                max-width: 180px;
+                flex: none;
+                font-size: 0.7rem;
+                padding: 6px 4px;
+                line-height: 1.1;
+                word-wrap: break-word;
+                white-space: normal;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .input-group-text2 {
+                border-radius: 0;
+                width: 50px;
+                min-width: 50px;
+                max-width: 50px;
+                font-size: 0.6rem;
+                padding: 6px 2px;
+                flex-shrink: 0;
             }
 
             .form-control {
-                border-radius: 0 0 8px 8px;
+                border-radius: 0 8px 8px 0;
                 border: 1px solid #dee2e6;
+                border-left: none;
+                flex: 1;
+                min-width: 0;
+                width: auto;
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+            
+            .input-row {
+                margin-bottom: 15px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .input-section {
+                width: 100%;
+                padding: 15px 8px;
+                box-sizing: border-box;
+            }
+            
+            .results-table {
+                font-size: 10px;
+                width: 100%;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Night Mode Toggle -->
+    <div class="night-mode-toggle animate-slide-top delay-0">
+        <label class="toggle-switch">
+            <input type="checkbox" id="nightModeToggle" onchange="toggleNightMode()">
+            <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Night Mode</span>
+    </div>
+    
     <!-- Back Button -->
-    <button class="back-button" onclick="goBack()" title="Back to Calculators">
+    <button class="back-button animate-zoom-in delay-100" onclick="goBack()" title="Back to Calculators">
         <i class="fas fa-arrow-left"></i>
     </button>
     <!-- Main Calculator Container -->
-    <div class="calculator-container">
+    <div class="calculator-container animate-slide-bottom delay-200">
         <!-- Header -->
-        <div class="calculator-header">
+        <div class="calculator-header animate-flip-in delay-300">
             <h1 class="calculator-title">Alternate Fuel Cost Economics Calculator</h1>
         </div>
 
         <!-- Error/Instruction Messages -->
-        <div class="error-message" id="errorMessage"></div>
-        <div class="instruction-message" id="instructionMessage">
+        <div class="error-message animate-slide-left delay-400" id="errorMessage"></div>
+        <div class="instruction-message animate-slide-right delay-400" id="instructionMessage">
             <i class="fas fa-info-circle me-2"></i>
             Please fill in all the required fields to see the alternate fuel cost analysis results
         </div>
 
         <!-- Linked Coal Properties Section -->
-        <h3 class="section-title">
+        <h3 class="section-title animate-rotate-in delay-500">
             <i class="fas fa-fire me-2"></i>Linked Coal Properties
         </h3>
 
-        <div class="input-section">
+        <div class="input-section animate-slide-left delay-600">
             <div class="input-row">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text1">Annual Coal Requirement</span>
                         <span class="input-group-text2">MT</span>
                     </div>
-                    <input type="number" class="form-control" id="acq-linked-coal" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="acq-linked-coal" placeholder="1000000" step="0.01" min="0">
                 </div>
             </div>
 
@@ -692,7 +1410,7 @@
                         <span class="input-group-text1">Landed Coal Cost</span>
                         <span class="input-group-text2">Rs/MCal</span>
                     </div>
-                    <input type="number" class="form-control" id="landed-cost-linked" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="landed-cost-linked" placeholder="1.25" step="0.01" min="0">
                 </div>
             </div>
 
@@ -702,24 +1420,24 @@
                         <span class="input-group-text1">GCV Linked Coal</span>
                         <span class="input-group-text2">kcal/kg</span>
                     </div>
-                    <input type="number" class="form-control" id="gcv-linked-coal" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="gcv-linked-coal" placeholder="4300" step="0.01" min="0">
                 </div>
             </div>
         </div>
 
         <!-- Alternate Fuel Properties Section -->
-        <h3 class="section-title">
+        <h3 class="section-title animate-rotate-in delay-700">
             <i class="fas fa-leaf me-2"></i>Alternate Fuel Properties
         </h3>
 
-        <div class="input-section">
+        <div class="input-section animate-slide-right delay-800">
             <div class="input-row">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text1">Alternate Fuel %</span>
                         <span class="input-group-text2">%</span>
                     </div>
-                    <input type="number" class="form-control" id="alternate-fuel-percentage" placeholder="0" step="0.01" min="0" max="100">
+                    <input type="number" class="form-control" id="alternate-fuel-percentage" placeholder="5" step="0.01" min="0" max="100">
                 </div>
             </div>
 
@@ -729,7 +1447,7 @@
                         <span class="input-group-text1">Landed Fuel Cost</span>
                         <span class="input-group-text2">Rs/MCal</span>
                     </div>
-                    <input type="number" class="form-control" id="landed-cost-alternate" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="landed-cost-alternate" placeholder="2.25" step="0.01" min="0">
                 </div>
             </div>
 
@@ -739,18 +1457,17 @@
                         <span class="input-group-text1">GCV Alternate Fuel</span>
                         <span class="input-group-text2">kcal/kg</span>
                     </div>
-                    <input type="number" class="form-control" id="gcv-alternate-fuel" placeholder="0" step="0.01" min="0">
+                    <input type="number" class="form-control" id="gcv-alternate-fuel" placeholder="2800" step="0.01" min="0">
                 </div>
             </div>
         </div>
 
         <!-- Plant Name Section -->
-        <div class="input-section">
+        <div class="input-section animate-zoom-in delay-850">
             <div class="input-row">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text1">Plant Name</span>
-                        <span class="input-group-text2">Name</span>
                     </div>
                     <input type="text" class="form-control" id="plant-name" placeholder="Enter plant name" maxlength="50" data-allow-text="true">
                 </div>
@@ -758,22 +1475,25 @@
         </div>
 
         <!-- Add Plant Data Button -->
-        <div class="text-center">
-            <button class="store-btn" onclick="addPlantToAnalysis()" id="addPlantButton">
-                <i class="fas fa-plus me-2"></i>Add Plant to Analysis
+        <div class="text-center animate-pulse-grow delay-900">
+            <button class="store-btn-small" onclick="addPlantToAnalysis()" id="addPlantButton">
+                <i class="fas fa-plus me-1"></i>Add Plant
             </button>
-            <button class="clear-btn" onclick="clearAllInputs()">
-                <i class="fas fa-refresh me-2"></i>Clear Form
+            <button class="clear-btn-small" onclick="clearAllInputs()">
+                <i class="fas fa-refresh me-1"></i>Clear Form
             </button>
-            <button class="btn btn-warning" onclick="clearCurrentAnalysis()" style="margin: 10px; padding: 12px 20px; border-radius: 25px;">
-                <i class="fas fa-trash me-2"></i>Clear Analysis Table
+            <button class="btn btn-warning btn-small" onclick="clearCurrentAnalysis()">
+                <i class="fas fa-trash me-1"></i>Clear Table
+            </button>
+            <button class="btn btn-info btn-small" onclick="toggleAnalysisTable()" id="toggleTableButton">
+                <i class="fas fa-eye me-1"></i>Hide Table
             </button>
         </div>
 
         <!-- Store Calculation Button -->
-        <div class="text-center" style="margin-top: 15px;">
-            <button class="store-btn" onclick="storeCalculation()" id="storeButton" disabled>
-                <i class="fas fa-save me-2"></i>Store Complete Analysis
+        <div class="text-center animate-bounce-in delay-900" style="margin-top: 15px;">
+            <button class="store-btn-small" onclick="storeCalculation()" id="storeButton" disabled>
+                <i class="fas fa-save me-1"></i>Store Analysis
             </button>
         </div>
 
@@ -839,8 +1559,13 @@
                             <td class="total-column avg-gcv-alternate" style="background-color: #fadbd8; font-weight: bold;">-</td>
                         </tr>
                         <tr style="background-color: rgba(231, 76, 60, 0.1);">
+                            <td class="sticky-column" style="position: sticky; left: 0; background-color: #e74c3c; color: white; font-weight: bold;">Weighted Average Cost</td>
+                            <td style="background-color: #e74c3c; color: white; font-weight: bold;">Rs/MCal</td>
+                            <td class="total-column weighted-avg-cost-total" style="background-color: #c0392b; color: white; font-weight: bold;">-</td>
+                        </tr>
+                        <tr style="background-color: rgba(231, 76, 60, 0.1);">
                             <td class="sticky-column" style="position: sticky; left: 0; background-color: #e74c3c; color: white; font-weight: bold;">Additional Financial Liability</td>
-                            <td style="background-color: #e74c3c; color: white; font-weight: bold;">Rs Lakh</td>
+                            <td style="background-color: #e74c3c; color: white; font-weight: bold;">Rs Crore</td>
                             <td class="total-column total-liability" style="background-color: #c0392b; color: white; font-weight: bold;">-</td>
                         </tr>
                     </tbody>
@@ -864,7 +1589,7 @@
             <span class="calculation-counter" id="calculationCounter">0</span>
         </button>
         <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
-            <i class="fas fa-calculator"></i>
+            <span style="font-weight: bold; font-style: italic; font-size: 14px;">fx</span>
         </button>
         <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
             <i class="fas fa-download"></i>
@@ -872,7 +1597,7 @@
     </div>
 
     <!-- Export Dropdown -->
-    <div class="export-dropdown" id="exportDropdown">
+    <div class="export-dropdown animate-slide-right delay-1100" id="exportDropdown">
         <button class="export-btn" onclick="exportToPDF()">
             <i class="fas fa-file-pdf text-danger"></i>
             Export as PDF
@@ -895,42 +1620,40 @@
         <div class="formula-item">
             <div class="formula-expression">
                 $$\text{Quantity of Alternate Fuel} = \text{ACQ} \times \frac{\text{AF Percentage}}{100}$$
-                <div class="formula-fallback">Quantity of Alternate Fuel = ACQ × (AF Percentage ÷ 100)</div>
+                <div class="formula-fallback">Quantity of Alternate Fuel =<br>ACQ × (AF Percentage ÷ 100)</div>
             </div>
         </div>
 
         <div class="formula-item">
             <div class="formula-expression">
                 $$\text{Quantity of Linked Coal} = \text{ACQ} - \text{Quantity of Alternate Fuel}$$
-                <div class="formula-fallback">Quantity of Linked Coal = ACQ - Quantity of Alternate Fuel</div>
+                <div class="formula-fallback">Quantity of Linked Coal =<br>ACQ - Quantity of Alternate Fuel</div>
             </div>
         </div>
 
         <div class="formula-item">
             <div class="formula-expression">
                 $$\text{Energy Content} = \text{Quantity} \times \frac{\text{GCV}}{1000}$$
-                <div class="formula-fallback">Energy Content = Quantity × (GCV ÷ 1000)</div>
+                <div class="formula-fallback">Energy Content =<br>Quantity × (GCV ÷ 1000)</div>
             </div>
         </div>
 
         <div class="formula-item">
             <div class="formula-expression">
                 $$\text{Total Cost} = \text{Energy Content} \times \text{Cost per MCal}$$
-                <div class="formula-fallback">Total Cost = Energy Content × Cost per MCal</div>
+                <div class="formula-fallback">Total Cost =<br>Energy Content × Cost per MCal</div>
             </div>
         </div>
 
         <div class="formula-item">
             <div class="formula-expression">
                 $$\text{Additional Financial Liability} = \text{Total Cost (Mixed)} - \text{Total Cost (Linked Only)}$$
-                <div class="formula-fallback">Additional Financial Liability = Total Cost (Mixed) - Total Cost (Linked Only)</div>
+                <div class="formula-fallback">Additional Financial Liability =<br>Total Cost (Mixed) - Total Cost (Linked Only)</div>
             </div>
         </div>
     </div>
 
     <!-- Include necessary libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -974,7 +1697,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 <!-- JavaScript for Professional Alternate Fuel Cost Economics -->
 <script>
@@ -995,9 +1719,88 @@ window.MathJax = {
     }
 };
 
-// Global variables for professional features
-let storedCalculations = JSON.parse(localStorage.getItem('alternateFuelCalculations')) || [];
-let calculationCounter = parseInt(localStorage.getItem('alternateFuelCalculationCounter')) || 1;
+// Global variables for simple plant storage with browser compatibility
+let plantStorageCounter = 1;
+
+// Initialize simple plant storage with enhanced browser compatibility
+function initializePlantStorage() {
+    try {
+        // Check if localStorage is available (for browser security restrictions)
+        if (typeof(Storage) === "undefined" || !window.localStorage) {
+            console.warn('localStorage not available - using session storage');
+            return false;
+        }
+        
+        const counter = localStorage.getItem('alternateFuelPlantCounter');
+        if (counter && !isNaN(parseInt(counter))) {
+            plantStorageCounter = parseInt(counter);
+            console.log('Loaded plant storage counter:', plantStorageCounter);
+        } else {
+            // Initialize counter if not found
+            plantStorageCounter = 1;
+            localStorage.setItem('alternateFuelPlantCounter', '1');
+        }
+        return true;
+    } catch (error) {
+        console.error('Error accessing localStorage:', error);
+        plantStorageCounter = 1;
+        return false;
+    }
+}
+
+// Get all stored plants with enhanced browser compatibility
+function getAllStoredPlants() {
+    const plants = [];
+    try {
+        if (typeof(Storage) === "undefined" || !window.localStorage) {
+            console.warn('localStorage not available');
+            return plants;
+        }
+        
+        for (let i = 1; i < plantStorageCounter; i++) {
+            const plantData = localStorage.getItem(`alternateFuelPlant_${i}`);
+            if (plantData) {
+                try {
+                    const plant = JSON.parse(plantData);
+                    plants.push({ srNo: i, ...plant });
+                } catch (error) {
+                    console.error(`Error parsing plant ${i}:`, error);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error accessing stored plants:', error);
+    }
+    return plants;
+}
+
+// Clear all stored plant data with enhanced browser compatibility
+function clearAllStoredData() {
+    if (confirm('Are you sure you want to clear all stored plant data? This cannot be undone.')) {
+        try {
+            if (typeof(Storage) === "undefined" || !window.localStorage) {
+                console.warn('localStorage not available');
+                showNotification('Storage not available in this browser', 'warning');
+                return;
+            }
+            
+            // Clear all plant entries
+            for (let i = 1; i < plantStorageCounter; i++) {
+                localStorage.removeItem(`alternateFuelPlant_${i}`);
+            }
+            // Reset counter to 1
+            plantStorageCounter = 1;
+            localStorage.setItem('alternateFuelPlantCounter', '1');
+            
+            updateStoredCalculationsDisplay();
+            showNotification('All stored plant data cleared', 'success');
+            console.log('All stored plant data cleared, counter reset to 1');
+        } catch (error) {
+            console.error('Error clearing stored data:', error);
+            showNotification('Error clearing stored data', 'warning');
+        }
+    }
+}
 
 // Professional input validation
 document.addEventListener('DOMContentLoaded', function () {
@@ -1044,6 +1847,7 @@ document.addEventListener('DOMContentLoaded', function () {
     applyUniversalNumericRestriction();
     
     // Initialize professional features
+    initializePlantStorage(); // Initialize storage before other features
     initializeStoredCalculations();
     setupEventListeners();
     
@@ -1291,65 +2095,127 @@ function initializeStoredCalculations() {
     updateStoredCalculationsDisplay();
 }
 
-// Manual store calculation function
+// Simple store calculation function - stores current plant from form inputs
 function storeCalculation() {
+    // Prevent multiple rapid clicks
+    const storeButton = document.getElementById('storeButton');
+    if (storeButton && storeButton.disabled) {
+        console.log('Store button is disabled, preventing duplicate storage');
+        return;
+    }
+    
     try {
-        console.log('storeCalculation() called for multi-plant analysis');
+        console.log('=== SIMPLE STORE DEBUG ===');
+        console.log('Storing current plant with Sr. No. approach');
         
-        // Check if there are plants in the analysis
-        if (plantAnalysisData.length === 0) {
-            showNotification('Please add plants to analysis before storing', 'warning');
+        // Temporarily disable button to prevent double-clicks
+        if (storeButton) {
+            storeButton.disabled = true;
+            storeButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Storing...';
+        }
+        
+        // Get current plant name from form
+        const plantName = document.getElementById('plant-name').value.trim();
+        if (!plantName) {
+            showNotification('Please enter a plant name before storing', 'warning');
             return;
         }
 
-        // Create analysis summary
-        const analysisName = prompt('Enter a name for this analysis:') || `Analysis ${new Date().toLocaleDateString('en-IN')}`;
+        // Check if plant with same name already exists
+        const existingPlants = getAllStoredPlants();
+        const duplicatePlant = existingPlants.find(plant => 
+            plant.plantName.toLowerCase() === plantName.toLowerCase()
+        );
         
-        if (!analysisName.trim()) {
-            showNotification('Analysis name is required', 'warning');
-            return;
-        }
-
-        // Calculate totals for summary
-        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
-        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
-        const avgAlternateFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
-
-        // Create analysis object
-        const analysis = {
-            id: calculationCounter++,
-            type: 'multiPlantAnalysis',
-            timestamp: new Date().toISOString(),
-            date: new Date().toLocaleDateString('en-IN'),
-            time: new Date().toLocaleTimeString('en-IN'),
-            data: {
-                analysisName: analysisName.trim(),
-                plants: [...plantAnalysisData],
-                summary: {
-                    plantCount: plantAnalysisData.length,
-                    totalACQ: totalACQ,
-                    totalLiability: totalLiability,
-                    avgAlternateFuelPct: avgAlternateFuelPct
-                }
+        if (duplicatePlant) {
+            const confirmOverwrite = confirm(`A plant named "${plantName}" already exists as Sr. No. ${duplicatePlant.srNo}. Do you want to store this as a new entry anyway?`);
+            if (!confirmOverwrite) {
+                console.log('User cancelled storage due to duplicate name');
+                return;
             }
+        }
+
+        // Get all current form inputs with correct IDs
+        const currentInputs = {
+            acqLinkedCoal: parseFloat(document.getElementById('acq-linked-coal').value) || 0,
+            landedCostLinked: parseFloat(document.getElementById('landed-cost-linked').value) || 0,
+            gcvLinkedCoal: parseFloat(document.getElementById('gcv-linked-coal').value) || 0,
+            alternateFuelPercentage: parseFloat(document.getElementById('alternate-fuel-percentage').value) || 0,
+            landedCostAlternate: parseFloat(document.getElementById('landed-cost-alternate').value) || 0,
+            gcvAlternateFuel: parseFloat(document.getElementById('gcv-alternate-fuel').value) || 0
         };
 
-        // Store the analysis
-        storedCalculations.unshift(analysis);
-        if (storedCalculations.length > 10) {
-            storedCalculations = storedCalculations.slice(0, 10);
+        // Validate essential inputs
+        if (currentInputs.acqLinkedCoal <= 0) {
+            showNotification('Please enter a valid ACQ for Linked Coal', 'warning');
+            return;
+        }
+        
+        if (currentInputs.alternateFuelPercentage <= 0 || currentInputs.alternateFuelPercentage >= 100) {
+            showNotification('Please enter a valid Alternate Fuel Percentage (0-100)', 'warning');
+            return;
         }
 
-        localStorage.setItem('alternateFuelCalculations', JSON.stringify(storedCalculations));
-        localStorage.setItem('alternateFuelCalculationCounter', calculationCounter.toString());
+        // Calculate current results to store using the same function as display
+        const calculations = performAlternateFuelCalculations(currentInputs);
         
-        updateStoredCalculationsDisplay();
+        console.log('=== CALCULATION DEBUG ===');
+        console.log('Input values:', currentInputs);
+        console.log('Calculated values:', calculations);
+        console.log('Additional Financial Liability:', calculations.additionalFinancialLiability);
+        console.log('=== END CALCULATION DEBUG ===');
+        
+        // Use current counter as Sr. No.
+        const srNo = plantStorageCounter;
+        
+        // Create simple plant storage object
+        const plantStorage = {
+            srNo: srNo,
+            plantName: plantName,
+            date: new Date().toLocaleDateString('en-IN'),
+            time: new Date().toLocaleTimeString('en-IN'),
+            timestamp: new Date().toISOString(),
+            inputs: currentInputs,
+            calculations: calculations
+        };
 
-        showNotification(`Multi-plant analysis "${analysis.data.analysisName}" stored successfully!`, 'success');
+        // Store in localStorage with Sr. No. as key
+        try {
+            if (typeof(Storage) === "undefined" || !window.localStorage) {
+                showNotification('Storage not available in this browser', 'warning');
+                return;
+            }
+            
+            const storageKey = `alternateFuelPlant_${srNo}`;
+            localStorage.setItem(storageKey, JSON.stringify(plantStorage));
+            
+            console.log(`Stored: Sr.${srNo} - ${plantName} in key: ${storageKey}`);
+            
+            // Increment counter
+            plantStorageCounter++;
+            localStorage.setItem('alternateFuelPlantCounter', plantStorageCounter.toString());
+            
+            console.log('Next Sr. No. will be:', plantStorageCounter);
+            console.log('=== END SIMPLE STORE DEBUG ===');
+            
+            updateStoredCalculationsDisplay();
+            showNotification(`Plant "${plantName}" stored successfully as Sr. No. ${srNo}`, 'success');
+        } catch (error) {
+            console.error('Error storing plant:', error);
+            showNotification(`Error storing plant: ${error.message}`, 'warning');
+        }
         
     } catch (error) {
-        console.error('Error storing analysis:', error);
-        showNotification('Error storing analysis', 'warning');
+        console.error('Error storing plant:', error);
+        showNotification(`Error storing plant: ${error.message}`, 'warning');
+    } finally {
+        // Re-enable button after processing
+        setTimeout(() => {
+            if (storeButton) {
+                storeButton.disabled = false;
+                storeButton.innerHTML = '<i class="fas fa-save me-2"></i>Store Complete Analysis';
+            }
+        }, 1000); // 1 second delay to prevent rapid clicks
     }
 }
 
@@ -1359,78 +2225,63 @@ function updateStoredCalculationsDisplay() {
     
     if (!container) return;
     
+    // Get all stored plants
+    const storedPlants = getAllStoredPlants();
+    
     // Update counter
     if (counter) {
-        counter.textContent = storedCalculations.length;
-        counter.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+        counter.textContent = storedPlants.length;
+        counter.style.display = storedPlants.length > 0 ? 'flex' : 'none';
     }
     
-    if (storedCalculations.length === 0) {
-        container.innerHTML = '<p class="text-muted" style="color: rgba(255,255,255,0.7);">No stored calculations yet.</p>';
+    if (storedPlants.length === 0) {
+        container.innerHTML = '<p class="text-muted" style="color: rgba(255,255,255,0.7);">No stored plants yet.</p>';
         return;
     }
-    
-    container.innerHTML = storedCalculations.map(calc => {
-        // Handle multi-plant analysis
-        if (calc.type === 'multiPlantAnalysis') {
-            const plantNames = calc.data.plants.map(p => p.plantName).join(', ');
-            const plantCount = calc.data.plants.length;
-            const avgAltFuel = (calc.data.summary.avgAlternateFuelPct || 0).toFixed(1);
-            
-            return `
-                <div class="stored-calc-item" data-calc-id="${calc.id}">
-                    <div class="calc-header">
-                        <strong style="color: white;">${calc.data.analysisName}</strong>
-                        <small class="text-muted" style="color: rgba(255,255,255,0.7);">${calc.date} ${calc.time}</small>
-                    </div>
-                    <div class="calc-summary" style="margin: 8px 0;">
-                        <span class="badge bg-info" style="margin-right: 5px;">Plants: ${plantCount}</span>
-                        <span class="badge bg-primary" style="margin-right: 5px;">Avg AF: ${avgAltFuel}%</span>
-                        <span class="badge bg-success">Total: Rs.${calc.data.summary.totalLiability}Cr</span>
-                    </div>
-                    <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin: 5px 0;">
-                        <strong>Plants:</strong> ${plantNames}
-                    </div>
-                    <div class="calc-actions" style="display: flex; gap: 10px;">
-                        <button class="btn btn-sm btn-outline-light" onclick="loadMultiPlantAnalysis(${calc.id})" style="font-size: 12px;">
-                            <i class="fas fa-upload"></i> Load
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStoredAnalysis(${calc.id})" style="font-size: 12px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Handle legacy single calculations for backward compatibility
-            const altFuelPct = calc.inputs?.alternateFuelPercentage || 0;
-            const liability = calc.results?.additionalFinancialLiability || 0;
-            
-            return `
-                <div class="stored-calc-item" data-calc-id="${calc.id}">
-                    <div class="calc-header">
-                        <strong style="color: white;">Alternate Fuel Analysis</strong>
-                        <small class="text-muted" style="color: rgba(255,255,255,0.7);">${calc.date || 'N/A'} ${calc.time || 'N/A'}</small>
-                    </div>
-                    <div class="calc-summary" style="margin: 8px 0;">
-                        <span class="badge bg-primary" style="margin-right: 5px;">AF: ${altFuelPct}%</span>
-                        <span class="badge bg-success">Liability: Rs.${liability.toFixed(2)}Cr</span>
-                    </div>
-                    <div class="calc-actions" style="display: flex; gap: 10px;">
-                        <button class="btn btn-sm btn-outline-light" onclick="loadCalculation(${calc.id})" style="font-size: 12px;">
-                            <i class="fas fa-upload"></i> Load
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCalculation(${calc.id})" style="font-size: 12px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-    }).join('');
-}
 
-function loadCalculation(calcId) {
+    // Add clear all button at the top
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: rgba(220, 53, 69, 0.1); border-radius: 8px; border: 1px solid rgba(220, 53, 69, 0.3);">
+            <span style="color: rgba(255,255,255,0.8); font-size: 13px;">
+                <i class="fas fa-database me-1"></i>
+                ${storedPlants.length} stored plant${storedPlants.length !== 1 ? 's' : ''}
+            </span>
+            <button class="btn btn-sm btn-outline-danger" onclick="clearAllStoredData()" style="font-size: 11px; padding: 4px 8px;">
+                <i class="fas fa-trash-alt me-1"></i>Clear All
+            </button>
+        </div>
+    `;
+
+    html += storedPlants.map(plant => {
+        const altFuelPct = (plant.inputs?.alternateFuelPercentage || 0).toFixed(1);
+        const liability = (plant.calculations?.additionalFinancialLiability || 0).toFixed(2);
+        const acq = (plant.inputs?.acqLinkedCoal || 0).toFixed(0);
+        
+        return `
+            <div class="stored-calc-item" data-sr-no="${plant.srNo}">
+                <div class="calc-header">
+                    <strong style="color: white;">Sr.${plant.srNo} - ${plant.plantName}</strong>
+                    <small class="text-muted" style="color: rgba(255,255,255,0.7);">${plant.date} ${plant.time}</small>
+                </div>
+                <div class="calc-summary" style="margin: 8px 0;">
+                    <span class="badge bg-info" style="margin-right: 5px;">ACQ: ${acq}MT</span>
+                    <span class="badge bg-primary" style="margin-right: 5px;">AF: ${altFuelPct}%</span>
+                    <span class="badge bg-success">Liability: Rs.${liability}Cr</span>
+                </div>
+                <div class="calc-actions" style="display: flex; gap: 10px;">
+                    <button class="btn btn-sm btn-outline-light" onclick="loadPlantBySrNo(${plant.srNo})" style="font-size: 12px;">
+                        <i class="fas fa-upload"></i> Load
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deletePlantBySrNo(${plant.srNo})" style="font-size: 12px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = html;
+}function loadCalculation(calcId) {
     const calc = storedCalculations.find(c => c.id === calcId);
     if (!calc) return;
     
@@ -1464,35 +2315,90 @@ function loadCalculation(calcId) {
     showNotification('Calculation loaded successfully!', 'success');
 }
 
+// Load individual plant data
+function loadSinglePlant(calcId) {
+    console.log('=== LOAD SINGLE PLANT DEBUG ===');
+    console.log('Loading plant ID:', calcId);
+    
+    const plant = storedCalculations.find(c => c.id == calcId && c.type === 'singlePlant');
+    if (!plant) {
+        console.log('Plant not found or wrong type');
+        showNotification('Plant data not found', 'warning');
+        return;
+    }
+    
+    console.log('Found plant:', plant.plantName);
+    
+    // Set plant name
+    document.getElementById('plant-name').value = plant.plantName || '';
+    
+    // Set input values
+    const inputMapping = {
+        'acqLinkedCoal': 'acq-linked-coal',
+        'landedCostLinked': 'landed-cost-linked',
+        'gcvLinkedCoal': 'gcv-linked-coal',
+        'alternateFuelPercentage': 'alternate-fuel-percentage',
+        'landedCostAlternate': 'landed-cost-alternate',
+        'gcvAlternateFuel': 'gcv-alternate-fuel'
+    };
+    
+    Object.entries(plant.inputs || {}).forEach(([key, value]) => {
+        const elementId = inputMapping[key];
+        if (elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = value;
+                console.log(`Loaded ${key}: ${value}`);
+            }
+        }
+    });
+    
+    // Recalculate
+    calculateAlternateFuelCostEconomics();
+    
+    // Hide stored calculations
+    toggleStoredCalculations();
+    
+    // Show success notification
+    showNotification(`Plant "${plant.plantName}" loaded successfully!`, 'success');
+    
+    console.log('=== END LOAD SINGLE PLANT DEBUG ===');
+}
+
 // Load multi-plant analysis
 function loadMultiPlantAnalysis(analysisId) {
-    const analysis = storedCalculations.find(c => c.id === analysisId);
-    if (!analysis || analysis.type !== 'multiPlantAnalysis') return;
+    console.log('=== LOAD ANALYSIS DEBUG ===');
+    console.log('Attempting to load analysis ID:', analysisId);
+    console.log('Available analyses:', storedCalculations.map(c => ({ id: c.id, name: c.data?.analysisName, type: c.type })));
+    
+    const analysis = storedCalculations.find(c => c.id == analysisId); // Use == for flexible comparison
+    if (!analysis || analysis.type !== 'multiPlantAnalysis') {
+        console.log('Analysis not found or wrong type. Analysis:', analysis);
+        showNotification('Analysis not found', 'warning');
+        return;
+    }
     
     // Check if analysis has plants
     if (!analysis.data.plants || analysis.data.plants.length === 0) {
+        console.log('No plants found in analysis');
         showNotification('No plant data found in this analysis', 'warning');
         return;
     }
     
     // Debug: Log the complete analysis structure
-    console.log('=== LOADING ANALYSIS DEBUG ===');
-    console.log('Analysis ID:', analysisId);
-    console.log('Analysis Name:', analysis.data.analysisName);
-    console.log('Total plants stored:', analysis.data.plants.length);
-    console.log('Complete plant data:');
-    analysis.data.plants.forEach((plant, index) => {
-        console.log(`Plant ${index + 1}:`, {
-            name: plant.name,
-            inputs: plant.inputs,
-            acq: plant.inputs?.acqLinkedCoal,
-            altFuelPct: plant.inputs?.alternateFuelPercentage
-        });
+    console.log('Found analysis:', {
+        id: analysis.id,
+        name: analysis.data.analysisName,
+        plantCount: analysis.data.plants.length,
+        plants: analysis.data.plants.map(p => ({ name: p.name, inputs: Object.keys(p.inputs || {}) }))
     });
-    console.log('=== END DEBUG ===');
     
     // Show available plants to user and let them choose
-    const plantNames = analysis.data.plants.map((plant, index) => `${index + 1}. ${plant.name} (ACQ: ${plant.inputs?.acqLinkedCoal || 'N/A'}, AF%: ${plant.inputs?.alternateFuelPercentage || 'N/A'})`).join('\n');
+    const plantOptions = analysis.data.plants.map((plant, index) => {
+        const acq = plant.inputs?.acqLinkedCoal || 'N/A';
+        const altFuel = plant.inputs?.alternateFuelPercentage || 'N/A';
+        return `${index + 1}. ${plant.name} (ACQ: ${acq}, AF%: ${altFuel})`;
+    }).join('\n');
     
     let choice;
     if (analysis.data.plants.length === 1) {
@@ -1501,19 +2407,25 @@ function loadMultiPlantAnalysis(analysisId) {
         console.log('Auto-loading single plant:', analysis.data.plants[0].name);
     } else {
         // If multiple plants, let user choose
-        choice = prompt(`Analysis: ${analysis.data.analysisName}\n\nAvailable plants:\n${plantNames}\n\nEnter plant number to load (1-${analysis.data.plants.length}):`);
+        console.log('Multiple plants found, showing selection dialog');
+        choice = prompt(`Analysis: ${analysis.data.analysisName}\n\nAvailable plants:\n${plantOptions}\n\nEnter plant number to load (1-${analysis.data.plants.length}):`);
         
-        if (choice === null) return; // User cancelled
+        if (choice === null) {
+            console.log('User cancelled plant selection');
+            return; // User cancelled
+        }
     }
     
     const plantIndex = parseInt(choice) - 1;
     if (isNaN(plantIndex) || plantIndex < 0 || plantIndex >= analysis.data.plants.length) {
+        console.log('Invalid plant selection:', choice, 'Index:', plantIndex);
         showNotification('Invalid plant number selected', 'warning');
         return;
     }
     
     const selectedPlant = analysis.data.plants[plantIndex];
-    console.log('Selected plant for loading:', selectedPlant);
+    console.log('Loading plant:', selectedPlant.name, 'with data:', selectedPlant);
+    console.log('=== END LOAD DEBUG ===');
     
     // Set input values for the selected plant
     const inputMapping = {
@@ -1541,6 +2453,9 @@ function loadMultiPlantAnalysis(analysisId) {
         }
     });
     
+    // Recalculate to update results and badges
+    calculateAlternateFuelCostEconomics();
+    
     // Hide stored calculations
     toggleStoredCalculations();
     
@@ -1553,6 +2468,58 @@ function deleteCalculation(calcId) {
     localStorage.setItem('alternateFuelCalculations', JSON.stringify(storedCalculations));
     updateStoredCalculationsDisplay();
     showNotification('Calculation deleted', 'warning');
+}
+
+// New Simple Loading Functions for Sr. No. System
+
+// Simple function to load plant by Sr. No.
+function loadPlantBySrNo(srNo) {
+    try {
+        const plantData = localStorage.getItem(`alternateFuelPlant_${srNo}`);
+        if (!plantData) {
+            alert(`Plant with Sr. No. ${srNo} not found!`);
+            return;
+        }
+        
+        const plant = JSON.parse(plantData);
+        
+        // Load all the plant data into the form using correct IDs
+        document.getElementById('plant-name').value = plant.plantName || '';
+        document.getElementById('acq-linked-coal').value = plant.inputs?.acqLinkedCoal || '';
+        document.getElementById('landed-cost-linked').value = plant.inputs?.landedCostLinked || '';
+        document.getElementById('gcv-linked-coal').value = plant.inputs?.gcvLinkedCoal || '';
+        document.getElementById('alternate-fuel-percentage').value = plant.inputs?.alternateFuelPercentage || '';
+        document.getElementById('landed-cost-alternate').value = plant.inputs?.landedCostAlternate || '';
+        document.getElementById('gcv-alternate-fuel').value = plant.inputs?.gcvAlternateFuel || '';
+        
+        alert(`Successfully loaded plant: ${plant.plantName} (Sr. No. ${srNo})`);
+        
+        // Close the stored calculations view
+        toggleStoredCalculations();
+        
+    } catch (error) {
+        alert(`Error loading plant: ${error.message}`);
+        console.error('Error loading plant:', error);
+    }
+}
+
+// Simple function to delete plant by Sr. No.
+function deletePlantBySrNo(srNo) {
+    if (confirm(`Are you sure you want to delete plant Sr. No. ${srNo}?`)) {
+        try {
+            const plantData = localStorage.getItem(`alternateFuelPlant_${srNo}`);
+            if (plantData) {
+                const plant = JSON.parse(plantData);
+                localStorage.removeItem(`alternateFuelPlant_${srNo}`);
+                updateStoredCalculationsDisplay();
+                alert(`Plant "${plant.plantName}" (Sr. No. ${srNo}) deleted successfully!`);
+            } else {
+                alert(`Plant Sr. No. ${srNo} not found!`);
+            }
+        } catch (error) {
+            alert(`Error deleting plant: ${error.message}`);
+        }
+    }
 }
 
 // Delete multi-plant analysis
@@ -1639,18 +2606,13 @@ function addPlantToAnalysis() {
     // Update the table
     updateMultiPlantTable();
     
-    // Clear inputs for next plant
-    document.getElementById("plant-name").value = '';
-    const inputFields = ['acq-linked-coal', 'landed-cost-linked', 'gcv-linked-coal', 
-                        'alternate-fuel-percentage', 'landed-cost-alternate', 'gcv-alternate-fuel'];
-    inputFields.forEach(id => {
-        document.getElementById(id).value = '';
-    });
+    // Keep all inputs including plant name for potential storage
+    // Users can manually clear if they want to enter new data
     
     // Enable store button if we have plants
     document.getElementById('storeButton').disabled = false;
     
-    showNotification(`Plant "${plantName}" added successfully!`, 'success');
+    showNotification(`Plant "${plantName}" added to analysis! All input values preserved for storage.`, 'success');
 }
 
 // Update the multi-plant analysis table
@@ -1701,8 +2663,11 @@ function updateMultiPlantTable() {
     // GCV Alternate row
     updateDataRow(rows[7], 'gcvAlternateFuel', 'kcal/kg');
     
+    // Weighted Average Cost row (calculated)
+    updateDataRow(rows[8], 'weightedAvgCost', 'Rs/MCal', true);
+    
     // Additional Financial Liability row
-    updateDataRow(rows[8], 'additionalFinancialLiability', 'Rs Crore', true);
+    updateDataRow(rows[9], 'additionalFinancialLiability', 'Rs Crore', true);
     
     // Show results container
     updateElementDisplay('resultsContainer', 'block');
@@ -1719,12 +2684,25 @@ function updateDataRow(row, dataKey, unit, isCalculation = false) {
     let total = 0;
     let count = plantAnalysisData.length;
     
+    // Determine if this is the liability row or weighted average cost row (special styling)
+    const isLiabilityRow = dataKey === 'additionalFinancialLiability';
+    const isWeightedAvgRow = dataKey === 'weightedAvgCost';
+    
     // Add plant data cells
     plantAnalysisData.forEach(plant => {
         const td = document.createElement('td');
         td.className = 'plant-data';
         td.style.textAlign = 'center';
-        td.style.backgroundColor = '#ebf3fd';
+        
+        // Apply appropriate background color based on row type
+        if (isLiabilityRow || isWeightedAvgRow) {
+            td.style.backgroundColor = '#e74c3c';
+            td.style.color = 'white';
+            td.style.fontWeight = 'bold';
+        } else {
+            td.style.backgroundColor = '#ecf0f1';
+            td.style.color = '#333';
+        }
         
         let value;
         if (isCalculation) {
@@ -1746,6 +2724,16 @@ function updateDataRow(row, dataKey, unit, isCalculation = false) {
             dataKey === 'quantityLinkedCoal' || 
             dataKey === 'quantityAlternateFuel') {
             totalCell.textContent = total.toFixed(2); // Sum for liability, ACQ, and quantities
+        } else if (dataKey === 'weightedAvgCost') {
+            // Calculate overall weighted average cost based on total energy content
+            let totalCostMixed = 0;
+            let totalEnergyContent = 0;
+            plantAnalysisData.forEach(plant => {
+                totalCostMixed += plant.calculations.totalCostMixed;
+                totalEnergyContent += plant.calculations.totalEnergyContent;
+            });
+            const overallWeightedAvgCost = totalEnergyContent > 0 ? (totalCostMixed * 10000000) / totalEnergyContent : 0;
+            totalCell.textContent = overallWeightedAvgCost.toFixed(2);
         } else if (dataKey === 'landedCostLinked' || dataKey === 'gcvLinkedCoal') {
             // Weighted average w.r.t. quantity of linked coal
             let weightedSum = 0;
@@ -1777,7 +2765,7 @@ function updateDataRow(row, dataKey, unit, isCalculation = false) {
 }
 
 function clearAllInputs() {
-    if (confirm('Are you sure you want to clear all inputs and analysis data?')) {
+    if (confirm('Are you sure you want to clear all input fields?')) {
         const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
         inputs.forEach(input => {
             if (!input.hasAttribute('data-keep-value')) {
@@ -1785,33 +2773,32 @@ function clearAllInputs() {
             }
         });
         
-        // Clear plant analysis data
-        plantAnalysisData = [];
+        // Don't hide the analysis table - only hide results if no analysis exists
+        if (plantAnalysisData.length === 0) {
+            showErrorState();
+        }
         
-        // Reset table to initial state
-        const headerRow = document.getElementById('tableHeader');
-        const existingPlantHeaders = headerRow.querySelectorAll('.plant-column');
-        existingPlantHeaders.forEach(header => header.remove());
-        
-        // Clear all plant data cells
-        const tableBody = document.getElementById('multiPlantTableBody');
-        const rows = tableBody.querySelectorAll('tr');
-        rows.forEach(row => {
-            const plantCells = row.querySelectorAll('.plant-data');
-            plantCells.forEach(cell => cell.remove());
-            
-            // Reset total cells
-            const totalCell = row.querySelector('.total-column');
-            if (totalCell) {
-                totalCell.textContent = '-';
-            }
-        });
-        
-        // Hide results and disable store button
-        showErrorState();
-        document.getElementById('storeButton').disabled = true;
-        
-        showNotification('All inputs and analysis data cleared', 'info');
+        showNotification('All input fields cleared', 'info');
+    }
+}
+
+// Toggle analysis table visibility
+function toggleAnalysisTable() {
+    const resultsContainer = document.getElementById('resultsContainer');
+    const toggleButton = document.getElementById('toggleTableButton');
+    
+    if (!resultsContainer || !toggleButton) return;
+    
+    const isVisible = resultsContainer.style.display !== 'none';
+    
+    if (isVisible) {
+        resultsContainer.style.display = 'none';
+        toggleButton.innerHTML = '<i class="fas fa-eye me-1"></i>Show Table';
+        toggleButton.className = 'btn btn-success btn-small';
+    } else {
+        resultsContainer.style.display = 'block';
+        toggleButton.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Hide Table';
+        toggleButton.className = 'btn btn-info btn-small';
     }
 }
 
@@ -1889,8 +2876,9 @@ function exportToPDF() {
 
         console.log('Starting PDF export for multi-plant analysis...');
         
-        // Create a new jsPDF instance
-        let doc = new jsPDF("l", "mm", "a4"); // Landscape for wider table
+        // Create a new jsPDF instance in A4 Portrait mode
+        const { jsPDF } = window.jspdf;
+        let doc = new jsPDF("p", "mm", "a4"); // Portrait for A4 format
         
         // Header
         doc.setFontSize(18);
@@ -1920,7 +2908,8 @@ function exportToPDF() {
             ['Quantity of Alternate Fuel', 'MT'],
             ['Landed Alternate Fuel Cost', 'Rs/MCal'],
             ['GCV Alternate Fuel', 'kcal/kg'],
-            ['Additional Financial Liability', 'Rs Lakh']
+            ['Weighted Average Cost', 'Rs/MCal'],
+            ['Additional Financial Liability', 'Rs Crore']
         ];
         
         // Add plant data to each row
@@ -1928,11 +2917,11 @@ function exportToPDF() {
             const paramNames = [
                 'acqLinkedCoal', 'landedCostLinked', 'gcvLinkedCoal', 'alternateFuelPercentage',
                 'quantityLinkedCoal', 'quantityAlternateFuel', 'landedCostAlternate', 
-                'gcvAlternateFuel', 'additionalFinancialLiability'
+                'gcvAlternateFuel', 'weightedAvgCost', 'additionalFinancialLiability'
             ];
             
             const paramName = paramNames[rowIndex];
-            const isCalculation = ['quantityLinkedCoal', 'quantityAlternateFuel', 'additionalFinancialLiability'].includes(paramName);
+            const isCalculation = ['quantityLinkedCoal', 'quantityAlternateFuel', 'weightedAvgCost', 'additionalFinancialLiability'].includes(paramName);
             
             let total = 0;
             let count = plantAnalysisData.length;
@@ -1947,6 +2936,16 @@ function exportToPDF() {
             // Add total/average column
             if (['additionalFinancialLiability', 'acqLinkedCoal', 'quantityLinkedCoal', 'quantityAlternateFuel'].includes(paramName)) {
                 row.push(total.toFixed(2)); // Sum
+            } else if (paramName === 'weightedAvgCost') {
+                // Calculate overall weighted average cost
+                let totalCostMixed = 0;
+                let totalEnergyContent = 0;
+                plantAnalysisData.forEach(plant => {
+                    totalCostMixed += plant.calculations.totalCostMixed;
+                    totalEnergyContent += plant.calculations.totalEnergyContent;
+                });
+                const overallWeightedAvgCost = totalEnergyContent > 0 ? (totalCostMixed * 10000000) / totalEnergyContent : 0;
+                row.push(overallWeightedAvgCost.toFixed(2));
             } else if (paramName === 'landedCostLinked' || paramName === 'gcvLinkedCoal') {
                 // Weighted average by linked coal quantity
                 let weightedSum = 0;
@@ -1983,8 +2982,8 @@ function exportToPDF() {
             body: rows,
             theme: 'grid',
             styles: { 
-                fontSize: 8,
-                cellPadding: 2,
+                fontSize: 7,
+                cellPadding: 1.5,
                 overflow: 'linebreak'
             },
             headStyles: { 
@@ -2001,38 +3000,14 @@ function exportToPDF() {
                 fillColor: [249, 250, 251]
             }
         });
-        
-        // Summary information
-        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
-        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
-        const avgAltFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
-        
-        doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
-        doc.text('Analysis Summary', 20, doc.lastAutoTable.finalY + 15);
-        
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 20,
-            body: [
-                ['Total Plants Analyzed', `${plantAnalysisData.length}`],
-                ['Total Annual Coal Requirement', `${totalACQ.toFixed(2)} MT`],
-                ['Average Alternate Fuel Percentage', `${avgAltFuelPct.toFixed(2)}%`],
-                ['Total Additional Financial Liability', `Rs ${totalLiability.toFixed(2)} Lakh`]
-            ],
-            theme: 'grid',
-            styles: { fontSize: 10 },
-            columnStyles: {
-                0: { fontStyle: 'bold', fillColor: [248, 249, 250] }
-            }
-        });
-        
+
         // Footer
         const pageCount = doc.internal.getNumberOfPages();
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
             doc.setFontSize(8);
-            doc.text(`Page ${i} of ${pageCount}`, 20, 200);
-            doc.text('Multi-Plant Analysis - Professional Alternate Fuel Cost Economics Tool', 150, 200);
+            doc.text(`Page ${i} of ${pageCount}`, 20, 280);
+            doc.text('Multi-Plant Analysis - Professional Alternate Fuel Cost Economics Tool', 60, 280);
         }
         
         doc.save(`Multi_Plant_Alternate_Fuel_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -2058,17 +3033,18 @@ function exportToJPG() {
         console.log('Starting JPG export process for multi-plant analysis...');
         showNotification('Generating multi-plant JPG report...', 'info');
 
-        // Create a temporary container for the multi-plant table
+        // Create a temporary container for the multi-plant table (A4 Portrait dimensions)
         const reportContainer = document.createElement('div');
         reportContainer.id = 'tempReportContainer';
         reportContainer.style.cssText = `
             position: fixed;
             top: 50px;
             left: 50px;
-            width: 1200px;
+            width: 794px;
+            min-height: 1123px;
             background: #ffffff !important;
             background-color: #ffffff !important;
-            padding: 40px;
+            padding: 30px;
             font-family: Arial, sans-serif;
             color: #333;
             box-sizing: border-box;
@@ -2088,18 +3064,18 @@ function exportToJPG() {
                     Generated on: ${new Date().toLocaleString('en-IN')} | Total Plants: ${plantAnalysisData.length}
                 </p>
                 
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9px;">
                     <thead>
                         <tr style="background: #3498db; color: white;">
-                            <th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold;">Parameter</th>
-                            <th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold;">Unit</th>`;
+                            <th style="border: 1px solid #ddd; padding: 6px; text-align: left; font-weight: bold; font-size: 8px;">Parameter</th>
+                            <th style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 8px;">Unit</th>`;
         
         // Add plant name headers
         plantAnalysisData.forEach(plant => {
-            tableHTML += `<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; min-width: 100px;">${plant.name}</th>`;
+            tableHTML += `<th style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 8px; min-width: 60px;">${plant.name}</th>`;
         });
         
-        tableHTML += `<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; background: #f39c12;">Total/Avg</th></tr></thead><tbody>`;
+        tableHTML += `<th style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; background: #f39c12; font-size: 8px;">Total/Avg</th></tr></thead><tbody>`;
         
         // Table rows
         const rows = [
@@ -2111,7 +3087,8 @@ function exportToJPG() {
             ['Quantity of Alternate Fuel', 'MT', 'quantityAlternateFuel', true],
             ['Landed Alternate Fuel Cost', 'Rs/MCal', 'landedCostAlternate', false],
             ['GCV Alternate Fuel', 'kcal/kg', 'gcvAlternateFuel', false],
-            ['Additional Financial Liability', 'Rs Lakh', 'additionalFinancialLiability', true]
+            ['Weighted Average Cost', 'Rs/MCal', 'weightedAvgCost', true],
+            ['Additional Financial Liability', 'Rs Crore', 'additionalFinancialLiability', true]
         ];
         
         rows.forEach(([paramName, unit, dataKey, isCalculation], rowIndex) => {
@@ -2119,8 +3096,8 @@ function exportToJPG() {
             const bgColor = isEvenRow ? '#f8f9fa' : '#ffffff';
             
             tableHTML += `<tr style="background: ${bgColor};">`;
-            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; background: #ecf0f1;">${paramName}</td>`;
-            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; background: #ecf0f1;">${unit}</td>`;
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 5px; font-weight: bold; background: #ecf0f1; font-size: 8px;">${paramName}</td>`;
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 5px; text-align: center; background: #ecf0f1; font-size: 8px;">${unit}</td>`;
             
             let total = 0;
             let count = plantAnalysisData.length;
@@ -2128,7 +3105,7 @@ function exportToJPG() {
             // Add plant data
             plantAnalysisData.forEach(plant => {
                 const value = isCalculation ? plant.calculations[dataKey] : plant.inputs[dataKey];
-                tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${value.toFixed(2)}</td>`;
+                tableHTML += `<td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-size: 8px;">${value.toFixed(2)}</td>`;
                 total += value;
             });
             
@@ -2136,6 +3113,16 @@ function exportToJPG() {
             let totalValue;
             if (['additionalFinancialLiability', 'acqLinkedCoal', 'quantityLinkedCoal', 'quantityAlternateFuel'].includes(dataKey)) {
                 totalValue = total.toFixed(2); // Sum
+            } else if (dataKey === 'weightedAvgCost') {
+                // Calculate overall weighted average cost
+                let totalCostMixed = 0;
+                let totalEnergyContent = 0;
+                plantAnalysisData.forEach(plant => {
+                    totalCostMixed += plant.calculations.totalCostMixed;
+                    totalEnergyContent += plant.calculations.totalEnergyContent;
+                });
+                const overallWeightedAvgCost = totalEnergyContent > 0 ? (totalCostMixed * 10000000) / totalEnergyContent : 0;
+                totalValue = overallWeightedAvgCost.toFixed(2);
             } else if (dataKey === 'landedCostLinked' || dataKey === 'gcvLinkedCoal') {
                 // Weighted average by linked coal quantity
                 let weightedSum = 0;
@@ -2162,52 +3149,27 @@ function exportToJPG() {
                 totalValue = (total / count).toFixed(2); // Simple average
             }
             
-            tableHTML += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; background: #fff3cd;">${totalValue}</td>`;
+            tableHTML += `<td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; background: #fff3cd; font-size: 8px;">${totalValue}</td>`;
             tableHTML += `</tr>`;
         });
         
-        // Summary section
-        const totalACQ = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.acqLinkedCoal, 0);
-        const totalLiability = plantAnalysisData.reduce((sum, plant) => sum + plant.calculations.additionalFinancialLiability, 0);
-        const avgAltFuelPct = plantAnalysisData.reduce((sum, plant) => sum + plant.inputs.alternateFuelPercentage, 0) / plantAnalysisData.length;
-        
         tableHTML += `</tbody></table>
-            </div>
-            
-            <div style="margin-top: 30px;">
-                <h2 style="color: #2c3e50; font-size: 18px; margin-bottom: 15px; font-weight: bold;">Analysis Summary</h2>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                    <tr style="background: #f8f9fa;">
-                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Plants Analyzed</td>
-                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${plantAnalysisData.length}</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Annual Coal Requirement</td>
-                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${totalACQ.toFixed(2)} MT</td>
-                    </tr>
-                    <tr style="background: #f8f9fa;">
-                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Average Alternate Fuel Percentage</td>
-                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${avgAltFuelPct.toFixed(2)}%</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 10px; font-weight: bold; background: #ecf0f1;">Total Additional Financial Liability</td>
-                        <td style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; color: #e74c3c;">Rs ${totalLiability.toFixed(2)} Lakh</td>
-                    </tr>
-                </table>
             </div>`;
         
         reportContainer.innerHTML = tableHTML;
         document.body.appendChild(reportContainer);
         
-        // Use html2canvas to capture the content
+        // Use html2canvas to capture the content in A4 portrait format
         setTimeout(() => {
             html2canvas(reportContainer, {
                 backgroundColor: '#ffffff',
-                scale: 2,
+                scale: 1.5,
                 useCORS: true,
                 allowTaint: true,
-                width: reportContainer.scrollWidth,
-                height: reportContainer.scrollHeight
+                width: 794, // A4 width in pixels at 96 DPI
+                height: 1123, // A4 height in pixels at 96 DPI
+                scrollX: 0,
+                scrollY: 0
             }).then(canvas => {
                 // Create download link
                 const link = document.createElement('a');
@@ -2290,6 +3252,190 @@ function goBack() {
         }
     }
 }
+
+// Night Mode Functionality
+function toggleNightMode() {
+    const body = document.body;
+    const toggle = document.getElementById('nightModeToggle');
+    const isNightMode = toggle.checked;
+    
+    if (isNightMode) {
+        body.classList.add('night-mode');
+        localStorage.setItem('alternateFuelNightMode', 'enabled');
+    } else {
+        body.classList.remove('night-mode');
+        localStorage.setItem('alternateFuelNightMode', 'disabled');
+    }
+}
+
+// Initialize Night Mode on page load
+function initializeNightMode() {
+    const savedMode = localStorage.getItem('alternateFuelNightMode');
+    const toggle = document.getElementById('nightModeToggle');
+    
+    if (savedMode === 'enabled') {
+        document.body.classList.add('night-mode');
+        toggle.checked = true;
+    } else {
+        document.body.classList.remove('night-mode');
+        toggle.checked = false;
+    }
+}
+
+// Initialize night mode when page loads
+function initializeNightMode() {
+    try {
+        if (typeof(Storage) !== "undefined" && window.localStorage) {
+            const nightMode = localStorage.getItem('alternateFuelNightMode');
+            if (nightMode === 'enabled') {
+                document.body.classList.add('night-mode');
+                const toggle = document.getElementById('nightModeToggle');
+                if (toggle) toggle.checked = true;
+            }
+        }
+    } catch (error) {
+        console.error('Error initializing night mode:', error);
+    }
+}
+
+// Professional notification system for browser compatibility
+function showNotification(message, type = 'info', duration = 4000) {
+    console.log(`Notification (${type}): ${message}`);
+    
+    // Try to create visual notification if possible
+    try {
+        // Remove existing notification
+        const existing = document.querySelector('.temp-notification');
+        if (existing) existing.remove();
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'temp-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: ${type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : '#17a2b8'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 9999;
+            font-size: 14px;
+            max-width: 300px;
+            word-wrap: break-word;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        `;
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Auto remove after duration
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, duration);
+        
+    } catch (error) {
+        console.error('Error showing notification:', error);
+        // Fallback to alert for critical messages
+        if (type === 'warning') {
+            alert(message);
+        }
+    }
+}
+
+// Load plant by Sr. No. with enhanced browser compatibility
+function loadPlantBySrNo(srNo) {
+    try {
+        if (typeof(Storage) === "undefined" || !window.localStorage) {
+            showNotification('Storage not available in this browser', 'warning');
+            return;
+        }
+        
+        const plantData = localStorage.getItem(`alternateFuelPlant_${srNo}`);
+        if (!plantData) {
+            showNotification(`Plant Sr.${srNo} not found`, 'warning');
+            return;
+        }
+        
+        const plant = JSON.parse(plantData);
+        console.log(`Loading plant Sr.${srNo}:`, plant.plantName);
+        
+        // Set plant name
+        const plantNameInput = document.getElementById('plant-name');
+        if (plantNameInput) plantNameInput.value = plant.plantName || '';
+        
+        // Set input values
+        const inputMapping = {
+            'acqLinkedCoal': 'acq-linked-coal',
+            'landedCostLinked': 'landed-cost-linked', 
+            'gcvLinkedCoal': 'gcv-linked-coal',
+            'alternateFuelPercentage': 'alternate-fuel-percentage',
+            'landedCostAlternate': 'landed-cost-alternate',
+            'gcvAlternateFuel': 'gcv-alternate-fuel'
+        };
+        
+        Object.entries(plant.inputs || {}).forEach(([key, value]) => {
+            const elementId = inputMapping[key];
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.value = value;
+                }
+            }
+        });
+        
+        // Recalculate
+        calculateAlternateFuelCostEconomics();
+        
+        showNotification(`Plant "${plant.plantName}" loaded successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error loading plant:', error);
+        showNotification(`Error loading plant: ${error.message}`, 'warning');
+    }
+}
+
+// Delete plant by Sr. No. with enhanced browser compatibility
+function deletePlantBySrNo(srNo) {
+    if (!confirm(`Are you sure you want to delete Sr.${srNo}? This cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        if (typeof(Storage) === "undefined" || !window.localStorage) {
+            showNotification('Storage not available in this browser', 'warning');
+            return;
+        }
+        
+        const plantData = localStorage.getItem(`alternateFuelPlant_${srNo}`);
+        if (!plantData) {
+            showNotification(`Plant Sr.${srNo} not found`, 'warning');
+            return;
+        }
+        
+        const plant = JSON.parse(plantData);
+        localStorage.removeItem(`alternateFuelPlant_${srNo}`);
+        
+        updateStoredCalculationsDisplay();
+        showNotification(`Plant "${plant.plantName}" (Sr.${srNo}) deleted successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error deleting plant:', error);
+        showNotification(`Error deleting plant: ${error.message}`, 'warning');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeNightMode();
+});
 
 // Close export dropdown when clicking outside
 document.addEventListener('click', function(event) {
