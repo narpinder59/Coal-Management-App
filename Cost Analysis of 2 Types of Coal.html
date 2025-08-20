@@ -94,6 +94,71 @@
             font-weight: 700;
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Animated Comparison Icon */
+        .comparison-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .coal-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-size: 12px;
+            font-weight: bold;
+            animation: coalPulse 2s ease-in-out infinite;
+        }
+
+        .coal-icon:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .coal-icon:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .comparison-arrow {
+            color: #ffd700;
+            font-size: 18px;
+            animation: arrowPulse 1.5s ease-in-out infinite;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes coalPulse {
+            0%, 100% {
+                transform: scale(1);
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                transform: scale(1.1);
+                background: rgba(255, 255, 255, 1);
+                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+            }
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
         }
 
         .calculator-subtitle {
@@ -674,15 +739,21 @@
             }
 
             .action-buttons {
-                flex-direction: column;
+                flex-direction: row;
                 gap: 10px;
                 margin-top: 20px;
+                justify-content: center;
             }
 
             .action-buttons .btn {
-                width: 100%;
-                padding: 12px;
-                font-size: 14px;
+                flex: 1;
+                max-width: 48%;
+                padding: 10px 8px;
+                font-size: 13px;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .formula-sidebar {
@@ -870,6 +941,543 @@
                 font-size: 11px;
             }
         }
+        
+        /* Night Mode Toggle Styles */
+        .night-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-label {
+            font-size: 16px;
+            user-select: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 19px;
+            height: 19px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active {
+            background: #4a69bd;
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(25px);
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .calculator-container {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        body.night-mode .calculator-header {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin-bottom: 30px !important;
+            padding: 0 !important;
+        }
+
+        body.night-mode .calculator-title {
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.night-mode .coal-icon {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #1a1a1a !important;
+        }
+
+        body.night-mode .comparison-arrow {
+            color: #ffd700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.night-mode .calculator-subtitle {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        body.night-mode .input-section {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .section-title {
+            color: #74b9ff !important;
+        }
+
+        body.night-mode .form-control {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .form-control:focus {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: #74b9ff !important;
+            box-shadow: 0 0 0 0.25rem rgba(116, 185, 255, 0.25) !important;
+        }
+
+        body.night-mode .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        body.night-mode .input-label {
+            color: #ddd !important;
+        }
+
+        body.night-mode .unit-label {
+            color: #bbb !important;
+        }
+
+        body.night-mode .calculate-btn {
+            background: linear-gradient(135deg, #74b9ff, #0984e3) !important;
+        }
+
+        body.night-mode .calculate-btn:hover {
+            background: linear-gradient(135deg, #0984e3, #74b9ff) !important;
+        }
+
+        body.night-mode .results-container {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .results-title {
+            color: #74b9ff !important;
+        }
+
+        body.night-mode .comparison-table {
+            color: #ecf0f1 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        body.night-mode .comparison-table th {
+            background: rgba(116, 185, 255, 0.3) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .comparison-table td {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .comparison-table tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        body.night-mode .comparison-table .best-value {
+            background: rgba(39, 174, 96, 0.4) !important;
+            color: #2ecc71 !important;
+            font-weight: bold !important;
+        }
+
+        body.night-mode .floating-btn {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .floating-btn:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .export-dropdown {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .export-btn {
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .export-btn:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .instruction-message {
+            background: rgba(116, 185, 255, 0.2) !important;
+            border: 1px solid rgba(116, 185, 255, 0.3) !important;
+            color: #74b9ff !important;
+        }
+
+        body.night-mode .error-message {
+            background: rgba(231, 76, 60, 0.2) !important;
+            border: 1px solid rgba(231, 76, 60, 0.3) !important;
+            color: #e74c3c !important;
+        }
+
+        body.night-mode .night-mode-toggle {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        body.night-mode .toggle-label {
+            color: #ecf0f1 !important;
+        }
+
+        body.night-mode .back-button {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Storage Counter */
+        .storage-counter {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+        }
+
+        /* Stored Calculations Styles */
+        .stored-calculations {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            max-width: 90vw;
+            max-height: 70vh;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 1000;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stored-calculation-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .stored-calculation-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stored-calculation-title {
+            color: #74b9ff;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .stored-calculation-date {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .stored-calculation-data {
+            color: white;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .stored-calculation-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .calc-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .calc-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        body.night-mode .stored-calculations {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        body.night-mode .stored-calculation-item {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Mobile responsive adjustments for night mode toggle */
+        @media (max-width: 768px) {
+            .calculator-container {
+                margin-top: 80px !important;
+            }
+            
+            .night-mode-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 6px 12px;
+            }
+
+            .stored-calculations {
+                width: 350px;
+                top: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                margin-top: 70px !important;
+            }
+            
+            .night-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+
+            .stored-calculations {
+                width: 320px;
+                top: 70px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .calculator-container {
+                margin-top: 65px !important;
+            }
+            
+            .night-mode-toggle {
+                top: 8px;
+                right: 8px;
+                padding: 4px 8px;
+                font-size: 13px;
+            }
+
+            .stored-calculations {
+                width: 280px;
+                top: 65px;
+            }
+        }
+
+        /* Animation System */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-200deg);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes flipIn {
+            from {
+                opacity: 0;
+                transform: perspective(400px) rotateX(-90deg);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(400px) rotateX(0deg);
+            }
+        }
+
+        /* Animation Classes */
+        .animate-slide-in-left {
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in-up {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in-down {
+            animation: slideInDown 0.6s ease-out forwards;
+        }
+
+        .animate-zoom-in {
+            animation: zoomIn 0.5s ease-out forwards;
+        }
+
+        .animate-rotate-in {
+            animation: rotateIn 0.8s ease-out forwards;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s ease-out forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .animate-flip-in {
+            animation: flipIn 0.6s ease-out forwards;
+        }
+
+        /* Initial state for animated elements */
+        .animate-slide-in-left,
+        .animate-slide-in-right,
+        .animate-slide-in-up,
+        .animate-slide-in-down,
+        .animate-zoom-in,
+        .animate-rotate-in,
+        .animate-bounce-in,
+        .animate-flip-in {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -878,10 +1486,24 @@
         <i class="fas fa-arrow-left"></i>
     </button>
 
+    <!-- Night Mode Toggle -->
+    <div class="night-mode-toggle">
+        <span class="toggle-label">🌙</span>
+        <div class="toggle-switch" onclick="toggleNightMode()"></div>
+        <span class="toggle-label">☀️</span>
+    </div>
+
     <!-- Main Calculator Container -->
     <div class="calculator-container">
         <div class="calculator-header">
-            <h1 class="calculator-title">Coal Cost Analysis Calculator</h1>
+            <h1 class="calculator-title">
+                <div class="comparison-icon">
+                    <div class="coal-icon">A</div>
+                    <i class="fas fa-exchange-alt comparison-arrow"></i>
+                    <div class="coal-icon">B</div>
+                </div>
+                Coal Cost Analysis
+            </h1>
             <p class="calculator-subtitle">Compare costs between two types of coal</p>
         </div>
 
@@ -1029,15 +1651,19 @@
                 Store Data
                 <span class="storage-counter" id="storageCounter">0</span>
             </button>
-            <button class="btn btn-danger" onclick="clearData()">
-                <i class="fas fa-trash"></i>
-                Clear Data
+            <button class="btn btn-danger" onclick="clearInputs()">
+                <i class="fas fa-eraser"></i>
+                Clear
             </button>
         </div>
     </div>
 
     <!-- Floating Action Buttons -->
     <div class="floating-actions">
+        <button class="floating-btn" onclick="toggleStoredCalculations()" title="Stored Calculations">
+            <i class="fas fa-database"></i>
+            <span class="storage-counter" id="floatingStorageCounter">0</span>
+        </button>
         <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
             <i class="fas fa-calculator"></i>
         </button>
@@ -1056,6 +1682,19 @@
             <i class="fas fa-image text-primary"></i>
             Export as JPG
         </button>
+    </div>
+
+    <!-- Stored Calculations -->
+    <div class="stored-calculations" id="storedCalculationsContainer" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 style="color: white; margin: 0;">
+                <i class="fas fa-database me-2"></i>Stored Calculations
+            </h4>
+            <button type="button" class="btn btn-outline-light btn-sm" onclick="clearAllStoredData()" title="Clear All Stored Data">
+                <i class="fas fa-trash-alt me-1"></i>Clear All
+            </button>
+        </div>
+        <div id="storedCalculationsList"></div>
     </div>
 
     <!-- Formula Sidebar -->
@@ -1184,7 +1823,9 @@
             }
             
             errorMessage.style.display = 'block';
-            results.container.style.display = 'none';
+            if (type !== 'success') {
+                results.container.style.display = 'none';
+            }
             instructionMessage.style.display = 'none';
             
             setTimeout(() => {
@@ -1427,34 +2068,123 @@
             const calculation = calculate();
             if (!calculation) return;
 
-            const timestamp = new Date().toLocaleString();
+            const timestamp = new Date().toISOString();
+            
+            // Get input values directly
+            const inputValues = getInputValues();
+            
+            // Calculate best option using proper energy cost comparison
+            let bestOption = 'N/A';
+            if (calculation && calculation.coal1 && calculation.coal2) {
+                const coal1LandedCost = (inputValues.coal1Cost || 0) + (inputValues.coal1Freight || 0);
+                const coal2LandedCost = (inputValues.coal2Cost || 0) + (inputValues.coal2Freight || 0);
+                const coal1EnergyCharge = coal1LandedCost / (inputValues.coal1GCV || 1);
+                const coal2EnergyCharge = coal2LandedCost / (inputValues.coal2GCV || 1);
+                
+                if (coal1EnergyCharge > 0 && coal2EnergyCharge > 0) {
+                    bestOption = coal1EnergyCharge < coal2EnergyCharge ? 
+                        (inputValues.coal1Name || 'Coal A') : 
+                        (inputValues.coal2Name || 'Coal B');
+                }
+            }
+            
             const storedData = {
                 timestamp,
-                ...calculation.values,
-                coal1Results: calculation.coal1,
-                coal2Results: calculation.coal2,
-                generation: calculation.generation
+                coal1Name: inputValues.coal1Name || 'Coal A',
+                coal2Name: inputValues.coal2Name || 'Coal B',
+                coal1Cost: inputValues.coal1Cost || 0,
+                coal2Cost: inputValues.coal2Cost || 0,
+                coal1Freight: inputValues.coal1Freight || 0,
+                coal2Freight: inputValues.coal2Freight || 0,
+                coal1GCV: inputValues.coal1GCV || 0,
+                coal2GCV: inputValues.coal2GCV || 0,
+                capacity: inputValues.capacity || 0,
+                plf: inputValues.plf || 0,
+                days: inputValues.days || 0,
+                shr: inputValues.shr || 0,
+                coalQuantity: inputValues.coalQuantity || 0,
+                bestOption: bestOption,
+                results: calculation
             };
 
+            // Get current stored calculations
+            let storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
             storedCalculations.push(storedData);
             localStorage.setItem('coalAnalysisCalculations', JSON.stringify(storedCalculations));
-            updateStorageCounter();
+            updateStoredCalculationsCounter();
+            showMessage('Calculation stored successfully!', 'success');
+        }
+
+        // Dedicated function for showing messages without hiding results
+        function showMessage(message, type = 'info') {
+            if (!errorMessage) return;
+            
+            errorMessage.textContent = message;
+            
+            if (type === 'success') {
+                errorMessage.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
+                errorMessage.style.borderColor = '#28a745';
+                errorMessage.style.color = '#155724';
+            } else {
+                errorMessage.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                errorMessage.style.borderColor = '#dc3545';
+                errorMessage.style.color = '#721c24';
+            }
+            
+            errorMessage.style.display = 'block';
+            // Don't hide results for messages
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+                // Reset to default error styling
+                errorMessage.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                errorMessage.style.borderColor = '#dc3545';
+                errorMessage.style.color = '#721c24';
+            }, type === 'success' ? 3000 : 2500);
+        }
+
+        function clearInputs() {
+            // Clear coal name inputs
+            document.getElementById('coal1Name').value = '';
+            document.getElementById('coal2Name').value = '';
+            
+            // Clear coal properties
+            document.getElementById('coal1Cost').value = '';
+            document.getElementById('coal2Cost').value = '';
+            document.getElementById('coal1Freight').value = '';
+            document.getElementById('coal2Freight').value = '';
+            document.getElementById('coal1GCV').value = '';
+            document.getElementById('coal2GCV').value = '';
+            
+            // Clear plant parameters
+            document.getElementById('capacity').value = '';
+            document.getElementById('plf').value = '';
+            document.getElementById('days').value = '';
+            document.getElementById('shr').value = '';
+            document.getElementById('coalQuantity').value = '';
+            
+            // Clear results section
+            document.getElementById('results').innerHTML = '';
+            
+            console.log('All input fields cleared successfully!');
         }
 
         function clearData() {
+            let storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
             if (storedCalculations.length === 0) {
                 showError('No data to clear.');
                 return;
             }
 
             if (confirm('Are you sure you want to clear all stored calculations?')) {
-                storedCalculations = [];
                 localStorage.removeItem('coalAnalysisCalculations');
-                updateStorageCounter();
+                updateStoredCalculationsCounter();
+                showMessage('All stored data cleared successfully!', 'success');
             }
         }
 
         function updateStorageCounter() {
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
             if (storageCounter) {
                 storageCounter.textContent = storedCalculations.length;
             }
@@ -1510,13 +2240,23 @@
         }
 
         function exportToPDF() {
+            console.log('ExportToPDF function called');
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+            console.log('Stored calculations:', storedCalculations);
+            
             if (storedCalculations.length === 0) {
                 showError('No data to export. Please store some calculations first.');
                 return;
             }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4'); // A4 portrait format
+            try {
+                if (!window.jspdf) {
+                    showError('PDF library not loaded. Please refresh the page and try again.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4'); // A4 portrait format
             
             let yPosition = 20;
             const pageWidth = 210; // A4 width in mm
@@ -1633,17 +2373,17 @@
                 const results = [
                     ['Generation (Lakh Units)', `${(generation).toFixed(2)}`],
                     ['Coal Required (Lakh MT)', 
-                        `${(calc.coal1Results.required / 100000).toFixed(2)}`, 
-                        `${(calc.coal2Results.required / 100000).toFixed(2)}`],
+                        `${(calc.results.coal1.required / 100000).toFixed(2)}`, 
+                        `${(calc.results.coal2.required / 100000).toFixed(2)}`],
                     ['Energy Charges (Rs/kWh)', 
-                        `${calc.coal1Results.energyCharges.toFixed(4)}`, 
-                        `${calc.coal2Results.energyCharges.toFixed(4)}`],
+                        `${calc.results.coal1.energyCharges.toFixed(4)}`, 
+                        `${calc.results.coal2.energyCharges.toFixed(4)}`],
                     ['SCC (kg/kWh)', 
-                        `${calc.coal1Results.scc.toFixed(3)}`, 
-                        `${calc.coal2Results.scc.toFixed(3)}`],
+                        `${calc.results.coal1.scc.toFixed(3)}`, 
+                        `${calc.results.coal2.scc.toFixed(3)}`],
                     ['Total Expenditure (Rs. Crore)', 
-                        `${calc.coal1Results.totalCost.toFixed(2)}`, 
-                        `${calc.coal2Results.totalCost.toFixed(2)}`]
+                        `${calc.results.coal1.totalCost.toFixed(2)}`, 
+                        `${calc.results.coal2.totalCost.toFixed(2)}`]
                 ];
                 
                 doc.autoTable({
@@ -1661,9 +2401,9 @@
                 yPosition = doc.lastAutoTable.finalY + 6;
                 
                 // Economic Analysis
-                const economicalCoal = calc.coal1Results.totalCost < calc.coal2Results.totalCost ? calc.coal1Name : calc.coal2Name;
-                const savings = Math.abs(calc.coal1Results.totalCost - calc.coal2Results.totalCost);
-                const perUnitSaving = Math.abs(calc.coal1Results.energyCharges - calc.coal2Results.energyCharges);
+                const economicalCoal = calc.results.coal1.totalCost < calc.results.coal2.totalCost ? calc.coal1Name : calc.coal2Name;
+                const savings = Math.abs(calc.results.coal1.totalCost - calc.results.coal2.totalCost);
+                const perUnitSaving = Math.abs(calc.results.coal1.energyCharges - calc.results.coal2.energyCharges);
                 
                 // Calculate coal quantity savings if specified
                 let coalQuantitySavings = 0;
@@ -1722,15 +2462,28 @@
 
             doc.save('Professional_Coal_Cost_Analysis_Report.pdf');
             toggleExportOptions();
+        } catch (error) {
+            console.error('Error exporting to PDF:', error);
+            showError('Error occurred while exporting to PDF. Please try again.');
+            toggleExportOptions();
+        }
         }
 
         async function exportToJPG() {
+            console.log('ExportToJPG function called');
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+            console.log('Stored calculations for JPG:', storedCalculations);
+            
             if (storedCalculations.length === 0) {
                 showError('No data to export. Please store some calculations first.');
                 return;
             }
 
             try {
+                if (!window.html2canvas) {
+                    showError('Image export library not loaded. Please refresh the page and try again.');
+                    return;
+                }
                 const pageWidth = 794; // A4 width at 96 DPI (210mm)
                 const pageHeight = 1123; // A4 height at 96 DPI (297mm)
                 const margin = 60;
@@ -1824,9 +2577,9 @@
                 storedCalculations.forEach((calc, index) => {
                     // Calculate generation
                     const generation = calc.capacity * (calc.plf / 10000) * 24 * calc.days;
-                    const economicalCoal = calc.coal1Results.totalCost < calc.coal2Results.totalCost ? calc.coal1Name : calc.coal2Name;
-                    const savings = Math.abs(calc.coal1Results.totalCost - calc.coal2Results.totalCost);
-                    const perUnitSaving = Math.abs(calc.coal1Results.energyCharges - calc.coal2Results.energyCharges);
+                    const economicalCoal = calc.results.coal1.totalCost < calc.results.coal2.totalCost ? calc.coal1Name : calc.coal2Name;
+                    const savings = Math.abs(calc.results.coal1.totalCost - calc.results.coal2.totalCost);
+                    const perUnitSaving = Math.abs(calc.results.coal1.energyCharges - calc.results.coal2.energyCharges);
                     
                     // Calculate coal quantity savings if specified
                     let coalQuantitySavings = 0;
@@ -1899,10 +2652,10 @@
                                 </thead>
                                 <tbody>
                                     <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Generation (Lakh Units)</td><td colspan="2" style="padding: 6px; border: 1px solid #ddd; text-align: center;">${generation.toFixed(2)}</td></tr>
-                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Coal Required (Lakh MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal1Results.required / 100000).toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.coal2Results.required / 100000).toFixed(2)}</td></tr>
-                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Energy Charges (Rs/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.energyCharges.toFixed(4)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.energyCharges.toFixed(4)}</td></tr>
-                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">SCC (kg/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.scc.toFixed(3)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.scc.toFixed(3)}</td></tr>
-                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Total Expenditure (Rs. Crore)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal1Results.totalCost.toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.coal2Results.totalCost.toFixed(2)}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">Coal Required (Lakh MT)</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.results.coal1.required / 100000).toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${(calc.results.coal2.required / 100000).toFixed(2)}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Energy Charges (Rs/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal1.energyCharges.toFixed(4)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal2.energyCharges.toFixed(4)}</td></tr>
+                                    <tr><td style="padding: 6px; border: 1px solid #ddd;">SCC (kg/kWh)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal1.scc.toFixed(3)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal2.scc.toFixed(3)}</td></tr>
+                                    <tr style="background: #f8f9fa;"><td style="padding: 6px; border: 1px solid #ddd;">Total Expenditure (Rs. Crore)</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal1.totalCost.toFixed(2)}</td><td style="padding: 6px; border: 1px solid #ddd;">${calc.results.coal2.totalCost.toFixed(2)}</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1970,7 +2723,7 @@
                     ? `Successfully exported ${storedCalculations.length} JPG files (one per analysis)`
                     : 'Successfully exported Professional Coal Analysis Report as JPG';
                     
-                showError(message, 'success');
+                showMessage(message, 'success');
                 
             } catch (error) {
                 console.error('Error exporting to JPG:', error);
@@ -2045,12 +2798,205 @@
             });
         }
 
-        // Initialize everything when DOM is ready
+        // Night Mode Functions
+        function toggleNightMode() {
+            const body = document.body;
+            const toggleSwitch = document.querySelector('.toggle-switch');
+            
+            body.classList.toggle('night-mode');
+            toggleSwitch.classList.toggle('active');
+            
+            // Save preference to localStorage
+            const isNightMode = body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode);
+        }
+
+        function initializeNightMode() {
+            const savedNightMode = localStorage.getItem('nightMode');
+            const body = document.body;
+            const toggleSwitch = document.querySelector('.toggle-switch');
+            
+            if (savedNightMode === 'true') {
+                body.classList.add('night-mode');
+                if (toggleSwitch) {
+                    toggleSwitch.classList.add('active');
+                }
+            }
+        }
+
+        // Stored Calculations Functions
+        function toggleStoredCalculations() {
+            const container = document.getElementById('storedCalculationsContainer');
+            if (container.style.display === 'none') {
+                updateStoredCalculationsDisplay();
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function updateStoredCalculationsDisplay() {
+            const container = document.getElementById('storedCalculationsList');
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+            
+            if (storedCalculations.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.7); text-align: center;">No stored calculations yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = storedCalculations.map((calc, index) => `
+                <div class="stored-calculation-item">
+                    <div class="stored-calculation-actions">
+                        <button class="calc-action-btn" onclick="loadCalculation(${index})" title="Load">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <button class="calc-action-btn" onclick="deleteCalculation(${index})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="stored-calculation-header">
+                        <h5 class="stored-calculation-title">${calc.coal1Name || 'Coal A'} vs ${calc.coal2Name || 'Coal B'}</h5>
+                    </div>
+                    <div class="stored-calculation-date">${new Date(calc.timestamp).toLocaleString()}</div>
+                    <div class="stored-calculation-data">
+                        <strong>${calc.coal1Name || 'Coal A'}:</strong> ₹${((calc.coal1Cost + calc.coal1Freight) / calc.coal1GCV).toFixed(3)}/MCal, ${calc.coal1GCV || 0} kcal/kg<br>
+                        <strong>${calc.coal2Name || 'Coal B'}:</strong> ₹${((calc.coal2Cost + calc.coal2Freight) / calc.coal2GCV).toFixed(3)}/MCal, ${calc.coal2GCV || 0} kcal/kg<br>
+                        <strong>Best Option:</strong> ${calc.bestOption || 'N/A'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadCalculation(index) {
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+            const calc = storedCalculations[index];
+            
+            if (calc) {
+                // Load all form values using correct field IDs
+                document.getElementById('coal1Name').value = calc.coal1Name || '';
+                document.getElementById('coal2Name').value = calc.coal2Name || '';
+                document.getElementById('coal1Cost').value = calc.coal1Cost || '';
+                document.getElementById('coal2Cost').value = calc.coal2Cost || '';
+                document.getElementById('coal1Freight').value = calc.coal1Freight || '';
+                document.getElementById('coal2Freight').value = calc.coal2Freight || '';
+                document.getElementById('coal1GCV').value = calc.coal1GCV || '';
+                document.getElementById('coal2GCV').value = calc.coal2GCV || '';
+                document.getElementById('capacity').value = calc.capacity || '';
+                document.getElementById('plf').value = calc.plf || '';
+                document.getElementById('days').value = calc.days || '';
+                document.getElementById('shr').value = calc.shr || '';
+                document.getElementById('coalQuantity').value = calc.coalQuantity || '';
+                
+                // Hide stored calculations
+                toggleStoredCalculations();
+                
+                // Trigger calculation if we have minimum required data
+                if (calc.coal1Cost && calc.coal2Cost && calc.coal1GCV && calc.coal2GCV) {
+                    calculate();
+                }
+                
+                showMessage('Calculation loaded successfully!', 'success');
+            }
+        }
+
+        function deleteCalculation(index) {
+            if (confirm('Are you sure you want to delete this calculation?')) {
+                const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+                storedCalculations.splice(index, 1);
+                localStorage.setItem('coalAnalysisCalculations', JSON.stringify(storedCalculations));
+                updateStoredCalculationsDisplay();
+                updateStoredCalculationsCounter();
+                showMessage('Calculation deleted successfully!', 'success');
+            }
+        }
+
+        function clearAllStoredData() {
+            if (confirm('Are you sure you want to clear all stored calculation data? This action cannot be undone.')) {
+                try {
+                    localStorage.removeItem('coalAnalysisCalculations');
+                    updateStoredCalculationsDisplay();
+                    updateStoredCalculationsCounter();
+                    showMessage('All stored data cleared successfully!', 'success');
+                } catch (error) {
+                    console.error('Error clearing stored data:', error);
+                    alert('Error clearing stored data. Please try again.');
+                }
+            }
+        }
+
+        function updateStoredCalculationsCounter() {
+            const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
+            
+            // Update main storage counter
+            const counter = document.getElementById('storageCounter');
+            if (counter) {
+                counter.textContent = storedCalculations.length;
+                counter.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+            }
+            
+            // Update floating storage counter
+            const floatingCounter = document.getElementById('floatingStorageCounter');
+            if (floatingCounter) {
+                floatingCounter.textContent = storedCalculations.length;
+                floatingCounter.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function showMessage(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 500;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // Animation System
+        function initializeAnimations() {
+            const animationElements = [
+                { selector: '.calculator-header', animation: 'animate-slide-in-down', delay: 0 },
+                { selector: '.instruction-message', animation: 'animate-slide-in-left', delay: 0.2 },
+                { selector: '.calculator-container', animation: 'animate-zoom-in', delay: 0.4 },
+                { selector: '.results-container', animation: 'animate-zoom-in', delay: 0.6 },
+                { selector: '.floating-actions', animation: 'animate-slide-in-right', delay: 0.8 },
+                { selector: '.night-mode-toggle', animation: 'animate-slide-in-right', delay: 1 },
+                { selector: '.back-button', animation: 'animate-slide-in-left', delay: 1.2 }
+            ];
+
+            animationElements.forEach(({ selector, animation, delay }) => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    setTimeout(() => {
+                        element.classList.add(animation);
+                    }, delay * 1000);
+                });
+            });
+        }
+
+        // Enhanced initialization
         document.addEventListener('DOMContentLoaded', function() {
             initializeElements();
             updateStorageCounter();
             updateInstructionMessage();
             setupEventListeners();
+            initializeNightMode(); // Initialize night mode
+            updateStoredCalculationsCounter(); // Initialize storage counter
+            initializeAnimations(); // Initialize animations
             
             // Ensure export dropdown is hidden on page load
             const exportDropdown = document.getElementById('exportDropdown');
@@ -2076,6 +3022,16 @@
                     }, 3000);
                 }
             }, 1000);
+            
+            // Add click outside handlers for stored calculations
+            document.addEventListener('click', function(e) {
+                const storedCalcsContainer = document.getElementById('storedCalculationsContainer');
+                const storageButton = e.target.closest('.floating-btn[onclick*="toggleStoredCalculations"]');
+                
+                if (storedCalcsContainer && !storedCalcsContainer.contains(e.target) && !storageButton && storedCalcsContainer.style.display !== 'none') {
+                    storedCalcsContainer.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
