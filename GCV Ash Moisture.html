@@ -7,11 +7,21 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         /* Glassmorphism Container */
@@ -24,6 +34,8 @@
             padding: 30px;
             margin: 20px auto;
             max-width: 1200px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .page-title {
@@ -248,7 +260,7 @@
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            padding: 12px 25px;
+            padding: 8px 20px;
             font-weight: 500;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
@@ -922,11 +934,12 @@
             }
             
             .glass-container {
-                margin: 10px;
+                margin: 0;
                 padding: 15px;
-                border-radius: 15px;
-                width: calc(100vw - 20px);
-                max-width: none;
+                border-radius: 0;
+                width: 100%;
+                max-width: 100%;
+                min-height: 100vh;
                 box-sizing: border-box;
                 overflow-x: hidden;
             }
@@ -1019,20 +1032,21 @@
             }
             
             .action-buttons {
-                flex-direction: column;
+                flex-direction: row;
                 gap: 10px;
                 margin-top: 20px;
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
+                justify-content: center;
             }
             
             .action-btn {
-                width: 100%;
-                padding: 14px 20px;
-                font-size: 16px;
+                flex: 1;
+                max-width: 120px;
+                padding: 8px 12px;
+                font-size: 14px;
                 border-radius: 8px;
-                max-width: 100%;
                 box-sizing: border-box;
             }
             
@@ -1290,7 +1304,7 @@
                         <label class="input-label">GCV [kcal/kg]:</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvInput" 
-                                   placeholder="Enter GCV value" step="0.01" 
+                                   placeholder="Enter GCV value" step="0.01" min="0"
                                    oninput="debouncedCalculateFromInputs()">
                         </div>
                     </div>
@@ -1348,7 +1362,7 @@
                         <label class="input-label">GCV Equilibrated [kcal/kg]:</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvEqInput" 
-                                   placeholder="Enter GCV Equilibrated value" step="0.01" 
+                                   placeholder="Enter GCV Equilibrated value" step="0.01" min="0"
                                    oninput="debouncedCalculateConversion()">
                         </div>
                     </div>
@@ -1375,7 +1389,7 @@
                         <label class="input-label">GCV ARB [kcal/kg]:</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="gcvArbInput" 
-                                   placeholder="Enter GCV ARB value" step="0.01" 
+                                   placeholder="Enter GCV ARB value" step="0.01" min="0"
                                    oninput="debouncedCalculateConversion()">
                         </div>
                     </div>
@@ -1569,6 +1583,71 @@ function handleNumberInput(inputElement, calculationFunction) {
     calculationFunction();
 }
 
+// Validation function to ensure only positive values
+function validatePositiveInput(inputElement) {
+    let value = parseFloat(inputElement.value);
+    if (value < 0) {
+        inputElement.value = '';
+        showError(1, 'Only positive values are allowed.');
+        setTimeout(() => hideError(1), 3000);
+    }
+}
+
+// Function to prevent mathematical operators from being typed
+function preventMathOperators(event) {
+    const forbiddenChars = ['-', '+', '*', '/', 'e', 'E'];
+    
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey === true) ||
+        (event.keyCode === 67 && event.ctrlKey === true) ||
+        (event.keyCode === 86 && event.ctrlKey === true) ||
+        (event.keyCode === 88 && event.ctrlKey === true) ||
+        // Allow: home, end, left, right, down, up
+        (event.keyCode >= 35 && event.keyCode <= 40)) {
+        return;
+    }
+    
+    // Prevent forbidden characters
+    if (forbiddenChars.includes(event.key)) {
+        event.preventDefault();
+        setTimeout(() => hideError(1), 3000);
+        return false;
+    }
+}
+
+// Add validation to all number inputs
+function addPositiveValidation() {
+    const numberInputs = [
+        'gcvInput', 'ashInput', 'moistureInput',
+        'gcvEqInput', 'moistureArbInput', 'moistureEqInput', 'gcvArbInput'
+    ];
+    
+    numberInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            // Prevent negative values
+            input.addEventListener('input', function() {
+                validatePositiveInput(this);
+            });
+            
+            // Prevent mathematical operators from being typed
+            input.addEventListener('keydown', preventMathOperators);
+            
+            // Prevent negative values and operators from being pasted
+            input.addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    // Remove any mathematical operators from pasted content
+                    let cleanValue = this.value.replace(/[-+*/eE]/g, '');
+                    this.value = cleanValue;
+                    validatePositiveInput(this);
+                }, 0);
+            });
+        }
+    });
+}
+
 // Tab Switching
 function switchCalculator(calc) {
     // Hide all calculator contents
@@ -1625,7 +1704,7 @@ function calculateFromInputs() {
     }
     
     if (filledCount === 1) {
-        showError(1, "Please enter at least 2 values to calculate the third.");
+        showError(1, "Please enter at least 2 inputs for calculations.");
         document.getElementById('calcResult1').style.display = 'none';
         return;
     }
@@ -1782,7 +1861,7 @@ function calculateConversion() {
     }
     
     if (filledCount < 3) {
-        showError(2, "Please enter at least 3 values to calculate the fourth.");
+        showError(2, "Please enter at least 3 inputs for calculations.");
         document.getElementById('calcResult2').style.display = 'none';
         document.getElementById('results2').style.display = 'none';
         return;
@@ -2274,6 +2353,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load night mode preference
     loadNightModePreference();
     
+    // Add positive value validation to all inputs
+    addPositiveValidation();
+    
     // Trigger entrance animations
     const animatedElements = document.querySelectorAll('.animate-on-load');
     
@@ -2346,14 +2428,9 @@ function exportToPDF() {
     const doc = new jsPDF('p', 'mm', 'a4');
     
     // Add title
-    doc.setFontSize(18);
+    doc.setFontSize(20);
     doc.setTextColor(40, 40, 40);
-    doc.text('Coal Analysis Results', 20, 20);
-    
-    // Add subtitle
-    doc.setFontSize(12);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`Total Records: ${savedCalculations.length} | Generated: ${new Date().toLocaleString()}`, 20, 30);
+    doc.text('Coal Quality Analysis Results', 105, 20, { align: 'center' });
     
     // Prepare table data
     const tableColumns = ['S.No', 'Calculator Type', 'GCV (kcal/kg)', 'Ash (%)', 'Moisture (%)', 'Calculated Field'];
@@ -2381,27 +2458,49 @@ function exportToPDF() {
         }
     });
     
-    // Add table
+    // Add professional table
     doc.autoTable({
         head: [tableColumns],
         body: tableRows,
-        startY: 40,
+        startY: 35,
         styles: {
-            fontSize: 10,
-            cellPadding: 3
+            fontSize: 9,
+            cellPadding: 4,
+            halign: 'center',
+            valign: 'middle',
+            lineColor: [200, 200, 200],
+            lineWidth: 0.5
         },
         headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: 255,
-            fontStyle: 'bold'
+            fillColor: [52, 73, 94],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 10,
+            cellPadding: 6
         },
         alternateRowStyles: {
-            fillColor: [245, 245, 245]
-        }
+            fillColor: [248, 249, 250]
+        },
+        columnStyles: {
+            0: { cellWidth: 25, halign: 'center' },
+            1: { cellWidth: 35, halign: 'center' },
+            2: { cellWidth: 30, halign: 'center' },
+            3: { cellWidth: 20, halign: 'center' },
+            4: { cellWidth: 30, halign: 'center' },
+            5: { cellWidth: 50, halign: 'center' }
+        },
+        margin: { top: 35, right: 15, bottom: 30, left: 15 },
+        tableWidth: 'auto'
     });
     
+    // Add footer
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(8);
+    doc.setTextColor(120, 120, 120);
+    doc.text(`Report generated on: ${new Date().toLocaleString()}`, 105, pageHeight - 10, { align: 'center' });
+    
     // Save the PDF
-    doc.save(`Coal_Analysis_Results_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Coal_Quality_Analysis_Results_${new Date().toISOString().split('T')[0]}.pdf`);
     
     // Close export dropdown
     document.getElementById('exportDropdown').classList.remove('active');
@@ -2431,16 +2530,12 @@ function exportToJPG() {
     
     // Add title
     ctx.fillStyle = '#2c3e50';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('Coal Analysis Results', 100, 150);
-    
-    // Add subtitle
-    ctx.fillStyle = '#7f8c8d';
-    ctx.font = '32px Arial';
-    ctx.fillText(`Total Records: ${savedCalculations.length} | Generated: ${new Date().toLocaleString()}`, 100, 200);
+    ctx.font = 'bold 54px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Coal Quality Analysis Results', canvas.width / 2, 150);
     
     // Table styling (adjusted for portrait A4 - full width, no timestamp)
-    const startY = 300;
+    const startY = 250;
     const rowHeight = 100; // Increased for larger fonts
     const availableWidth = canvas.width - 200; // Full width minus margins
     const colWidths = [120, 420, 480, 200, 480, 380]; // 6 columns, no timestamp
@@ -2565,12 +2660,18 @@ function exportToJPG() {
         });
     });
     
+    // Add footer
+    ctx.fillStyle = '#95a5a6';
+    ctx.font = '28px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Report generated on: ${new Date().toLocaleString()}`, canvas.width / 2, canvas.height - 80);
+    
     // Convert canvas to JPG and download
     canvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Coal_Analysis_Results_${new Date().toISOString().split('T')[0]}.jpg`;
+        a.download = `Coal_Quality_Analysis_Results_${new Date().toISOString().split('T')[0]}.jpg`;
         a.click();
         URL.revokeObjectURL(url);
         

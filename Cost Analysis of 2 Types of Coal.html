@@ -390,6 +390,17 @@
             justify-content: center;
         }
 
+        /* Override font-weight for strong tags within summary items */
+        .summary-item strong {
+            font-weight: bold !important;
+        }
+
+        /* Specific override for strong tags in section headers within summary */
+        .summary-item.section-header {
+            font-weight: 900 !important;
+            color:#1a1a1a;
+        }
+
         .error-message {
             background: rgba(255, 107, 107, 0.2);
             color: #ff6b6b;
@@ -779,6 +790,15 @@
                 height: 50px;
                 font-size: 18px;
                 margin-bottom: 10px;
+                background: rgba(52, 73, 94, 0.9) !important;
+                border: 1px solid rgba(52, 73, 94, 0.8) !important;
+                color: white !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .floating-btn:hover {
+                background: rgba(44, 62, 80, 0.95) !important;
+                transform: scale(1.05);
             }
 
             .export-dropdown {
@@ -929,6 +949,15 @@
                 width: 45px;
                 height: 45px;
                 font-size: 16px;
+                background: rgba(52, 73, 94, 0.9) !important;
+                border: 1px solid rgba(52, 73, 94, 0.8) !important;
+                color: white !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .floating-btn:hover {
+                background: rgba(44, 62, 80, 0.95) !important;
+                transform: scale(1.05);
             }
 
             .export-dropdown {
@@ -1119,6 +1148,21 @@
 
         body.night-mode .floating-btn:hover {
             background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Mobile night mode floating buttons - enhanced visibility */
+        @media (max-width: 768px) {
+            body.night-mode .floating-btn {
+                background: rgba(30, 30, 30, 0.95) !important;
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                color: #ffffff !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            }
+
+            body.night-mode .floating-btn:hover {
+                background: rgba(45, 45, 45, 0.98) !important;
+                transform: scale(1.05);
+            }
         }
 
         body.night-mode .export-dropdown {
@@ -1874,17 +1918,17 @@
             return {
                 coal1Name: inputs.coal1Name.value.trim(),
                 coal2Name: inputs.coal2Name.value.trim(),
-                coal1Cost: parseFloat(inputs.coal1Cost.value) || NaN,
-                coal2Cost: parseFloat(inputs.coal2Cost.value) || NaN,
-                coal1Freight: parseFloat(inputs.coal1Freight.value) || NaN,
-                coal2Freight: parseFloat(inputs.coal2Freight.value) || NaN,
-                coal1GCV: parseFloat(inputs.coal1GCV.value) || NaN,
-                coal2GCV: parseFloat(inputs.coal2GCV.value) || NaN,
-                capacity: parseFloat(inputs.capacity.value) || NaN,
-                plf: parseFloat(inputs.plf.value) || NaN,
-                days: parseFloat(inputs.days.value) || NaN,
-                shr: parseFloat(inputs.shr.value) || NaN,
-                coalQuantity: parseFloat(inputs.coalQuantity.value) || NaN
+                coal1Cost: parseFloat(inputs.coal1Cost.value),
+                coal2Cost: parseFloat(inputs.coal2Cost.value),
+                coal1Freight: parseFloat(inputs.coal1Freight.value),
+                coal2Freight: parseFloat(inputs.coal2Freight.value),
+                coal1GCV: parseFloat(inputs.coal1GCV.value),
+                coal2GCV: parseFloat(inputs.coal2GCV.value),
+                capacity: parseFloat(inputs.capacity.value),
+                plf: parseFloat(inputs.plf.value),
+                days: parseFloat(inputs.days.value),
+                shr: parseFloat(inputs.shr.value),
+                coalQuantity: parseFloat(inputs.coalQuantity.value)
             };
         }
 
@@ -1895,7 +1939,19 @@
                 return false;
             }
 
-            // Check for negative or missing numeric values
+            // Check if any numeric input field is empty
+            const numericInputs = [
+                inputs.coal1Cost.value, inputs.coal2Cost.value, inputs.coal1Freight.value, inputs.coal2Freight.value,
+                inputs.coal1GCV.value, inputs.coal2GCV.value, inputs.capacity.value, inputs.plf.value, 
+                inputs.days.value, inputs.shr.value, inputs.coalQuantity.value
+            ];
+
+            if (numericInputs.some(v => v.trim() === '')) {
+                showError('Please fill in all numeric fields.');
+                return false;
+            }
+
+            // Check for negative or invalid numeric values
             const numericValues = [
                 values.coal1Cost, values.coal2Cost, values.coal1Freight, values.coal2Freight,
                 values.coal1GCV, values.coal2GCV, values.capacity, values.plf, values.days, values.shr,
@@ -1903,7 +1959,7 @@
             ];
 
             if (numericValues.some(v => isNaN(v))) {
-                showError('Please fill in all numeric fields.');
+                showError('Please enter valid numeric values.');
                 return false;
             }
 
@@ -2038,17 +2094,17 @@
 
             results.summarySection.innerHTML = `
                 <div class="summary-item section-header">
-                    <strong> ${economicalCoalName} </strong> coal is economical w.r.t. <strong> ${otherCoalName} </strong>
+                    ${economicalCoalName} coal is economical w.r.t. ${otherCoalName} coal
                 </div>
                 <div class="summary-item">
-                    Total Saving for using <strong>${economicalCoalName}</strong> coal: <strong>Rs. ${formatNumber(totalSavingAmount, 2)} Crore</strong>
+                    Total Saving for using <strong style="font-weight: bold !important;">${economicalCoalName}</strong> coal: <strong style="font-weight: bold !important;">Rs. ${formatNumber(totalSavingAmount, 2)} Crore</strong>
                 </div>
                 ${coalQuantityDisplay > 0 ? `
                 <div class="summary-item">
-                    <strong>Rs. ${formatNumber(savingsPerMT, 2)} Crore</strong> per <strong>${formatNumber(coalQuantityDisplay, 2)} Lakh MT</strong>
+                    <strong style="font-weight: bold !important;">Rs. ${formatNumber(savingsPerMT, 2)} Crore</strong> per <strong style="font-weight: bold !important;">${formatNumber(coalQuantityDisplay, 2)} Lakh MT</strong>
                 </div>` : ''}
                 <div class="summary-item">
-                    Per Unit cost reduction: <strong>Rs. ${formatNumber(savings.perUnitReduction, 4)}</strong>
+                    Per Unit cost reduction: <strong style="font-weight: bold !important;">Rs. ${formatNumber(savings.perUnitReduction, 4)}</strong>
                 </div>
                 <div class="summary-item">
                     Generation: <strong>${formatNumber(generation, 2)} Lakh Units</strong>
