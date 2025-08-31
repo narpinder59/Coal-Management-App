@@ -13,6 +13,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         /* ==========================================================================
+           INITIAL LOAD FIX - PREVENTS DARK FLASH IN FIRST COLUMNS
+           ========================================================================== */
+        
+        /* Force light background on first columns during initial load - highest priority */
+        #Table1 th:first-child, #Table1 td:first-child,
+        #Table2 th:first-child, #Table2 td:first-child,
+        #Table1 thead th:first-child, #Table2 thead th:first-child {
+            background-color: #e9ecef !important;
+            color: #212529 !important;
+        }
+        
+        /* Mobile first column initial fix */
+        @media (max-width: 768px) {
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child,
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                background-color: #e9ecef !important;
+                color: #212529 !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #Table1 th:first-child, #Table1 td:first-child,
+            #Table2 th:first-child, #Table2 td:first-child,
+            #Table1 thead th:first-child, #Table2 thead th:first-child {
+                background-color: #e9ecef !important;
+                color: #212529 !important;
+            }
+        }
+        
+        /* ==========================================================================
            CSS CUSTOM PROPERTIES FOR THEME SWITCHING
            ========================================================================== */
         
@@ -66,6 +97,14 @@
         
         * {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+        }
+        
+        /* Prevent transitions on color-coded cells to ensure immediate color changes */
+        .table td[style*="color: red"], 
+        .table td[style*="color: green"],
+        .table td[style*="color:#ff4444"],
+        .table td[style*="color:#28a745"] {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
         }
         
         /* ==========================================================================
@@ -204,9 +243,17 @@
             color: white !important;
         }
         
+        .btn-primary i {
+            color: white !important;
+        }
+        
         .btn-primary:hover {
             background: #0056b3 !important;
             border-color: #0056b3 !important;
+            color: white !important;
+        }
+        
+        .btn-primary:hover i {
             color: white !important;
         }
         
@@ -287,6 +334,25 @@
             color: var(--text-secondary) !important;
         }
         
+        /* Force btn-info styling to override custom variables */
+        .btn-info {
+            background-color: #0dcaf0 !important;
+            border-color: #0dcaf0 !important;
+            color: #000 !important;
+        }
+        
+        .btn-info:hover {
+            background-color: #31d2f2 !important;
+            border-color: #25cff2 !important;
+            color: #000 !important;
+        }
+        
+        .btn-info:active {
+            background-color: #0baccc !important;
+            border-color: #0aa2c0 !important;
+            color: #000 !important;
+        }
+
         /* Input Group Styling */
         .input-group-text {
             background: var(--bg-secondary) !important;
@@ -312,6 +378,11 @@
             color: var(--text-primary);
             font-weight: 600;
             font-size: 1.1rem;
+            white-space: nowrap !important;
+            overflow: visible !important;
+            max-width: none !important;
+            width: auto !important;
+            line-height: 1.3 !important;
         }
         
         .section-header .fas {
@@ -407,15 +478,17 @@
         }
         
         th, td {
-            border-bottom: 1px solid var(--border-light) !important;
+            border-bottom: 2px solid var(--border-medium) !important;
             border-right: 1px solid var(--border-light) !important;
-            padding: 16px 20px !important;
+            padding: 0 !important;
             text-align: center !important;
             vertical-align: middle !important;
             background-color: var(--bg-primary) !important;
             color: var(--text-primary) !important;
             transition: all 0.2s ease !important;
             font-weight: 500;
+            height: 42px !important;
+            max-height: 42px !important;
         }
         
         thead th {
@@ -425,9 +498,11 @@
             border-bottom: 2px solid var(--border-medium) !important;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-size: 0.85rem;
-            padding: 18px 20px !important;
+            font-size: 1rem;
+            padding: 12px 16px !important;
             text-align: center !important;
+            height: 40px !important;
+            max-height: 40px !important;
         }
         
         tbody tr {
@@ -448,54 +523,62 @@
             background: rgba(255, 255, 255, 0.02) !important;
         }
         
-        /* STICKY COLUMNS - THEME ADAPTIVE */
-        #Table1 th:first-child, #Table1 td:first-child,
-        #Table2 th:first-child, #Table2 td:first-child {
+        /* STICKY COLUMNS - THEME ADAPTIVE (Applied after initial load) */
+        body.theme-loaded #Table1 th:first-child, body.theme-loaded #Table1 td:first-child,
+        body.theme-loaded #Table2 th:first-child, body.theme-loaded #Table2 td:first-child {
             position: sticky !important;
             left: 0px !important;
             z-index: 999 !important;
             background: var(--bg-secondary) !important;
             color: var(--text-primary) !important;
             box-shadow: 3px 0 6px var(--shadow) !important;
-            font-weight: 600 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-weight: bolder !important;
             text-align: left !important;
-            padding: 16px 20px !important;
+            padding: 8px 12px !important;
             border-right: 2px solid var(--border-medium) !important;
-            border-bottom: 1px solid var(--border-light) !important;
-            width: 250px !important;
-            min-width: 250px !important;
-            max-width: 250px !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            border-bottom: 2px solid var(--border-medium) !important;
+            width: 220px !important;
+            min-width: 220px !important;
+            max-width: 220px !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            line-height: 1.4 !important;
+            vertical-align: middle !important;
+            height: 32px !important;
+            max-height: 32px !important;
         }
         
-        #Table1 thead th:first-child, #Table2 thead th:first-child {
+        body.theme-loaded #Table1 thead th:first-child, body.theme-loaded #Table2 thead th:first-child {
             position: sticky !important;
             left: 0px !important;
             z-index: 1001 !important;
             background: var(--bg-secondary) !important;
             color: var(--text-primary) !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
             font-weight: 700 !important;
             box-shadow: 3px 0 6px var(--shadow) !important;
             border-bottom: 2px solid var(--border-medium) !important;
             border-right: 2px solid var(--border-medium) !important;
             font-size: 0.9rem !important;
             text-align: left !important;
-            padding: 18px 20px !important;
+            padding: 12px 16px !important;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            line-height: 1.4 !important;
+            vertical-align: middle !important;
+            height: 40px !important;
+            max-height: 40px !important;
         }
         
         /* Consistent width for first columns */
         #Table1 th:first-child, #Table1 td:first-child,
         #Table2 th:first-child, #Table2 td:first-child {
-            width: 250px !important;
-            min-width: 250px !important;
-            max-width: 250px !important;
+            width: 220px !important;
+            min-width: 220px !important;
+            max-width: 220px !important;
         }
         
         /* Consistent width for all data columns (month columns) */
@@ -546,21 +629,26 @@
         /* Minimal input field styling */
         input[type="number"] {
             border: 1px solid var(--border-light);
-            border-radius: 6px;
-            padding: 8px 12px;
+            border-radius: 4px;
+            padding: 4px 8px;
             width: 100%;
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
             text-align: center;
+            height: 42px;
+            max-height: 42px;
+            line-height: 1.2;
+            margin: 0;
+            box-sizing: border-box;
         }
         
         input[type="number"]:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
         }
         
         /* Toggle switch styling */
@@ -620,11 +708,17 @@
             margin-bottom: 0 !important;
             cursor: pointer !important;
             transition: all 0.2s ease !important;
-            font-size: 12px !important;
+            font-size: 14px !important;
             line-height: 1.2 !important;
             color: var(--text-primary) !important;
             -webkit-tap-highlight-color: transparent !important;
             touch-action: manipulation !important;
+        }
+        
+        /* Enhanced border for inactive toggle switches */
+        .form-check.form-switch:not(.active-checkbox):not([data-active="true"]) {
+            border: 2px solid #6c757d !important;
+            box-shadow: 0 1px 3px rgba(108, 117, 125, 0.2) !important;
         }
         
         /* Active checkbox container with green background - Persistent Mobile Enhanced */
@@ -666,6 +760,12 @@
 
         /* Force mobile-specific styling for active checkboxes - Enhanced Persistence */
         @media (max-width: 768px) {
+            /* Enhanced border for inactive toggle switches - mobile */
+            .form-check.form-switch:not(.active-checkbox):not([data-active="true"]) {
+                border: 2px solid #6c757d !important;
+                box-shadow: 0 1px 3px rgba(108, 117, 125, 0.3) !important;
+            }
+            
             .form-check.form-switch.active-checkbox,
             .form-check.form-switch[data-active="true"] {
                 background-color: #28a745 !important;
@@ -704,6 +804,12 @@
 
         /* Extra emphasis for very small mobile devices - Enhanced Persistence */
         @media (max-width: 480px) {
+            /* Enhanced border for inactive toggle switches - small mobile */
+            .form-check.form-switch:not(.active-checkbox):not([data-active="true"]) {
+                border: 3px solid #6c757d !important;
+                box-shadow: 0 2px 4px rgba(108, 117, 125, 0.4) !important;
+            }
+            
             .form-check.form-switch.active-checkbox,
             .form-check.form-switch[data-active="true"] {
                 background-color: #28a745 !important;
@@ -1159,36 +1265,106 @@
         
         .remove-month-btn {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+            width: 18px;
+            height: 14px;
+            border-radius: 3px;
             background-color: #dc3545;
             border: none;
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             cursor: pointer;
             display: none;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
         }
         
         .month-header:hover .remove-month-btn {
-            display: block;
+            display: flex;
         }
         
         .remove-month-btn:hover {
             background-color: #c82333;
         }
         
-        /* CARD HEADER PADDING OPTIMIZATION */
+        /* CARD HEADER PADDING OPTIMIZATION - WITH TEXT WRAPPING FOR ALL SCREEN SIZES */
         .card-header {
             padding: 8px 12px !important;
+            min-height: auto !important; /* Allow height to adjust to content */
+        }
+        
+        /* Card header text wrapping for all screen sizes */
+        .card-header h5 {
+            white-space: normal !important; /* Allow text wrapping */
+            overflow: visible !important; /* Show wrapped text */
+            text-overflow: initial !important; /* Remove ellipsis */
+            word-wrap: break-word !important; /* Break long words */
+            overflow-wrap: break-word !important; /* Modern word breaking */
+            line-height: 1.3 !important; /* Better line spacing for wrapped text */
+            height: auto !important; /* Allow height to adjust for wrapped text */
+            max-width: 100% !important; /* Prevent overflow */
+            width: 100% !important; /* Use available width */
+            box-sizing: border-box !important; /* Include padding in width */
+        }
+        
+        .card-header .row {
+            flex-wrap: wrap !important; /* Allow row content to wrap if needed */
+            align-items: flex-start !important; /* Top align when content wraps */
+        }
+        
+        /* Card header column width constraints */
+        .card-header .col-md-6 {
+            max-width: 100% !important; /* Prevent column overflow */
+            flex: 1 1 auto !important; /* Allow flexible sizing */
+            min-width: 0 !important; /* Allow shrinking */
+            overflow: hidden !important; /* Contain any overflow */
+        }
+        
+        /* Specific width control for text column */
+        .card-header .col-md-6:first-child {
+            max-width: 60% !important; /* Limit text column width */
+            flex: 0 1 60% !important; /* Set max flex basis */
+        }
+        
+        /* Controls column gets remaining space */
+        .card-header .col-md-6:last-child {
+            max-width: 40% !important; /* Controls get remaining width */
+            flex: 0 1 40% !important; /* Set max flex basis */
         }
         
         /* MOBILE RESPONSIVE IMPROVEMENTS - ENHANCED FOR SINGLE ROW CONTROLS */
         
         /* Mobile card optimization - Full width */
         @media (max-width: 768px) {
+            /* Reduce main heading size for mobile instead of moving it down */
+            .glass-container h1 {
+                font-size: 1.5rem !important;
+                margin-top: 0px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            /* Reduce back button size for mobile */
+            .back-btn {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 14px !important;
+                top: 10px !important;
+                left: 10px !important;
+            }
+            
+            /* Reduce theme toggle button size for mobile */
+            .theme-toggle {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 14px !important;
+                top: 10px !important;
+                right: 10px !important;
+            }
+            
             .glass-container {
                 margin: 10px 5px;
                 padding: 15px 10px;
@@ -1197,6 +1373,18 @@
             .section-header {
                 padding: 10px;
                 margin-bottom: 15px;
+            }
+            
+            /* Add left padding to card header headings and keep text on single line */
+            .section-header h5 {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                white-space: nowrap !important;
+                overflow: visible !important;
+                max-width: none !important;
+                width: auto !important;
+                line-height: 1.2 !important;
+                font-size: 1rem !important;
             }
             
             /* Mobile controls - Icons only in single row */
@@ -1219,31 +1407,31 @@
                 width: auto !important;
             }
             
-            /* Button styling - Show text with icons */
+            /* Button styling - Smaller for mobile */
             .section-header .btn-sm {
-                font-size: 8px !important; /* Show text at 10px */
-                padding: 6px 8px !important;
-                min-height: 32px !important;
-                width: auto !important; /* Allow width to expand for text */
-                border-radius: 6px !important;
+                font-size: 7px !important; /* Reduced from 8px */
+                padding: 4px 6px !important; /* Reduced from 6px 8px */
+                min-height: 26px !important; /* Reduced from 32px */
+                width: auto !important;
+                border-radius: 4px !important; /* Reduced from 6px */
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
             }
             
             .section-header .btn-sm i {
-                font-size: 14px !important; /* Show only icon */
+                font-size: 10px !important; /* Reduced from 14px */
                 margin: 0 !important;
             }
             
-            /* Toggle switches - Show text with proper sizing */
+            /* Toggle switches - Smaller for mobile */
             .section-header .form-check.form-switch {
                 background-color: var(--bg-secondary) !important;
-                border-radius: 6px !important;
-                padding: 6px 8px !important;
+                border-radius: 4px !important; /* Reduced from 6px */
+                padding: 4px 6px !important; /* Reduced from 6px 8px */
                 border: 1px solid var(--border-light) !important;
-                min-height: 32px !important;
-                width: auto !important; /* Allow width to expand for text */
+                min-height: 26px !important; /* Reduced from 32px */
+                width: auto !important;
                 margin: 0 !important;
                 display: flex !important;
                 align-items: center !important;
@@ -1251,36 +1439,43 @@
             }
             
             .section-header .form-check.form-switch .form-check-label {
-                font-size: 8px !important; /* Show text at 10px */
-                margin: 0 1px 0 0 !important; /* Small right margin for spacing */
+                font-size: 12px !important; /* Increased from 7px for better readability */
+                margin: 0 1px 0 0 !important;
                 width: auto !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
             }
             
-            /* Mobile-specific text overrides for toggle labels */
+            /* Toggle switch input - smaller */
+            .section-header .form-check.form-switch .form-check-input {
+                width: 28px !important; /* Smaller switch width */
+                height: 14px !important; /* Smaller switch height */
+                font-size: 6px !important;
+            }
+            
+            /* Mobile-specific text overrides for toggle labels - smaller text */
             .section-header .form-check.form-switch .form-check-label[for="copyValuesCheckbox"],
             .section-header .form-check.form-switch .form-check-label[for="copyQuantityCheckbox"] {
-                font-size: 0 !important; /* Hide original text */
+                font-size: 0 !important;
             }
             
             .section-header .form-check.form-switch .form-check-label[for="copyValuesCheckbox"]::after,
             .section-header .form-check.form-switch .form-check-label[for="copyQuantityCheckbox"]::after {
                 content: "Auto-copy" !important;
-                font-size: 8px !important;
-                margin-left: 4px !important;
+                font-size: 7px !important; /* Reduced from 8px */
+                margin-left: 3px !important;
                 color: var(--text-primary) !important;
             }
             
             .section-header .form-check.form-switch .form-check-label[for="linkToMainTable"] {
-                font-size: 0 !important; /* Hide original text */
+                font-size: 0 !important;
             }
             
             .section-header .form-check.form-switch .form-check-label[for="linkToMainTable"]::after {
                 content: "Auto-Link" !important;
-                font-size: 8px !important;
-                margin-left: 4px !important;
+                font-size: 7px !important; /* Reduced from 8px */
+                margin-left: 3px !important;
                 color: var(--text-primary) !important;
             }
             
@@ -1295,8 +1490,30 @@
             }
             
             .section-header .form-check.form-switch .form-check-label i {
-                font-size: 14px !important; /* Show only icon */
+                font-size: 10px !important; /* Reduced from 14px */
                 color: var(--text-primary) !important;
+                margin: 0 !important;
+            }
+            
+            /* Form controls - smaller for mobile */
+            .section-header .form-control-sm {
+                font-size: 7px !important;
+                padding: 2px 4px !important;
+                height: 20px !important;
+                width: 40px !important;
+                border-radius: 3px !important;
+            }
+            
+            .section-header .small {
+                font-size: 7px !important;
+            }
+            
+            .section-header .d-flex.align-items-center {
+                gap: 2px !important;
+            }
+            
+            .section-header label.small {
+                font-size: 7px !important;
                 margin: 0 !important;
             }
             
@@ -1305,13 +1522,13 @@
                 display: none !important;
             }
             
-            /* Buffer stock container - Icon and input only */
+            /* Buffer stock container - Icon and input only with border */
             .section-header .d-flex.align-items-center {
                 gap: 4px !important;
                 background-color: var(--bg-secondary) !important;
                 border-radius: 6px !important;
-                padding: 6px 8px !important;
-                border: 1px solid var(--border-light) !important;
+                padding: 2px 3px !important;
+                border: 2px solid var(--border-light) !important; /* Enhanced border */
                 min-height: 32px !important;
                 display: flex !important;
                 align-items: center !important;
@@ -1319,6 +1536,7 @@
                 transition: all 0.3s ease !important;
                 width: auto !important;
                 flex: 0 0 auto !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; /* Added subtle shadow */
             }
             
             .section-header .d-flex.align-items-center label,
@@ -1358,15 +1576,133 @@
                 border-radius: 6px;
             }
         }
+
+
+        
+        
+        /* Extra Small Mobile - Consistent controller sizing */
+        @media (max-width: 480px) {
+            /* Even more compact card headers with proper text wrapping */
+            .card-header {
+                padding: 2px 3px !important; /* Further reduced */
+                margin-bottom: 6px !important;
+                min-height: auto !important; /* Allow height to adjust to content */
+            }
+            
+            .card-header h5 {
+                font-size: 7px !important; /* Even smaller text */
+                min-height: 16px !important; /* Allow height to grow with content */
+                height: auto !important; /* Allow height to adjust for wrapped text */
+                white-space: normal !important; /* Allow text wrapping */
+                overflow: visible !important; /* Show wrapped text */
+                text-overflow: initial !important; /* Remove ellipsis */
+                line-height: 1.3 !important; /* Better line spacing for wrapped text */
+                word-wrap: break-word !important; /* Break long words */
+                overflow-wrap: break-word !important; /* Modern word breaking */
+            }
+            
+            .card-header h5 i {
+                font-size: 9px !important; /* Smaller icon */
+                margin-right: 1px !important;
+            }
+            
+            .card-header .btn-sm {
+                font-size: 8px !important; /* Increased from 6px for better readability */
+                padding: 2px 6px !important;
+                min-height: 16px !important; /* Match h5 height */
+                min-width: 45px !important; /* Slightly smaller */
+            }
+            
+            .card-header .btn-sm i {
+                font-size: 7px !important;
+            }
+            
+            .card-header .form-check.form-switch {
+                min-height: 16px !important; /* Match button height */
+                padding: 2px 3px !important; /* Even more compact */
+            }
+            
+            /* Add enhanced border to inactive auto copy buttons - same as 768px */
+            .card-header .form-check.form-switch:not(.active-checkbox):not([data-active="true"]) {
+                border: 2px solid #6c757d !important; /* Thicker gray border for inactive state */
+                box-shadow: 0 0 0 1px rgba(108, 117, 125, 0.25) !important; /* Subtle shadow */
+            }
+            
+            .card-header .form-check.form-switch .form-check-label {
+                font-size: 12px !important; /* Increased from 8px for better readability */
+            }
+            
+            /* Further reduce card spacing */
+            .glass-card,
+            .card {
+                margin-bottom: 4px !important;
+            }
+            
+            /* Reduce spacing even more for small screens */
+            .row.mb-4 {
+                margin-bottom: 0.75rem !important; /* Even smaller spacing */
+            }
+            
+            .glass-container h1.mb-5 {
+                margin-bottom: 1rem !important; /* Smaller heading margin */
+            }
+            
+            /* Button icon spacing for small mobile */
+            .section-header .btn-sm i {
+                margin-right: 2px !important; /* Smaller icon spacing */
+            }
+            
+            .card-header .btn-sm i {
+                margin-right: 1px !important; /* Minimal icon spacing */
+            }
+            
+            .section-header .btn-sm {
+                font-size: 8px !important; /* Increased from 6px for better readability */
+                padding: 3px 5px !important;
+                min-height: 24px !important;
+                line-height: 1.2 !important;
+                border-radius: 3px !important;
+            }
+            
+            .section-header .form-check.form-switch .form-check-input {
+                width: 26px !important;
+                height: 12px !important;
+                padding: 0 !important;
+            }
+            
+            .section-header .form-check.form-switch .form-check-label {
+                font-size: 10px !important; /* Increased from 6px for better readability */
+                margin-left: 0.2em !important;
+                padding-left: 0 !important;
+            }
+            
+            .section-header .form-control-sm {
+                font-size: 6px !important;
+                padding: 2px 3px !important;
+                height: 18px !important;
+                width: 35px !important;
+            }
+            
+            .section-header .small,
+            .section-header label.small {
+                font-size: 6px !important;
+            }
+        }
         
         /* Desktop and tablet default sizes for main columns */
         #Table1 th:first-child, #Table1 td:first-child,
         #Table2 th:first-child, #Table2 td:first-child {
             font-size: 13px !important;
             font-weight: 500 !important;
-            padding: 6px 8px !important;
-            min-width: 120px !important;
-            max-width: 140px !important;
+            padding: 4px 6px !important;
+            min-width: 220px !important;
+            max-width: 220px !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            line-height: 1.4 !important;
+            vertical-align: top !important;
+            height: 32px !important;
+            max-height: 32px !important;
         }
         
         /* Tablet size adjustments */
@@ -1379,6 +1715,36 @@
             #Table1 thead th:first-child, #Table2 thead th:first-child {
                 font-size: 11px !important;
             }
+        }
+        
+        /* ==========================================================================
+           COLOR CODING FOR POSITIVE/NEGATIVE VALUES
+           ========================================================================== */
+        
+        /* Strong color coding rules to override hover and other effects */
+        .table tbody td[style*="color: red"],
+        .table tbody td[style*="color:#ff4444"] {
+            color: #ff4444 !important;
+            font-weight: bold !important;
+        }
+        
+        .table tbody td[style*="color: green"],
+        .table tbody td[style*="color:#28a745"] {
+            color: #28a745 !important;
+            font-weight: bold !important;
+        }
+        
+        /* Ensure color coding works even on hover */
+        tbody tr:hover td[style*="color: red"],
+        tbody tr:hover td[style*="color:#ff4444"] {
+            color: #ff4444 !important;
+            font-weight: bold !important;
+        }
+        
+        tbody tr:hover td[style*="color: green"],
+        tbody tr:hover td[style*="color:#28a745"] {
+            color: #28a745 !important;
+            font-weight: bold !important;
         }
         
         /* Mobile optimizations */
@@ -1411,8 +1777,8 @@
             }
             
             /* Enhanced sticky column behavior for mobile - Theme adaptive */
-            #Table1 th:first-child, #Table1 td:first-child,
-            #Table2 th:first-child, #Table2 td:first-child {
+            body.theme-loaded #Table1 th:first-child, body.theme-loaded #Table1 td:first-child,
+            body.theme-loaded #Table2 th:first-child, body.theme-loaded #Table2 td:first-child {
                 position: sticky !important;
                 left: 0px !important;
                 z-index: 999 !important;
@@ -1420,17 +1786,24 @@
                 color: var(--text-primary) !important;
                 box-shadow: 3px 0 6px var(--shadow) !important;
                 font-size: 9px !important;
-                font-weight: 600 !important;
-                padding: 4px 6px !important;
-                width: 120px !important;
-                min-width: 120px !important;
-                max-width: 120px !important;
+                font-weight: bold !important;
+                padding: 2px 4px !important;
+                width: 80px !important;
+                min-width: 80px !important;
+                max-width: 80px !important;
                 border-right: 2px solid var(--border-medium) !important;
+                border-bottom: 2px solid var(--border-medium) !important;
                 text-align: left !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                line-height: 1.3 !important;
+                vertical-align: top !important;
+                height: 28px !important;
+                max-height: 28px !important;
             }
             
             /* Header sticky columns for mobile - Theme adaptive */
-            #Table1 thead th:first-child, #Table2 thead th:first-child {
+            body.theme-loaded #Table1 thead th:first-child, body.theme-loaded #Table2 thead th:first-child {
                 position: sticky !important;
                 left: 0 !important;
                 z-index: 1001 !important;
@@ -1444,28 +1817,57 @@
                 text-transform: uppercase;
                 letter-spacing: 0.4px;
                 text-align: left !important;
-                padding: 4px 6px !important;
+                padding: 2px 4px !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                line-height: 1.3 !important;
+                vertical-align: middle !important;
+                width: 80px !important;
+                min-width: 80px !important;
+                max-width: 80px !important;
+                height: 32px !important;
+                max-height: 32px !important;
             }
             
             /* Adjust input fields for mobile */
             input[type="number"] {
-                font-size: 11px !important;
-                padding: 2px 4px !important;
+                font-size: 20px !important;
+                padding: 3px 4px !important; /* Increased padding for larger font */
+                height: 28px !important; /* Increased height to accommodate 20px font */
+                max-height: 28px !important;
+                line-height: 1.2 !important;
             }
             
             /* Make contenteditable cells more mobile-friendly */
             #Table2 td[contenteditable="true"] {
-                font-size: 11px !important;
-                padding: 6px 4px !important;
-                min-height: 30px !important;
+                font-size: 10px !important;
+                padding: 3px 2px !important;
+                min-height: 24px !important;
+                height: 24px !important;
+                max-height: 24px !important;
+                line-height: 1.2 !important;
             }
             
-            /* Ensure table maintains structure on mobile */
+            /* Ensure table maintains structure on mobile and allows full scrolling */
             table {
                 table-layout: fixed !important;
-                min-width: 600px !important;
+                min-width: 100% !important;
                 margin: 0 !important;
                 position: relative !important;
+            }
+            
+            /* Enable horizontal scrolling for table containers */
+            .card-body {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                padding: 0 !important;
+                position: relative !important;
+            }
+            
+            /* Ensure tables can scroll to show all columns including total */
+            #Table1, #Table2 {
+                min-width: calc(80px + (var(--month-columns, 3) * 75px) + 60px) !important;
+                width: auto !important;
             }
             
             /* Prevent horizontal bouncing */
@@ -1481,30 +1883,67 @@
                 max-width: 100vw !important;
                 overflow: hidden !important;
             }
+            
+            /* Card header responsive styling with text wrapping */
+            .card-header .col-md-6 {
+                width: 60% !important;
+                max-width: 100% !important;
+                flex: 0 0 60% !important;
+                padding-right: 5px !important;
+                box-sizing: border-box !important;
+            }
+            
+            .card-header .col-md-6:last-child {
+                width: 40% !important;
+                max-width: 40% !important;
+                flex: 0 0 40% !important;
+                padding-left: 5px !important;
+                box-sizing: border-box !important;
+            }
+            
+            .card-header h5 {
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: initial !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                line-height: 1.3 !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+            }
         }
         
         /* Extra small mobile devices */
         @media (max-width: 480px) {
-            #Table1 th:first-child, #Table1 td:first-child,
-            #Table2 th:first-child, #Table2 td:first-child {
+            body.theme-loaded #Table1 th:first-child, body.theme-loaded #Table1 td:first-child,
+            body.theme-loaded #Table2 th:first-child, body.theme-loaded #Table2 td:first-child {
                 background: var(--bg-secondary) !important;
                 color: var(--text-primary) !important;
                 font-size: 8px !important;
-                padding: 3px 4px !important;
+                padding: 2px 3px !important;
                 width: 100px !important;
                 min-width: 100px !important;
                 max-width: 100px !important;
-                font-weight: 600 !important;
+                font-weight: bold !important;
                 text-align: left !important;
                 /* Enhanced sticky positioning for extra small */
                 position: sticky !important;
                 left: 0px !important;
                 z-index: 999 !important;
                 box-shadow: 3px 0 6px var(--shadow) !important;
+                border-right: 2px solid var(--border-medium) !important;
+                border-bottom: 2px solid var(--border-medium) !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                line-height: 1.2 !important;
+                vertical-align: middle !important;
+                height: 24px !important;
+                max-height: 24px !important;
             }
             
             /* Header sticky columns for extra small devices */
-            #Table1 thead th:first-child, #Table2 thead th:first-child {
+            body.theme-loaded #Table1 thead th:first-child, body.theme-loaded #Table2 thead th:first-child {
                 background: var(--bg-secondary) !important;
                 color: var(--text-primary) !important;
                 font-size: 8px !important;
@@ -1517,6 +1956,18 @@
                 left: 0px !important;
                 z-index: 1001 !important;
                 box-shadow: 3px 0 6px var(--shadow) !important;
+                border-right: 2px solid var(--border-medium) !important;
+                border-bottom: 2px solid var(--border-medium) !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                line-height: 1.2 !important;
+                vertical-align: middle !important;
+                padding: 2px 3px !important;
+                width: 100px !important;
+                min-width: 100px !important;
+                max-width: 100px !important;
+                height: 28px !important;
+                max-height: 28px !important;
             }
             
             /* Consistent data column widths on extra small mobile */
@@ -1526,7 +1977,9 @@
                 min-width: 75px !important;
                 max-width: 75px !important;
                 font-size: 10px !important;
-                padding: 4px 2px !important;
+                padding: 2px 1px !important;
+                height: 24px !important;
+                max-height: 24px !important;
             }
             
             /* Consistent total column widths on extra small mobile */
@@ -1536,12 +1989,17 @@
                 min-width: 65px !important;
                 max-width: 65px !important;
                 font-size: 10px !important;
-                padding: 4px 2px !important;
+                padding: 2px 1px !important;
+                height: 24px !important;
+                max-height: 24px !important;
             }
             
             input[type="number"] {
-                font-size: 10px !important;
-                padding: 1px 2px !important;
+                font-size: 11px !important; /* Increased from 9px for better readability */
+                padding: 2px 3px !important; /* Increased padding to accommodate larger font */
+                height: 22px !important; /* Increased height for larger font */
+                max-height: 22px !important;
+                line-height: 1.2 !important; /* Better line height for larger text */
             }
             
             /* Mobile warning system */
@@ -1610,87 +2068,198 @@
                 font-size: 10px !important;
             }
             
-            /* Mobile card header optimization - Icons only */
+            /* Mobile card header optimization - Compact with proper text wrapping */
             .card-header {
-                padding: 4px 6px !important;
+                padding: 3px 4px !important; /* Reduced vertical padding */
+                margin-bottom: 8px !important; /* Reduced margin */
+                min-height: auto !important; /* Allow height to adjust to content */
             }
             
             .card-header .row {
                 margin: 0 !important;
                 display: flex !important;
-                flex-wrap: nowrap !important;
-                align-items: center !important;
-                justify-content: center !important;
+                flex-wrap: wrap !important; /* Allow wrapping if needed */
+                align-items: flex-start !important; /* Top align when content wraps */
+                justify-content: space-between !important; /* Better distribution */
+                gap: 3px !important; /* Reduced gap */
             }
             
             .card-header .col-md-6 {
-                padding: 0 2px !important;
+                padding: 0 1px !important; /* Minimal padding */
                 margin: 0 !important;
-                max-width: none !important;
-                flex: 0 0 auto !important;
+                max-width: 100% !important; /* Prevent column overflow */
+                flex: 1 1 auto !important; /* Allow flexible growth */
                 width: auto !important;
+                min-width: 0 !important; /* Allow shrinking */
+                overflow: hidden !important; /* Contain any overflow */
+                box-sizing: border-box !important; /* Include padding in width */
+            }
+            
+            /* Mobile specific column width constraints */
+            .card-header .col-md-6:first-child {
+                max-width: 65% !important; /* Limit text column width for mobile */
+                flex: 0 1 65% !important; /* Set max flex basis */
+            }
+            
+            /* Mobile controls column gets remaining space */
+            .card-header .col-md-6:last-child {
+                max-width: 35% !important; /* Controls get remaining width */
+                flex: 0 1 35% !important; /* Set max flex basis */
             }
             
             .card-header h5 {
-                font-size: 8px !important; /* Show text at 10px */
+                font-size: 8px !important;
                 margin: 0 !important;
-                width: auto !important; /* Allow width to expand for text */
-                height: 20px !important;
+                width: 100% !important; /* Full width utilization */
+                max-width: 100% !important; /* Prevent h5 overflow */
+                min-height: 18px !important; /* Allow height to grow with content */
+                height: auto !important; /* Allow height to adjust for wrapped text */
                 display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
+                align-items: flex-start !important; /* Align to top when text wraps */
+                justify-content: flex-start !important; /* Left align */
+                white-space: normal !important; /* Allow text wrapping */
+                overflow: visible !important; /* Show wrapped text */
+                text-overflow: initial !important; /* Remove ellipsis */
+                flex: 1 1 auto !important;
+                line-height: 1.3 !important; /* Better line spacing for wrapped text */
+                word-wrap: break-word !important; /* Break long words */
+                overflow-wrap: break-word !important; /* Modern word breaking */
+                box-sizing: border-box !important; /* Include padding in width */
             }
             
             .card-header h5 i {
-                font-size: 12px !important; /* Show only icon */
+                font-size: 10px !important; /* Slightly smaller icon */
                 color: var(--text-primary) !important;
+                margin-right: 2px !important; /* Reduced margin */
+                flex-shrink: 0 !important; /* Keep icon size */
             }
             
             .card-header .d-flex {
-                gap: 2px !important;
-                justify-content: center !important;
+                gap: 1px !important; /* Minimal gap for more space */
+                justify-content: flex-end !important; /* Right align controls */
                 flex-wrap: nowrap !important;
+                flex: 1 1 auto !important; /* Allow growth */
             }
             
             .card-header .btn-sm {
-                font-size: 8px !important; /* Show text at 10px */
-                padding: 4px 6px !important;
-                margin: 0 1px !important;
+                font-size: 9px !important; /* Increased font size for better readability */
+                padding: 3px 8px !important; /* Increased horizontal padding */
+                min-height: 18px !important; /* Reduced height to match h5 */
+                line-height: 1.2 !important;
                 border-radius: 3px !important;
-                min-height: 20px !important;
-                width: auto !important; /* Allow width to expand for text */
-                line-height: 1 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
+                margin: 0 1px !important; /* Minimal margin */
+                flex: 0 0 auto !important; /* Don't shrink */
+                white-space: nowrap !important;
             }
             
             .card-header .btn-sm i {
-                font-size: 10px !important; /* Show only icon */
+                font-size: 8px !important; /* Slightly larger icon */
                 margin: 0 !important;
+                color: #ffffff !important;
+            }
+            
+            .card-header .form-check.form-switch {
+                margin: 0 1px !important; /* Minimal margin */
+                padding: 0 !important;
+                height: 18px !important; /* Match button height */
+                display: flex !important;
+                align-items: center !important;
+                flex: 0 0 auto !important; /* Don't shrink */
+            }
+            
+            .card-header .btn-sm i {
+                font-size: 8px !important; /* Slightly larger icon */
+                margin: 0 !important;
+                color: #ffffff !important;
+            }
+            
+            /* Fix spacing between icon and text in all mobile buttons */
+            .section-header .btn-sm i {
+                margin-right: 3px !important; /* Add space after icons */
+            }
+            
+            .card-header .btn-sm i {
+                margin-right: 2px !important; /* Add space after icons in card header */
+            }
+            
+            /* Clear buttons should be red, not yellow with white icons */
+            #clearValuesBtn,
+            #clearSourceValuesBtn {
+                background-color: #dc3545 !important; /* Bootstrap danger red */
+                border-color: #dc3545 !important;
+                color: white !important;
+            }
+            
+            /* Fix clear button icon color to white */
+            #clearValuesBtn i,
+            #clearSourceValuesBtn i {
+                color: white !important; /* Force white color for eraser icons */
+            }
+            
+            #clearValuesBtn:hover,
+            #clearSourceValuesBtn:hover {
+                background-color: #c82333 !important; /* Darker red on hover */
+                border-color: #bd2130 !important;
+            }
+            
+            /* Reduce card margins for mobile */
+            .glass-card {
+                margin-bottom: 6px !important; /* Reduced from default */
+            }
+            
+            .card {
+                margin-bottom: 6px !important; /* Reduced overall card spacing */
+            }
+            
+            /* Reduce spacing for main content sections */
+            .row.mb-4 {
+                margin-bottom: 1rem !important; /* Reduced from 1.5rem */
+            }
+            
+            .glass-container h1.mb-5 {
+                margin-bottom: 1.5rem !important; /* Reduced from 3rem */
+            }
+            
+            /* Optimize section header button widths */
+            .section-header .btn-sm {
+                min-width: 60px !important; /* Increased minimum width */
+                flex: 0 0 auto !important;
+                font-size: 9px !important; /* Increased font size for better readability */
+            }
+            
+            .section-header .form-control-sm {
+                min-width: 55px !important; /* Increased form control width */
             }
             
             .card-header .form-check.form-switch {
                 margin: 0 1px !important;
                 background-color: var(--bg-secondary) !important;
                 border-radius: 3px !important;
-                padding: 4px 6px !important;
+                padding: 2px 4px !important; /* Reduced padding */
                 border: 1px solid var(--border-light) !important;
-                min-height: 20px !important;
-                width: auto !important; /* Allow width to expand for text */
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-            
-            .card-header .form-check.form-switch .form-check-label {
-                font-size: 8px !important; /* Show text at 10px */
-                margin: 0 1px 0 0 !important; /* Small right margin for spacing */
+                min-height: 18px !important; /* Reduced height to match buttons */
                 width: auto !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                white-space: nowrap !important; /* Prevent text wrapping */
+                flex: 0 0 auto !important; /* Don't shrink */
+            }
+            
+            /* Add enhanced border to inactive auto copy buttons */
+            .card-header .form-check.form-switch:not(.active-checkbox):not([data-active="true"]) {
+                border: 2px solid #6c757d !important; /* Thicker gray border for inactive state */
+                box-shadow: 0 0 0 1px rgba(108, 117, 125, 0.25) !important; /* Subtle shadow */
+            }
+            
+            .card-header .form-check.form-switch .form-check-label {
+                font-size: 11px !important; /* Increased font size for better readability */
+                margin: 0 !important;
+                width: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
+                color: var(--text-primary) !important;
             }
             
             /* Mobile-specific text overrides for card header toggle labels */
@@ -1702,7 +2271,7 @@
             .card-header .form-check.form-switch .form-check-label[for="copyValuesCheckbox"]::after,
             .card-header .form-check.form-switch .form-check-label[for="copyQuantityCheckbox"]::after {
                 content: "Auto-copy" !important;
-                font-size: 8px !important;
+                font-size: 9px !important; /* Increased font size to match buttons */
                 margin-left: 4px !important;
                 color: var(--text-primary) !important;
             }
@@ -1713,7 +2282,7 @@
             
             .card-header .form-check.form-switch .form-check-label[for="linkToMainTable"]::after {
                 content: "Auto-Link" !important;
-                font-size: 8px !important;
+                font-size: 9px !important; /* Increased font size to match buttons */
                 margin-left: 4px !important;
                 color: var(--text-primary) !important;
             }
@@ -2044,7 +2613,7 @@
                 Coal Scenario Analysis
             </h1>
             
-            <!-- Power Plant Name Input -->
+            <!-- Power Plant Name Input for Reports -->
             <div class="row mb-4">
                 <div class="col-md-6 mx-auto">
                     <div class="input-group">
@@ -2063,10 +2632,10 @@
         <!-- Section 1: Coal Scenario -->
         <div class="section-header">
             <!-- Header Row -->
-            <div class="row mb-3">
+            <div class="row mb-1">
                 <div class="col-12">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-line me-2"></i>Coal Scenario at <span id="plantNameDisplay1">____</span>
+                        <i class="fas fa-chart-line me-2"></i>Coal Scenario
                     </h5>
                 </div>
             </div>
@@ -2074,7 +2643,7 @@
             <!-- Controls Row -->
             <div class="row g-2">
                 <div class="col-6 col-md-auto">
-                    <button id="addRowBtn" class="btn btn-light btn-sm w-100">
+                    <button id="addRowBtn" class="btn btn-primary btn-sm w-100">
                         <i class="fas fa-plus"></i> Add Month
                     </button>
                 </div>
@@ -2109,25 +2678,25 @@
             </tr>
         </thead>
             <tbody>
-                <tr><td><strong>Generation Capacity (MW)</strong></td><td class="total-cell">0</td></tr>
-                <tr><td><strong>PLF (%)</strong></td><td class="total-cell">0</td></tr>
-                <tr><td><strong>Units Generated (MU)</strong></td><td class="total-cell">0</td></tr>
-                <tr><td><strong>Specific Coal Consumption (kg/kWh)</strong></td><td class="total-cell">0</td></tr>
-                <tr><td><strong>Coal Requirement (MT)</strong></td><td class="total-cell">0</td></tr>
-            <tr><td><strong>Coal Available (MT)</strong></td><td class="total-cell">0</td></tr>
-            <tr><td><strong>Opening Stock (MT)</strong></td><td class="total-cell">0</td></tr>
-            <tr><td><strong>Closing Stock (MT)</strong></td><td class="total-cell">0</td></tr>
-            <tr><td><strong>Closing Stock in Days</strong></td><td class="total-cell">0</td></tr>
+                <tr><td>Generation Capacity (MW)</td><td class="total-cell">0</td></tr>
+                <tr><td>PLF (%)</td><td class="total-cell">0</td></tr>
+                <tr><td>Units Generated (MU)</td><td class="total-cell">0</td></tr>
+                <tr><td>Specific Coal Consumption (kg/kWh)</td><td class="total-cell">0</td></tr>
+                <tr><td>Coal Requirement (MT)</td><td class="total-cell">0</td></tr>
+                <tr><td>Coal Available (MT)</td><td class="total-cell">0</td></tr>
+                <tr><td>Opening Stock (MT)</td><td class="total-cell">0</td></tr>
+                <tr><td>Closing Stock (MT)</td><td class="total-cell">0</td></tr>
+                <tr><td>Closing Stock in Days</td><td class="total-cell">0</td></tr>
         </tbody>
         </table>
         
         <!-- Controls for Table 1 -->        <!-- Section 2: Coal Sources -->
         <div class="section-header">
             <!-- Header Row -->
-            <div class="row mb-3">
+            <div class="row mb-1">
                 <div class="col-12">
                     <h5 class="mb-0">
-                        <i class="fas fa-truck me-2"></i>Coal Sources for <span id="plantNameDisplay2">____</span>
+                        <i class="fas fa-truck me-2"></i>Coal Sources
                     </h5>
                 </div>
             </div>
@@ -2135,7 +2704,7 @@
             <!-- Controls Row -->
             <div class="row g-2">
                 <div class="col-6 col-md-auto">
-                    <button id="addSourceBtn" class="btn btn-light btn-sm w-100">
+                    <button id="addSourceBtn" class="btn btn-primary btn-sm w-100">
                         <i class="fas fa-plus"></i> Add Source
                     </button>
                 </div>
@@ -2178,7 +2747,7 @@
                 </tbody>
                 <tfoot>
                     <tr id="totalRow">
-                        <td><strong>Total</strong></td>
+                        <td>Total</td>
                         <td>0</td>
                     </tr>
                 </tfoot>
@@ -2187,8 +2756,8 @@
         
         <!-- Export Button -->
         <div class="text-center mt-3 mb-4">
-            <button class="btn btn-success btn-lg" id="exportButton">
-                <i class="fas fa-download me-2"></i>Export Data
+            <button class="btn btn-success btn-sm" id="exportButton">
+                <i class="fas fa-download me-2"></i>Export
             </button>
         </div>
         </div>
@@ -2226,6 +2795,11 @@
             } else {
                 themeIcon.className = 'fas fa-moon';
             }
+            
+            // Add theme-loaded class to enable theme-aware styles after initial load
+            setTimeout(() => {
+                document.body.classList.add('theme-loaded');
+            }, 50); // Small delay to ensure theme is fully applied
         });
         
         // ==========================================================================
@@ -2308,14 +2882,32 @@
                 startingYear = currentYear;
             }
             
-            // Calculate year offset based on how many months we've progressed
-            let yearOffset = 0;
-            if (monthNumber < startingMonth) {
-                yearOffset = 1; // We've wrapped to next year
+            // For the first column, simply check if we need to wrap to next year
+            if (monthColumns.length === 0) {
+                const yearOffset = monthNumber < startingMonth ? 1 : 0;
+                const displayYear = startingYear + yearOffset;
+                return `${months[monthNumber - 1]} ${displayYear}`;
             }
             
-            const displayYear = startingYear + yearOffset;
-            return `${months[monthNumber - 1]} ${displayYear}`;
+            // For subsequent columns, calculate based on position from first column
+            const firstColumnMonth = monthColumns[0].monthNumber;
+            const firstColumnYear = startingYear + (firstColumnMonth < startingMonth ? 1 : 0);
+            
+            // Calculate how many months ahead this column is from the first column
+            const currentColumnPosition = monthColumns.length; // 0-based position of column being added
+            
+            // Create a date object for the first column
+            const firstDate = new Date(2000 + firstColumnYear, firstColumnMonth - 1, 1);
+            
+            // Add the number of months to get the current column date
+            const currentDate = new Date(firstDate);
+            currentDate.setMonth(currentDate.getMonth() + currentColumnPosition);
+            
+            // Extract year and month from the result
+            const resultYear = currentDate.getFullYear() % 100;
+            const resultMonth = currentDate.getMonth() + 1;
+            
+            return `${months[resultMonth - 1]} ${resultYear}`;
         }
         
         /**
@@ -2948,17 +3540,17 @@
                     const closingStock = parseFloat(closingStockSpan.textContent) || 0;
                     
                     if (closingStock < 0) {
-                        closingStockSpan.style.backgroundColor = '#ffebee';
-                        closingStockSpan.style.color = '#c62828';
-                        closingStockSpan.style.fontWeight = 'bold';
-                        closingStockSpan.style.padding = '2px 4px';
-                        closingStockSpan.style.borderRadius = '3px';
+                        closingStockSpan.style.setProperty('background-color', '#ffebee', 'important');
+                        closingStockSpan.style.setProperty('color', '#c62828', 'important');
+                        closingStockSpan.style.setProperty('font-weight', 'bold', 'important');
+                        closingStockSpan.style.setProperty('padding', '2px 4px', 'important');
+                        closingStockSpan.style.setProperty('border-radius', '3px', 'important');
                     } else {
-                        closingStockSpan.style.backgroundColor = '#e8f5e8';
-                        closingStockSpan.style.color = '#2e7d32';
-                        closingStockSpan.style.fontWeight = 'bold';
-                        closingStockSpan.style.padding = '2px 4px';
-                        closingStockSpan.style.borderRadius = '3px';
+                        closingStockSpan.style.setProperty('background-color', '#e8f5e8', 'important');
+                        closingStockSpan.style.setProperty('color', '#2e7d32', 'important');
+                        closingStockSpan.style.setProperty('font-weight', 'bold', 'important');
+                        closingStockSpan.style.setProperty('padding', '2px 4px', 'important');
+                        closingStockSpan.style.setProperty('border-radius', '3px', 'important');
                     }
                 }
                 
@@ -2968,14 +3560,23 @@
                     const stockInDays = parseFloat(stockInDaysSpan.textContent) || 0;
                     
                     if (stockInDays < 0) {
-                        stockInDaysSpan.style.color = '#c62828';
-                        stockInDaysSpan.style.fontWeight = 'bold';
+                        stockInDaysSpan.style.setProperty('background-color', '#ffebee', 'important');
+                        stockInDaysSpan.style.setProperty('color', '#c62828', 'important');
+                        stockInDaysSpan.style.setProperty('font-weight', 'bold', 'important');
+                        stockInDaysSpan.style.setProperty('padding', '2px 4px', 'important');
+                        stockInDaysSpan.style.setProperty('border-radius', '3px', 'important');
                     } else if (stockInDays > 0) {
-                        stockInDaysSpan.style.color = '#2e7d32';
-                        stockInDaysSpan.style.fontWeight = 'bold';
+                        stockInDaysSpan.style.setProperty('background-color', '#e8f5e8', 'important');
+                        stockInDaysSpan.style.setProperty('color', '#2e7d32', 'important');
+                        stockInDaysSpan.style.setProperty('font-weight', 'bold', 'important');
+                        stockInDaysSpan.style.setProperty('padding', '2px 4px', 'important');
+                        stockInDaysSpan.style.setProperty('border-radius', '3px', 'important');
                     } else {
-                        stockInDaysSpan.style.color = '';
-                        stockInDaysSpan.style.fontWeight = '';
+                        stockInDaysSpan.style.setProperty('background-color', '', 'important');
+                        stockInDaysSpan.style.setProperty('color', '', 'important');
+                        stockInDaysSpan.style.setProperty('font-weight', '', 'important');
+                        stockInDaysSpan.style.setProperty('padding', '', 'important');
+                        stockInDaysSpan.style.setProperty('border-radius', '', 'important');
                     }
                 }
             }
@@ -3030,13 +3631,13 @@
                     totalCell.textContent = closingValue.toFixed(2);
                     // Apply color coding for closing stock
                     if (closingValue < 0) {
-                        totalCell.style.backgroundColor = '#ffebee';
-                        totalCell.style.color = '#c62828';
-                        totalCell.style.fontWeight = 'bold';
+                        totalCell.style.setProperty('background-color', '#ffebee', 'important');
+                        totalCell.style.setProperty('color', '#c62828', 'important');
+                        totalCell.style.setProperty('font-weight', 'bold', 'important');
                     } else {
-                        totalCell.style.backgroundColor = '#e8f5e8';
-                        totalCell.style.color = '#2e7d32';
-                        totalCell.style.fontWeight = 'bold';
+                        totalCell.style.setProperty('background-color', '#e8f5e8', 'important');
+                        totalCell.style.setProperty('color', '#2e7d32', 'important');
+                        totalCell.style.setProperty('font-weight', 'bold', 'important');
                     }
                 } else if (rowIndex === 8) { // Stock in Days - show last month value
                     const lastCell = row.children[monthColumns.length];
@@ -3045,17 +3646,17 @@
                     totalCell.textContent = stockInDaysValue.toFixed(2);
                     // Apply color coding for stock in days
                     if (stockInDaysValue < 0) {
-                        totalCell.style.color = '#c62828';
-                        totalCell.style.fontWeight = 'bold';
-                        totalCell.style.backgroundColor = '';
+                        totalCell.style.setProperty('background-color', '#ffebee', 'important');
+                        totalCell.style.setProperty('color', '#c62828', 'important');
+                        totalCell.style.setProperty('font-weight', 'bold', 'important');
                     } else if (stockInDaysValue > 0) {
-                        totalCell.style.color = '#2e7d32';
-                        totalCell.style.fontWeight = 'bold';
-                        totalCell.style.backgroundColor = '';
+                        totalCell.style.setProperty('background-color', '#e8f5e8', 'important');
+                        totalCell.style.setProperty('color', '#2e7d32', 'important');
+                        totalCell.style.setProperty('font-weight', 'bold', 'important');
                     } else {
-                        totalCell.style.color = '';
-                        totalCell.style.fontWeight = '';
-                        totalCell.style.backgroundColor = '';
+                        totalCell.style.setProperty('color', '', 'important');
+                        totalCell.style.setProperty('font-weight', '', 'important');
+                        totalCell.style.setProperty('background-color', '', 'important');
                     }
                 } else if (rowIndex === 1) { // PLF - use average instead of sum
                     const average = validValues > 0 ? total / validValues : 0;
@@ -3690,20 +4291,10 @@
             const warningBadge = document.querySelector('.warning-badge');
             
             if (warnings.length > 0) {
-                // Show professional inline warnings above the table
-                warningContainer.style.display = 'block';
+                // Hide inline warnings above the table (keep only sidebar warnings)
+                warningContainer.style.display = 'none';
                 
-                // Update inline content with professional styling
-                warningContent.innerHTML = `
-                    <div class="warnings-panel" style="border: none; padding: 0; box-shadow: none;">
-                        ${warnings.join('')}
-                        <div class="warning-note" style="margin-top: 15px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border-left: 4px solid #ffc107;">
-                            <strong><i class="fas fa-lightbulb me-1"></i> Professional Tip:</strong> Increase coal sources in Table 2 or adjust consumption parameters to resolve these warnings.
-                        </div>
-                    </div>
-                `;
-                
-                // Update warning sidebar with the same content
+                // Update warning sidebar with the content
                 warningMenuContent.innerHTML = `
                     <div class="warnings-panel">
                         ${warnings.join('')}
@@ -3788,17 +4379,6 @@
             newRow.appendChild(totalCell);
             
             tbody.insertBefore(newRow, totalRow);
-        }
-        
-        /**
-         * Update power plant name displays
-         */
-        function updatePowerPlantNameDisplays() {
-            const powerPlantName = document.getElementById('powerPlantName').value || '____';
-            const displays = document.querySelectorAll('#plantNameDisplay1, #plantNameDisplay2');
-            displays.forEach(display => {
-                display.textContent = powerPlantName;
-            });
         }
         
         /**
@@ -4124,33 +4704,11 @@
         });
         
         // ==========================================================================
-        // POWER PLANT NAME FUNCTIONALITY
+        // WARNING SYSTEM FUNCTIONALITY
         // ==========================================================================
         
-        /**
-         * Update power plant name displays when input changes
-         */
-        function updatePowerPlantNameDisplays() {
-            const powerPlantInput = document.getElementById('powerPlantName');
-            const plantNameDisplay1 = document.getElementById('plantNameDisplay1');
-            const plantNameDisplay2 = document.getElementById('plantNameDisplay2');
-            
-            const plantName = powerPlantInput.value.trim();
-            const displayName = plantName || '____';
-            
-            plantNameDisplay1.textContent = displayName;
-            plantNameDisplay2.textContent = displayName;
-        }
-        
-        // Add event listener for power plant name input
-        document.addEventListener('DOMContentLoaded', function() {
-            const powerPlantInput = document.getElementById('powerPlantName');
-            if (powerPlantInput) {
-                powerPlantInput.addEventListener('input', updatePowerPlantNameDisplays);
-                powerPlantInput.addEventListener('blur', updatePowerPlantNameDisplays);
-                powerPlantInput.addEventListener('keyup', updatePowerPlantNameDisplays);
-            }
-            
+        // Add event listener for warning system
+        document.addEventListener('DOMContentLoaded', function() {            
             // Warning system - Professional inline display + restored floating functionality
             const warningIcon = document.getElementById('warningFloatIcon');
             const warningSideMenu = document.getElementById('warningSideMenu');
@@ -4176,6 +4734,40 @@
                     warningSideMenu.classList.remove('open');
                 }
             });
+            
+            // Export functionality - Modal event listeners
+            const exportButton = document.getElementById('exportButton');
+            const exportModal = document.getElementById('exportModal');
+            const exportModalClose = document.getElementById('exportModalClose');
+            
+            if (exportButton && exportModal) {
+                exportButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportModal.classList.add('show');
+                });
+            }
+            
+            if (exportModalClose && exportModal) {
+                exportModalClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportModal.classList.remove('show');
+                });
+            }
+            
+            // Close export modal with escape key or background click
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && exportModal.classList.contains('show')) {
+                    exportModal.classList.remove('show');
+                }
+            });
+            
+            if (exportModal) {
+                exportModal.addEventListener('click', function(e) {
+                    if (e.target === exportModal) {
+                        exportModal.classList.remove('show');
+                    }
+                });
+            }
         });
         
         // ==========================================================================
@@ -4204,6 +4796,7 @@
          * Extract table data from HTML table
          */
         function extractTableData(tableElement) {
+            console.log('Extracting table data from:', tableElement.id);
             const data = [];
             
             // Extract headers
@@ -4222,15 +4815,20 @@
                 }
             });
             
-            // Extract body rows
+            // Extract body rows with color information
             const bodyRows = [];
+            const colorData = []; // Store color information for each cell
             const rows = tableElement.querySelectorAll('tbody tr');
-            rows.forEach(row => {
+            rows.forEach((row, rowIndex) => {
                 const rowData = [];
+                const rowColors = [];
                 const cells = row.querySelectorAll('td');
-                cells.forEach(cell => {
+                cells.forEach((cell, cellIndex) => {
                     // Get text content, handling input fields and spans
                     let cellValue = '';
+                    let cellColor = null;
+                    let cellBgColor = null;
+                    
                     const input = cell.querySelector('input');
                     const span = cell.querySelector('span');
                     const select = cell.querySelector('select');
@@ -4239,10 +4837,49 @@
                         cellValue = input.value || '0';
                     } else if (span) {
                         cellValue = span.textContent.trim();
+                        // Capture color information from span - be more thorough
+                        const spanStyle = window.getComputedStyle(span);
+                        const spanInlineStyle = span.style;
+                        
+                        // Check inline styles first (more specific)
+                        if (spanInlineStyle.color) {
+                            cellColor = spanInlineStyle.color;
+                        } else if (spanStyle.color && spanStyle.color !== 'rgb(0, 0, 0)' && spanStyle.color !== 'rgba(0, 0, 0, 1)') {
+                            cellColor = spanStyle.color;
+                        }
+                        
+                        if (spanInlineStyle.backgroundColor) {
+                            cellBgColor = spanInlineStyle.backgroundColor;
+                        } else if (spanStyle.backgroundColor && spanStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' && spanStyle.backgroundColor !== 'transparent') {
+                            cellBgColor = spanStyle.backgroundColor;
+                        }
                     } else if (select) {
                         cellValue = select.options[select.selectedIndex]?.text || '';
                     } else {
                         cellValue = cell.textContent.trim();
+                    }
+                    
+                    // Also check cell-level styling (for total column) - be more thorough
+                    if (!cellColor || !cellBgColor) {
+                        const cellStyle = window.getComputedStyle(cell);
+                        const cellInlineStyle = cell.style;
+                        
+                        // Check inline styles first
+                        if (!cellColor) {
+                            if (cellInlineStyle.color) {
+                                cellColor = cellInlineStyle.color;
+                            } else if (cellStyle.color && cellStyle.color !== 'rgb(0, 0, 0)' && cellStyle.color !== 'rgba(0, 0, 0, 1)') {
+                                cellColor = cellStyle.color;
+                            }
+                        }
+                        
+                        if (!cellBgColor) {
+                            if (cellInlineStyle.backgroundColor) {
+                                cellBgColor = cellInlineStyle.backgroundColor;
+                            } else if (cellStyle.backgroundColor && cellStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' && cellStyle.backgroundColor !== 'transparent') {
+                                cellBgColor = cellStyle.backgroundColor;
+                            }
+                        }
                     }
                     
                     // Try to convert to number for calculations
@@ -4252,15 +4889,33 @@
                     } else {
                         rowData.push(cellValue);
                     }
+                    
+                    // Store color information
+                    rowColors.push({
+                        color: cellColor,
+                        backgroundColor: cellBgColor,
+                        // Debug info
+                        cellText: cellValue,
+                        rowIndex: rowIndex,
+                        cellIndex: cellIndex
+                    });
+                    
+                    // Debug logging for closing stock rows
+                    if (rowIndex === 7 || rowIndex === 8) {
+                        console.log(`Row ${rowIndex}, Cell ${cellIndex}: value="${cellValue}", color="${cellColor}", bgColor="${cellBgColor}"`);
+                    }
                 });
                 bodyRows.push(rowData);
+                colorData.push(rowColors);
             });
             
             // Extract footer rows if they exist
             const footerRows = [];
+            const footerColors = [];
             const footers = tableElement.querySelectorAll('tfoot tr');
             footers.forEach(row => {
                 const rowData = [];
+                const rowColors = [];
                 const cells = row.querySelectorAll('td');
                 cells.forEach(cell => {
                     const cellValue = cell.textContent.trim();
@@ -4270,18 +4925,26 @@
                     } else {
                         rowData.push(cellValue);
                     }
+                    
+                    // Store color info for footer too
+                    const cellStyle = window.getComputedStyle(cell);
+                    rowColors.push({
+                        color: cellStyle.color !== 'rgb(0, 0, 0)' ? cellStyle.color : null,
+                        backgroundColor: cellStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? cellStyle.backgroundColor : null
+                    });
                 });
                 footerRows.push(rowData);
+                footerColors.push(rowColors);
             });
             
-            return { headers, bodyRows, footerRows };
+            return { headers, bodyRows, footerRows, colorData, footerColors };
         }
         
         /**
          * Create professional HTML table for export
          */
         function createProfessionalTable(tableData, title, tableId) {
-            const { headers, bodyRows, footerRows } = tableData;
+            const { headers, bodyRows, footerRows, colorData, footerColors } = tableData;
             
             // Generate dynamic title based on table ID
             let dynamicTitle = title;
@@ -4297,7 +4960,7 @@
             } else if (tableId === 'table2') {
                 dynamicTitle = 'Coal Available from Different Sources';
             }
-            
+
             let tableHTML = `
                 <div style="margin-bottom: 25px; page-break-inside: avoid;">
                     <h3 style="
@@ -4357,9 +5020,86 @@
                     const isNumeric = typeof cell === 'number';
                     const rowLabel = row[0]; // First column is the parameter name
                     
+                    // Get color information from captured data
+                    const cellColorInfo = colorData && colorData[rowIndex] && colorData[rowIndex][cellIndex];
+                    let cellColor = '#495057';
+                    let cellBgColor = '';
+                    
+                    if (cellColorInfo) {
+                        // Handle color detection more robustly
+                        if (cellColorInfo.color) {
+                            const colorStr = cellColorInfo.color.toLowerCase();
+                            // Check for red colors (negative values)
+                            if (colorStr.includes('rgb(196, 40, 40)') || colorStr.includes('196, 40, 40') || 
+                                colorStr.includes('#c62828') || colorStr.includes('c62828') ||
+                                colorStr.includes('rgb(220, 53, 69)') || colorStr.includes('220, 53, 69')) {
+                                cellColor = '#c62828'; // Red for negative
+                            }
+                            // Check for green colors (positive values)  
+                            else if (colorStr.includes('rgb(46, 125, 50)') || colorStr.includes('46, 125, 50') ||
+                                     colorStr.includes('#2e7d32') || colorStr.includes('2e7d32') ||
+                                     colorStr.includes('rgb(40, 167, 69)') || colorStr.includes('40, 167, 69')) {
+                                cellColor = '#2e7d32'; // Green for positive
+                            }
+                            // For any other non-black color, use it directly
+                            else if (!colorStr.includes('rgb(0, 0, 0)') && !colorStr.includes('rgba(0, 0, 0') && 
+                                     colorStr !== 'black' && colorStr !== '#000000') {
+                                cellColor = cellColorInfo.color;
+                            }
+                        }
+                        
+                        if (cellColorInfo.backgroundColor) {
+                            const bgColorStr = cellColorInfo.backgroundColor.toLowerCase();
+                            // Check for red background
+                            if (bgColorStr.includes('rgb(255, 235, 238)') || bgColorStr.includes('255, 235, 238') ||
+                                bgColorStr.includes('#ffebee') || bgColorStr.includes('ffebee')) {
+                                cellBgColor = '#ffebee'; // Light red background
+                            }
+                            // Check for green background
+                            else if (bgColorStr.includes('rgb(232, 245, 232)') || bgColorStr.includes('232, 245, 232') ||
+                                     bgColorStr.includes('#e8f5e8') || bgColorStr.includes('e8f5e8')) {
+                                cellBgColor = '#e8f5e8'; // Light green background
+                            }
+                            // For any other non-transparent background
+                            else if (!bgColorStr.includes('rgba(0, 0, 0, 0)') && !bgColorStr.includes('transparent') &&
+                                     bgColorStr !== 'rgba(0, 0, 0, 0)') {
+                                cellBgColor = cellColorInfo.backgroundColor;
+                            }
+                        }
+                    }
+                    
+                    // Fallback: if no colors detected but we know this should be colored based on content
+                    if (cellColor === '#495057' && isNumeric && !isFirstColumn) {
+                        const rowLabel = row[0] ? row[0].toString().toLowerCase() : '';
+                        if ((rowLabel.includes('closing') && rowLabel.includes('stock')) || 
+                            (rowLabel.includes('stock') && rowLabel.includes('days'))) {
+                            if (cell < 0) {
+                                cellColor = '#c62828';
+                                cellBgColor = '#ffebee';
+                            } else if (cell > 0) {
+                                cellColor = '#2e7d32';
+                                cellBgColor = '#e8f5e8';
+                            }
+                        }
+                    }
+                    
+                    // Additional fallback: Check for specific row indices (Closing Stock = row 7, Stock in Days = row 8)
+                    if (cellColor === '#495057' && isNumeric && !isFirstColumn && tableId === 'table1') {
+                        if (rowIndex === 7 || rowIndex === 8) { // Closing Stock or Stock in Days rows
+                            if (cell < 0) {
+                                cellColor = '#c62828';
+                                cellBgColor = '#ffebee';
+                                console.log(`Applied RED to row ${rowIndex}, cell ${cellIndex}, value: ${cell}`);
+                            } else if (cell > 0) {
+                                cellColor = '#2e7d32';
+                                cellBgColor = '#e8f5e8';
+                                console.log(`Applied GREEN to row ${rowIndex}, cell ${cellIndex}, value: ${cell}`);
+                            }
+                        }
+                    }
+                    
                     // Format numeric values based on parameter type
                     let displayValue = cell;
-                    let cellColor = '#495057';
                     
                     if (isNumeric && cell !== 0) {
                         // Check parameter type for specific formatting
@@ -4367,9 +5107,6 @@
                             displayValue = cell.toString(); // No formatting for generation capacity
                         } else if (rowLabel && (rowLabel.toLowerCase().includes('specific') && rowLabel.toLowerCase().includes('coal') && rowLabel.toLowerCase().includes('consumption')) || rowLabel.toLowerCase().includes('scc')) {
                             displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }); // 3 decimal places for SCC
-                        } else if (rowLabel && rowLabel.toLowerCase().includes('stock') && cell < 0) {
-                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                            cellColor = '#dc3545'; // Red color for negative stock
                         } else {
                             displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // 2 decimal places for all other values
                         }
@@ -4380,20 +5117,19 @@
                             padding: 6px 4px;
                             border: 1px solid #dee2e6;
                             text-align: ${isFirstColumn ? 'left' : 'center'};
-                            font-weight: ${isFirstColumn ? '600' : '400'};
+                            font-weight: ${(isFirstColumn || cellColor !== '#495057') ? '600' : '400'};
                             color: ${isFirstColumn ? '#2c3e50' : cellColor};
+                            ${cellBgColor ? `background-color: ${cellBgColor};` : ''}
                             font-size: 9px;
                             ${isFirstColumn ? 'padding-left: 8px;' : ''}
-                            ${isLastColumn ? 'background-color: #e8f4f8; font-weight: 600;' : ''}
+                            ${isLastColumn ? (cellBgColor ? '' : 'background-color: #e8f4f8;') + ' font-weight: 600;' : ''}
                             ${isNumeric && !isFirstColumn ? 'font-family: monospace;' : ''}
                         ">${displayValue}</td>
                     `;
                 });
                 
                 tableHTML += '</tr>';
-            });
-            
-            tableHTML += '</tbody>';
+            });            tableHTML += '</tbody>';
             
             // Add footer if exists
             if (footerRows.length > 0) {
