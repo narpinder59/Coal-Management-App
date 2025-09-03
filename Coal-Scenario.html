@@ -1998,12 +1998,12 @@
                 font-size: 20px !important;
                 z-index: 10000 !important;
                 -webkit-tap-highlight-color: transparent !important;
-                touch-action: none !important;
+                touch-action: manipulation !important;
                 user-select: none !important;
                 -webkit-touch-callout: none !important;
                 -webkit-user-select: none !important;
                 position: fixed !important;
-                cursor: move !important;
+                cursor: pointer !important;
             }
             
             .export-float-icon {
@@ -2014,12 +2014,12 @@
                 font-size: 20px !important;
                 z-index: 9999 !important;
                 -webkit-tap-highlight-color: transparent !important;
-                touch-action: none !important;
+                touch-action: manipulation !important;
                 user-select: none !important;
                 -webkit-touch-callout: none !important;
                 -webkit-user-select: none !important;
                 position: fixed !important;
-                cursor: move !important;
+                cursor: pointer !important;
             }
             
             /* Mobile export modal adjustments - Enhanced */
@@ -2644,7 +2644,7 @@
         <table id="Table1" class="table table-bordered mb-4">
         <thead>
             <tr>
-                <th>Parameter</th>
+                <th>Parameters</th>
                 <!-- Month columns will be added dynamically -->
                 <th>Total/Avg</th>
             </tr>
@@ -5798,168 +5798,9 @@
             }
         }
         
-        // ==========================================================================
-        // FLOATING ICONS DRAG FUNCTIONALITY
-        // ==========================================================================
-        
-        /**
-         * Make floating icons draggable
-         */
-        function makeDraggable(element) {
-            let isDragging = false;
-            let dragOffset = { x: 0, y: 0 };
-            let clickStartTime = 0;
-            let hasMoved = false;
-            
-            // Function to get coordinates from mouse or touch event
-            function getCoordinates(e) {
-                if (e.type.includes('touch')) {
-                    return {
-                        x: e.touches[0]?.clientX || e.changedTouches[0]?.clientX,
-                        y: e.touches[0]?.clientY || e.changedTouches[0]?.clientY
-                    };
-                }
-                return { x: e.clientX, y: e.clientY };
-            }
-            
-            // Start drag
-            function startDrag(e) {
-                e.preventDefault();
-                clickStartTime = Date.now();
-                hasMoved = false;
-                
-                const coords = getCoordinates(e);
-                const rect = element.getBoundingClientRect();
-                
-                dragOffset.x = coords.x - rect.left;
-                dragOffset.y = coords.y - rect.top;
-                
-                isDragging = true;
-                element.classList.add('dragging');
-                
-                // Temporarily disable transitions during drag
-                element.style.transition = 'none';
-                
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', stopDrag);
-                document.addEventListener('touchmove', drag, { passive: false });
-                document.addEventListener('touchend', stopDrag);
-            }
-            
-            // Drag
-            function drag(e) {
-                if (!isDragging) return;
-                
-                e.preventDefault();
-                hasMoved = true;
-                
-                const coords = getCoordinates(e);
-                
-                let newX = coords.x - dragOffset.x;
-                let newY = coords.y - dragOffset.y;
-                
-                // Keep within viewport bounds
-                const maxX = window.innerWidth - element.offsetWidth;
-                const maxY = window.innerHeight - element.offsetHeight;
-                
-                newX = Math.max(0, Math.min(newX, maxX));
-                newY = Math.max(0, Math.min(newY, maxY));
-                
-                // Position relative to bottom-right for consistency
-                const rightPos = window.innerWidth - newX - element.offsetWidth;
-                const bottomPos = window.innerHeight - newY - element.offsetHeight;
-                
-                element.style.right = rightPos + 'px';
-                element.style.bottom = bottomPos + 'px';
-                element.style.left = 'auto';
-                element.style.top = 'auto';
-            }
-            
-            // Stop drag
-            function stopDrag(e) {
-                if (!isDragging) return;
-                
-                isDragging = false;
-                element.classList.remove('dragging');
-                
-                // Re-enable transitions
-                element.style.transition = 'all 0.3s ease';
-                
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('mouseup', stopDrag);
-                document.removeEventListener('touchmove', drag);
-                document.removeEventListener('touchend', stopDrag);
-                
-                // If it was just a click (not a drag), trigger the button action
-                const clickDuration = Date.now() - clickStartTime;
-                if (!hasMoved && clickDuration < 300) {
-                    // Trigger click event after a small delay
-                    setTimeout(() => {
-                        if (element.id === 'exportFloatIcon') {
-                            toggleExportMenu();
-                        } else if (element.id === 'warningFloatIcon') {
-                            toggleWarningMenu();
-                        }
-                    }, 50);
-                }
-                
-                // Save position to localStorage
-                saveIconPosition(element);
-            }
-            
-            // Add event listeners
-            element.addEventListener('mousedown', startDrag);
-            element.addEventListener('touchstart', startDrag, { passive: false });
-        }
-        
-        /**
-         * Save icon position to localStorage
-         */
-        function saveIconPosition(element) {
-            const position = {
-                right: element.style.right,
-                bottom: element.style.bottom
-            };
-            localStorage.setItem(element.id + '_position', JSON.stringify(position));
-        }
-        
-        /**
-         * Load icon position from localStorage
-         */
-        function loadIconPosition(element) {
-            const savedPosition = localStorage.getItem(element.id + '_position');
-            if (savedPosition) {
-                try {
-                    const position = JSON.parse(savedPosition);
-                    if (position.right && position.bottom) {
-                        element.style.right = position.right;
-                        element.style.bottom = position.bottom;
-                        element.style.left = 'auto';
-                        element.style.top = 'auto';
-                    }
-                } catch (e) {
-                    console.log('Could not restore icon position for', element.id);
-                }
-            }
-        }
-        
-        /**
-         * Initialize draggable floating icons
-         */
-        function initializeDraggableIcons() {
-            const warningIcon = document.getElementById('warningFloatIcon');
-            const exportIcon = document.getElementById('exportFloatIcon');
-            
-            if (warningIcon) {
-                makeDraggable(warningIcon);
-                loadIconPosition(warningIcon);
-            }
-            
-            if (exportIcon) {
-                makeDraggable(exportIcon);
-                loadIconPosition(exportIcon);
-            }
-        }
+    // ==========================================================================
+    // FLOATING ICONS - DRAG DISABLED; ICONS ARE FIXED
+    // ==========================================================================
         
         // Toggle functions for floating icons
         function toggleWarningMenu() {
@@ -5976,11 +5817,8 @@
             }
         }
         
-        // Initialize draggable icons when DOM is loaded
+        // Add event listeners for close buttons (no dragging initialization)
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initializeDraggableIcons, 500); // Small delay to ensure everything is loaded
-            
-            // Add event listeners for close buttons
             const warningCloseBtn = document.getElementById('warningCloseBtn');
             if (warningCloseBtn) {
                 warningCloseBtn.addEventListener('click', function() {

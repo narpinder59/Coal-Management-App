@@ -17,13 +17,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
+/* CSS Variables for Theme Support */
+:root {
+    /* Light Theme Colors */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-bg-light: rgba(255, 255, 255, 0.15);
+    --card-border-light: rgba(255, 255, 255, 0.2);
+    --text-light: #ffffff;
+    --input-bg-light: rgba(255, 255, 255, 0.9);
+    --input-border-light: rgba(255, 255, 255, 0.3);
+    --input-text-light: #333333;
+    --label-bg-light: linear-gradient(135deg, #6c757d, #495057);
+    --label-text-light: #ffffff;
+    --section-bg-light: rgba(255, 255, 255, 0.15);
+    --section-border-light: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] {
+    /* Dark Theme Colors */
+    --primary-gradient: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+    --card-bg-light: rgba(26, 26, 46, 0.95);
+    --card-border-light: rgba(255, 255, 255, 0.1);
+    --text-light: #ffffff;
+    --input-bg-light: rgba(40, 40, 60, 0.8);
+    --input-border-light: rgba(255, 255, 255, 0.2);
+    --input-text-light: #e0e0e0;
+    --label-bg-light: linear-gradient(135deg, #2c2c54, #40407a);
+    --label-text-light: #ffffff;
+    --section-bg-light: rgba(40, 40, 60, 0.6);
+    --section-border-light: rgba(255, 255, 255, 0.1);
+}
+
 /* Professional Glass-Morphism Design */
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
 }
 
 .main-container {
@@ -31,27 +63,187 @@ body {
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.1);
     padding: 20px 0;
+    position: relative;
 }
 
 .calculator-container {
     max-width: 1200px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--card-bg-light);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--card-border-light);
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
+/* CONTROL BUTTONS */
+.btn-back, .theme-toggle {
+    position: fixed;
+    top: 15px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back {
+    left: 15px;
+}
+
+.btn-back:hover {
+    background: rgba(40, 167, 69, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.theme-toggle {
+    right: 15px;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.8), rgba(255, 152, 0, 0.8));
+}
+
+.theme-toggle:hover {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 1), rgba(255, 152, 0, 1));
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+}
+
+.theme-icon {
+    transition: all 0.3s ease;
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+[data-theme="dark"] .theme-icon.fa-sun {
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    animation: sunGlow 2s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] .theme-icon.fa-moon {
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(74, 144, 226, 0.6);
+    animation: moonGlow 2.5s ease-in-out infinite alternate;
+}
+
+.theme-toggle:hover .theme-icon {
+    transform: rotate(15deg) scale(1.1);
+    animation: none;
+}
+
+@keyframes iconPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.9; 
+    }
+    50% { 
+        transform: scale(1.05); 
+        opacity: 1; 
+    }
+}
+
+@keyframes sunGlow {
+    0% { 
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.4);
+        transform: rotate(0deg);
+    }
+    100% { 
+        text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 35px rgba(255, 215, 0, 0.6);
+        transform: rotate(5deg);
+    }
+}
+
+@keyframes moonGlow {
+    0% { 
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(74, 144, 226, 0.6);
+        filter: brightness(1);
+    }
+    100% { 
+        text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 35px rgba(74, 144, 226, 0.8);
+        filter: brightness(1.2);
+    }
+}
+
+[data-theme="light"] .theme-toggle {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.8), rgba(59, 130, 246, 0.8));
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 1), rgba(59, 130, 246, 1));
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
 .calculator-title {
     text-align: center;
-    color: white;
+    color: var(--text-light);
     font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.calculator-title i.fa-chart-line {
+    animation: chartBounce 3s ease-in-out infinite;
+    transform-origin: center;
+    transition: all 0.3s ease;
+    color: #28a745;
+    text-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+}
+
+.calculator-title:hover i.fa-chart-line {
+    animation: chartSpin 0.8s ease-in-out;
+    transform: scale(1.1);
+    color: #20c997;
+}
+
+[data-theme="dark"] .calculator-title i.fa-chart-line {
+    color: #4dabf7;
+    text-shadow: 0 0 15px rgba(77, 171, 247, 0.6);
+}
+
+[data-theme="dark"] .calculator-title:hover i.fa-chart-line {
+    color: #74c0fc;
+}
+
+@keyframes chartBounce {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+    }
+    25% { 
+        transform: translateY(-8px) rotate(2deg) scale(1.05); 
+    }
+    50% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+    }
+    75% { 
+        transform: translateY(-4px) rotate(-1deg) scale(1.02); 
+    }
+}
+
+@keyframes chartSpin {
+    0% { 
+        transform: rotate(0deg) scale(1.1); 
+    }
+    100% { 
+        transform: rotate(360deg) scale(1.1); 
+    }
 }
 
 .calculator-subtitle {
@@ -60,27 +252,6 @@ body {
     font-size: 1rem;
     margin-bottom: 15px;
     font-weight: 300;
-}
-
-.back-button {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-}
-
-.back-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    color: white;
 }
 
 /* Input Groups - Professional Styling */
@@ -197,7 +368,8 @@ body {
     border-left: none;
     border-radius: 0 8px 8px 0;
     padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--input-bg-light);
+    color: var(--input-text-light);
     transition: all 0.3s ease;
     font-weight: 500;
     flex: 1;
@@ -212,6 +384,76 @@ body {
     border-color: #28a745;
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
     background: white;
+}
+
+[data-theme="dark"] .form-control {
+    background: rgba(40, 40, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+    background: rgba(50, 50, 70, 0.9);
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: #aaaaaa !important;
+}
+
+/* DARK THEME - TABLE STYLING */
+[data-theme="dark"] .table-container {
+    background: rgba(40, 40, 60, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .table-title {
+    color: #ffffff;
+    border-bottom-color: #4dabf7;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table th {
+    background: linear-gradient(135deg, #2c2c54, #40407a);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table th:first-child {
+    background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table td {
+    background: rgba(50, 50, 70, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table td:first-child {
+    background-color: rgba(60, 60, 80, 0.9) !important;
+    color: #ffffff;
+    border-right-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td {
+    background-color: rgba(70, 70, 90, 0.9);
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td:first-child {
+    background-color: rgba(80, 80, 100, 0.9) !important;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"] {
+    background: rgba(255, 193, 7, 0.2);
+    border-color: #ffc107;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"]:focus {
+    background: rgba(77, 171, 247, 0.2);
+    border-color: #4dabf7;
+    color: #ffffff;
+    box-shadow: 0 0 5px rgba(77, 171, 247, 0.3);
 }
 
 /* Professional Buttons */
@@ -600,46 +842,74 @@ body {
     .main-container {
         padding: 10px;
         overflow-x: hidden;
+        margin-top: 10px;
+    }
+    
+    .btn-back, .theme-toggle {
+        top: 10px;
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+    
+    .btn-back {
+        left: 10px;
+    }
+    
+    .theme-toggle {
+        right: 10px;
     }
     
     .calculator-container {
         margin: 0 5px;
         padding: 10px;
         max-width: 100%;
+        width: calc(100% - 10px);
         overflow-x: hidden;
+        box-sizing: border-box;
     }
     
     .calculator-title {
-        font-size: 1.4rem;
+        font-size: 1.1rem;
         line-height: 1.3;
         text-align: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .calculator-title i.fa-chart-line {
+        font-size: 0.9em;
     }
     
     .input-group {
         margin-bottom: 8px;
+        width: 100%;
+        display: flex;
     }
     
     .input-group-text1,
     .input-group-text3 {
-        min-width: 130px;
-        width: 130px;
+        min-width: 140px;
+        width: 140px;
         font-size: 0.75rem;
         padding: 8px 6px;
+        flex-shrink: 0;
     }
     
     .input-group-text2,
     .input-group-text4 {
-        min-width: 35px;
-        width: 35px;
+        min-width: 45px;
+        width: 45px;
         font-size: 0.75rem;
         padding: 8px 4px;
+        flex-shrink: 0;
     }
-    
+
     .form-control {
-        font-size: 0.85rem;
+        flex: 1;
+        min-width: 0;
+        font-size: 0.8rem;
         padding: 8px 6px;
-        width: 100px;
-        max-width: 100px;
     }
     
     .table-container {
@@ -687,6 +957,25 @@ body {
 
 @media (max-width: 576px) {
     .main-container {
+        margin-top: 10px;
+        padding: 8px;
+    }
+    
+    .btn-back, .theme-toggle {
+        top: 8px;
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .btn-back {
+        left: 8px;
+    }
+    
+    .theme-toggle {
+        right: 8px;
+    }
+    .main-container {
         padding: 5px;
     }
     
@@ -697,9 +986,14 @@ body {
     }
     
     .calculator-title {
-        font-size: 1.2rem;
+        font-size: 0.95rem;
         line-height: 1.2;
         margin-bottom: 15px;
+        gap: 6px;
+    }
+
+    .calculator-title i.fa-chart-line {
+        font-size: 0.8em;
     }
     
     .back-button {
@@ -708,36 +1002,38 @@ body {
         margin-bottom: 10px;
     }
     
+    .input-group {
+        width: 100%;
+        display: flex;
+        margin-bottom: 6px;
+    }
+    
     .input-group-text1,
     .input-group-text3 {
-        min-width: 120px;
-        width: 120px;
-        font-size: 0.7rem;
+        min-width: 150px;
+        width: 150px;
+        font-size: 0.85rem;
         padding: 6px 4px;
         height: 36px;
+        flex-shrink: 0;
     }
     
     .input-group-text2,
     .input-group-text4 {
-        min-width: 30px;
-        width: 30px;
+        min-width: 40px;
+        width: 40px;
         font-size: 0.7rem;
         padding: 6px 2px;
         height: 36px;
+        flex-shrink: 0;
     }
-    
+
     .form-control {
-        font-size: 0.8rem;
-        padding: 6px 4px;
+        font-size: 0.95rem;
+        padding: 6  px 4px;
         height: 36px;
-        width: 80px;
-        max-width: 80px;
-    }
-    
-    .form-control {
-        font-size: 0.8rem;
-        padding: 6px 4px;
-        height: 36px;
+        flex: 1;
+        min-width: 0;
     }
     
     .table-container {
@@ -779,6 +1075,54 @@ body {
         font-size: 0.75rem;
         padding: 6px 10px;
         width: 100%;
+    }
+}
+
+/* EXTRA SMALL SCREENS */
+@media (max-width: 400px) {
+    .calculator-title {
+        font-size: 0.85rem;
+        line-height: 1.1;
+        gap: 4px;
+        margin-bottom: 12px;
+    }
+
+    .calculator-title i.fa-chart-line {
+        font-size: 0.7em;
+    }
+    
+    .input-group {
+        width: 100%;
+        display: flex;
+        margin-bottom: 5px;
+    }
+    
+    .input-group-text1,
+    .input-group-text3 {
+        min-width: 100px;
+        width: 100px;
+        font-size: 0.65rem;
+        padding: 5px 3px;
+        height: 34px;
+        flex-shrink: 0;
+    }
+    
+    .input-group-text2,
+    .input-group-text4 {
+        min-width: 35px;
+        width: 35px;
+        font-size: 0.65rem;
+        padding: 5px 2px;
+        height: 34px;
+        flex-shrink: 0;
+    }
+
+    .form-control {
+        font-size: 0.7rem;
+        padding: 5px 3px;
+        height: 34px;
+        flex: 1;
+        min-width: 0;
     }
 }
 
@@ -828,10 +1172,14 @@ body {
 <div class="main-container">
     <div class="calculator-container">
         <!-- Back Button -->
-        <a href="javascript:void(0)" onclick="goBackToCalculators()" class="back-button">
-            <i class="fas fa-arrow-left me-2"></i>
-            Back to Calculators
-        </a>
+        <div class="btn-back" onclick="goBackToCalculators()" title="Back to Calculators">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+
+        <!-- Theme Toggle -->
+        <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+            <i class="fas fa-moon theme-icon" id="theme-icon"></i>
+        </div>
 
         <!-- Header -->
         <h1 class="calculator-title">
@@ -2709,6 +3057,53 @@ body {
             
             return doc.lastAutoTable.finalY + 8;
         }
+
+        // =============================================================================
+        // THEME TOGGLE FUNCTIONALITY
+        // =============================================================================
+
+        function toggleTheme() {
+            const body = document.body;
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme') || html.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                html.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-moon theme-icon';
+                localStorage.setItem('coalLinkageAdvanceTheme', 'light');
+                
+                // Animate the icon
+                themeIcon.style.transform = 'rotate(360deg) scale(1.1)';
+                setTimeout(() => {
+                    themeIcon.style.transform = 'rotate(0deg) scale(1)';
+                }, 300);
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun theme-icon';
+                localStorage.setItem('coalLinkageAdvanceTheme', 'dark');
+                
+                // Animate the icon
+                themeIcon.style.transform = 'rotate(-360deg) scale(1.1)';
+                setTimeout(() => {
+                    themeIcon.style.transform = 'rotate(0deg) scale(1)';
+                }, 300);
+            }
+        }
+
+        // Initialize theme from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('coalLinkageAdvanceTheme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun theme-icon' : 'fas fa-moon theme-icon';
+            }
+        });
 
     </script>
 </body>
