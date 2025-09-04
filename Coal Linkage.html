@@ -174,25 +174,20 @@ body {
     top: 20px !important;
     right: 20px !important;
     left: auto !important;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 8px 15px;
-    border-radius: 25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000;
     color: white;
-    font-size: 14px;
-    font-weight: 500;
-    width: auto;
-    max-width: 150px;
-    min-width: auto;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-size: 20px;
     transform: none !important;
 }
 
@@ -247,7 +242,7 @@ body {
 /* CALCULATOR CARD */
 .calculator-card {
     max-width: 900px;
-    margin: 80px auto 40px;
+    margin: 10px auto 40px;
     background: var(--card-bg-light);
     border-radius: 25px;
     backdrop-filter: blur(20px);
@@ -281,7 +276,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 15px; /* Adjusted gap for better spacing between icon and text */
 }
 
 .calculator-title i.fa-calculator {
@@ -361,8 +356,8 @@ body {
     border-radius: 12px 0 0 12px;
     padding: 0 15px;
     font-weight: 600;
-    min-width: 250px;
-    width: 250px;
+    min-width: 220px;
+    width: 220px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -389,8 +384,8 @@ body {
     border-right: none;
     padding: 0 10px;
     font-weight: bold;
-    min-width: 70px;
-    width: 70px;
+    min-width: 50px;
+    width: 50px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -412,7 +407,6 @@ body {
 .form-control {
     background: var(--input-bg-light);
     border: 1px solid var(--input-border-light);
-    border-left: none;
     border-radius: 0 12px 12px 0;
     padding: 0 15px;
     font-size: 1.1rem !important;
@@ -458,7 +452,7 @@ body {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
     backdrop-filter: blur(20px);
     border-radius: 16px;
-    padding: 25px;
+    padding: 20px;
     margin-bottom: 25px;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1420,7 +1414,6 @@ body {
         <!-- Theme Toggle -->
         <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
             <i class="fas fa-moon theme-icon" id="theme-icon"></i>
-            <span>Theme</span>
         </div>
         
         <div class="calculator-card">
