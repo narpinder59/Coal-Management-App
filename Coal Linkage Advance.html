@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coal Linkage Advanced Calculator - Professional</title>
+    <title>Coal Linkage Distribution - Professional</title>
 
     <!-- CDN Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -196,7 +196,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 8px;
 }
 
 .calculator-title i.fa-chart-line {
@@ -264,6 +264,92 @@ body {
 /* Error badge spacing */
 #input-error-badge {
     margin: 8px 0;
+}
+
+/* Error message alert styling */
+.alert {
+    padding: 12px 15px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+.btn-close::before {
+    content: "×";
+}
+
+/* Dark theme support for alerts */
+[data-theme="dark"] .alert-danger {
+    color: #f8d7da;
+    background-color: #721c24;
+    border-color: #842029;
+}
+
+[data-theme="dark"] .alert-warning {
+    color: #fff3cd;
+    background-color: #856404;
+    border-color: #664d03;
+}
+
+[data-theme="dark"] .alert-success {
+    color: #d4edda;
+    background-color: #155724;
+    border-color: #0f4132;
+}
+
+[data-theme="dark"] .btn-close {
+    color: #ffffff;
+}
+
+/* Fix redistribution controls text color in dark mode */
+[data-theme="dark"] .redistribution-mode-container,
+[data-theme="dark"] .distribution-method-container {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .redistribution-mode-container .form-label,
+[data-theme="dark"] .distribution-method-container .form-label {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .redistribution-mode-container .text-muted,
+[data-theme="dark"] .distribution-method-container .text-muted {
+    color: #b0b0c0 !important;
 }
 
 /* Center input parameters content */
@@ -415,13 +501,30 @@ body {
 
 /* Dark Theme - Table Header Container */
 [data-theme="dark"] .table-header-container {
-    background: var(--card-bg-dark);
-    border: 1px solid var(--card-border-dark);
-    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.1);
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 [data-theme="dark"] .table-header-container .table-title {
     border-bottom-color: #4dabf7;
+}
+
+/* Dark Theme - Table Header Icon Colors */
+[data-theme="dark"] .table-title .fa-calendar-alt {
+    color: #4dabf7; /* Light Blue for Monthly */
+}
+
+[data-theme="dark"] .table-title .fa-chart-pie {
+    color: #51cf66; /* Light Green for Quarterly */
+}
+
+[data-theme="dark"] .table-title .fa-calendar-day {
+    color: #ffd43b; /* Light Yellow for Per Day */
+}
+
+[data-theme="dark"] .table-title .fa-chart-bar {
+    color: #ff6b6b; /* Light Red for Summary */
 }
 
 [data-theme="dark"] .CoalLinkageAdvance-table th {
@@ -548,6 +651,13 @@ body {
     contain: layout style paint;
 }
 
+/* Mobile-specific override for sticky columns */
+@media (max-width: 768px) {
+    .table-responsive {
+        contain: none !important; /* Remove contain property on mobile for sticky positioning */
+    }
+}
+
 /* Ensure sticky positioning works in table-responsive containers */
 .table-responsive .CoalLinkageAdvance-table {
     position: relative;
@@ -608,6 +718,261 @@ body {
     will-change: transform !important;
 }
 
+/* Redistribution Mode Toggle Styling */
+.redistribution-mode-container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.redistribution-toggle {
+    display: flex;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.redistribution-toggle input[type="radio"] {
+    display: none;
+}
+
+.redistribution-toggle .toggle-option {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.redistribution-toggle input[type="radio"]:checked + .toggle-option {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+    transform: translateY(-1px);
+}
+
+.redistribution-toggle .toggle-option:hover {
+    color: #495057;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.redistribution-toggle input[type="radio"]:checked + .toggle-option:hover {
+    background: linear-gradient(135deg, #218838, #1abc9c);
+    color: white;
+}
+
+/* Dark theme for redistribution toggle */
+[data-theme="dark"] .redistribution-mode-container {
+    background: rgba(60, 60, 80, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .redistribution-toggle {
+    background: rgba(40, 40, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .redistribution-toggle .toggle-option {
+    color: #b0b0c0;
+}
+
+[data-theme="dark"] .redistribution-toggle .toggle-option:hover {
+    color: #ffffff;
+    background: rgba(40, 167, 69, 0.2);
+}
+
+/* Distribution Method Toggle Styles */
+.distribution-method-container {
+    padding: 15px;
+    background: rgba(248, 249, 250, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.distribution-method-toggle {
+    display: inline-flex;
+    background: #ffffff;
+    border: 2px solid #dee2e6;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.distribution-method-toggle input[type="radio"] {
+    display: none;
+}
+
+.distribution-method-toggle .toggle-option {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+.distribution-method-toggle input[type="radio"]:checked + .toggle-option {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.distribution-method-toggle .toggle-option:hover {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+}
+
+.distribution-method-toggle input[type="radio"]:checked + .toggle-option:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    color: white;
+}
+
+/* Dark Theme Support for Distribution Method */
+[data-theme="dark"] .distribution-method-container {
+    background: rgba(40, 40, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .distribution-method-toggle {
+    background: rgba(40, 40, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .distribution-method-toggle .toggle-option {
+    color: #b0b0c0;
+}
+
+[data-theme="dark"] .distribution-method-toggle .toggle-option:hover {
+    color: #ffffff;
+    background: rgba(0, 123, 255, 0.2);
+}
+
+/* Month Selection Modal for Absolute Mode */
+.month-selection-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10050;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.month-selection-content {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.month-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.month-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.month-checkbox-item:hover {
+    background: #f8f9fa;
+    border-color: #28a745;
+}
+
+.month-checkbox-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.month-checkbox-item.selected {
+    background: linear-gradient(135deg, #e7f5e7, #d4edda);
+    border-color: #28a745;
+    color: #155724;
+}
+
+[data-theme="dark"] .month-selection-content {
+    background: #2c2c54;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .month-checkbox-item {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(40, 40, 60, 0.8);
+}
+
+[data-theme="dark"] .month-checkbox-item:hover {
+    background: rgba(40, 167, 69, 0.2);
+    border-color: #28a745;
+}
+
+[data-theme="dark"] .month-checkbox-item.selected {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: #28a745;
+    color: #ffffff;
+}
+
+/* Close button styling */
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.btn-close:hover {
+    color: #dc3545;
+}
+
+.btn-close::before {
+    content: "×";
+}
+
+[data-theme="dark"] .btn-close {
+    color: #b0b0c0;
+}
+
+[data-theme="dark"] .btn-close:hover {
+    color: #ff6b6b;
+}
+
 .CoalLinkageAdvance-table th:first-child {
     background: linear-gradient(135deg, #495057, #343a40) !important;
     color: white !important;
@@ -632,15 +997,14 @@ body {
     padding-bottom: 10px;
 }
 
-/* Glass Table Header Container */
+/* Table Header Container - Clean Design without Glass Effect */
 .table-header-container {
-    background: var(--card-bg-light);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--card-border-light);
-    border-radius: 15px;
-    padding: 5px;
-    margin-bottom: 5px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    box-shadow: none;
     transition: all 0.3s ease;
 }
 
@@ -648,6 +1012,29 @@ body {
     margin-bottom: 0;
     border-bottom: 3px solid #28a745;
     padding-bottom: 10px;
+}
+
+/* Table Section Margins */
+.row .col-12 {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Individual Table Header Icon Colors */
+.table-title .fa-calendar-alt {
+    color: #007bff; /* Blue for Monthly */
+}
+
+.table-title .fa-chart-pie {
+    color: #28a745; /* Green for Quarterly */
+}
+
+.table-title .fa-calendar-day {
+    color: #ffc107; /* Yellow for Per Day */
+}
+
+.table-title .fa-chart-bar {
+    color: #dc3545; /* Red for Summary */
 }
 
 .CoalLinkageAdvance-table {
@@ -926,10 +1313,7 @@ body {
         font-size: 0.8rem;
     }
     
-    .form-control {
-        width: 120px;
-        max-width: 120px;
-    }
+    /* Removed fixed width restriction for form-control to allow mobile responsiveness */
     
     .table-container {
         padding: 15px;
@@ -976,7 +1360,7 @@ body {
         font-size: 1.1rem;
         line-height: 1.3;
         text-align: center;
-        gap: 8px;
+        gap: 2px;
         margin-bottom: 8px;
     }
 
@@ -1109,10 +1493,10 @@ body {
     }
     
     .calculator-title {
-        font-size: 0.95rem;
+        font-size: 1.2rem;
         line-height: 1.2;
         margin-bottom: 15px;
-        gap: 6px;
+        gap: 2px;
     }
 
     .calculator-title i.fa-chart-line {
@@ -1249,14 +1633,14 @@ body {
 /* EXTRA SMALL SCREENS */
 @media (max-width: 400px) {
     .calculator-title {
-        font-size: 0.85rem;
+        font-size: 1.1rem;
         line-height: 1.1;
-        gap: 4px;
+        gap: 2px;
         margin-bottom: 12px;
     }
 
     .calculator-title i.fa-chart-line {
-        font-size: 0.7em;
+        font-size: 0.75em;
     }
     
     .input-group {
@@ -1337,6 +1721,81 @@ body {
         color: white !important;
         z-index: 10001 !important;
     }
+    
+    /* Mobile Responsive Toggle Buttons */
+    .redistribution-toggle {
+        flex-direction: column;
+        gap: 1px;
+        padding: 2px;
+    }
+    
+    .redistribution-toggle .toggle-option {
+        padding: 4px 6px;
+        font-size: 10px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+    
+    .distribution-method-toggle {
+        flex-direction: column;
+        gap: 1px;
+        width: 100%;
+        padding: 2px;
+    }
+    
+    .distribution-method-toggle .toggle-option {
+        padding: 4px 6px;
+        font-size: 9px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+    
+    /* Make form inputs full width */
+    .form-control {
+        width: 100% !important;
+        min-width: auto !important;
+        flex: none !important;
+        max-width: none !important;
+    }
+    
+    .input-group {
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+    
+    /* Override any previous width restrictions */
+    .input-group .form-control {
+        flex: 1 !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+    
+    /* Stack redistribution and distribution containers vertically */
+    .redistribution-mode-container,
+    .distribution-method-container {
+        margin-bottom: 8px;
+        padding: 6px;
+    }
+    
+    /* Make container labels smaller on mobile */
+    .redistribution-mode-container .form-label,
+    .distribution-method-container .form-label {
+        font-size: 12px;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+    
+    .redistribution-mode-container .text-muted,
+    .distribution-method-container .text-muted {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
 }
 
 /* Table specific responsive improvements */
@@ -1346,11 +1805,94 @@ body {
         border-radius: 8px;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        contain: none; /* Remove contain property that can interfere with sticky positioning */
+        position: relative;
     }
     
     .responsive-table-wrapper {
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Enhanced sticky columns for mobile */
+    .CoalLinkageAdvance-table th:first-child,
+    .CoalLinkageAdvance-table td:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 10000 !important;
+        background-color: #f8f9fa !important;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
+        border-right: 2px solid #dee2e6 !important;
+        width: 16.66% !important;
+        min-width: 80px !important;
+        font-weight: 700 !important;
+        isolation: isolate !important;
+    }
+}
+
+/* Custom table scroll wrapper - allows horizontal scrolling without interfering with sticky positioning */
+.table-scroll-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: white;
+    position: relative;
+}
+
+/* Match table border radius with wrapper */
+.table-scroll-wrapper .CoalLinkageAdvance-table {
+    min-width: 600px;
+    margin-bottom: 0;
+    white-space: nowrap;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Force sticky positioning for first columns */
+.table-scroll-wrapper .CoalLinkageAdvance-table th:first-child,
+.table-scroll-wrapper .CoalLinkageAdvance-table td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 10 !important;
+    background-color: #f8f9fa !important;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
+    border-right: 2px solid #dee2e6 !important;
+    isolation: isolate !important;
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+}
+
+/* Header sticky cells styling */
+.table-scroll-wrapper .CoalLinkageAdvance-table th:first-child {
+    background: linear-gradient(135deg, #343a40, #495057) !important;
+    color: white !important;
+    z-index: 11 !important;
+}
+
+/* Mobile specific scroll wrapper */
+@media (max-width: 768px) {
+    .table-scroll-wrapper {
+        border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+    }
+    
+    .table-scroll-wrapper .CoalLinkageAdvance-table {
+        min-width: 700px;
+        font-size: 0.8rem;
+        border-radius: 10px;
+    }
+    
+    /* Enhanced mobile sticky columns */
+    .table-scroll-wrapper .CoalLinkageAdvance-table th:first-child,
+    .table-scroll-wrapper .CoalLinkageAdvance-table td:first-child {
+        min-width: 100px !important;
+        width: 100px !important;
+        max-width: 100px !important;
+        font-size: 0.75rem !important;
+        padding: 8px 6px !important;
     }
 }
 
@@ -1409,6 +1951,25 @@ body {
         color: white !important;
         z-index: 10001 !important;
     }
+    
+    /* Tablet Responsive Toggle Buttons */
+    .redistribution-toggle .toggle-option {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .distribution-method-toggle .toggle-option {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+    
+    /* Ensure containers don't overflow */
+    .redistribution-mode-container,
+    .distribution-method-container {
+        margin-bottom: 12px;
+        overflow: hidden;
+        padding: 8px;
+    }
 }
 </style>
 
@@ -1430,7 +1991,7 @@ body {
         <!-- Header -->
         <h1 class="calculator-title">
             <i class="fas fa-chart-line me-3"></i>
-            Coal Linkage Advanced Calculator
+            Coal Linkage Distribution
         </h1>      
 
         <!-- Main Content Grid -->
@@ -1522,6 +2083,58 @@ body {
                             Copy to Actual Quantity
                         </button>
                     </div>
+                    
+                    <!-- Redistribution Mode Toggle -->
+                    <div class="redistribution-mode-container mt-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <label class="form-label mb-0 fw-bold">
+                                <i class="fas fa-calculator me-2"></i>
+                                Redistribution Mode:
+                            </label>
+                            <div class="redistribution-toggle">
+                                <input type="radio" id="mode-proportionate" name="redistribution-mode" value="proportionate" checked>
+                                <label for="mode-proportionate" class="toggle-option">
+                                    <i class="fas fa-percentage me-1"></i>
+                                    Proportionate
+                                </label>
+                                <input type="radio" id="mode-absolute" name="redistribution-mode" value="absolute">
+                                <label for="mode-absolute" class="toggle-option">
+                                    <i class="fas fa-list-check me-1"></i>
+                                    Absolute
+                                </label>
+                            </div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">
+                            <strong>Proportionate:</strong> Redistribute quantity based on quarterly percentages. 
+                            <strong>Absolute:</strong> Select specific months for redistribution.
+                        </small>
+                        
+                        <!-- Distribution Method Selection -->
+                        <div class="distribution-method-container mt-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="form-label mb-0 fw-bold">
+                                    <i class="fas fa-chart-pie me-2"></i>
+                                    Distribution Method:
+                                </label>
+                                <div class="distribution-method-toggle">
+                                    <input type="radio" id="method-quarterly" name="distribution-method" value="quarterly" checked>
+                                    <label for="method-quarterly" class="toggle-option">
+                                        <i class="fas fa-percentage me-1"></i>
+                                        Quarterly Percentages
+                                    </label>
+                                    <input type="radio" id="method-equal" name="distribution-method" value="equal">
+                                    <label for="method-equal" class="toggle-option">
+                                        <i class="fas fa-balance-scale me-1"></i>
+                                        Equal Distribution
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-1 d-block">
+                                <strong>Quarterly Percentages:</strong> Distribute quantities based on Q1-Q4 percentages set above.<br>
+                                <strong>Equal Distribution:</strong> Distribute quantities equally among target months.
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1540,7 +2153,7 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-responsive">
+                <div class="table-scroll-wrapper">
                     <table id="coal-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
                         <thead>
                             <tr>
@@ -1581,7 +2194,7 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-responsive">
+                <div class="table-scroll-wrapper">
                     <table id="quarterly-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
                         <thead>
                             <tr>
@@ -1609,11 +2222,11 @@ body {
             <div class="col-12">
                 <div class="table-header-container">
                     <h3 class="table-title">
-                        <i class="fas fa-calendar-day me-2 text-warning"></i>
+                        <i class="fas fa-calendar-day me-2"></i>
                         Per Day Values
                     </h3>
                 </div>
-                <div class="responsive-table-wrapper">
+                <div class="table-scroll-wrapper">
                     <table id="per-day-table" class="table table-bordered table-hover table-striped text-center align-middle table-sm CoalLinkageAdvance-table">
                         <thead class="table-gradient">
                             <tr>
@@ -1654,7 +2267,7 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-responsive">
+                <div class="table-scroll-wrapper">
                     <table id="summary-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
                         <thead>
                             <tr>
@@ -1902,45 +2515,126 @@ body {
         // Ensure sticky columns work properly
         document.addEventListener('DOMContentLoaded', function() {
             // Force sticky positioning for first columns with high z-index
-            const tables = document.querySelectorAll('.CoalLinkageAdvance-table');
-            tables.forEach(table => {
-                const firstCells = table.querySelectorAll('th:first-child, td:first-child');
-                firstCells.forEach(cell => {
-                    cell.style.position = 'sticky';
-                    cell.style.left = '0';
-                    if (cell.tagName === 'TH') {
-                        cell.style.zIndex = '10002';
-                    } else {
-                        cell.style.zIndex = '10001';
+            function applyStickyColumnsInitial() {
+                // Target tables within scroll wrappers specifically
+                const scrollWrappers = document.querySelectorAll('.table-scroll-wrapper');
+                scrollWrappers.forEach(wrapper => {
+                    const table = wrapper.querySelector('.CoalLinkageAdvance-table');
+                    if (table) {
+                        const firstCells = table.querySelectorAll('th:first-child, td:first-child');
+                        firstCells.forEach(cell => {
+                            // Enhanced mobile sticky positioning
+                            cell.style.setProperty('position', 'sticky', 'important');
+                            cell.style.setProperty('left', '0', 'important');
+                            cell.style.setProperty('background-color', '#f8f9fa', 'important');
+                            cell.style.setProperty('box-shadow', '2px 0 5px rgba(0,0,0,0.15)', 'important');
+                            cell.style.setProperty('border-right', '2px solid #dee2e6', 'important');
+                            
+                            if (cell.tagName === 'TH') {
+                                cell.style.setProperty('z-index', '11', 'important');
+                                cell.style.setProperty('background', 'linear-gradient(135deg, #343a40, #495057)', 'important');
+                                cell.style.setProperty('color', 'white', 'important');
+                            } else {
+                                cell.style.setProperty('z-index', '10', 'important');
+                            }
+                            
+                            // Additional properties to ensure sticky works on mobile
+                            cell.style.setProperty('isolation', 'isolate', 'important');
+                            cell.style.setProperty('white-space', 'nowrap', 'important');
+                            cell.style.setProperty('font-weight', '700', 'important');
+                            
+                            // Mobile-specific width
+                            if (window.innerWidth <= 768) {
+                                cell.style.setProperty('min-width', '100px', 'important');
+                                cell.style.setProperty('width', '100px', 'important');
+                                cell.style.setProperty('max-width', '100px', 'important');
+                            }
+                        });
                     }
-                    // Additional properties to ensure sticky works
-                    cell.style.isolation = 'isolate';
-                    cell.style.whiteSpace = 'nowrap';
                 });
-            });
-            
-            // Apply sticky columns after any table updates
-            function applyStickyColumns() {
+                
+                // Also apply to any direct tables (fallback)
                 const tables = document.querySelectorAll('.CoalLinkageAdvance-table');
                 tables.forEach(table => {
                     const firstCells = table.querySelectorAll('th:first-child, td:first-child');
                     firstCells.forEach(cell => {
-                        cell.style.position = 'sticky';
-                        cell.style.left = '0';
+                        cell.style.setProperty('position', 'sticky', 'important');
+                        cell.style.setProperty('left', '0', 'important');
                         if (cell.tagName === 'TH') {
-                            cell.style.zIndex = '10002';
+                            cell.style.setProperty('z-index', '11', 'important');
                         } else {
-                            cell.style.zIndex = '10001';
+                            cell.style.setProperty('z-index', '10', 'important');
                         }
-                        cell.style.isolation = 'isolate';
-                        cell.style.whiteSpace = 'nowrap';
                     });
                 });
             }
             
-            // Re-apply after any DOM changes
+            // Apply initial sticky columns
+            applyStickyColumnsInitial();
+            
+            // Apply sticky columns after any table updates
+            function applyStickyColumns() {
+                applyStickyColumnsInitial();
+            }
+            
+            // Re-apply after any DOM changes and window resize
             window.applyStickyColumns = applyStickyColumns;
+            
+            // Re-apply on window resize to handle orientation changes
+            window.addEventListener('resize', function() {
+                setTimeout(applyStickyColumnsInitial, 100);
+            });
+            
+            // Re-apply after a short delay to ensure all elements are loaded
+            setTimeout(applyStickyColumnsInitial, 500);
         });
+
+        // Mobile sticky column fix - Force table layout for mobile devices
+        if (window.innerWidth <= 768) {
+            document.addEventListener('DOMContentLoaded', function() {
+                function forceMobileStickyColumns() {
+                    // Force table-responsive containers to allow sticky positioning
+                    const tableResponsive = document.querySelectorAll('.table-responsive');
+                    tableResponsive.forEach(container => {
+                        container.style.setProperty('position', 'relative', 'important');
+                        container.style.setProperty('overflow-x', 'auto', 'important');
+                        container.style.setProperty('contain', 'none', 'important');
+                        container.style.setProperty('transform', 'none', 'important');
+                        container.style.setProperty('will-change', 'scroll-position', 'important');
+                    });
+                    
+                    // Force table layout for sticky columns
+                    const tables = document.querySelectorAll('.CoalLinkageAdvance-table');
+                    tables.forEach(table => {
+                        table.style.setProperty('table-layout', 'fixed', 'important');
+                        table.style.setProperty('border-collapse', 'separate', 'important');
+                        table.style.setProperty('border-spacing', '0', 'important');
+                        table.style.setProperty('min-width', '600px', 'important');
+                        table.style.setProperty('position', 'relative', 'important');
+                        
+                        // Force first column sticky
+                        const firstCells = table.querySelectorAll('th:first-child, td:first-child');
+                        firstCells.forEach(cell => {
+                            cell.style.setProperty('position', 'sticky', 'important');
+                            cell.style.setProperty('left', '0px', 'important');
+                            cell.style.setProperty('z-index', cell.tagName === 'TH' ? '1002' : '1001', 'important');
+                            cell.style.setProperty('background-color', cell.tagName === 'TH' ? '#343a40' : '#f8f9fa', 'important');
+                            cell.style.setProperty('color', cell.tagName === 'TH' ? 'white' : 'inherit', 'important');
+                            cell.style.setProperty('box-shadow', '2px 0 4px rgba(0,0,0,0.1)', 'important');
+                            cell.style.setProperty('border-right', '1px solid #ddd', 'important');
+                            cell.style.setProperty('width', '100px', 'important');
+                            cell.style.setProperty('min-width', '100px', 'important');
+                            cell.style.setProperty('max-width', '100px', 'important');
+                        });
+                    });
+                }
+                
+                // Apply immediately and on resize
+                forceMobileStickyColumns();
+                window.addEventListener('resize', forceMobileStickyColumns);
+                setTimeout(forceMobileStickyColumns, 1000);
+            });
+        }
 
         // Export Functions
         function exportToPDF() {
@@ -1952,7 +2646,7 @@ body {
             // Add title
             pdf.setFontSize(16);
             pdf.setFont(undefined, 'bold');
-            pdf.text('Coal Linkage Advanced Calculator - Results', 20, 20);
+            pdf.text('Coal Linkage Distribution - Results', 20, 20);
             
             // Get all input values
             const inputs = document.querySelectorAll('input[type="number"]');
@@ -2130,7 +2824,7 @@ body {
 
         // Initialize page and all functionality
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Coal Linkage Advanced Calculator - Professional loaded');
+            console.log('Coal Linkage Distribution - Professional loaded');
             
             // Initialize all calculator functionality
             initializeCalculator();
@@ -2142,8 +2836,8 @@ body {
             const acqInput = document.getElementById("acq-input");
             const rakeInput = document.getElementById("rake-quantity-input");
             
-            if (acqInput) acqInput.addEventListener("blur", validateInput);
-            if (rakeInput) rakeInput.addEventListener("blur", validateInput);
+            // Note: blur event listeners for validation are added below with calculations
+            // to avoid conflicts with multiple listeners
             
             // enforceACQLimit(); // Disabled to prevent duplicate input listeners
             initializeQuarterValidation();
@@ -2302,12 +2996,14 @@ body {
             });
 
             // Input event listeners
-            acqInput.addEventListener("blur", function() {
+            acqInput.addEventListener("blur", function(event) {
+                validateInput(event); // Add validation
                 calculateQuarterlyAllocations();
                 updatePercentages();
             });
 
-            rakeInput.addEventListener("blur", function() {
+            rakeInput.addEventListener("blur", function(event) {
+                validateInput(event); // Add validation
                 calculateQuarterlyAllocations();
                 updatePercentages();
             });
@@ -2636,7 +3332,7 @@ body {
                 
                 // Validate if the new value exceeds ACQ
                 if (changedValue > acq) {
-                    alert(`Actual quantity cannot exceed ACQ (${formatNumber(acq)} MT). Please enter a valid value.`);
+                    showErrorMessage(`Actual quantity cannot exceed ACQ (${formatNumber(acq)} MT). Please enter a valid value.`);
                     changedCell.textContent = '0';
                     changedValue = 0;
                 }
@@ -2651,23 +3347,34 @@ body {
                 
                 updateActualRakesForRow(changedCell);
 
-                // Calculate total used quantity from current month and all previous months
-                let totalUsedQuantity = 0;
-                for (let i = 0; i <= changedRowIndex; i++) {
-                    const cellContent = rows[i].cells[3].textContent.trim();
-                    const actualValue = cellContent === '' ? 0 : (parseFloat(rows[i].cells[3].textContent.replace(/,/g, '')) || 0);
-                    totalUsedQuantity += actualValue;
-                    console.log(`Month ${i} quantity:`, actualValue);
+                // Store the original allocated quantities before redistribution
+                const originalAllocatedQuantities = [];
+                for (let i = 0; i < rows.length; i++) {
+                    originalAllocatedQuantities[i] = parseFloat(rows[i].cells[1].textContent.replace(/,/g, '')) || 0;
                 }
 
-                console.log('Total used quantity (up to changed month):', totalUsedQuantity);
+                // Calculate how much quantity was freed up from changed months
+                // by comparing current actual quantities with their allocated quantities
+                let freedQuantity = 0;
+                for (let i = 0; i <= changedRowIndex; i++) {
+                    const allocatedQty = originalAllocatedQuantities[i];
+                    const actualQty = parseFloat(rows[i].cells[3].textContent.replace(/,/g, '')) || 0;
+                    const difference = allocatedQty - actualQty; // Positive if quantity is freed up
+                    if (difference > 0) {
+                        freedQuantity += difference;
+                    }
+                    console.log(`Month ${i} - Allocated: ${allocatedQty}, Actual: ${actualQty}, Freed: ${Math.max(0, difference)}`);
+                }
 
-                // Calculate remaining quantity to distribute among subsequent months
-                const remainingQuantity = acq - totalUsedQuantity;
-                console.log('Remaining quantity for subsequent months:', remainingQuantity);
+                console.log('Total freed quantity to redistribute:', freedQuantity);
 
-                if (remainingQuantity < 0) {
-                    alert(`Total actual quantities exceed ACQ. Please adjust values.`);
+                if (freedQuantity <= 0) {
+                    console.log('No quantity freed up for redistribution');
+                    // Update all dependent calculations
+                    updateQuarterlyTable();
+                    updatePercentages();
+                    updatePerDayValues();
+                    updateSummaryTable();
                     return;
                 }
 
@@ -2692,36 +3399,51 @@ body {
                 console.log('Subsequent months to redistribute:', subsequentMonths.length);
                 console.log('Total quarterly percent for redistribution:', totalQuarterlyPercent);
 
-                // Redistribute remaining quantity proportionally among subsequent months
-                if (subsequentMonths.length > 0 && totalQuarterlyPercent > 0) {
-                    subsequentMonths.forEach(monthData => {
-                        const proportionalShare = (monthData.quarterlyPercent / totalQuarterlyPercent) * remainingQuantity;
-                        console.log(`Month ${monthData.index} gets proportional share:`, proportionalShare);
-                        
-                        // Update the actual quantity cell (column 3)
-                        monthData.row.cells[3].textContent = formatNumber(Math.max(0, proportionalShare));
-                        
-                        // If this is the currently active cell, set cursor to end
-                        if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
-                            setCursorToEnd(monthData.row.cells[3]);
-                        }
-                        
-                        // Update actual rakes and percentage for this row
-                        updateActualRakesForRow(monthData.row.cells[3]);
-                    });
-                } else if (subsequentMonths.length > 0) {
-                    // If no quarterly percentages, distribute equally among subsequent months
-                    const equalShare = remainingQuantity / subsequentMonths.length;
-                    subsequentMonths.forEach(monthData => {
-                        monthData.row.cells[3].textContent = formatNumber(Math.max(0, equalShare));
-                        
-                        // If this is the currently active cell, set cursor to end
-                        if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
-                            setCursorToEnd(monthData.row.cells[3]);
-                        }
-                        
-                        updateActualRakesForRow(monthData.row.cells[3]);
-                    });
+                // Get the selected distribution method
+                const distributionMethod = getDistributionMethod();
+                console.log('Distribution method:', distributionMethod);
+
+                // Redistribute freed quantity based on selected method
+                if (subsequentMonths.length > 0) {
+                    if (distributionMethod === 'quarterly' && totalQuarterlyPercent > 0) {
+                        // Quarterly percentage-based distribution
+                        console.log('Using quarterly percentage distribution');
+                        subsequentMonths.forEach(monthData => {
+                            const proportionalShare = (monthData.quarterlyPercent / totalQuarterlyPercent) * freedQuantity;
+                            const currentActual = parseFloat(monthData.row.cells[3].textContent.replace(/,/g, '')) || 0;
+                            const newActual = currentActual + proportionalShare;
+                            console.log(`Month ${monthData.index} gets proportional share:`, proportionalShare);
+                            
+                            // Update the actual quantity cell (column 3)
+                            monthData.row.cells[3].textContent = formatNumber(Math.max(0, newActual));
+                            
+                            // If this is the currently active cell, set cursor to end
+                            if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
+                                setCursorToEnd(monthData.row.cells[3]);
+                            }
+                            
+                            // Update actual rakes and percentage for this row
+                            updateActualRakesForRow(monthData.row.cells[3]);
+                        });
+                    } else {
+                        // Equal distribution (either method=equal or no quarterly percentages available)
+                        console.log('Using equal distribution');
+                        const equalShare = freedQuantity / subsequentMonths.length;
+                        subsequentMonths.forEach(monthData => {
+                            const currentActual = parseFloat(monthData.row.cells[3].textContent.replace(/,/g, '')) || 0;
+                            const newActual = currentActual + equalShare;
+                            console.log(`Month ${monthData.index} gets equal share:`, equalShare);
+                            
+                            monthData.row.cells[3].textContent = formatNumber(Math.max(0, newActual));
+                            
+                            // If this is the currently active cell, set cursor to end
+                            if (document.activeElement === monthData.row.cells[3] || monthData.row.cells[3].hasAttribute('data-in-input')) {
+                                setCursorToEnd(monthData.row.cells[3]);
+                            }
+                            
+                            updateActualRakesForRow(monthData.row.cells[3]);
+                        });
+                    }
                 }
                 
                 // Update all dependent calculations
@@ -2992,7 +3714,24 @@ body {
                         console.log("BLUR EVENT - Value changed from", originalValue, "to", currentValue);
                         
                         if (currentValue !== '') {
-                            redistributeActualQuantities(event.target);
+                            // Check redistribution mode and handle accordingly
+                            const mode = getRedistributionMode();
+                            if (mode === 'proportionate') {
+                                // Use original working function for proportionate mode
+                                redistributeActualQuantities(event.target);
+                            } else if (mode === 'absolute') {
+                                // For absolute mode, get row index and show modal
+                                const table = document.getElementById("coal-table");
+                                const rows = Array.from(table.querySelector("tbody").querySelectorAll("tr"));
+                                const changedRowIndex = rows.findIndex(row => row.contains(event.target));
+                                
+                                // Calculate the difference (just for display in modal)
+                                const currentActual = parseFloat(currentValue.replace(/,/g, '')) || 0;
+                                const originalActual = parseFloat(originalValue.replace(/,/g, '')) || 0;
+                                const difference = currentActual - originalActual;
+                                
+                                showMonthSelectionModal(changedRowIndex, difference);
+                            }
                         } else {
                             // If cell is empty, just update rakes and percentages for this cell
                             updateActualRakesForRow(event.target);
@@ -3012,6 +3751,7 @@ body {
 
         // Additional calculator functions
         function validateInput(event) {
+            console.log('validateInput called for:', event.target.id, 'value:', event.target.value);
             const input = event.target;
             const value = input.value.trim();
             const resultContainer = document.getElementById('input-error-badge');
@@ -3032,25 +3772,19 @@ body {
 
             // Check for missing or negative input
             if (value === "") {
-                if (resultContainer) {
-                    resultContainer.style.display = 'block';
-                    resultContainer.innerHTML = badgeMissing;
-                }
+                console.log('Empty value detected, calling showErrorMessage');
+                showErrorMessage('Please enter a value for all required fields.', 'success');
                 return;
             }
             if (!isNaN(value) && parseFloat(value) < 0) {
-                if (resultContainer) {
-                    resultContainer.style.display = 'block';
-                    resultContainer.innerHTML = badgeNegative;
-                }
+                console.log('Negative value detected, calling showErrorMessage');
+                showErrorMessage('Please enter a valid non-negative value.', 'success');
                 return;
             }
 
-            // Hide badge if input is valid
-            if (resultContainer) {
-                resultContainer.style.display = 'none';
-                resultContainer.innerHTML = '';
-            }
+            // Hide all messages if input is valid (but only if no other inputs have errors)
+            console.log('Input is valid, checking if we can hide error messages');
+            hideErrorMessage();
         }
 
         // ACQ enforcement for actual quantity cells
@@ -3124,16 +3858,21 @@ body {
                 `;
 
                 if (totalPercentage > 100) {
+                    showErrorMessage('The total quarterly percentage cannot exceed 100%. Please adjust the quarterly percentages.', 'error');
+                    // Hide the old error badge
                     if (errorMessage) {
-                        errorMessage.style.display = 'block';
-                        errorMessage.innerHTML = badgePercentageExceed;
+                        errorMessage.style.display = 'none';
+                        errorMessage.innerHTML = '';
                     }
                 } else if (totalPercentage < 100) {
+                    showErrorMessage('The total quarterly percentage must equal 100%. Please adjust the quarterly percentages.', 'warning');
+                    // Hide the old error badge
                     if (errorMessage) {
-                        errorMessage.style.display = 'block';
-                        errorMessage.innerHTML = badgePercentageLess;
+                        errorMessage.style.display = 'none';
+                        errorMessage.innerHTML = '';
                     }
                 } else {
+                    hideErrorMessage();
                     if (errorMessage) {
                         errorMessage.style.display = 'none';
                         errorMessage.innerHTML = '';
@@ -3148,6 +3887,9 @@ body {
             // Add event listeners to quarter inputs
             quarterInputs.forEach(input => {
                 input.addEventListener('input', validateAndUpdatePercentages);
+                input.addEventListener('blur', function(event) {
+                    validateInput(event); // Add validation for quarterly inputs too
+                });
             });
         }
 
@@ -3391,6 +4133,418 @@ body {
             }
         });
 
+        // Function to clear all actual quantities
+        function clearActualQuantities() {
+            console.log('Clearing all actual quantities due to mode/method change');
+            const table = document.getElementById('coal-table');
+            if (table) {
+                const rows = table.querySelector('tbody').querySelectorAll('tr');
+                rows.forEach(row => {
+                    // Clear actual quantity (column 3)
+                    row.cells[3].textContent = '0';
+                    // Clear actual rakes (column 4)
+                    row.cells[4].textContent = '0.00';
+                });
+                
+                // Update all dependent calculations
+                updateQuarterlyTable();
+                updatePercentages();
+                updatePerDayValues();
+                updateSummaryTable();
+                
+                console.log('Actual quantities cleared and tables updated');
+            }
+        }
+
+        // Add event listeners for redistribution mode and distribution method changes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Listen for redistribution mode changes
+            const redistributionModeRadios = document.querySelectorAll('input[name="redistribution-mode"]');
+            redistributionModeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    console.log('Redistribution mode changed to:', this.value);
+                    clearActualQuantities();
+                });
+            });
+
+            // Listen for distribution method changes
+            const distributionMethodRadios = document.querySelectorAll('input[name="distribution-method"]');
+            distributionMethodRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    console.log('Distribution method changed to:', this.value);
+                    clearActualQuantities();
+                });
+            });
+        });
+
+        // Global variables for redistribution mode
+        let currentChangedRow = -1;
+        let currentDifference = 0;
+        const monthNames = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+
+        // Get current redistribution mode
+        function getRedistributionMode() {
+            const modeRadio = document.querySelector('input[name="redistribution-mode"]:checked');
+            return modeRadio ? modeRadio.value : 'proportionate';
+        }
+
+        // Get current distribution method
+        function getDistributionMethod() {
+            const methodRadio = document.querySelector('input[name="distribution-method"]:checked');
+            return methodRadio ? methodRadio.value : 'quarterly';
+        }
+
+        // Function to display error messages above the Annual Coal Quantity input
+        function showErrorMessage(message, type = 'error') {
+            console.log('showErrorMessage called with:', message, 'type:', type);
+            const errorContainer = document.getElementById('input-error-badge');
+            console.log('Error container found:', errorContainer);
+            
+            if (errorContainer) {
+                errorContainer.style.display = 'block';
+                
+                // Determine alert class and icon
+                let alertClass, typeLabel, iconClass;
+                switch(type) {
+                    case 'success':
+                        alertClass = 'alert-success';
+                        typeLabel = 'Info';
+                        iconClass = 'fas fa-info-circle';
+                        break;
+                    case 'warning':
+                        alertClass = 'alert-warning';
+                        typeLabel = 'Warning';
+                        iconClass = 'fas fa-exclamation-triangle';
+                        break;
+                    default: // error
+                        alertClass = 'alert-danger';
+                        typeLabel = 'Error';
+                        iconClass = 'fas fa-exclamation-triangle';
+                }
+                
+                errorContainer.className = `alert ${alertClass} mb-2`;
+                errorContainer.innerHTML = `
+                    <i class="${iconClass} me-2"></i>
+                    <strong>${typeLabel}:</strong> ${message}
+                    <button type="button" class="btn-close ms-auto" onclick="hideErrorMessage()"></button>
+                `;
+                
+                console.log('Error message set, container class:', errorContainer.className);
+                
+                // Auto-hide after 5 seconds for warnings and success, keep errors until manually closed
+                if (type === 'warning' || type === 'success') {
+                    setTimeout(() => {
+                        hideErrorMessage();
+                    }, 5000);
+                }
+            } else {
+                console.log('Error container not found!');
+            }
+        }
+
+        // Function to hide error messages (but only if no current errors exist)
+        function hideErrorMessage() {
+            console.log('hideErrorMessage called');
+            // Don't hide if there are current validation errors
+            const acqInput = document.getElementById('acq-input');
+            const rakeInput = document.getElementById('rake-quantity-input');
+            
+            let hasErrors = false;
+            if (acqInput && acqInput.value.trim() === '') hasErrors = true;
+            if (rakeInput && rakeInput.value.trim() === '') hasErrors = true;
+            
+            // Check quarterly inputs too
+            const quarterInputs = ['quarter-1', 'quarter-2', 'quarter-3', 'quarter-4'];
+            quarterInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input && input.value.trim() === '') hasErrors = true;
+            });
+            
+            if (!hasErrors) {
+                console.log('No errors detected, hiding message');
+                const errorContainer = document.getElementById('input-error-badge');
+                if (errorContainer) {
+                    errorContainer.style.display = 'none';
+                    errorContainer.innerHTML = '';
+                    errorContainer.className = '';
+                }
+            } else {
+                console.log('Errors still exist, keeping message visible');
+            }
+        }
+
+        // Show month selection modal for absolute mode
+        function showMonthSelectionModal(changedRowIndex, difference) {
+            currentChangedRow = changedRowIndex;
+            currentDifference = difference;
+            
+            const modal = document.getElementById('month-selection-modal');
+            const changedMonthName = document.getElementById('changed-month-name');
+            const differenceAmount = document.getElementById('difference-amount');
+            const checkboxGroup = document.getElementById('month-checkbox-group');
+            
+            // Calculate the total surplus from all months up to and including the changed month
+            const table = document.getElementById("coal-table");
+            const rows = table.querySelector("tbody").querySelectorAll("tr");
+            let totalSurplus = 0;
+            
+            for (let i = 0; i <= changedRowIndex; i++) {
+                const allocatedQty = parseFloat(rows[i].cells[1].textContent.replace(/,/g, '')) || 0; // Column 1: Allocated
+                const actualQty = parseFloat(rows[i].cells[3].textContent.replace(/,/g, '')) || 0;     // Column 3: Actual
+                const monthSurplus = allocatedQty - actualQty;
+                totalSurplus += monthSurplus;
+            }
+            
+            // Set modal content
+            changedMonthName.textContent = monthNames[changedRowIndex];
+            differenceAmount.textContent = formatNumber(Math.max(0, totalSurplus));
+            
+            // Clear and populate month checkboxes (only for months after the changed month)
+            checkboxGroup.innerHTML = '';
+            
+            for (let i = changedRowIndex + 1; i < 12; i++) {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `month-${i}`;
+                checkbox.value = i;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `month-${i}`;
+                label.textContent = monthNames[i];
+                
+                monthDiv.appendChild(checkbox);
+                monthDiv.appendChild(label);
+                
+                // Add click handler for the div
+                monthDiv.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    monthDiv.classList.toggle('selected', checkbox.checked);
+                });
+                
+                // Add change handler for checkbox
+                checkbox.addEventListener('change', function() {
+                    monthDiv.classList.toggle('selected', this.checked);
+                });
+                
+                checkboxGroup.appendChild(monthDiv);
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        // Close month selection modal
+        function closeMonthSelectionModal() {
+            const modal = document.getElementById('month-selection-modal');
+            modal.style.display = 'none';
+            currentChangedRow = -1;
+            currentDifference = 0;
+        }
+
+        // Redistribute in absolute mode
+        function redistributeAbsoluteMode() {
+            const selectedMonths = [];
+            const checkboxes = document.querySelectorAll('#month-checkbox-group input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                selectedMonths.push(parseInt(checkbox.value));
+            });
+            
+            console.log('Selected months for redistribution:', selectedMonths);
+            
+            if (selectedMonths.length === 0) {
+                showErrorMessage('Please select at least one month for redistribution.');
+                return;
+            }
+            
+            const table = document.getElementById("coal-table");
+            const rows = table.querySelector("tbody").querySelectorAll("tr");
+            
+            // Calculate the surplus/deficit from ONLY the currently changed month
+            // This prevents accumulation from previously redistributed months
+            const allocatedQty = parseFloat(rows[currentChangedRow].cells[1].textContent.replace(/,/g, '')) || 0; // Column 1: Allocated
+            const actualQty = parseFloat(rows[currentChangedRow].cells[3].textContent.replace(/,/g, '')) || 0;     // Column 3: Actual
+            const totalSurplus = allocatedQty - actualQty; // Surplus if positive, deficit if negative
+            
+            console.log(`Changed month ${currentChangedRow} (${monthNames[currentChangedRow]}): Allocated ${allocatedQty}, Actual ${actualQty}, Surplus ${totalSurplus}`);
+            console.log('Number of selected months:', selectedMonths.length);
+            
+            if (totalSurplus <= 0) {
+                showErrorMessage('No surplus quantity available for redistribution from this month.');
+                return;
+            }
+            
+            // If only one month selected, give all surplus to that month
+            if (selectedMonths.length === 1) {
+                const selectedRowIndex = selectedMonths[0];
+                const currentActual = parseFloat(rows[selectedRowIndex].cells[3].textContent.replace(/,/g, '')) || 0;
+                const newActual = currentActual + totalSurplus;
+                
+                console.log(`Single month ${monthNames[selectedRowIndex]}: ${currentActual} + ${totalSurplus} = ${newActual}`);
+                
+                rows[selectedRowIndex].cells[3].textContent = formatNumber(newActual);
+                
+                // Update actual rakes for this row
+                const rakeCapacity = parseFloat(document.getElementById('rake-quantity-input')?.value) || 0;
+                if (rakeCapacity > 0) {
+                    const actualRakes = newActual / rakeCapacity;
+                    rows[selectedRowIndex].cells[4].textContent = formatNumber(actualRakes.toFixed(2));
+                }
+            } else {
+                // Multiple months selected - distribute based on selected distribution method
+                const distributionMethod = getDistributionMethod();
+                console.log('Multiple months selected, distribution method:', distributionMethod);
+                
+                if (distributionMethod === 'quarterly') {
+                    // Quarterly percentage-based distribution
+                    console.log('Using quarterly percentage distribution for absolute mode...');
+                    
+                    // Get quarterly percentages for selected months
+                    const selectedMonthsData = selectedMonths.map(monthIndex => {
+                        const quarterIndex = Math.floor(monthIndex / 3);
+                        const quarterPercentages = [
+                            parseFloat(document.getElementById('quarter-1')?.value) || 0,
+                            parseFloat(document.getElementById('quarter-2')?.value) || 0,
+                            parseFloat(document.getElementById('quarter-3')?.value) || 0,
+                            parseFloat(document.getElementById('quarter-4')?.value) || 0
+                        ];
+                        const monthlyPercentage = quarterPercentages[quarterIndex] / 3; // Monthly percentage
+                        
+                        console.log(`Month ${monthNames[monthIndex]} (Q${quarterIndex + 1}): ${monthlyPercentage}% monthly`);
+                        
+                        return {
+                            index: monthIndex,
+                            monthlyPercentage: monthlyPercentage
+                        };
+                    });
+                    
+                    // Calculate total percentage of selected months
+                    const totalSelectedPercentage = selectedMonthsData.reduce((sum, month) => sum + month.monthlyPercentage, 0);
+                    console.log('Total selected percentage:', totalSelectedPercentage);
+                    
+                    if (totalSelectedPercentage > 0) {
+                        // Distribute surplus proportionally among selected months
+                        console.log('Distributing proportionally...');
+                        selectedMonthsData.forEach(monthData => {
+                            const proportionalShare = (monthData.monthlyPercentage / totalSelectedPercentage) * totalSurplus;
+                            const currentActual = parseFloat(rows[monthData.index].cells[3].textContent.replace(/,/g, '')) || 0;
+                            const newActual = currentActual + proportionalShare;
+                            
+                            console.log(`Month ${monthNames[monthData.index]}: ${currentActual} + ${proportionalShare} = ${newActual}`);
+                            
+                            rows[monthData.index].cells[3].textContent = formatNumber(newActual);
+                            
+                            // Update actual rakes for this row
+                            const rakeCapacity = parseFloat(document.getElementById('rake-quantity-input')?.value) || 0;
+                            if (rakeCapacity > 0) {
+                                const actualRakes = newActual / rakeCapacity;
+                                rows[monthData.index].cells[4].textContent = formatNumber(actualRakes.toFixed(2));
+                            }
+                        });
+                    } else {
+                        // If no quarterly percentages available, fall back to equal distribution
+                        console.log('No quarterly percentages available, falling back to equal distribution...');
+                        const equalShare = totalSurplus / selectedMonths.length;
+                        selectedMonths.forEach(monthIndex => {
+                            const currentActual = parseFloat(rows[monthIndex].cells[3].textContent.replace(/,/g, '')) || 0;
+                            const newActual = currentActual + equalShare;
+                            
+                            console.log(`Month ${monthNames[monthIndex]}: ${currentActual} + ${equalShare} = ${newActual}`);
+                            
+                            rows[monthIndex].cells[3].textContent = formatNumber(newActual);
+                            
+                            // Update actual rakes for this row
+                            const rakeCapacity = parseFloat(document.getElementById('rake-quantity-input')?.value) || 0;
+                            if (rakeCapacity > 0) {
+                                const actualRakes = newActual / rakeCapacity;
+                                rows[monthIndex].cells[4].textContent = formatNumber(actualRakes.toFixed(2));
+                            }
+                        });
+                    }
+                } else {
+                    // Equal distribution method
+                    console.log('Using equal distribution for absolute mode...');
+                    const equalShare = totalSurplus / selectedMonths.length;
+                    selectedMonths.forEach(monthIndex => {
+                        const currentActual = parseFloat(rows[monthIndex].cells[3].textContent.replace(/,/g, '')) || 0;
+                        const newActual = currentActual + equalShare;
+                        
+                        console.log(`Month ${monthNames[monthIndex]}: ${currentActual} + ${equalShare} = ${newActual}`);
+                        
+                        rows[monthIndex].cells[3].textContent = formatNumber(newActual);
+                        
+                        // Update actual rakes for this row
+                        const rakeCapacity = parseFloat(document.getElementById('rake-quantity-input')?.value) || 0;
+                        if (rakeCapacity > 0) {
+                            const actualRakes = newActual / rakeCapacity;
+                            rows[monthIndex].cells[4].textContent = formatNumber(actualRakes.toFixed(2));
+                        }
+                    });
+                }
+            }
+            
+            updateQuarterlyTable();
+            updateSummaryTable();
+            updatePerDayValues();
+            updatePercentages();
+            
+            // Ensure sticky columns are maintained after table updates
+            if (window.applyStickyColumns) {
+                window.applyStickyColumns();
+            }
+            
+            // Close modal
+            closeMonthSelectionModal();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('month-selection-modal');
+            if (event.target === modal) {
+                closeMonthSelectionModal();
+            }
+        });
+
     </script>
+    
+    <!-- Month Selection Modal for Absolute Mode -->
+    <div id="month-selection-modal" class="month-selection-modal">
+        <div class="month-selection-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Select Months for Redistribution
+                </h5>
+                <button type="button" class="btn-close" onclick="closeMonthSelectionModal()"></button>
+            </div>
+            
+            <div class="mb-3">
+                <p class="text-muted mb-2">
+                    <strong>Last Changed Month:</strong> <span id="changed-month-name"></span><br>
+                    <strong>Surplus to Redistribute:</strong> <span id="difference-amount"></span> MT<br>
+                    <small><em>Surplus = Total Allocated - Total Actual (up to changed month)</em></small>
+                </p>
+            </div>
+            
+            <div class="month-checkbox-group" id="month-checkbox-group">
+                <!-- Month checkboxes will be populated dynamically -->
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button type="button" class="btn btn-secondary" onclick="closeMonthSelectionModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-professional-green" onclick="redistributeAbsoluteMode()">
+                    <i class="fas fa-check me-2"></i>
+                    Redistribute
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
