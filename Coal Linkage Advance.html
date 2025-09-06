@@ -17,7 +17,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
-/* CSS Variables for Theme Support */
+/* ========================================================================
+   COAL LINKAGE ADVANCE CALCULATOR - CLEAN CSS STRUCTURE
+   ======================================================================== */
+
+/* ========================================================================
+   1. CSS VARIABLES & THEME SUPPORT
+   ======================================================================== */
 :root {
     /* Light Theme Colors */
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,10 +33,16 @@
     --input-bg-light: rgba(255, 255, 255, 0.9);
     --input-border-light: rgba(255, 255, 255, 0.3);
     --input-text-light: #333333;
-    --label-bg-light: linear-gradient(135deg, #6c757d, #495057);
-    --label-text-light: #ffffff;
     --section-bg-light: rgba(255, 255, 255, 0.15);
     --section-border-light: rgba(255, 255, 255, 0.3);
+    
+    /* Table Colors */
+    --table-bg: #ffffff;
+    --table-header-bg: #f8f9fa;
+    --table-border: #dee2e6;
+    --table-hover: #e8f5e8;
+    --sticky-bg: #f8f9fa;
+    --sticky-shadow: 2px 0 5px rgba(0,0,0,0.15);
 }
 
 [data-theme="dark"] {
@@ -42,333 +54,256 @@
     --input-bg-light: rgba(40, 40, 60, 0.8);
     --input-border-light: rgba(255, 255, 255, 0.2);
     --input-text-light: #e0e0e0;
-    --label-bg-light: linear-gradient(135deg, #2c2c54, #40407a);
-    --label-text-light: #ffffff;
     --section-bg-light: rgba(40, 40, 60, 0.6);
     --section-border-light: rgba(255, 255, 255, 0.1);
+    
+    /* Dark Table Colors */
+    --table-bg: rgba(50, 50, 70, 0.8);
+    --table-header-bg: linear-gradient(135deg, #2c2c54, #40407a);
+    --table-border: rgba(255, 255, 255, 0.1);
+    --table-hover: rgba(70, 70, 90, 0.9);
+    --sticky-bg: rgba(50, 50, 70, 1);
+    --sticky-shadow: 2px 0 5px rgba(255,255,255,0.1);
 }
 
-/* Professional Glass-Morphism Design */
+/* ========================================================================
+   2. BASE LAYOUT & TYPOGRAPHY
+   ======================================================================== */
 body {
-    margin: 0;
-    padding: 0;
     background: var(--primary-gradient);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: all 0.3s ease;
+    margin: 0;
+    padding: 0;
 }
 
 .main-container {
-    min-height: 100vh;
-    backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px 0;
+    padding: 20px;
+    margin-top: 20px;
     position: relative;
 }
 
 .calculator-container {
-    max-width: 1200px;
-    margin: 0 auto;
     background: var(--card-bg-light);
     backdrop-filter: blur(20px);
     border: 1px solid var(--card-border-light);
     border-radius: 20px;
-    padding: 30px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-/* CONTROL BUTTONS */
-.btn-back, .theme-toggle {
-    position: fixed;
-    top: 15px;
-    width: 45px;
-    height: 45px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.btn-back {
-    left: 15px;
-}
-
-.btn-back:hover {
-    background: rgba(40, 167, 69, 0.8);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-}
-
-.theme-toggle {
-    right: 15px;
-    background: linear-gradient(135deg, rgba(243, 234, 71, 0.8), rgba(255, 152, 0, 0.8));
-}
-
-.theme-toggle:hover {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 1), rgba(255, 152, 0, 1));
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-}
-
-.theme-icon {
-    transition: all 0.3s ease;
-    color: white;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    animation: iconPulse 3s ease-in-out infinite;
-}
-
-[data-theme="dark"] .theme-icon.fa-sun {
-    color: #ffd700;
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-    animation: sunGlow 2s ease-in-out infinite alternate;
-}
-
-[data-theme="light"] .theme-icon.fa-moon {
-    color: #ffffff;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(74, 144, 226, 0.6);
-    animation: moonGlow 2.5s ease-in-out infinite alternate;
-}
-
-.theme-toggle:hover .theme-icon {
-    transform: rotate(15deg) scale(1.1);
-    animation: none;
-}
-
-@keyframes iconPulse {
-    0%, 100% { 
-        transform: scale(1); 
-        opacity: 0.9; 
-    }
-    50% { 
-        transform: scale(1.05); 
-        opacity: 1; 
-    }
-}
-
-@keyframes sunGlow {
-    0% { 
-        text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.4);
-        transform: rotate(0deg);
-    }
-    100% { 
-        text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 35px rgba(255, 215, 0, 0.6);
-        transform: rotate(5deg);
-    }
-}
-
-@keyframes moonGlow {
-    0% { 
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(74, 144, 226, 0.6);
-        filter: brightness(1);
-    }
-    100% { 
-        text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 35px rgba(74, 144, 226, 0.8);
-        filter: brightness(1.2);
-    }
-}
-
-[data-theme="light"] .theme-toggle {
-    background: linear-gradient(135deg, rgba(74, 144, 226, 0.8), rgba(59, 130, 246, 0.8));
-}
-
-[data-theme="light"] .theme-toggle:hover {
-    background: linear-gradient(135deg, rgba(74, 144, 226, 1), rgba(59, 130, 246, 1));
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    padding: 30px;
+    margin: 0 auto;
+    max-width: 1400px;
+    position: relative;
 }
 
 .calculator-title {
-    text-align: center;
     color: var(--text-light);
+    text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    letter-spacing: 1px;
+}
+
+/* Animated main heading icon */
+.calculator-title .fa-chart-line {
+    animation: chartPulse 2s ease-in-out infinite;
+    color: #ffd700;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+}
+
+@keyframes chartPulse {
+    0% {
+        transform: scale(1) rotate(0deg);
+        color: #ffd700;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    }
+    25% {
+        transform: scale(1.1) rotate(5deg);
+        color: #ff6b6b;
+        filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.7));
+    }
+    50% {
+        transform: scale(1.2) rotate(0deg);
+        color: #4ecdc4;
+        filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.8));
+    }
+    75% {
+        transform: scale(1.1) rotate(-5deg);
+        color: #45b7d1;
+        filter: drop-shadow(0 0 15px rgba(69, 183, 209, 0.7));
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        color: #ffd700;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    }
+}
+
+/* Performance optimization for animations */
+.table-title::after,
+.calculator-title .fa-chart-line {
+    will-change: transform, background-position, color, filter;
+}
+
+/* ========================================================================
+   3. NAVIGATION BUTTONS
+   ======================================================================== */
+.btn-back, .theme-toggle {
+    position: fixed;
+    top: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    padding: 0;
 }
 
-.calculator-title i.fa-chart-line {
-    animation: chartBounce 3s ease-in-out infinite;
-    transform-origin: center;
+.btn-back {
+    left: 20px;
+    background: linear-gradient(135deg, #6c757d, #495057);
+}
+
+.theme-toggle {
+    right: 20px;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.btn-back:hover, .theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme specific styling for theme toggle button */
+[data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Rainbow Animation Toggle Button */
+.rainbow-toggle {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    z-index: 1000;
     transition: all 0.3s ease;
-    color: #28a745;
-    text-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 400% 400%;
+    animation: rainbowButtonAnimation 3s ease-in-out infinite;
 }
 
-.calculator-title:hover i.fa-chart-line {
-    animation: chartSpin 0.8s ease-in-out;
-    transform: scale(1.1);
-    color: #20c997;
-}
-
-[data-theme="dark"] .calculator-title i.fa-chart-line {
-    color: #4dabf7;
-    text-shadow: 0 0 15px rgba(77, 171, 247, 0.6);
-}
-
-[data-theme="dark"] .calculator-title:hover i.fa-chart-line {
-    color: #74c0fc;
-}
-
-@keyframes chartBounce {
-    0%, 100% { 
-        transform: translateY(0) rotate(0deg) scale(1); 
+@keyframes rainbowButtonAnimation {
+    0% {
+        background-position: 0% 50%;
+        transform: scale(1) rotate(0deg);
     }
-    25% { 
-        transform: translateY(-8px) rotate(2deg) scale(1.05); 
+    25% {
+        background-position: 50% 0%;
+        transform: scale(1.05) rotate(90deg);
     }
-    50% { 
-        transform: translateY(0) rotate(0deg) scale(1); 
+    50% {
+        background-position: 100% 50%;
+        transform: scale(1.1) rotate(180deg);
     }
-    75% { 
-        transform: translateY(-4px) rotate(-1deg) scale(1.02); 
+    75% {
+        background-position: 50% 100%;
+        transform: scale(1.05) rotate(270deg);
     }
-}
-
-@keyframes chartSpin {
-    0% { 
-        transform: rotate(0deg) scale(1.1); 
-    }
-    100% { 
-        transform: rotate(360deg) scale(1.1); 
+    100% {
+        background-position: 0% 50%;
+        transform: scale(1) rotate(360deg);
     }
 }
 
-.calculator-subtitle {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    margin-bottom: 15px;
-    font-weight: 300;
+.rainbow-toggle:hover {
+    transform: translateY(-2px) scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
 }
 
-/* Input Groups - Professional Styling */
+.rainbow-toggle.disabled {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    animation: none;
+}
+
+.rainbow-toggle.disabled:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================================================
+   4. FORM CONTROLS & INPUTS
+   ======================================================================== */
+.form-control {
+    background: var(--input-bg-light);
+    border: 1px solid var(--input-border-light);
+    border-left: 1px solid #007bff;
+    border-radius: 8px;
+    color: var(--input-text-light);
+    padding: 10px 15px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    height: 42px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+/* Form control in input groups */
+.input-group .form-control {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+    flex: 1;
+}
+
 .input-group {
-    margin-bottom: 12px;
     display: flex;
     align-items: stretch;
-}
-
-/* Error badge spacing */
-#input-error-badge {
-    margin: 8px 0;
-}
-
-/* Error message alert styling */
-.alert {
-    padding: 12px 15px;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
-}
-
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.btn-close {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    opacity: 0.7;
-    padding: 0;
-    margin-left: 10px;
-}
-
-.btn-close:hover {
-    opacity: 1;
-}
-
-.btn-close::before {
-    content: "×";
-}
-
-/* Dark theme support for alerts */
-[data-theme="dark"] .alert-danger {
-    color: #f8d7da;
-    background-color: #721c24;
-    border-color: #842029;
-}
-
-[data-theme="dark"] .alert-warning {
-    color: #fff3cd;
-    background-color: #856404;
-    border-color: #664d03;
-}
-
-[data-theme="dark"] .alert-success {
-    color: #d4edda;
-    background-color: #155724;
-    border-color: #0f4132;
-}
-
-[data-theme="dark"] .btn-close {
-    color: #ffffff;
-}
-
-/* Fix redistribution controls text color in dark mode */
-[data-theme="dark"] .redistribution-mode-container,
-[data-theme="dark"] .distribution-method-container {
-    color: #ffffff;
-}
-
-[data-theme="dark"] .redistribution-mode-container .form-label,
-[data-theme="dark"] .distribution-method-container .form-label {
-    color: #ffffff;
-}
-
-[data-theme="dark"] .redistribution-mode-container .text-muted,
-[data-theme="dark"] .distribution-method-container .text-muted {
-    color: #b0b0c0 !important;
-}
-
-/* Center input parameters content */
-.table-container .row {
-    justify-content: center;
-}
-
-.table-container .col-lg-6 {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .input-group-prepend {
     display: flex;
+    align-items: stretch;
 }
 
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #4dabf7;
+    border-left: 1px solid #4dabf7;
+    box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+    outline: none;
+}
+
+.form-label {
+    color: var(--text-light);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* ========================================================================
+   4.1. INPUT GROUP STYLES
+   ======================================================================== */
 .input-group-text1 {
     background: linear-gradient(135deg, #495057, #343a40);
     color: white;
@@ -449,132 +384,105 @@ body {
     box-sizing: border-box;
 }
 
-.form-control {
-    border: 1px solid #dee2e6;
-    border-left: none;
-    border-radius: 0 8px 8px 0;
-    padding: 8px 12px;
-    background: var(--input-bg-light);
-    color: var(--input-text-light);
-    transition: all 0.3s ease;
-    font-weight: 500;
-    flex: 1;
-    height: 42px;
-    line-height: 1.5;
-    box-sizing: border-box;
-    font-size: 0.875rem;
+/* Dark theme support for input groups */
+[data-theme="dark"] .input-group-text1,
+[data-theme="dark"] .input-group-text3 {
+    background: linear-gradient(135deg, #2c2c54, #40407a);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-.form-control:focus {
-    outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-    background: white;
+[data-theme="dark"] .input-group-text2,
+[data-theme="dark"] .input-group-text4 {
+    background: rgba(40, 40, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
 }
 
+/* Dark theme for form controls */
 [data-theme="dark"] .form-control {
     background: rgba(40, 40, 60, 0.8);
     border-color: rgba(255, 255, 255, 0.2);
-    color: #e0e0e0 !important;
+    border-left: 2px solid #17a2b8;
+    color: #e0e0e0;
 }
 
 [data-theme="dark"] .form-control:focus {
     background: rgba(50, 50, 70, 0.9);
     border-color: #4dabf7;
+    border-left: 1px solid #4dabf7;
     box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
-}
-
-[data-theme="dark"] .form-control::placeholder {
-    color: #aaaaaa !important;
-}
-
-/* DARK THEME - TABLE STYLING */
-[data-theme="dark"] .table-container {
-    background: rgba(40, 40, 60, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .table-title {
-    color: #ffffff;
-    border-bottom-color: #4dabf7;
-}
-
-/* Dark Theme - Table Header Container */
-[data-theme="dark"] .table-header-container {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-[data-theme="dark"] .table-header-container .table-title {
-    border-bottom-color: #4dabf7;
-}
-
-/* Dark Theme - Table Header Icon Colors */
-[data-theme="dark"] .table-title .fa-calendar-alt {
-    color: #4dabf7; /* Light Blue for Monthly */
-}
-
-[data-theme="dark"] .table-title .fa-chart-pie {
-    color: #51cf66; /* Light Green for Quarterly */
-}
-
-[data-theme="dark"] .table-title .fa-calendar-day {
-    color: #ffd43b; /* Light Yellow for Per Day */
-}
-
-[data-theme="dark"] .table-title .fa-chart-bar {
-    color: #ff6b6b; /* Light Red for Summary */
-}
-
-[data-theme="dark"] .CoalLinkageAdvance-table th {
-    background: linear-gradient(135deg, #2c2c54, #40407a);
     color: #ffffff;
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table th:first-child {
-    background: linear-gradient(135deg, #2c2c54, #40407a) !important;
-    color: #ffffff !important;
-    z-index: 10001 !important;
+/* Dark theme toggle button colors */
+[data-theme="dark"] .redistribution-toggle input[type="radio"]:checked + .toggle-option {
+    background: rgba(75, 192, 192, 0.8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(75, 192, 192, 0.3);
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table td {
-    background: rgba(50, 50, 70, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
+[data-theme="dark"] .distribution-method-toggle input[type="radio"]:checked + .toggle-option {
+    background: rgba(255, 159, 64, 0.8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 159, 64, 0.3);
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table td:first-child {
-    background-color: rgba(60, 60, 80, 0.9) !important;
-    color: #ffffff !important;
-    border-right-color: rgba(255, 255, 255, 0.2) !important;
-    z-index: 10000 !important;
-    position: sticky !important;
-    left: 0 !important;
+/* ========================================================================
+   5. TOGGLE BUTTONS & CONTROLS
+   ======================================================================== */
+.redistribution-mode-container,
+.distribution-method-container {
+    background: var(--section-bg-light);
+    border: 1px solid var(--section-border-light);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td {
-    background-color: rgba(70, 70, 90, 0.9);
+.redistribution-toggle,
+.distribution-method-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 4px;
+    gap: 2px;
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td:first-child {
-    background-color: rgba(80, 80, 100, 0.9) !important;
+.redistribution-toggle input[type="radio"],
+.distribution-method-toggle input[type="radio"] {
+    display: none;
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"] {
-    background: rgba(255, 193, 7, 0.2);
-    border-color: #ffc107;
-    color: #ffffff;
+.redistribution-toggle .toggle-option,
+.distribution-method-toggle .toggle-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"]:focus {
-    background: rgba(77, 171, 247, 0.2);
-    border-color: #4dabf7;
-    color: #ffffff;
-    box-shadow: 0 0 5px rgba(77, 171, 247, 0.3);
+.redistribution-toggle input[type="radio"]:checked + .toggle-option {
+    background: rgba(0, 123, 255, 0.8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
 }
 
-/* Professional Buttons */
+.distribution-method-toggle input[type="radio"]:checked + .toggle-option {
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* ========================================================================
+   6. PROFESSIONAL BUTTONS
+   ======================================================================== */
 .btn-professional {
     background: linear-gradient(135deg, #007bff, #0056b3);
     border: none;
@@ -613,521 +521,260 @@ body {
     color: white;
 }
 
-.btn-professional-orange {
-    background: linear-gradient(135deg, #fd7e14, #e55a00);
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
-    margin: 5px;
-}
-
-.btn-professional-orange:hover {
-    background: linear-gradient(135deg, #e55a00, #cc5200);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(253, 126, 20, 0.4);
-    color: white;
-}
-
-/* Professional Tables */
-.table-container {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-}
-
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    position: relative;
-    max-width: 100%;
-    /* Fix for sticky columns */
-    contain: layout style paint;
-}
-
-/* Mobile-specific override for sticky columns */
-@media (max-width: 768px) {
-    .table-responsive {
-        contain: none !important; /* Remove contain property on mobile for sticky positioning */
-    }
-}
-
-/* Ensure sticky positioning works in table-responsive containers */
-.table-responsive .CoalLinkageAdvance-table {
-    position: relative;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-/* MAIN STICKY COLUMN STYLING - Enhanced for table-responsive containers */
-.CoalLinkageAdvance-table {
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    table-layout: fixed !important;
-    width: 100% !important;
-}
-
-/* Equal width for all columns */
-.CoalLinkageAdvance-table th,
-.CoalLinkageAdvance-table td {
-    width: 16.66% !important; /* Default for 6-column tables */
-    min-width: 120px !important;
-    padding: 8px 4px !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-}
-
-/* Summary table has 5 columns */
-#summary-table th,
-#summary-table td {
-    width: 20% !important; /* 100% / 5 columns = 20% each */
-    min-width: 140px !important;
-}
-
-/* Ensure first column has same width as others */
-#summary-table th:first-child,
-#summary-table td:first-child {
-    width: 20% !important;
-    min-width: 140px !important;
-}
-
-.CoalLinkageAdvance-table th:first-child,
-.CoalLinkageAdvance-table td:first-child {
-    position: sticky !important;
-    left: 0 !important;
-    z-index: 10001 !important;
-    background-color: rgba(255, 255, 255, 0.98) !important;
-    font-weight: 600 !important;
-    border-right: 2px solid rgba(0, 123, 255, 0.3) !important;
-    width: 16.66% !important; /* Same width as other columns */
-    min-width: 120px !important;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1) !important;
-    white-space: nowrap !important;
-    display: table-cell !important;
-    /* Ensure proper layering */
-    isolation: isolate !important;
-    /* Override any conflicting transform properties */
-    transform: none !important;
-    /* Ensure proper positioning context */
-    will-change: transform !important;
-}
-
-/* Redistribution Mode Toggle Styling */
-.redistribution-mode-container {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #e0e6ed;
-    border-radius: 12px;
-    padding: 15px;
-    margin-top: 15px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.redistribution-toggle {
-    display: flex;
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid #dee2e6;
-}
-
-.redistribution-toggle input[type="radio"] {
-    display: none;
-}
-
-.redistribution-toggle .toggle-option {
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: transparent;
-    color: #6c757d;
-    font-weight: 500;
-    border: none;
-    white-space: nowrap;
-    margin: 0;
-}
-
-.redistribution-toggle input[type="radio"]:checked + .toggle-option {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
-    transform: translateY(-1px);
-}
-
-.redistribution-toggle .toggle-option:hover {
-    color: #495057;
-    background: rgba(40, 167, 69, 0.1);
-}
-
-.redistribution-toggle input[type="radio"]:checked + .toggle-option:hover {
-    background: linear-gradient(135deg, #218838, #1abc9c);
-    color: white;
-}
-
-/* Dark theme for redistribution toggle */
-[data-theme="dark"] .redistribution-mode-container {
-    background: rgba(60, 60, 80, 0.95);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-[data-theme="dark"] .redistribution-toggle {
-    background: rgba(40, 40, 60, 0.8);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-[data-theme="dark"] .redistribution-toggle .toggle-option {
-    color: #b0b0c0;
-}
-
-[data-theme="dark"] .redistribution-toggle .toggle-option:hover {
-    color: #ffffff;
-    background: rgba(40, 167, 69, 0.2);
-}
-
-/* Distribution Method Toggle Styles */
-.distribution-method-container {
-    padding: 15px;
-    background: rgba(248, 249, 250, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-top: 10px;
-}
-
-.distribution-method-toggle {
-    display: inline-flex;
-    background: #ffffff;
-    border: 2px solid #dee2e6;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.distribution-method-toggle input[type="radio"] {
-    display: none;
-}
-
-.distribution-method-toggle .toggle-option {
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    font-size: 14px;
-    border: none;
-    background: transparent;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-}
-
-.distribution-method-toggle input[type="radio"]:checked + .toggle-option {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-}
-
-.distribution-method-toggle .toggle-option:hover {
-    background: rgba(0, 123, 255, 0.1);
-    color: #007bff;
-}
-
-.distribution-method-toggle input[type="radio"]:checked + .toggle-option:hover {
-    background: linear-gradient(135deg, #0056b3, #004085);
-    color: white;
-}
-
-/* Dark Theme Support for Distribution Method */
-[data-theme="dark"] .distribution-method-container {
-    background: rgba(40, 40, 60, 0.8);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .distribution-method-toggle {
-    background: rgba(40, 40, 60, 0.8);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-[data-theme="dark"] .distribution-method-toggle .toggle-option {
-    color: #b0b0c0;
-}
-
-[data-theme="dark"] .distribution-method-toggle .toggle-option:hover {
-    color: #ffffff;
-    background: rgba(0, 123, 255, 0.2);
-}
-
-/* Month Selection Modal for Absolute Mode */
-.month-selection-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 10050;
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-.month-selection-content {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-}
-
-.month-checkbox-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.month-checkbox-item {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.month-checkbox-item:hover {
-    background: #f8f9fa;
-    border-color: #28a745;
-}
-
-.month-checkbox-item input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-.month-checkbox-item.selected {
-    background: linear-gradient(135deg, #e7f5e7, #d4edda);
-    border-color: #28a745;
-    color: #155724;
-}
-
-[data-theme="dark"] .month-selection-content {
-    background: #2c2c54;
-    color: #e0e0e0;
-}
-
-[data-theme="dark"] .month-checkbox-item {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(40, 40, 60, 0.8);
-}
-
-[data-theme="dark"] .month-checkbox-item:hover {
-    background: rgba(40, 167, 69, 0.2);
-    border-color: #28a745;
-}
-
-[data-theme="dark"] .month-checkbox-item.selected {
-    background: rgba(40, 167, 69, 0.3);
-    border-color: #28a745;
-    color: #ffffff;
-}
-
-/* Close button styling */
-.btn-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    transition: color 0.3s ease;
-}
-
-.btn-close:hover {
-    color: #dc3545;
-}
-
-.btn-close::before {
-    content: "×";
-}
-
-[data-theme="dark"] .btn-close {
-    color: #b0b0c0;
-}
-
-[data-theme="dark"] .btn-close:hover {
-    color: #ff6b6b;
-}
-
-.CoalLinkageAdvance-table th:first-child {
-    background: linear-gradient(135deg, #495057, #343a40) !important;
-    color: white !important;
-    z-index: 10002 !important;
-    font-weight: 700 !important;
-}
-
-.responsive-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    position: relative;
-    max-width: 100%;
+/* ========================================================================
+   7. TABLE STRUCTURE & CONTAINERS
+   ======================================================================== */
+.table-header-container {
+    margin-bottom: 15px;
 }
 
 .table-title {
+    color: var(--text-light);
     font-size: 1.4rem;
     font-weight: 700;
-    color: #343a40;
     margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
     text-align: center;
-    border-bottom: 3px solid #28a745;
     padding-bottom: 10px;
+    border-bottom: 2px solid var(--text-light);
+    position: relative;
 }
 
-/* Table Header Container - Clean Design without Glass Effect */
-.table-header-container {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    margin-bottom: 10px;
-    box-shadow: none;
-    transition: all 0.3s ease;
+.table-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 400% 100%;
+    border-radius: 2px;
+    animation: rainbowAnimation 3s ease-in-out infinite;
 }
 
-.table-header-container .table-title {
-    margin-bottom: 0;
-    border-bottom: 3px solid #28a745;
-    padding-bottom: 10px;
+@keyframes rainbowAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-/* Table Section Margins */
-.row .col-12 {
-    padding-left: 20px;
-    padding-right: 20px;
+/* Rainbow animation control classes */
+.no-rainbow .table-title::after {
+    animation: none !important;
+    background: linear-gradient(90deg, #dee2e6, #adb5bd) !important;
 }
 
-/* Individual Table Header Icon Colors */
+[data-theme="dark"] .no-rainbow .table-title::after {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* Icon colors for different table titles */
+.table-title .fa-cogs {
+    color: #28a745; /* Green for Input Parameters */
+}
+
 .table-title .fa-calendar-alt {
-    color: #007bff; /* Blue for Monthly */
+    color: #007bff; /* Blue for Monthly Values */
 }
 
 .table-title .fa-chart-pie {
-    color: #28a745; /* Green for Quarterly */
+    color: #ffc107; /* Yellow for Quarterly Values */
 }
 
 .table-title .fa-calendar-day {
-    color: #ffc107; /* Yellow for Per Day */
+    color: #fd7e14; /* Orange for Per Day Values */
 }
 
 .table-title .fa-chart-bar {
-    color: #dc3545; /* Red for Summary */
+    color: #e40a0a; /* Purple for Summary */
 }
 
-.CoalLinkageAdvance-table {
-    font-size: 0.9rem;
-    table-layout: fixed;
+/* Glowing green pencil-square icon in table header */
+.bi-pencil-square {
+    color: #28a745;
+    filter: drop-shadow(0 0 8px rgba(40, 167, 69, 0.8));
+    animation: pencilGlow 2s ease-in-out infinite alternate;
+    transform-origin: center;
+}
+
+@keyframes pencilGlow {
+    0% {
+        color: #28a745;
+        filter: drop-shadow(0 0 8px rgba(40, 167, 69, 0.8));
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        color: #20c997;
+        filter: drop-shadow(0 0 10px rgba(32, 201, 151, 0.9));
+        transform: scale(1.1) rotate(-3deg);
+    }
+    50% {
+        color: #17a2b8;
+        filter: drop-shadow(0 0 12px rgba(23, 162, 184, 1));
+        transform: scale(1.15) rotate(0deg);
+    }
+    75% {
+        color: #20c997;
+        filter: drop-shadow(0 0 10px rgba(32, 201, 151, 0.9));
+        transform: scale(1.1) rotate(3deg);
+    }
+    100% {
+        color: #28a745;
+        filter: drop-shadow(0 0 8px rgba(40, 167, 69, 0.8));
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Dark theme support for glowing pencil icon */
+[data-theme="dark"] .bi-pencil-square {
+    color: #20c997;
+    filter: drop-shadow(0 0 10px rgba(32, 201, 151, 0.9));
+}
+
+/* Table header container spacing */
+.table-header-container {
+    margin-bottom: 10px;
+}
+
+/* Consistent spacing between table sections */
+.row.mt-5 {
+    margin-top: 1.5rem !important;
+}
+
+.coal-table-wrapper {
     width: 100%;
-    min-width: 800px;
-    word-wrap: break-word;
-    border: none;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
     position: relative;
+    border-radius: 8px;
+    background: var(--table-bg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ========================================================================
+   8. TABLE BASE STYLING
+   ======================================================================== */
+.CoalLinkageAdvance-table {
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    margin: 0;
+    font-size: 14px;
+    table-layout: fixed;
+}
+
+.CoalLinkageAdvance-table th,
+.CoalLinkageAdvance-table td {
+    padding: 12px 8px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid var(--table-border);
+    background: var(--table-bg);
+    white-space: nowrap;
+    min-width: 120px;
 }
 
 .CoalLinkageAdvance-table th {
     background: linear-gradient(135deg, #343a40, #495057);
-    color: white;
-    font-weight: 600;
-    text-align: center;
-    vertical-align: middle;
-    padding: 12px 8px;
-    border: none;
-    white-space: normal;
-    word-wrap: break-word;
-    hyphens: auto;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
-/* Sticky first column for all tables */
+/* ========================================================================
+   9. STICKY FIRST COLUMN - UNIFIED RULES
+   ======================================================================== */
 .CoalLinkageAdvance-table th:first-child,
 .CoalLinkageAdvance-table td:first-child {
     position: sticky !important;
     left: 0 !important;
-    z-index: 10000 !important;
-    background-color: #f8f9fa !important;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-    border-right: 2px solid #dee2e6 !important;
-    min-width: 80px !important;
-    max-width: 120px !important;
-    font-weight: 700 !important;
+    background: var(--sticky-bg) !important;
+    box-shadow: var(--sticky-shadow) !important;
+    border-right: 2px solid var(--table-border) !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    min-width: 200px !important;
+    width: 200px !important;
+    max-width: 200px !important;
+    z-index: 999 !important;
 }
 
-.CoalLinkageAdvance-table th:first-child {
+/* Equal width for remaining columns on desktop */
+.CoalLinkageAdvance-table th:not(:first-child),
+.CoalLinkageAdvance-table td:not(:first-child) {
+    width: calc((100% - 200px) / 5) !important;
+    min-width: 140px !important;
+    max-width: calc((100% - 200px) / 5) !important;
+}
+
+/* Header sticky columns get higher z-index */
+.CoalLinkageAdvance-table thead th:first-child {
+    z-index: 1001 !important;
     background: linear-gradient(135deg, #343a40, #495057) !important;
-    color: white !important;
-    z-index: 10001 !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Light theme first column specific rules */
+.CoalLinkageAdvance-table:not([data-theme="dark"]) th:first-child {
+    background: linear-gradient(135deg, #343a40, #495057) !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+.CoalLinkageAdvance-table:not([data-theme="dark"]) td:first-child {
+    background: var(--sticky-bg) !important;
+    color: #333333 !important;
+}
+
+/* ========================================================================
+   10. TABLE INTERACTIONS
+   ======================================================================== */
+.CoalLinkageAdvance-table tr:hover td {
+    background: var(--table-hover);
 }
 
 .CoalLinkageAdvance-table tr:hover td:first-child {
-    background-color: #e8f5e8 !important;
+    background: var(--table-hover) !important;
+    color: #333333 !important;
 }
 
-.CoalLinkageAdvance-table td {
-    padding: 6px 8px;
-    vertical-align: middle;
-    border: 1px solid #dee2e6;
-    background: white;
-    transition: background-color 0.3s ease;
-}
-
-.CoalLinkageAdvance-table td:first-child {
-    font-size: 0.95rem;
-    white-space: normal;
-    text-align: left;
-    font-weight: 600;
-    background-color: #f8f9fa;
-    color: #495057;
-}
-
-.CoalLinkageAdvance-table tr:hover td {
-    background-color: #e8f5e8;
+/* Light theme hover states */
+.CoalLinkageAdvance-table:not([data-theme="dark"]) tr:hover td:first-child {
+    background: var(--table-hover) !important;
+    color: #333333 !important;
 }
 
 .CoalLinkageAdvance-table td[contenteditable="true"] {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
+    background: rgba(255, 193, 7, 0.1);
     cursor: text;
+    border-color: #ffc107;
 }
 
 .CoalLinkageAdvance-table td[contenteditable="true"]:focus {
-    background: #ffffff;
-    border: 2px solid #28a745;
+    background: rgba(77, 171, 247, 0.1);
+    border-color: #4dabf7;
     outline: none;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 0 5px rgba(77, 171, 247, 0.3);
 }
 
-/* Floating Icons */
+/* ========================================================================
+   11. FLOATING ICONS & SIDEBAR
+   ======================================================================== */
 .floating-icons {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 20px;
+    right: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1135,25 +782,25 @@ body {
 }
 
 .floating-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    position: relative;
+    padding: 0;
 }
 
 .floating-icon:hover {
     transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
 }
 
 /* Export Dropdown */
@@ -1217,23 +864,22 @@ body {
     box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
 }
 
-/* Formula Sidebar */
 .formula-sidebar {
     position: fixed;
     top: 0;
-    right: -600px;
-    width: 600px;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 1001;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background: rgba(26, 26, 46, 0.95);
+    color: white;
+    z-index: 10050;
     transition: right 0.3s ease;
     overflow-y: auto;
-    padding: 20px;
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.formula-sidebar.active,
 .formula-sidebar.show {
     right: 0;
 }
@@ -1245,98 +891,113 @@ body {
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+    z-index: 10000;
+    display: none;
+    transition: opacity 0.3s ease;
 }
 
 .sidebar-overlay.show {
-    opacity: 1;
-    visibility: visible;
+    display: block;
 }
 
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
+/* Light theme for formula sidebar */
+[data-theme="light"] .formula-sidebar {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333333;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================================================
+   12. MONTH SELECTION MODAL
+   ======================================================================== */
+.month-selection-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10050;
+    display: none;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #28a745;
 }
 
-.sidebar-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #343a40;
+.month-selection-content {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-.close-sidebar {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #6c757d;
-    cursor: pointer;
-    transition: color 0.3s ease;
+.month-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
 }
 
-.close-sidebar:hover {
-    color: #343a40;
-}
-
-/* Responsive Design */
+/* ========================================================================
+   13. MOBILE RESPONSIVE DESIGN
+   ======================================================================== */
 @media (max-width: 992px) {
+    .main-container,
     .calculator-container {
-        margin: 0 10px;
+        overflow-x: visible !important;
         padding: 15px;
     }
     
     .calculator-title {
         font-size: 1.6rem;
-        text-align: center;
     }
     
-    .formula-sidebar {
-        width: 100%;
-        right: -100%;
+    .CoalLinkageAdvance-table {
+        font-size: 12px;
+        table-layout: auto;
     }
     
-    .floating-icons {
-        bottom: 15px;
-        right: 15px;
+    .CoalLinkageAdvance-table th,
+    .CoalLinkageAdvance-table td {
+        padding: 8px 4px;
+        min-width: 100px;
     }
     
-    .input-group-text1,
-    .input-group-text3 {
-        min-width: 140px;
-        width: 140px;
-        font-size: 0.8rem;
+    /* Fix header font size to match first column in tablet mode */
+    .CoalLinkageAdvance-table th {
+        font-size: 11px;
     }
     
-    /* Removed fixed width restriction for form-control to allow mobile responsiveness */
-    
-    .table-container {
-        padding: 15px;
-        margin-bottom: 20px;
+    .CoalLinkageAdvance-table th:first-child,
+    .CoalLinkageAdvance-table td:first-child {
+        min-width: 120px !important;
+        width: 120px !important;
+        max-width: 120px !important;
+        font-size: 11px;
     }
     
-    .table-title {
-        font-size: 1.1rem;
+    /* Reset equal width constraint for mobile */
+    .CoalLinkageAdvance-table th:not(:first-child),
+    .CoalLinkageAdvance-table td:not(:first-child) {
+        width: auto !important;
+        min-width: 100px !important;
+        max-width: none !important;
     }
 }
 
 @media (max-width: 768px) {
-    .main-container {
-        padding: 10px;
-        overflow-x: hidden;
-        margin-top: 10px;
-    }
-    
     .btn-back, .theme-toggle {
-        top: 10px;
         width: 45px;
         height: 45px;
         font-size: 16px;
+        top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
     
     .btn-back {
@@ -1347,40 +1008,83 @@ body {
         right: 10px;
     }
     
-    .calculator-container {
-        margin: 0 5px;
-        padding: 10px;
-        max-width: 100%;
-        width: calc(100% - 10px);
-        overflow-x: hidden;
-        box-sizing: border-box;
+    .rainbow-toggle {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        top: 60px;
+        right: 25px;
     }
     
     .calculator-title {
-        font-size: 1.1rem;
-        line-height: 1.3;
-        text-align: center;
-        gap: 2px;
-        margin-bottom: 8px;
-    }
-
-    .calculator-title i.fa-chart-line {
-        font-size: 0.9em;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
     }
     
-    .input-group {
-        margin-bottom: 8px;
-        width: 100%;
+    .redistribution-toggle,
+    .distribution-method-toggle {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .redistribution-toggle .toggle-option,
+    .distribution-method-toggle .toggle-option {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+    
+    .CoalLinkageAdvance-table {
+        font-size: 11px;
+    }
+    
+    .CoalLinkageAdvance-table th,
+    .CoalLinkageAdvance-table td {
+        padding: 6px 3px;
+        min-width: 80px;
+    }
+    
+    /* Fix header font size to match table content in mobile */
+    .CoalLinkageAdvance-table th {
+        font-size: 10px;
+    }
+    
+    .CoalLinkageAdvance-table th:first-child,
+    .CoalLinkageAdvance-table td:first-child {
+        min-width: 100px !important;
+        width: 100px !important;
+        max-width: 100px !important;
+        font-size: 10px;
+    }
+    
+    /* Reset equal width constraint for smallest mobile */
+    .CoalLinkageAdvance-table th:not(:first-child),
+    .CoalLinkageAdvance-table td:not(:first-child) {
+        width: auto !important;
+        min-width: 70px !important;
+        max-width: none !important;
+    }
+    
+    .floating-icons {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .floating-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
     
+    /* Mobile input group adjustments */
     .input-group-text1,
     .input-group-text3 {
         min-width: 140px;
         width: 140px;
-        font-size: 0.75rem;
-        padding: 8px 6px;
-        flex-shrink: 0;
+        font-size: 0.8rem;
     }
     
     .input-group-text2,
@@ -1388,592 +1092,176 @@ body {
         min-width: 45px;
         width: 45px;
         font-size: 0.75rem;
-        padding: 8px 4px;
-        flex-shrink: 0;
-    }
-
-    .form-control {
-        flex: 1;
-        min-width: 0;
-        font-size: 0.8rem;
-        padding: 8px 6px;
     }
     
-    .table-container {
-        padding: 10px;
-        margin-bottom: 15px;
-        overflow-x: auto;
-    }
-    
+    /* Mobile table title adjustments */
     .table-title {
-        font-size: 1rem;
-        text-align: center;
+        font-size: 1.1rem;
+        margin-bottom: 12px;
     }
     
-    .responsive-table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .CoalLinkageAdvance-table {
-        font-size: 0.7rem;
-        min-width: 600px;
+    .table-title::after {
         width: 100%;
+        height: 2px;
     }
     
-    .CoalLinkageAdvance-table th,
-    .CoalLinkageAdvance-table td {
-        padding: 8px 4px;
-        white-space: nowrap;
+    /* Reduce animation intensity on mobile */
+    .calculator-title .fa-chart-line {
+        animation: chartPulseMobile 3s ease-in-out infinite;
     }
     
-    .CoalLinkageAdvance-table th {
-        font-size: 0.65rem;
-        line-height: 1.1;
-        white-space: normal !important;
-        word-wrap: break-word;
-        hyphens: auto;
-        padding: 6px 3px;
-    }
-    
-    /* Ensure sticky columns work on mobile */
-    .CoalLinkageAdvance-table th:first-child,
-    .CoalLinkageAdvance-table td:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10000 !important;
-        background-color: #f8f9fa !important;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-        border-right: 2px solid #dee2e6 !important;
-        font-size: 0.65rem !important;
-        font-weight: 700 !important;
-        min-width: 70px !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child {
-        background: linear-gradient(135deg, #343a40, #495057) !important;
-        color: white !important;
-        z-index: 10001 !important;
-    }
-    
-    .btn-professional-green {
-        font-size: 0.8rem;
-        padding: 8px 12px;
+    @keyframes chartPulseMobile {
+        0%, 100% {
+            transform: scale(1);
+            color: #ffd700;
+        }
+        50% {
+            transform: scale(1.05);
+            color: #4ecdc4;
+        }
     }
 }
 
 @media (max-width: 576px) {
     .main-container {
+        padding: 10px;
         margin-top: 10px;
-        padding: 8px;
-    }
-    
-    .btn-back, .theme-toggle {
-        top: 8px;
-        width: 40px;
-        height: 40px;
-        font-size: 14px;
-    }
-    
-    .btn-back {
-        left: 8px;
-    }
-    
-    .theme-toggle {
-        right: 8px;
-    }
-    .main-container {
-        padding: 5px;
     }
     
     .calculator-container {
-        margin: 0;
-        padding: 8px;
-        border-radius: 8px;
+        padding: 15px;
+        border-radius: 15px;
     }
     
     .calculator-title {
-        font-size: 1.2rem;
-        line-height: 1.2;
-        margin-bottom: 15px;
-        gap: 2px;
-    }
-
-    .calculator-title i.fa-chart-line {
-        font-size: 0.8em;
+        font-size: 1.1rem;
     }
     
-    .back-button {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        margin-bottom: 10px;
-    }
-    
-    .input-group {
-        width: 100%;
-        display: flex;
-        margin-bottom: 6px;
-    }
-    
-    .input-group-text1,
-    .input-group-text3 {
-        min-width: 150px;
-        width: 150px;
-        font-size: 0.85rem;
-        padding: 6px 4px;
-        height: 36px;
-        flex-shrink: 0;
-    }
-    
-    .input-group-text2,
-    .input-group-text4 {
-        min-width: 40px;
-        width: 40px;
-        font-size: 0.7rem;
-        padding: 6px 2px;
-        height: 36px;
-        flex-shrink: 0;
-    }
-
-    .form-control {
-        font-size: 0.95rem;
-        padding: 6  px 4px;
-        height: 36px;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .table-container {
-        padding: 8px;
-        margin-bottom: 12px;
-    }
-    
-    .table-title {
-        font-size: 0.9rem;
-        margin-bottom: 10px;
+    .redistribution-toggle .toggle-option,
+    .distribution-method-toggle .toggle-option {
+        padding: 6px 8px;
+        font-size: 10px;
     }
     
     .CoalLinkageAdvance-table {
-        font-size: 0.65rem;
-        min-width: 500px;
+        font-size: 10px;
     }
     
     .CoalLinkageAdvance-table th,
     .CoalLinkageAdvance-table td {
-        padding: 6px 3px;
+        padding: 4px 2px;
         min-width: 70px;
     }
     
+    /* Fix header font size to match table content in smallest mobile */
     .CoalLinkageAdvance-table th {
-        font-size: 0.6rem !important;
-        line-height: 1.1;
-        white-space: normal !important;
-        word-wrap: break-word;
-        hyphens: auto;
-    }
-    
-    /* Ensure sticky columns work on mobile 576px */
-    .CoalLinkageAdvance-table {
-        min-width: 550px;
-    }
-    
-    .CoalLinkageAdvance-table th,
-    .CoalLinkageAdvance-table td {
-        width: 16.66% !important;
-        min-width: 90px !important;
-        font-size: 0.65rem !important;
-        padding: 5px 3px !important;
-    }
-    
-    #summary-table th,
-    #summary-table td {
-        width: 20% !important;
-        min-width: 110px !important;
+        font-size: 9px;
     }
     
     .CoalLinkageAdvance-table th:first-child,
     .CoalLinkageAdvance-table td:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10000 !important;
-        background-color: #f8f9fa !important;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-        border-right: 2px solid #dee2e6 !important;
-        width: 16.66% !important;
-        min-width: 90px !important;
-        font-size: 0.65rem !important;
-        font-weight: 700 !important;
+        min-width: 90px;
+        font-size: 9px;
     }
     
-    #summary-table th:first-child,
-    #summary-table td:first-child {
-        width: 20% !important;
-        min-width: 110px !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child {
-        background: linear-gradient(135deg, #343a40, #495057) !important;
-        color: white !important;
-        z-index: 10001 !important;
-    }
-    
-    .floating-icons {
-        bottom: 10px;
-        right: 10px;
-        transform: scale(0.9);
-    }
-    
+    .btn-professional,
     .btn-professional-green {
         font-size: 0.75rem;
         padding: 6px 10px;
         width: 100%;
     }
-}
-
-/* EXTRA SMALL SCREENS */
-@media (max-width: 400px) {
-    .calculator-title {
-        font-size: 1.1rem;
-        line-height: 1.1;
-        gap: 2px;
-        margin-bottom: 12px;
-    }
-
-    .calculator-title i.fa-chart-line {
-        font-size: 0.75em;
+    
+    /* Smaller mobile table title adjustments */
+    .table-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
     }
     
-    .input-group {
-        width: 100%;
-        display: flex;
-        margin-bottom: 5px;
-    }
-    
-    .input-group-text1,
-    .input-group-text3 {
-        min-width: 100px;
-        width: 100px;
-        font-size: 0.65rem;
-        padding: 5px 3px;
-        height: 34px;
-        flex-shrink: 0;
-    }
-    
-    .input-group-text2,
-    .input-group-text4 {
-        min-width: 35px;
-        width: 35px;
-        font-size: 0.65rem;
-        padding: 5px 2px;
-        height: 34px;
-        flex-shrink: 0;
-    }
-
-    .form-control {
-        font-size: 0.7rem;
-        padding: 5px 3px;
-        height: 34px;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    /* Ensure sticky columns work on mobile 400px */
-    .CoalLinkageAdvance-table {
-        min-width: 600px; /* Increased to accommodate equal width columns */
-    }
-    
-    .CoalLinkageAdvance-table th,
-    .CoalLinkageAdvance-table td {
-        width: 16.66% !important; /* Maintain equal width */
-        min-width: 100px !important; /* Slightly smaller for mobile */
-        font-size: 0.7rem !important;
-        padding: 6px 4px !important;
-    }
-    
-    #summary-table th,
-    #summary-table td {
-        width: 20% !important;
-        min-width: 120px !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child,
-    .CoalLinkageAdvance-table td:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10000 !important;
-        background-color: #f8f9fa !important;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-        border-right: 2px solid #dee2e6 !important;
-        width: 16.66% !important; /* Same as other columns */
-        min-width: 100px !important;
-        font-size: 0.7rem !important;
-        font-weight: 700 !important;
-    }
-    
-    #summary-table th:first-child,
-    #summary-table td:first-child {
-        width: 20% !important;
-        min-width: 120px !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child {
-        background: linear-gradient(135deg, #343a40, #495057) !important;
-        color: white !important;
-        z-index: 10001 !important;
-    }
-    
-    /* Mobile Responsive Toggle Buttons */
-    .redistribution-toggle {
-        flex-direction: column;
-        gap: 1px;
-        padding: 2px;
-    }
-    
-    .redistribution-toggle .toggle-option {
-        padding: 4px 6px;
-        font-size: 10px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.2;
-    }
-    
-    .distribution-method-toggle {
-        flex-direction: column;
-        gap: 1px;
-        width: 100%;
-        padding: 2px;
-    }
-    
-    .distribution-method-toggle .toggle-option {
-        padding: 4px 6px;
-        font-size: 9px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.2;
-    }
-    
-    /* Make form inputs full width */
-    .form-control {
-        width: 100% !important;
-        min-width: auto !important;
-        flex: none !important;
-        max-width: none !important;
-    }
-    
-    .input-group {
-        flex-wrap: nowrap;
-        width: 100%;
-    }
-    
-    /* Override any previous width restrictions */
-    .input-group .form-control {
-        flex: 1 !important;
-        width: auto !important;
-        max-width: none !important;
-    }
-    
-    /* Stack redistribution and distribution containers vertically */
-    .redistribution-mode-container,
-    .distribution-method-container {
-        margin-bottom: 8px;
-        padding: 6px;
-    }
-    
-    /* Make container labels smaller on mobile */
-    .redistribution-mode-container .form-label,
-    .distribution-method-container .form-label {
-        font-size: 12px;
-        margin-bottom: 4px;
-        font-weight: 600;
-    }
-    
-    .redistribution-mode-container .text-muted,
-    .distribution-method-container .text-muted {
-        font-size: 10px;
-        margin-bottom: 6px;
+    .table-title .fa-cogs,
+    .table-title .fa-calendar-alt,
+    .table-title .fa-chart-pie,
+    .table-title .fa-calendar-day,
+    .table-title .fa-chart-bar {
+        font-size: 0.9rem;
     }
 }
 
-/* Table specific responsive improvements */
-@media (max-width: 768px) {
-    .table-responsive {
-        border: none;
-        border-radius: 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        contain: none; /* Remove contain property that can interfere with sticky positioning */
-        position: relative;
-    }
-    
-    .responsive-table-wrapper {
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    /* Enhanced sticky columns for mobile */
-    .CoalLinkageAdvance-table th:first-child,
-    .CoalLinkageAdvance-table td:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10000 !important;
-        background-color: #f8f9fa !important;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-        border-right: 2px solid #dee2e6 !important;
-        width: 16.66% !important;
-        min-width: 80px !important;
-        font-weight: 700 !important;
-        isolation: isolate !important;
-    }
+/* ========================================================================
+   14. DARK THEME SPECIFIC OVERRIDES
+   ======================================================================== */
+[data-theme="dark"] .CoalLinkageAdvance-table th {
+    background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
 }
 
-/* Custom table scroll wrapper - allows horizontal scrolling without interfering with sticky positioning */
-.table-scroll-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    background: white;
-    position: relative;
+[data-theme="dark"] .CoalLinkageAdvance-table td {
+    background: var(--table-bg) !important;
+    color: #e0e0e0 !important;
+    border-color: var(--table-border) !important;
 }
 
-/* Match table border radius with wrapper */
-.table-scroll-wrapper .CoalLinkageAdvance-table {
-    min-width: 600px;
-    margin-bottom: 0;
-    white-space: nowrap;
-    border-radius: 12px;
-    overflow: hidden;
+[data-theme="dark"] .CoalLinkageAdvance-table th:first-child {
+    background: linear-gradient(135deg, #2c2c54, #40407a) !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+    z-index: 1001 !important;
 }
 
-/* Force sticky positioning for first columns */
-.table-scroll-wrapper .CoalLinkageAdvance-table th:first-child,
-.table-scroll-wrapper .CoalLinkageAdvance-table td:first-child {
-    position: sticky !important;
-    left: 0 !important;
-    z-index: 10 !important;
-    background-color: #f8f9fa !important;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-    border-right: 2px solid #dee2e6 !important;
-    isolation: isolate !important;
-    white-space: nowrap !important;
-    font-weight: 700 !important;
+[data-theme="dark"] .CoalLinkageAdvance-table td:first-child {
+    background: var(--sticky-bg) !important;
+    color: #e0e0e0 !important;
 }
 
-/* Header sticky cells styling */
-.table-scroll-wrapper .CoalLinkageAdvance-table th:first-child {
-    background: linear-gradient(135deg, #343a40, #495057) !important;
-    color: white !important;
-    z-index: 11 !important;
+[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td:first-child {
+    background: var(--table-hover) !important;
+    color: #e0e0e0 !important;
 }
 
-/* Mobile specific scroll wrapper */
-@media (max-width: 768px) {
-    .table-scroll-wrapper {
-        border-radius: 10px;
-        box-shadow: 0 1px 6px rgba(0,0,0,0.15);
-    }
-    
-    .table-scroll-wrapper .CoalLinkageAdvance-table {
-        min-width: 700px;
-        font-size: 0.8rem;
-        border-radius: 10px;
-    }
-    
-    /* Enhanced mobile sticky columns */
-    .table-scroll-wrapper .CoalLinkageAdvance-table th:first-child,
-    .table-scroll-wrapper .CoalLinkageAdvance-table td:first-child {
-        min-width: 100px !important;
-        width: 100px !important;
-        max-width: 100px !important;
-        font-size: 0.75rem !important;
-        padding: 8px 6px !important;
-    }
+[data-theme="dark"] .CoalLinkageAdvance-table tr:hover td {
+    background: var(--table-hover) !important;
 }
 
-/* Fix for small screens table overflow */
-@media (max-width: 480px) {
-    .CoalLinkageAdvance-table {
-        min-width: 500px;
-        font-size: 0.6rem;
-    }
-    
-    .CoalLinkageAdvance-table th,
-    .CoalLinkageAdvance-table td {
-        width: 16.66% !important;
-        min-width: 80px !important;
-        padding: 4px 2px !important;
-        font-size: 0.6rem !important;
-    }
-    
-    #summary-table th,
-    #summary-table td {
-        width: 20% !important;
-        min-width: 100px !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child,
-    .CoalLinkageAdvance-table td:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10000 !important;
-        width: 16.66% !important;
-        min-width: 80px !important;
-        background-color: #f8f9fa !important;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.15) !important;
-        border-right: 2px solid #dee2e6 !important;
-        font-weight: 700 !important;
-    }
-    
-    #summary-table th:first-child,
-    #summary-table td:first-child {
-        width: 20% !important;
-        min-width: 100px !important;
-    }
-    
-    /* Dark theme sticky columns for small screens */
-    [data-theme="dark"] .CoalLinkageAdvance-table th:first-child,
-    [data-theme="dark"] .CoalLinkageAdvance-table td:first-child {
-        background: rgba(60, 60, 80, 0.95) !important;
-        color: #ffffff !important;
-        z-index: 10001 !important;
-        position: sticky !important;
-        left: 0 !important;
-    }
-    
-    .CoalLinkageAdvance-table th:first-child {
-        background: linear-gradient(135deg, #343a40, #495057) !important;
-        color: white !important;
-        z-index: 10001 !important;
-    }
-    
-    /* Tablet Responsive Toggle Buttons */
-    .redistribution-toggle .toggle-option {
-        padding: 6px 10px;
-        font-size: 11px;
-    }
-    
-    .distribution-method-toggle .toggle-option {
-        padding: 6px 10px;
-        font-size: 10px;
-    }
-    
-    /* Ensure containers don't overflow */
-    .redistribution-mode-container,
-    .distribution-method-container {
-        margin-bottom: 12px;
-        overflow: hidden;
-        padding: 8px;
-    }
+[data-theme="dark"] .coal-table-wrapper {
+    background: rgba(40, 40, 60, 0.9) !important;
 }
+
+[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"] {
+    background: rgba(255, 193, 7, 0.2) !important;
+    border-color: #ffc107 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .CoalLinkageAdvance-table td[contenteditable="true"]:focus {
+    background: rgba(77, 171, 247, 0.2) !important;
+    border-color: #4dabf7 !important;
+    color: #ffffff !important;
+}
+
+/* Dark theme table title styling */
+[data-theme="dark"] .table-title {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .table-title::after {
+    background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 400% 100%;
+    animation: rainbowAnimation 3s ease-in-out infinite;
+}
+
+/* Dark theme text color fixes */
+[data-theme="dark"] .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="dark"] .text-muted strong {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
 </style>
 
 </head>
+
 <body>
 
 <div class="main-container">
@@ -1988,6 +1276,11 @@ body {
             <i class="fas fa-moon theme-icon" id="theme-icon"></i>
         </div>
 
+        <!-- Rainbow Animation Toggle -->
+        <div class="rainbow-toggle" onclick="toggleRainbowAnimation()" title="Toggle Rainbow Animation">
+            <i class="fas fa-palette" id="rainbow-icon"></i>
+        </div>
+
         <!-- Header -->
         <h1 class="calculator-title">
             <i class="fas fa-chart-line me-3"></i>
@@ -1997,8 +1290,8 @@ body {
         <!-- Main Content Grid -->
         <div class="row justify-content-center">
             <!-- Input Section -->
-            <div class="col-lg-6 col-md-8 col-sm-10">
-                <div class="table-container">
+            <div class="col-lg-6 col-md-8 col-sm-10 mb-2">
+                <div class="table-container mb-2">
                     <h3 class="table-title">
                         <i class="fas fa-cogs me-2"></i>
                         Input Parameters
@@ -2025,9 +1318,9 @@ body {
                     </div>
 
                     <!-- Quarterly Percentages -->
-                    <div class="row" style="margin-bottom: 0px !important;">
+                    <div class="row" style="margin-bottom: 15px !important;">
                         <!-- Q1 (Apr-Jun) -->
-                        <div class="col-md-6 mb-0">
+                        <div class="col-md-6 mb-2">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text3">Q1 (Apr-Jun)</span>
@@ -2038,7 +1331,7 @@ body {
                         </div>
 
                         <!-- Q2 (Jul-Sep) -->
-                        <div class="col-md-6 mb-0">
+                        <div class="col-md-6 mb-2">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text3">Q2 (Jul-Sep)</span>
@@ -2049,7 +1342,7 @@ body {
                         </div>
 
                         <!-- Q3 (Oct-Dec) -->
-                        <div class="col-md-6 mb-0">
+                        <div class="col-md-6 mb-2">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text3">Q3 (Oct-Dec)</span>
@@ -2060,7 +1353,7 @@ body {
                         </div>
 
                         <!-- Q4 (Jan-Mar) -->
-                        <div class="col-md-6 mb-0">
+                        <div class="col-md-6 mb-2">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text3">Q4 (Jan-Mar)</span>
@@ -2105,7 +1398,7 @@ body {
                             </div>
                         </div>
                         <small class="text-muted mt-1 d-block">
-                            <strong>Proportionate:</strong> Redistribute quantity based on quarterly percentages. 
+                            <strong>Proportionate:</strong> Redistribute quantity based on quarterly percentages.<br> 
                             <strong>Absolute:</strong> Select specific months for redistribution.
                         </small>
                         
@@ -2153,7 +1446,7 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-scroll-wrapper">
+                <div class="coal-table-wrapper">
                     <table id="coal-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
                         <thead>
                             <tr>
@@ -2162,7 +1455,7 @@ body {
                                 <th>Allocated Rakes</th>
                                 <th>Actual Quantity <i class="bi bi-pencil-square ms-1"></i></th>
                                 <th>Actual Rakes</th>
-                                <th>%age (Actual / Allocated)</th>
+                                <th>Actual / Allocated</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2185,7 +1478,7 @@ body {
         </div>
 
         <!-- Quarterly Table -->
-        <div class="row">
+        <div class="row mt-5">
             <div class="col-12">
                 <div class="table-header-container">
                     <h3 class="table-title">
@@ -2194,23 +1487,23 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-scroll-wrapper">
+                <div class="coal-table-wrapper">
                     <table id="quarterly-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
-                        <thead>
-                            <tr>
-                                <th>Quarter</th>
-                                <th>Allocated Quantity</th>
-                                <th>Allocated Rakes</th>
-                                <th>Actual Quantity</th>
-                                <th>Actual Rakes</th>
-                                <th>%age (Actual / Allocated)</th>
-                            </tr>
+                    <thead>
+                        <tr>
+                            <th>Quarter</th>
+                            <th>Allocated Quantity</th>
+                            <th>Allocated Rakes</th>
+                            <th>Actual Quantity</th>
+                            <th>Actual Rakes</th>
+                            <th>Actual / Allocated</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr><td id="q1-label">Q1 (Apr-Jun) 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td id="q2-label">Q2 (Jul-Sep) 22%</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td id="q3-label">Q3 (Oct-Dec) 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td id="q4-label">Q4 (Jan-Mar) 28%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td id="q1-label">Q1-Apr-Jun 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td id="q2-label">Q2-Jul-Sep 22%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td id="q3-label">Q3-Oct-Dec 25%</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td id="q4-label">Q4-Jan-Mar 28%</td><td></td><td></td><td></td><td></td><td></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -2218,7 +1511,7 @@ body {
         </div>
 
         <!-- Per Day Values Table -->
-        <div class="row mt-4">
+        <div class="row mt-5">
             <div class="col-12">
                 <div class="table-header-container">
                     <h3 class="table-title">
@@ -2226,17 +1519,17 @@ body {
                         Per Day Values
                     </h3>
                 </div>
-                <div class="table-scroll-wrapper">
+                <div class="coal-table-wrapper">
                     <table id="per-day-table" class="table table-bordered table-hover table-striped text-center align-middle table-sm CoalLinkageAdvance-table">
-                        <thead class="table-gradient">
-                            <tr>
-                                <th>Month</th>
-                                <th>Allocated Quantity</th>
-                                <th>Allocated Rakes</th>
-                                <th>Actual Quantity</th>
-                                <th>Actual Rakes</th>
-                                <th>%age (Actual / Allocated)</th>
-                            </tr>
+                    <thead class="table-gradient">
+                        <tr>
+                            <th>Month</th>
+                            <th>Allocated Quantity</th>
+                            <th>Allocated Rakes</th>
+                            <th>Actual Quantity</th>
+                            <th>Actual Rakes</th>
+                            <th>Actual / Allocated</th>
+                        </tr>
                         </thead>
                         <tbody>
                             <tr><td>Apr</td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -2258,7 +1551,7 @@ body {
         </div>
 
         <!-- Summary Table -->
-        <div class="row mt-4">
+        <div class="row mt-5">
             <div class="col-12">
                 <div class="table-header-container">
                     <h3 class="table-title">
@@ -2267,16 +1560,16 @@ body {
                     </h3>
                 </div>
                 
-                <div class="table-scroll-wrapper">
+                <div class="coal-table-wrapper">
                     <table id="summary-table" class="table table-hover text-center align-middle CoalLinkageAdvance-table">
-                        <thead>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Allocated</th>
-                                <th>Actual</th>
-                                <th>Difference</th>
-                                <th>%age Achievement</th>
-                            </tr>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Allocated</th>
+                            <th>Actual</th>
+                            <th>Difference</th>
+                            <th>%age Achievement</th>
+                        </tr>
                         </thead>
                         <tbody>
                             <tr><td>Total Quantity</td><td></td><td></td><td></td><td></td></tr>
@@ -2516,6 +1809,9 @@ body {
         document.addEventListener('DOMContentLoaded', function() {
             // Force sticky positioning for first columns with high z-index
             function applyStickyColumnsInitial() {
+                // Check if dark theme is active
+                const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+                
                 // Target tables within scroll wrappers specifically
                 const scrollWrappers = document.querySelectorAll('.table-scroll-wrapper');
                 scrollWrappers.forEach(wrapper => {
@@ -2526,28 +1822,42 @@ body {
                             // Enhanced mobile sticky positioning
                             cell.style.setProperty('position', 'sticky', 'important');
                             cell.style.setProperty('left', '0', 'important');
-                            cell.style.setProperty('background-color', '#f8f9fa', 'important');
-                            cell.style.setProperty('box-shadow', '2px 0 5px rgba(0,0,0,0.15)', 'important');
-                            cell.style.setProperty('border-right', '2px solid #dee2e6', 'important');
                             
-                            if (cell.tagName === 'TH') {
-                                cell.style.setProperty('z-index', '11', 'important');
-                                cell.style.setProperty('background', 'linear-gradient(135deg, #343a40, #495057)', 'important');
-                                cell.style.setProperty('color', 'white', 'important');
+                            // Only apply colors for dark theme, let CSS handle light theme
+                            if (isDarkTheme) {
+                                if (cell.tagName === 'TH') {
+                                    cell.style.setProperty('z-index', '1001', 'important');
+                                } else {
+                                    cell.style.setProperty('z-index', '999', 'important');
+                                }
                             } else {
-                                cell.style.setProperty('z-index', '10', 'important');
+                                // For light theme, just ensure z-index is set, let CSS handle colors
+                                if (cell.tagName === 'TH') {
+                                    cell.style.setProperty('z-index', '1001', 'important');
+                                } else {
+                                    cell.style.setProperty('z-index', '999', 'important');
+                                }
+                                // Remove any inline color styling to let CSS take over
+                                cell.style.removeProperty('background');
+                                cell.style.removeProperty('background-color');
+                                cell.style.removeProperty('color');
                             }
                             
                             // Additional properties to ensure sticky works on mobile
                             cell.style.setProperty('isolation', 'isolate', 'important');
-                            cell.style.setProperty('white-space', 'nowrap', 'important');
-                            cell.style.setProperty('font-weight', '700', 'important');
+                            cell.style.setProperty('white-space', 'normal', 'important');
+                            cell.style.setProperty('font-weight', 'bolder', 'important');
+                            cell.style.setProperty('word-wrap', 'break-word', 'important');
                             
                             // Mobile-specific width
                             if (window.innerWidth <= 768) {
-                                cell.style.setProperty('min-width', '100px', 'important');
-                                cell.style.setProperty('width', '100px', 'important');
-                                cell.style.setProperty('max-width', '100px', 'important');
+                                cell.style.setProperty('min-width', '120px', 'important');
+                                cell.style.setProperty('width', '120px', 'important');
+                                cell.style.setProperty('max-width', '120px', 'important');
+                            } else {
+                                cell.style.setProperty('min-width', '200px', 'important');
+                                cell.style.setProperty('width', '200px', 'important');
+                                cell.style.setProperty('max-width', '200px', 'important');
                             }
                         });
                     }
@@ -2560,11 +1870,32 @@ body {
                     firstCells.forEach(cell => {
                         cell.style.setProperty('position', 'sticky', 'important');
                         cell.style.setProperty('left', '0', 'important');
-                        if (cell.tagName === 'TH') {
-                            cell.style.setProperty('z-index', '11', 'important');
+                        
+                        // Only apply colors for dark theme, let CSS handle light theme
+                        if (isDarkTheme) {
+                            if (cell.tagName === 'TH') {
+                                cell.style.setProperty('z-index', '1001', 'important');
+                            } else {
+                                cell.style.setProperty('z-index', '999', 'important');
+                            }
                         } else {
-                            cell.style.setProperty('z-index', '10', 'important');
+                            // For light theme, just ensure z-index is set, let CSS handle colors
+                            if (cell.tagName === 'TH') {
+                                cell.style.setProperty('z-index', '1001', 'important');
+                            } else {
+                                cell.style.setProperty('z-index', '999', 'important');
+                            }
+                            // Remove any inline color styling to let CSS take over
+                            cell.style.removeProperty('background');
+                            cell.style.removeProperty('background-color');
+                            cell.style.removeProperty('color');
                         }
+                        
+                        // Additional properties to ensure sticky works on mobile
+                        cell.style.setProperty('isolation', 'isolate', 'important');
+                        cell.style.setProperty('white-space', 'normal', 'important');
+                        cell.style.setProperty('font-weight', 'bolder', 'important');
+                        cell.style.setProperty('word-wrap', 'break-word', 'important');
                     });
                 });
             }
@@ -2612,19 +1943,22 @@ body {
                         table.style.setProperty('min-width', '600px', 'important');
                         table.style.setProperty('position', 'relative', 'important');
                         
-                        // Force first column sticky
+                        // Force first column sticky - let CSS handle colors
                         const firstCells = table.querySelectorAll('th:first-child, td:first-child');
                         firstCells.forEach(cell => {
                             cell.style.setProperty('position', 'sticky', 'important');
                             cell.style.setProperty('left', '0px', 'important');
                             cell.style.setProperty('z-index', cell.tagName === 'TH' ? '1002' : '1001', 'important');
-                            cell.style.setProperty('background-color', cell.tagName === 'TH' ? '#343a40' : '#f8f9fa', 'important');
-                            cell.style.setProperty('color', cell.tagName === 'TH' ? 'white' : 'inherit', 'important');
                             cell.style.setProperty('box-shadow', '2px 0 4px rgba(0,0,0,0.1)', 'important');
                             cell.style.setProperty('border-right', '1px solid #ddd', 'important');
                             cell.style.setProperty('width', '100px', 'important');
                             cell.style.setProperty('min-width', '100px', 'important');
                             cell.style.setProperty('max-width', '100px', 'important');
+                            
+                            // Remove color styling to let CSS take over
+                            cell.style.removeProperty('background');
+                            cell.style.removeProperty('background-color');
+                            cell.style.removeProperty('color');
                         });
                     });
                 }
@@ -4119,6 +3453,34 @@ body {
                     themeIcon.style.transform = 'rotate(0deg) scale(1)';
                 }, 300);
             }
+            
+            // Refresh first column styling after theme change
+            refreshFirstColumnStyling();
+        }
+
+        // Function to refresh first column styling after theme changes
+        function refreshFirstColumnStyling() {
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            const firstCells = document.querySelectorAll('.CoalLinkageAdvance-table th:first-child, .CoalLinkageAdvance-table td:first-child');
+            
+            firstCells.forEach(cell => {
+                // Remove any inline styling to let CSS take over
+                cell.style.removeProperty('background');
+                cell.style.removeProperty('background-color');
+                cell.style.removeProperty('color');
+                cell.style.removeProperty('box-shadow');
+                cell.style.removeProperty('border-right');
+                
+                // Only keep essential positioning styles
+                cell.style.setProperty('position', 'sticky', 'important');
+                cell.style.setProperty('left', '0', 'important');
+                
+                if (cell.tagName === 'TH') {
+                    cell.style.setProperty('z-index', '1001', 'important');
+                } else {
+                    cell.style.setProperty('z-index', '999', 'important');
+                }
+            });
         }
 
         // Initialize theme from localStorage
@@ -4130,6 +3492,56 @@ body {
                 document.body.setAttribute('data-theme', savedTheme);
                 document.documentElement.setAttribute('data-theme', savedTheme);
                 themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun theme-icon' : 'fas fa-moon theme-icon';
+            }
+        });
+
+        // =============================================================================
+        // RAINBOW ANIMATION TOGGLE FUNCTIONALITY
+        // =============================================================================
+        
+        function toggleRainbowAnimation() {
+            const body = document.body;
+            const rainbowButton = document.querySelector('.rainbow-toggle');
+            const rainbowIcon = document.getElementById('rainbow-icon');
+            
+            // Toggle the no-rainbow class on body
+            if (body.classList.contains('no-rainbow')) {
+                body.classList.remove('no-rainbow');
+                rainbowButton.classList.remove('disabled');
+                rainbowButton.title = 'Disable Rainbow Animation';
+                localStorage.setItem('coalLinkageRainbowEnabled', 'true');
+                
+                // Animate the icon
+                rainbowIcon.style.transform = 'rotate(360deg) scale(1.2)';
+                setTimeout(() => {
+                    rainbowIcon.style.transform = 'rotate(0deg) scale(1)';
+                }, 400);
+            } else {
+                body.classList.add('no-rainbow');
+                rainbowButton.classList.add('disabled');
+                rainbowButton.title = 'Enable Rainbow Animation';
+                localStorage.setItem('coalLinkageRainbowEnabled', 'false');
+                
+                // Animate the icon
+                rainbowIcon.style.transform = 'rotate(-360deg) scale(0.8)';
+                setTimeout(() => {
+                    rainbowIcon.style.transform = 'rotate(0deg) scale(1)';
+                }, 400);
+            }
+        }
+
+        // Initialize rainbow animation state from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const rainbowEnabled = localStorage.getItem('coalLinkageRainbowEnabled');
+            const body = document.body;
+            const rainbowButton = document.querySelector('.rainbow-toggle');
+            
+            if (rainbowEnabled === 'false') {
+                body.classList.add('no-rainbow');
+                rainbowButton.classList.add('disabled');
+                rainbowButton.title = 'Enable Rainbow Animation';
+            } else {
+                rainbowButton.title = 'Disable Rainbow Animation';
             }
         });
 
