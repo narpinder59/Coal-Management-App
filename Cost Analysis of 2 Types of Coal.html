@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cost Analysis of 2 Types of Coal Calculator</title>
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -34,7 +39,7 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -281,6 +286,251 @@
             gap: 1px;
         }
 
+        .dynamic-input-container {
+            display: flex;
+            gap: 0;
+            flex: 1;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .dynamic-input-container .input-field {
+            flex: 1;
+            min-width: 120px;
+            border-left: none;
+            position: relative;
+        }
+
+        .dynamic-input-container .input-field:first-child {
+            border-radius: 0;
+        }
+
+        .dynamic-input-container .input-field:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Remove button for coal inputs */
+        .remove-coal-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .remove-coal-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        /* Coal Cards Grid */
+        .coal-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Add Coal Button Section */
+        .add-coal-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .add-coal-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .add-coal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #20c997, #28a745);
+        }
+
+        /* Individual Coal Card */
+        .coal-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .coal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Card Border Colors */
+        .coal-card:nth-child(1) { border-color: #007bff; }
+        .coal-card:nth-child(2) { border-color: #28a745; }
+        .coal-card:nth-child(3) { border-color: #ffc107; }
+        .coal-card:nth-child(4) { border-color: #dc3545; }
+        .coal-card:nth-child(5) { border-color: #6f42c1; }
+        .coal-card:nth-child(6) { border-color: #fd7e14; }
+
+        /* Card Header */
+        .coal-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .coal-card-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .coal-card-remove {
+            background: rgba(220, 53, 69, 0.8);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .coal-card-remove:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+
+        /* Coal Card Inputs */
+        .coal-card-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .coal-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .coal-input-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .coal-input-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 14px;
+            width: 100%;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .coal-input-field:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .coal-input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Plant Parameters Card */
+        .plant-parameters-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #17a2b8;
+            margin: 20px 0;
+        }
+
+        .plant-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .coal-cards-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .coal-card {
+                padding: 15px;
+            }
+            
+            .plant-params-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .coal-card-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .coal-card-remove {
+                align-self: flex-end;
+            }
+        }
+
+        /* Coal input wrapper */
+        .coal-input-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .coal-input-wrapper .input-field {
+            width: 100%;
+            border-left: none;
+        }
+
+        .coal-input-wrapper:first-child .input-field {
+            border-radius: 0;
+        }
+
+        .coal-input-wrapper:last-child .input-field {
+            border-radius: 0 8px 8px 0;
+        }
+
         .input-field {
             border: 1px solid #dee2e6;
             border-left: none;
@@ -374,6 +624,18 @@
             padding-left: 12px;
         }
 
+        .economical-header {
+            background: rgba(40, 167, 69, 0.2) !important;
+            color: #28a745 !important;
+            font-weight: bold !important;
+        }
+
+        .economical-cell {
+            background: rgba(40, 167, 69, 0.1) !important;
+            color: #28a745 !important;
+            font-weight: bold !important;
+        }
+
         .summary-section {
             background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
@@ -399,6 +661,33 @@
         .summary-item.section-header {
             font-weight: 900 !important;
             color:#1a1a1a;
+        }
+
+        /* Multi-column table responsive design */
+        .comparison-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px 4px;
+                font-size: 12px;
+                min-width: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .comparison-table th,
+            .comparison-table td {
+                min-width: 100px;
+                font-size: 11px;
+            }
+            
+            .comparison-table {
+                min-width: 600px;
+            }
         }
 
         .error-message {
@@ -1548,7 +1837,7 @@
                 </div>
                 Coal Cost Analysis
             </h1>
-            <p class="calculator-subtitle">Compare costs between two types of coal</p>
+            <p class="calculator-subtitle">Compare costs between various types of coal</p>
         </div>
 
         <!-- Instruction Message -->
@@ -1563,7 +1852,7 @@
         <!-- Results Container -->
         <div class="results-container" id="resultsContainer">
             <h3 class="results-title" id="resultsTitle">Cost Analysis Results</h3>
-            <table class="comparison-table">
+            <table class="comparison-table" id="comparisonTable">
                 <thead>
                     <tr>
                         <th>Parameter</th>
@@ -1580,116 +1869,67 @@
             </div>
         </div>
 
-        <!-- Coal Names Section -->
-        <div class="section-header">
-            <i class="fas fa-tags me-2"></i>
-            Coal Types
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Coal Names</span>
-                <span class="input-group-text2"></span>
-            </div>
-            <div class="dual-input-container">
-                <input type="text" class="input-field" id="coal1Name" data-allow-text="true" placeholder="Coal A Name">
-                <input type="text" class="input-field" id="coal2Name" data-allow-text="true" placeholder="Coal B Name">
-            </div>
-        </div>
-
-        <!-- Coal Properties Section -->
+        <!-- Coal Types Section -->
         <div class="section-header">
             <i class="fas fa-mountain me-2"></i>
-            Coal Properties
+            Coal Types Comparison
         </div>
 
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Coal Cost</span>
-                <span class="input-group-text2">Rs/MT</span>
-            </div>
-            <div class="dual-input-container">
-                <input type="number" class="input-field" id="coal1Cost" step="0.01" min="0" placeholder="2400">
-                <input type="number" class="input-field" id="coal2Cost" step="0.01" min="0" placeholder="2600">
-            </div>
+        <!-- Coal Cards Container -->
+        <div id="coalCardsContainer" class="coal-cards-grid">
+            <!-- Coal cards will be dynamically generated here -->
         </div>
 
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Railway Freight</span>
-                <span class="input-group-text2">Rs/MT</span>
-            </div>
-            <div class="dual-input-container">
-                <input type="number" class="input-field" id="coal1Freight" step="0.01" min="0" placeholder="2500">
-                <input type="number" class="input-field" id="coal2Freight" step="0.01" min="0" placeholder="2700">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">GCV</span>
-                <span class="input-group-text2">kcal/kg</span>
-            </div>
-            <div class="dual-input-container">
-                <input type="number" class="input-field" id="coal1GCV" step="0.01" min="0" placeholder="4300">
-                <input type="number" class="input-field" id="coal2GCV" step="0.01" min="0" placeholder="4500">
-            </div>
+        <!-- Add Coal Button -->
+        <div class="add-coal-section">
+            <button class="btn btn-success add-coal-btn" onclick="addCoalType()" title="Add Coal Type">
+                <i class="fas fa-plus me-2"></i> Add Coal Type
+            </button>
         </div>
 
         <!-- Plant Parameters Section -->
-        <div class="section-header">
-            <i class="fas fa-industry me-2"></i>
-            Plant Parameters
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Generation Capacity</span>
-                <span class="input-group-text2">MW</span>
+        <div class="plant-parameters-card">
+            <div class="coal-card-header">
+                <h6 class="coal-card-title">
+                    <i class="fas fa-industry me-2"></i>
+                    Plant Parameters
+                </h6>
             </div>
-            <input type="number" class="input-field single" id="capacity" step="1" min="0" placeholder="2300">
-        </div>
+            
+            <div class="plant-params-grid">
+                <div class="coal-input-group">
+                    <label class="coal-input-label">Generation Capacity (MW)</label>
+                    <input type="number" class="coal-input-field" id="capacity" step="1" min="0" placeholder="2300">
+                </div>
 
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">PLF</span>
-                <span class="input-group-text2">%</span>
+                <div class="coal-input-group">
+                    <label class="coal-input-label">PLF (%)</label>
+                    <input type="number" class="coal-input-field" id="plf" step="0.01" min="0" max="100" placeholder="85">
+                </div>
+
+                <div class="coal-input-group">
+                    <label class="coal-input-label">Number of Days</label>
+                    <input type="number" class="coal-input-field" id="days" step="1" min="0" max="365" placeholder="365">
+                </div>
+
+                <div class="coal-input-group">
+                    <label class="coal-input-label">Station Heat Rate (kcal/kWh)</label>
+                    <input type="number" class="coal-input-field" id="shr" step="0.01" min="0" placeholder="2700">
+                </div>
+
+                <div class="coal-input-group">
+                    <label class="coal-input-label">Coal Quantity (MT) - Optional</label>
+                    <input type="number" class="coal-input-field" id="coalQuantity" step="1" min="0" placeholder="100000">
+                </div>
             </div>
-            <input type="number" class="input-field single" id="plf" step="0.01" min="0" max="100" placeholder="85">
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Number of Days</span>
-                <span class="input-group-text2">Days</span>
-            </div>
-            <input type="number" class="input-field single" id="days" step="1" min="0" max="365" placeholder="365">
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Station Heat Rate</span>
-                <span class="input-group-text2">kcal/kWh</span>
-            </div>
-            <input type="number" class="input-field single" id="shr" step="0.01" min="0" placeholder="2700">
-        </div>
-
-        <!-- Cost Economics Section -->
-        <div class="section-header">
-            <i class="fas fa-calculator me-2"></i>
-            Cost Economics for the Coal Quantity to be used
-        </div>
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text1">Coal Quantity</span>
-                <span class="input-group-text2">MT</span>
-            </div>
-            <input type="number" class="input-field single" id="coalQuantity" step="1" min="0" placeholder="100000">
         </div>
 
         <!-- Action Buttons -->
         <div class="action-buttons">
+            <button class="btn btn-success" onclick="calculate()">
+                <i class="fas fa-calculator"></i>
+                Calculate
+            </button>
             <button class="btn btn-primary" onclick="storeCalculation()">
                 <i class="fas fa-save"></i>
                 Store Data
@@ -1810,18 +2050,13 @@
         let storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
         let isExportDropdownOpen = false;
         let inputs, results, errorMessage, storageCounter, instructionMessage;
+        let coalCount = 2; // Track number of coal types
+        let maxCoalTypes = 6; // Maximum allowed coal types
 
         // Initialize DOM elements after page loads
         function initializeElements() {
+            // Initialize only the basic elements first
             inputs = {
-                coal1Name: document.getElementById('coal1Name'),
-                coal2Name: document.getElementById('coal2Name'),
-                coal1Cost: document.getElementById('coal1Cost'),
-                coal2Cost: document.getElementById('coal2Cost'),
-                coal1Freight: document.getElementById('coal1Freight'),
-                coal2Freight: document.getElementById('coal2Freight'),
-                coal1GCV: document.getElementById('coal1GCV'),
-                coal2GCV: document.getElementById('coal2GCV'),
                 capacity: document.getElementById('capacity'),
                 plf: document.getElementById('plf'),
                 days: document.getElementById('days'),
@@ -1832,8 +2067,7 @@
             results = {
                 container: document.getElementById('resultsContainer'),
                 title: document.getElementById('resultsTitle'),
-                coal1Header: document.getElementById('coal1Header'),
-                coal2Header: document.getElementById('coal2Header'),
+                table: document.getElementById('comparisonTable'),
                 tableBody: document.getElementById('comparisonTableBody'),
                 summarySection: document.getElementById('summarySection')
             };
@@ -1843,7 +2077,238 @@
             instructionMessage = document.getElementById('instruction-message');
         }
 
+        // Dynamic coal management functions
+        function updateInputsObject() {
+            inputs = {
+                capacity: document.getElementById('capacity'),
+                plf: document.getElementById('plf'),
+                days: document.getElementById('days'),
+                shr: document.getElementById('shr'),
+                coalQuantity: document.getElementById('coalQuantity')
+            };
+
+            // Add dynamic coal inputs
+            for (let i = 1; i <= coalCount; i++) {
+                inputs[`coal${i}Name`] = document.getElementById(`coal${i}Name`);
+                inputs[`coal${i}Cost`] = document.getElementById(`coal${i}Cost`);
+                inputs[`coal${i}Freight`] = document.getElementById(`coal${i}Freight`);
+                inputs[`coal${i}GCV`] = document.getElementById(`coal${i}GCV`);
+            }
+        }
+
+        function addCoalType() {
+            if (coalCount >= maxCoalTypes) {
+                showError(`Maximum ${maxCoalTypes} coal types allowed.`);
+                return;
+            }
+
+            coalCount++;
+            
+            const coalCardsContainer = document.getElementById('coalCardsContainer');
+            const coalCard = createCoalCard(coalCount);
+            coalCardsContainer.appendChild(coalCard);
+            
+            updateInputsObject();
+            updateInstructionMessage();
+            
+            // Add event listeners to new inputs
+            setupInputEventListeners(coalCard);
+            
+            // Show success message
+            showError(`Coal Type ${coalCount} added successfully!`, 'success');
+        }
+
+        function createCoalCard(index) {
+            const coalCard = document.createElement('div');
+            coalCard.className = 'coal-card';
+            coalCard.setAttribute('data-coal-index', index);
+            
+            coalCard.innerHTML = `
+                <div class="coal-card-header">
+                    <h6 class="coal-card-title">Coal ${index}</h6>
+                    ${index > 2 ? `
+                        <button type="button" class="coal-card-remove" onclick="removeCoalType(${index})" title="Remove Coal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                </div>
+                
+                <div class="coal-card-inputs">
+                    <div class="coal-input-group">
+                        <label class="coal-input-label">Coal Name</label>
+                        <input type="text" 
+                               class="coal-input-field coal-name" 
+                               id="coal${index}Name" 
+                               placeholder="Enter coal name"
+                               data-allow-text="true">
+                    </div>
+                    
+                    <div class="coal-input-group">
+                        <label class="coal-input-label">Coal Cost (Rs/MT)</label>
+                        <input type="number" 
+                               class="coal-input-field coal-cost" 
+                               id="coal${index}Cost" 
+                               step="0.01" 
+                               min="0" 
+                               placeholder="${2400 + (index - 1) * 200}">
+                    </div>
+                    
+                    <div class="coal-input-group">
+                        <label class="coal-input-label">Railway Freight (Rs/MT)</label>
+                        <input type="number" 
+                               class="coal-input-field coal-freight" 
+                               id="coal${index}Freight" 
+                               step="0.01" 
+                               min="0" 
+                               placeholder="${2500 + (index - 1) * 200}">
+                    </div>
+                    
+                    <div class="coal-input-group">
+                        <label class="coal-input-label">GCV (kcal/kg)</label>
+                        <input type="number" 
+                               class="coal-input-field coal-gcv" 
+                               id="coal${index}GCV" 
+                               step="0.01" 
+                               min="0" 
+                               placeholder="${4300 + (index - 1) * 200}">
+                    </div>
+                </div>
+            `;
+            
+            return coalCard;
+        }
+
+        function createCoalInput(type, id, placeholder, allowText = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'coal-input-wrapper';
+            
+            const input = document.createElement('input');
+            input.type = type;
+            input.className = 'input-field';
+            input.id = id;
+            input.placeholder = placeholder;
+            
+            if (type === 'number') {
+                input.step = '0.01';
+                input.min = '0';
+            }
+            
+            if (allowText) {
+                input.setAttribute('data-allow-text', 'true');
+            }
+
+            // Add remove button (only if more than 2 coal types)
+            if (coalCount > 2) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-coal-btn';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.title = 'Remove this coal type';
+                removeBtn.onclick = () => removeCoalType(coalCount);
+                wrapper.appendChild(removeBtn);
+            }
+
+            wrapper.appendChild(input);
+            return wrapper;
+        }
+
+        function getPlaceholderValue(type) {
+            const placeholders = {
+                cost: (2400 + (coalCount - 1) * 200).toString(),
+                freight: (2500 + (coalCount - 1) * 200).toString(),
+                gcv: (4300 + (coalCount - 1) * 200).toString()
+            };
+            return placeholders[type] || '';
+        }
+
+        function removeCoalType(coalIndex) {
+            if (coalCount <= 2) {
+                showError('Minimum 2 coal types required.');
+                return;
+            }
+
+            // Remove the coal card from DOM
+            const coalCard = document.querySelector(`.coal-card[data-coal-index="${coalIndex}"]`);
+            if (coalCard) {
+                coalCard.remove();
+            }
+
+            // Reindex remaining coal cards
+            reindexCoalCards();
+            
+            coalCount--;
+            
+            // Update inputs object
+            updateInputsObject();
+            
+            // Update instruction message
+            updateInstructionMessage();
+            
+            // Show success message
+            showError(`Coal type removed successfully!`, 'success');
+        }
+
+        function reindexCoalCards() {
+            const coalCards = document.querySelectorAll('.coal-card');
+            coalCards.forEach((card, index) => {
+                const newIndex = index + 1;
+                card.setAttribute('data-coal-index', newIndex);
+                
+                // Update card title
+                const title = card.querySelector('.coal-card-title');
+                if (title) {
+                    title.textContent = `Coal ${newIndex}`;
+                }
+                
+                // Update input IDs
+                const nameInput = card.querySelector('.coal-name');
+                const costInput = card.querySelector('.coal-cost');
+                const freightInput = card.querySelector('.coal-freight');
+                const gcvInput = card.querySelector('.coal-gcv');
+                
+                if (nameInput) nameInput.id = `coal${newIndex}Name`;
+                if (costInput) costInput.id = `coal${newIndex}Cost`;
+                if (freightInput) freightInput.id = `coal${newIndex}Freight`;
+                if (gcvInput) gcvInput.id = `coal${newIndex}GCV`;
+                
+                // Update remove button (only show for index > 2)
+                const removeBtn = card.querySelector('.coal-card-remove');
+                if (removeBtn) {
+                    if (newIndex <= 2) {
+                        removeBtn.remove();
+                    } else {
+                        removeBtn.onclick = () => removeCoalType(newIndex);
+                    }
+                } else if (newIndex > 2) {
+                    // Add remove button if it doesn't exist but should
+                    const header = card.querySelector('.coal-card-header');
+                    const newRemoveBtn = document.createElement('button');
+                    newRemoveBtn.type = 'button';
+                    newRemoveBtn.className = 'coal-card-remove';
+                    newRemoveBtn.onclick = () => removeCoalType(newIndex);
+                    newRemoveBtn.title = 'Remove Coal';
+                    newRemoveBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    header.appendChild(newRemoveBtn);
+                }
+            });
+        }
+
         // Utility functions
+        function setupInputEventListeners(container = document) {
+            const inputs = container.querySelectorAll('.coal-input-field');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updateInstructionMessage();
+                    // Auto-calculate silently when all required fields are filled
+                    autoCalculate();
+                });
+                input.addEventListener('change', () => {
+                    updateInstructionMessage();
+                    // Auto-calculate silently when all required fields are filled
+                    autoCalculate();
+                });
+            });
+        }
+
         function formatNumber(num, decimals = 2) {
             if (isNaN(num) || num === null || num === undefined) return '-';
             return new Intl.NumberFormat('en-IN', {
@@ -1852,7 +2317,7 @@
             }).format(num);
         }
 
-        function showError(message, type = 'error') {
+        function showError(message, type = 'error', hideResults = true) {
             errorMessage.textContent = message;
             
             // Style based on message type
@@ -1867,7 +2332,7 @@
             }
             
             errorMessage.style.display = 'block';
-            if (type !== 'success') {
+            if (type !== 'success' && hideResults) {
                 results.container.style.display = 'none';
             }
             instructionMessage.style.display = 'none';
@@ -1888,19 +2353,23 @@
 
         function updateInstructionMessage() {
             const values = getInputValues();
-            const textInputs = [values.coal1Name, values.coal2Name];
-            const numericInputs = [
-                values.coal1Cost, values.coal2Cost, values.coal1Freight, values.coal2Freight,
-                values.coal1GCV, values.coal2GCV, values.capacity, values.plf, values.days, values.shr
-            ];
             
-            const textFilled = textInputs.every(v => v && v.trim() !== '');
-            const numericFilled = numericInputs.every(v => !isNaN(v) && v !== null);
+            // Check if all coal names are filled
+            const namesComplete = values.coalTypes && values.coalTypes.every(coal => coal.name && coal.name.trim() !== '');
             
-            if (!textFilled || !numericFilled) {
+            // Check if all coal properties are filled
+            const coalPropertiesComplete = values.coalTypes && values.coalTypes.every(coal => 
+                !isNaN(coal.cost) && !isNaN(coal.freight) && !isNaN(coal.gcv)
+            );
+            
+            // Check if all plant parameters are filled
+            const plantParamsComplete = !isNaN(values.capacity) && !isNaN(values.plf) && 
+                                      !isNaN(values.days) && !isNaN(values.shr) && !isNaN(values.coalQuantity);
+            
+            if (!namesComplete || !coalPropertiesComplete || !plantParamsComplete) {
                 instructionMessage.innerHTML = `
                     <i class="fas fa-info-circle me-2"></i>
-                    Fill all parameters to compare coal costs
+                    Fill all parameters to compare ${coalCount} coal types
                 `;
                 instructionMessage.style.display = 'block';
                 instructionMessage.style.color = 'white';
@@ -1910,74 +2379,146 @@
         }
 
         function getInputValues() {
-            if (!inputs || !inputs.coal1Name) {
+            if (!inputs || !inputs.capacity) {
                 console.log('Inputs not initialized yet');
                 return {};
             }
             
-            return {
-                coal1Name: inputs.coal1Name.value.trim(),
-                coal2Name: inputs.coal2Name.value.trim(),
-                coal1Cost: parseFloat(inputs.coal1Cost.value),
-                coal2Cost: parseFloat(inputs.coal2Cost.value),
-                coal1Freight: parseFloat(inputs.coal1Freight.value),
-                coal2Freight: parseFloat(inputs.coal2Freight.value),
-                coal1GCV: parseFloat(inputs.coal1GCV.value),
-                coal2GCV: parseFloat(inputs.coal2GCV.value),
+            const values = {
                 capacity: parseFloat(inputs.capacity.value),
                 plf: parseFloat(inputs.plf.value),
                 days: parseFloat(inputs.days.value),
                 shr: parseFloat(inputs.shr.value),
-                coalQuantity: parseFloat(inputs.coalQuantity.value)
+                coalQuantity: parseFloat(inputs.coalQuantity.value),
+                coalTypes: []
             };
+
+            // Get values for all coal types
+            for (let i = 1; i <= coalCount; i++) {
+                const nameInput = inputs[`coal${i}Name`];
+                const costInput = inputs[`coal${i}Cost`];
+                const freightInput = inputs[`coal${i}Freight`];
+                const gcvInput = inputs[`coal${i}GCV`];
+                
+                if (nameInput && costInput && freightInput && gcvInput) {
+                    const coalData = {
+                        name: nameInput.value.trim() || '',
+                        cost: parseFloat(costInput.value),
+                        freight: parseFloat(freightInput.value),
+                        gcv: parseFloat(gcvInput.value)
+                    };
+                    values.coalTypes.push(coalData);
+                } else {
+                    // Fallback to direct DOM access
+                    const nameEl = document.getElementById(`coal${i}Name`);
+                    const costEl = document.getElementById(`coal${i}Cost`);
+                    const freightEl = document.getElementById(`coal${i}Freight`);
+                    const gcvEl = document.getElementById(`coal${i}GCV`);
+                    
+                    if (nameEl && costEl && freightEl && gcvEl) {
+                        const coalData = {
+                            name: nameEl.value.trim() || '',
+                            cost: parseFloat(costEl.value),
+                            freight: parseFloat(freightEl.value),
+                            gcv: parseFloat(gcvEl.value)
+                        };
+                        values.coalTypes.push(coalData);
+                    } else {
+                        console.log(`Warning: Coal ${i} inputs not found`);
+                    }
+                }
+            }
+            
+            return values;
         }
 
         function validateInputs(values) {
-            // Check for missing text inputs
-            if (!values.coal1Name || !values.coal2Name) {
-                showError('Please enter names for both coal types.');
+            console.log('Validating inputs with values:', values);
+            
+            // Check if we have coal types data
+            if (!values.coalTypes || values.coalTypes.length === 0) {
+                console.log('No coal types found in values');
+                showError('No coal types found. Please ensure coal cards are loaded properly.');
                 return false;
             }
+            
+            // Check for missing coal names
+            for (let i = 0; i < values.coalTypes.length; i++) {
+                console.log(`Checking coal ${i + 1} name:`, values.coalTypes[i].name);
+                if (!values.coalTypes[i].name || values.coalTypes[i].name.trim() === '') {
+                    const error = `Please enter name for Coal Type ${i + 1}.`;
+                    console.log('Validation error:', error);
+                    showError(error);
+                    return false;
+                }
+            }
 
-            // Check if any numeric input field is empty
-            const numericInputs = [
-                inputs.coal1Cost.value, inputs.coal2Cost.value, inputs.coal1Freight.value, inputs.coal2Freight.value,
-                inputs.coal1GCV.value, inputs.coal2GCV.value, inputs.capacity.value, inputs.plf.value, 
-                inputs.days.value, inputs.shr.value, inputs.coalQuantity.value
+            // Check if any plant parameter is empty
+            const plantInputs = [
+                inputs.capacity.value, inputs.plf.value, inputs.days.value, 
+                inputs.shr.value, inputs.coalQuantity.value
             ];
 
-            if (numericInputs.some(v => v.trim() === '')) {
-                showError('Please fill in all numeric fields.');
+            console.log('Plant inputs:', plantInputs);
+            if (plantInputs.some(v => v.trim() === '')) {
+                const error = 'Please fill in all plant parameter fields.';
+                console.log('Validation error:', error);
+                showError(error);
                 return false;
             }
 
-            // Check for negative or invalid numeric values
-            const numericValues = [
-                values.coal1Cost, values.coal2Cost, values.coal1Freight, values.coal2Freight,
-                values.coal1GCV, values.coal2GCV, values.capacity, values.plf, values.days, values.shr,
-                values.coalQuantity
-            ];
+            // Check coal properties for all coal types
+            for (let i = 0; i < values.coalTypes.length; i++) {
+                const coal = values.coalTypes[i];
+                const coalValues = [coal.cost, coal.freight, coal.gcv];
+                
+                if (coalValues.some(v => isNaN(v))) {
+                    const error = `Please enter valid numeric values for ${coal.name || `Coal Type ${i + 1}`}.`;
+                    console.log('Validation error:', error);
+                    showError(error);
+                    return false;
+                }
 
-            if (numericValues.some(v => isNaN(v))) {
-                showError('Please enter valid numeric values.');
+                if (coalValues.some(v => v < 0)) {
+                    const error = `Please enter valid non-negative values for ${coal.name || `Coal Type ${i + 1}`}.`;
+                    console.log('Validation error:', error);
+                    showError(error);
+                    return false;
+                }
+            }
+
+            // Check for negative or invalid numeric values for plant parameters
+            const plantValues = [values.capacity, values.plf, values.days, values.shr, values.coalQuantity];
+
+            if (plantValues.some(v => isNaN(v))) {
+                const error = 'Please enter valid numeric values for plant parameters.';
+                console.log('Validation error:', error);
+                showError(error);
                 return false;
             }
 
-            if (numericValues.some(v => v < 0)) {
-                showError('Please enter valid non-negative values.');
+            if (plantValues.some(v => v < 0)) {
+                const error = 'Please enter valid non-negative values for plant parameters.';
+                console.log('Validation error:', error);
+                showError(error);
                 return false;
             }
 
             if (values.plf > 100) {
-                showError('PLF cannot exceed 100%.');
+                const error = 'PLF cannot exceed 100%.';
+                console.log('Validation error:', error);
+                showError(error);
                 return false;
             }
 
             if (values.days > 365) {
-                showError('Days cannot exceed 365.');
+                const error = 'Days cannot exceed 365.';
+                console.log('Validation error:', error);
+                showError(error);
                 return false;
             }
 
+            console.log('Validation passed!');
             return true;
         }
 
@@ -1989,125 +2530,121 @@
             hideError();
             updateInstructionMessage();
 
-            // Calculations
-            const generation = values.capacity * (values.plf / 10000) * 24 * values.days; // MWh
+            // Common calculations
+            const generation = values.capacity * (values.plf / 100) * 24 * values.days; // MWh
             
-            // Coal 1 calculations
-            const coal1LandedCost = values.coal1Cost + values.coal1Freight;
-            const coal1Required = ((generation * values.shr) / (values.coal1GCV * 1000)) * 100000; // MT (multiplied by 1000)
-            const coal1LandedCostMC = coal1LandedCost / values.coal1GCV;
-            const coal1EnergyCharges = (coal1LandedCost * values.shr) / (values.coal1GCV * 1000);
-            const coal1SCC = values.shr / values.coal1GCV;
-            const coal1TotalCost = (coal1Required * coal1LandedCost / 10000000); // Crores 
+            // Initialize results array
+            const coalResults = [];
             
-            // Coal 2 calculations
-            const coal2LandedCost = values.coal2Cost + values.coal2Freight;
-            const coal2Required = ((generation * values.shr) / (values.coal2GCV * 1000)) * 100000; // MT (multiplied by 1000)
-            const coal2LandedCostMC = coal2LandedCost / values.coal2GCV;
-            const coal2EnergyCharges = (coal2LandedCost * values.shr) / (values.coal2GCV * 1000);
-            const coal2SCC = values.shr / values.coal2GCV;
-            const coal2TotalCost = (coal2Required * coal2LandedCost / 10000000); // Crores
-
-            // Calculate Fuel Cost for Coal 1 and Coal 2 (using coal quantity)
-            const fuelCost1 = (coal1Required * coal1LandedCost) / 100;
-            const fuelCost2 = (coal2Required * coal2LandedCost) / 100;
-
-            // Calculate Savings
-            const savingsCoal1 = fuelCost1 - fuelCost2;
-            const savingsCoal2 = fuelCost2 - fuelCost1;
-
-            // Calculate savings per MT using coal quantity
-            const savingsPerMTCoal1 = ((coal2LandedCost * (values.coal1GCV / values.coal2GCV)) - coal1LandedCost) * (values.coalQuantity || coal1Required) / 10000000;
-            const savingsPerMTCoal2 = ((coal1LandedCost * (values.coal2GCV / values.coal1GCV)) - coal2LandedCost) * (values.coalQuantity || coal2Required) / 10000000;
-
-            // Per unit cost reduction (difference between energy charges)
-            const perUnitReduction = Math.abs(coal1EnergyCharges - coal2EnergyCharges);
+            // Calculate for each coal type
+            values.coalTypes.forEach((coal, index) => {
+                const landedCost = coal.cost + coal.freight;
+                const required = (generation * values.shr) / (coal.gcv * 1000); // MT
+                const landedCostMC = landedCost / coal.gcv;
+                const energyCharges = (landedCost * values.shr) / (coal.gcv * 1000);
+                const scc = values.shr / coal.gcv;
+                const totalCost = (required * 1000 * landedCost) / 10000000; // Crores (using displayed quantity)
+                const fuelCost = required * landedCost; // Total fuel cost in Rs
+                
+                coalResults.push({
+                    index: index,
+                    name: coal.name,
+                    cost: coal.cost,
+                    freight: coal.freight,
+                    gcv: coal.gcv,
+                    landedCost: landedCost,
+                    required: required,
+                    landedCostMC: landedCostMC,
+                    energyCharges: energyCharges,
+                    scc: scc,
+                    totalCost: totalCost,
+                    fuelCost: fuelCost
+                });
+            });
+            
+            // Sort by energy charges (most economical first)
+            coalResults.sort((a, b) => a.energyCharges - b.energyCharges);
+            
+            // Calculate savings relative to most expensive coal
+            const mostExpensive = coalResults[coalResults.length - 1];
+            const mostEconomical = coalResults[0];
+            
+            coalResults.forEach(coal => {
+                coal.savingsVsMostExpensive = mostExpensive.fuelCost - coal.fuelCost;
+                coal.isEconomical = coal.index === mostEconomical.index;
+            });
 
             return {
                 values,
                 generation,
-                coal1: {
-                    landedCost: coal1LandedCost,
-                    required: coal1Required,
-                    landedCostMC: coal1LandedCostMC,
-                    energyCharges: coal1EnergyCharges,
-                    scc: coal1SCC,
-                    totalCost: coal1TotalCost,
-                    fuelCost: fuelCost1
-                },
-                coal2: {
-                    landedCost: coal2LandedCost,
-                    required: coal2Required,
-                    landedCostMC: coal2LandedCostMC,
-                    energyCharges: coal2EnergyCharges,
-                    scc: coal2SCC,
-                    totalCost: coal2TotalCost,
-                    fuelCost: fuelCost2
-                },
-                savings: {
-                    savingsCoal1,
-                    savingsCoal2,
-                    savingsPerMTCoal1,
-                    savingsPerMTCoal2,
-                    perUnitReduction,
-                    economicalCoal: fuelCost1 < fuelCost2 ? 'coal1' : 'coal2',
-                    totalSaving: Math.abs(savingsCoal1),
-                    coalQuantityUsed: values.coalQuantity || 0
-                }
+                coalResults,
+                mostEconomical: mostEconomical.name,
+                mostExpensive: mostExpensive.name,
+                maxSavings: mostExpensive.fuelCost - mostEconomical.fuelCost
             };
         }
 
         function displayResults(calculation) {
             if (!calculation) return;
 
-            const { values, generation, coal1, coal2, savings } = calculation;
+            const { values, generation, coalResults, mostEconomical, mostExpensive, maxSavings } = calculation;
 
-            // Update headers
-            results.coal1Header.textContent = values.coal1Name;
-            results.coal2Header.textContent = values.coal2Name;
-            results.title.textContent = `${values.coal1Name} vs ${values.coal2Name} Analysis`;
+            // Update title with multiple coal names
+            const coalNames = coalResults.map(coal => coal.name).join(' vs ');
+            results.title.textContent = `${coalNames} Analysis`;
 
-            // Create table rows
-            const rows = [
-                ['Quantity Required (Lakh MT)', formatNumber(coal1.required / 100000, 2), formatNumber(coal2.required / 100000, 2)],
-                ['Landed Cost (Rs/MT)', formatNumber(coal1.landedCost, 2), formatNumber(coal2.landedCost, 2)],
-                ['Landed Cost (Rs/MCal)', formatNumber(coal1.landedCostMC, 3), formatNumber(coal2.landedCostMC, 3)],
-                ['Energy Charges (Rs/kWh)', formatNumber(coal1.energyCharges, 4), formatNumber(coal2.energyCharges, 4)],
-                ['SCC (kg/kWh)', formatNumber(coal1.scc, 3), formatNumber(coal2.scc, 3)],
-                ['Total Expenditure (Rs. Crore)', formatNumber(coal1.totalCost, 2), formatNumber(coal2.totalCost, 2)]
+            // Create dynamic table headers
+            const headerRow = results.table.querySelector('thead tr');
+            headerRow.innerHTML = `
+                <th class="parameter-cell">Parameters</th>
+                ${coalResults.map(coal => `
+                    <th class="text-center ${coal.isEconomical ? 'economical-header' : ''}">${coal.name}</th>
+                `).join('')}
+            `;
+
+            // Create table rows with dynamic columns
+            const parameters = [
+                { label: 'Cost (Rs/MT)', key: 'cost', decimals: 2 },
+                { label: 'Freight (Rs/MT)', key: 'freight', decimals: 2 },
+                { label: 'GCV (kcal/kg)', key: 'gcv', decimals: 0 },
+                { label: 'Quantity Required (MT)', key: 'required', decimals: 0, transform: val => val * 1000 },
+                { label: 'Landed Cost (Rs/MT)', key: 'landedCost', decimals: 2 },
+                { label: 'Landed Cost (Rs/MCal)', key: 'landedCostMC', decimals: 3 },
+                { label: 'Energy Charges (Rs/kWh)', key: 'energyCharges', decimals: 4 },
+                { label: 'SCC (kg/kWh)', key: 'scc', decimals: 3 },
+                { label: 'Total Expenditure (Rs. Crore)', key: 'totalCost', decimals: 2 }
             ];
 
-            results.tableBody.innerHTML = rows.map(row => `
+            results.tableBody.innerHTML = parameters.map(param => `
                 <tr>
-                    <td class="parameter-cell">${row[0]}</td>
-                    <td>${row[1]}</td>
-                    <td>${row[2]}</td>
+                    <td class="parameter-cell">${param.label}</td>
+                    ${coalResults.map(coal => {
+                        const value = param.transform ? param.transform(coal[param.key]) : coal[param.key];
+                        const cellClass = coal.isEconomical && param.key === 'energyCharges' ? 'economical-cell' : '';
+                        return `<td class="${cellClass}">${formatNumber(value, param.decimals)}</td>`;
+                    }).join('')}
                 </tr>
             `).join('');
 
-            // Determine economical coal and savings display
-            const economicalCoalName = savings.economicalCoal === 'coal1' ? values.coal1Name : values.coal2Name;
-            const otherCoalName = savings.economicalCoal === 'coal1' ? values.coal2Name : values.coal1Name;
-            const totalSavingAmount = (savings.economicalCoal === 'coal1' ? savings.savingsCoal2 : savings.savingsCoal1) / 100000;
-            const savingsPerMT = savings.economicalCoal === 'coal1' ? savings.savingsPerMTCoal1 : savings.savingsPerMTCoal2;
-            const coalQuantityDisplay = savings.coalQuantityUsed > 0 ? savings.coalQuantityUsed / 100000 : 0;
-
+            // Update summary section for multiple coals
+            const totalSavingAmount = maxSavings / 10000000; // Convert to crores
+            
             results.summarySection.innerHTML = `
                 <div class="summary-item section-header">
-                    ${economicalCoalName} coal is economical w.r.t. ${otherCoalName} coal
+                    <i class="fas fa-trophy text-warning me-2"></i>
+                    <strong>${mostEconomical}</strong> is the most economical coal
                 </div>
                 <div class="summary-item">
-                    Total Saving for using <strong style="font-weight: bold !important;">${economicalCoalName}</strong> coal: <strong style="font-weight: bold !important;">Rs. ${formatNumber(totalSavingAmount, 2)} Crore</strong>
-                </div>
-                ${coalQuantityDisplay > 0 ? `
-                <div class="summary-item">
-                    <strong style="font-weight: bold !important;">Rs. ${formatNumber(savingsPerMT, 2)} Crore</strong> per <strong style="font-weight: bold !important;">${formatNumber(coalQuantityDisplay, 2)} Lakh MT</strong>
-                </div>` : ''}
-                <div class="summary-item">
-                    Per Unit cost reduction: <strong style="font-weight: bold !important;">Rs. ${formatNumber(savings.perUnitReduction, 4)}</strong>
+                    <i class="fas fa-coins text-success me-2"></i>
+                    Maximum saving vs <strong>${mostExpensive}</strong>: <strong>Rs. ${formatNumber(totalSavingAmount, 2)} Crore</strong>
                 </div>
                 <div class="summary-item">
+                    <i class="fas fa-bolt text-primary me-2"></i>
                     Generation: <strong>${formatNumber(generation, 2)} Lakh Units</strong>
+                </div>
+                <div class="summary-item">
+                    <i class="fas fa-chart-line text-info me-2"></i>
+                    Comparing <strong>${coalResults.length}</strong> coal types
                 </div>
             `;
 
@@ -2120,6 +2657,86 @@
             return calculation;
         }
 
+        function autoCalculate() {
+            const values = getInputValues();
+            
+            // Check if we have minimum required data for auto-calculation
+            const hasMinimumData = values.coalTypes && values.coalTypes.length >= 2;
+            const allNamesProvided = hasMinimumData && values.coalTypes.every(coal => coal.name && coal.name.trim() !== '');
+            const allCoalPropsProvided = hasMinimumData && values.coalTypes.every(coal => 
+                !isNaN(coal.cost) && !isNaN(coal.freight) && !isNaN(coal.gcv) &&
+                coal.cost >= 0 && coal.freight >= 0 && coal.gcv > 0
+            );
+            const allPlantParamsProvided = values.capacity > 0 && values.plf > 0 && values.days > 0 && 
+                                         values.shr > 0 && values.coalQuantity > 0;
+
+            if (hasMinimumData && allNamesProvided && allCoalPropsProvided && allPlantParamsProvided) {
+                const calculation = calculateComparisonSilent(values);
+                if (calculation) {
+                    displayResults(calculation);
+                }
+            }
+        }
+
+        function calculateComparisonSilent(values) {
+            // Silent calculation without validation errors
+            hideError();
+            updateInstructionMessage();
+
+            // Common calculations
+            const generation = values.capacity * (values.plf / 100) * 24 * values.days; // MWh
+            
+            // Initialize results array
+            const coalResults = [];
+            
+            // Calculate for each coal type
+            values.coalTypes.forEach((coal, index) => {
+                const landedCost = coal.cost + coal.freight;
+                const required = (generation * values.shr) / (coal.gcv * 1000); // MT
+                const landedCostMC = landedCost / coal.gcv;
+                const energyCharges = (landedCost * values.shr) / (coal.gcv * 1000);
+                const scc = values.shr / coal.gcv;
+                const totalCost = (required * 1000 * landedCost) / 10000000; // Crores (using displayed quantity)
+                const fuelCost = required * landedCost; // Total fuel cost in Rs
+                
+                coalResults.push({
+                    index: index,
+                    name: coal.name,
+                    cost: coal.cost,
+                    freight: coal.freight,
+                    gcv: coal.gcv,
+                    landedCost: landedCost,
+                    required: required,
+                    landedCostMC: landedCostMC,
+                    energyCharges: energyCharges,
+                    scc: scc,
+                    totalCost: totalCost,
+                    fuelCost: fuelCost
+                });
+            });
+            
+            // Sort by energy charges (most economical first)
+            coalResults.sort((a, b) => a.energyCharges - b.energyCharges);
+            
+            // Calculate savings relative to most expensive coal
+            const mostExpensive = coalResults[coalResults.length - 1];
+            const mostEconomical = coalResults[0];
+            
+            coalResults.forEach(coal => {
+                coal.savingsVsMostExpensive = mostExpensive.fuelCost - coal.fuelCost;
+                coal.isEconomical = coal.index === mostEconomical.index;
+            });
+
+            return {
+                values,
+                generation,
+                coalResults,
+                mostEconomical: mostEconomical.name,
+                mostExpensive: mostExpensive.name,
+                maxSavings: mostExpensive.fuelCost - mostEconomical.fuelCost
+            };
+        }
+
         function storeCalculation() {
             const calculation = calculate();
             if (!calculation) return;
@@ -2129,37 +2746,21 @@
             // Get input values directly
             const inputValues = getInputValues();
             
-            // Calculate best option using proper energy cost comparison
-            let bestOption = 'N/A';
-            if (calculation && calculation.coal1 && calculation.coal2) {
-                const coal1LandedCost = (inputValues.coal1Cost || 0) + (inputValues.coal1Freight || 0);
-                const coal2LandedCost = (inputValues.coal2Cost || 0) + (inputValues.coal2Freight || 0);
-                const coal1EnergyCharge = coal1LandedCost / (inputValues.coal1GCV || 1);
-                const coal2EnergyCharge = coal2LandedCost / (inputValues.coal2GCV || 1);
-                
-                if (coal1EnergyCharge > 0 && coal2EnergyCharge > 0) {
-                    bestOption = coal1EnergyCharge < coal2EnergyCharge ? 
-                        (inputValues.coal1Name || 'Coal A') : 
-                        (inputValues.coal2Name || 'Coal B');
-                }
-            }
+            // Use the most economical coal from the calculation
+            const bestOption = calculation.mostEconomical || 'N/A';
             
             const storedData = {
                 timestamp,
-                coal1Name: inputValues.coal1Name || 'Coal A',
-                coal2Name: inputValues.coal2Name || 'Coal B',
-                coal1Cost: inputValues.coal1Cost || 0,
-                coal2Cost: inputValues.coal2Cost || 0,
-                coal1Freight: inputValues.coal1Freight || 0,
-                coal2Freight: inputValues.coal2Freight || 0,
-                coal1GCV: inputValues.coal1GCV || 0,
-                coal2GCV: inputValues.coal2GCV || 0,
+                coalTypes: inputValues.coalTypes || [],
                 capacity: inputValues.capacity || 0,
                 plf: inputValues.plf || 0,
                 days: inputValues.days || 0,
                 shr: inputValues.shr || 0,
                 coalQuantity: inputValues.coalQuantity || 0,
                 bestOption: bestOption,
+                mostExpensive: calculation.mostExpensive || 'N/A',
+                maxSavings: calculation.maxSavings || 0,
+                coalCount: inputValues.coalTypes ? inputValues.coalTypes.length : 0,
                 results: calculation
             };
 
@@ -2297,21 +2898,173 @@
 
         function exportToPDF() {
             console.log('ExportToPDF function called');
+            
+            // Try to get current calculation first
+            const currentCalculation = calculateComparison();
+            if (currentCalculation) {
+                // Export current calculation
+                exportCurrentCalculationToPDF(currentCalculation);
+                return;
+            }
+            
+            // Fallback to stored calculations
             const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
             console.log('Stored calculations:', storedCalculations);
             
             if (storedCalculations.length === 0) {
-                showError('No data to export. Please store some calculations first.');
+                showError('No data to export. Please enter coal data or store some calculations first.', 'error', false);
                 return;
             }
 
             try {
                 if (!window.jspdf) {
-                    showError('PDF library not loaded. Please refresh the page and try again.');
+                    showError('PDF library not loaded. Please refresh the page and try again.', 'error', false);
                     return;
                 }
                 
+                exportStoredCalculationsToPDF(storedCalculations);
+                
+            } catch (error) {
+                console.error('Error exporting to PDF:', error);
+                showError('Error occurred while exporting to PDF. Please try again.', 'error', false);
+                toggleExportOptions();
+            }
+        }
+
+        function exportCurrentCalculationToPDF(calculation) {
+            try {
                 const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                let yPosition = 20;
+                const pageWidth = 210;
+                const margin = 20;
+                
+                // Header
+                doc.setFillColor(79, 172, 254);
+                doc.rect(0, 0, pageWidth, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Coal Cost Analysis Report', pageWidth/2, 12, { align: 'center' });
+                
+                yPosition = 35;
+                doc.setTextColor(0, 0, 0);
+                
+                // Coal comparison title
+                const coalNames = calculation.coalResults.map(coal => coal.name).join(' vs ');
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Analysis: ${coalNames}`, margin, yPosition);
+                yPosition += 12;
+                
+                // Input values
+                const values = getInputValues();
+                
+                // Plant parameters table
+                const plantParams = [
+                    ['Generation Capacity', `${values.capacity} MW`],
+                    ['Plant Load Factor (PLF)', `${values.plf}%`],
+                    ['Number of Days', `${values.days} Days`],
+                    ['Station Heat Rate (SHR)', `${values.shr} kcal/kWh`],
+                    ['Coal Quantity (if specified)', values.coalQuantity ? `${(values.coalQuantity/100000).toFixed(2)} Lakh MT` : 'Not specified']
+                ];
+                
+                doc.autoTable({
+                    head: [['Plant Parameters', 'Value']],
+                    body: plantParams,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 9, cellPadding: 2, font: 'helvetica' },
+                    headStyles: { fillColor: [52, 144, 220], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 8;
+                
+                // Coal input parameters
+                const coalInputData = calculation.coalResults.map(coal => [
+                    coal.name,
+                    `${coal.cost}`,
+                    `${coal.freight}`,
+                    `${coal.gcv}`
+                ]);
+                
+                doc.autoTable({
+                    head: [['Coal Type', 'Cost (Rs/MT)', 'Freight (Rs/MT)', 'GCV (kcal/kg)']],
+                    body: coalInputData,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 9, cellPadding: 2, font: 'helvetica' },
+                    headStyles: { fillColor: [52, 144, 220], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 8;
+                
+                // Results table
+                const resultsData = [
+                    ['Quantity Required (MT)', ...calculation.coalResults.map(coal => `${(coal.required * 1000).toFixed(0)}`)],
+                    ['Landed Cost (Rs/MT)', ...calculation.coalResults.map(coal => `${coal.landedCost.toFixed(2)}`)],
+                    ['Landed Cost (Rs/MCal)', ...calculation.coalResults.map(coal => `${coal.landedCostMC.toFixed(3)}`)],
+                    ['Energy Charges (Rs/kWh)', ...calculation.coalResults.map(coal => `${coal.energyCharges.toFixed(4)}`)],
+                    ['SCC (kg/kWh)', ...calculation.coalResults.map(coal => `${coal.scc.toFixed(3)}`)],
+                    ['Total Expenditure (Rs. Crore)', ...calculation.coalResults.map(coal => `${coal.totalCost.toFixed(2)}`)]
+                ];
+                
+                const headers = ['Parameters', ...calculation.coalResults.map(coal => coal.name)];
+                
+                doc.autoTable({
+                    head: [headers],
+                    body: resultsData,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 8, cellPadding: 2, font: 'helvetica' },
+                    headStyles: { fillColor: [220, 53, 69], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 249, 250] },
+                    theme: 'grid'
+                });
+                
+                yPosition = doc.lastAutoTable.finalY + 10;
+                
+                // Summary
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Summary:', margin, yPosition);
+                yPosition += 6;
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Most Economical: ${calculation.mostEconomical}`, margin, yPosition);
+                yPosition += 5;
+                doc.text(`Most Expensive: ${calculation.mostExpensive}`, margin, yPosition);
+                yPosition += 5;
+                doc.text(`Maximum Savings: Rs. ${(calculation.maxSavings / 10000000).toFixed(2)} Crore`, margin, yPosition);
+                yPosition += 5;
+                doc.text(`Generation: ${calculation.generation.toFixed(2)} Lakh Units`, margin, yPosition);
+                yPosition += 5;
+                doc.text(`Comparing: ${calculation.coalResults.length} coal types`, margin, yPosition);
+                
+                // Footer
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Report Generated: ${new Date().toLocaleString()}`, pageWidth/2, 285, { align: 'center' });
+                
+                doc.save('Coal_Analysis_Report.pdf');
+                toggleExportOptions();
+                showMessage('PDF exported successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error exporting current calculation to PDF:', error);
+                showError('Error occurred while exporting to PDF. Please try again.', 'error', false);
+                toggleExportOptions();
+            }
+        }
+
+        function exportStoredCalculationsToPDF(storedCalculations) {
+            // Keep the existing stored calculations export logic for backward compatibility
+            // This function will handle the legacy stored data format
+            const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('p', 'mm', 'a4'); // A4 portrait format
             
             let yPosition = 20;
@@ -2518,28 +3271,259 @@
 
             doc.save('Professional_Coal_Cost_Analysis_Report.pdf');
             toggleExportOptions();
-        } catch (error) {
-            console.error('Error exporting to PDF:', error);
-            showError('Error occurred while exporting to PDF. Please try again.');
-            toggleExportOptions();
-        }
+            showMessage('PDF exported successfully!', 'success');
         }
 
         async function exportToJPG() {
             console.log('ExportToJPG function called');
+            
+            // Try to get current calculation first
+            const currentCalculation = calculateComparison();
+            if (currentCalculation) {
+                // Export current calculation
+                await exportCurrentCalculationToJPG(currentCalculation);
+                return;
+            }
+            
+            // Fallback to stored calculations
             const storedCalculations = JSON.parse(localStorage.getItem('coalAnalysisCalculations') || '[]');
             console.log('Stored calculations for JPG:', storedCalculations);
             
             if (storedCalculations.length === 0) {
-                showError('No data to export. Please store some calculations first.');
+                showError('No data to export. Please enter coal data or store some calculations first.', 'error', false);
                 return;
             }
 
             try {
                 if (!window.html2canvas) {
-                    showError('Image export library not loaded. Please refresh the page and try again.');
+                    showError('Image export library not loaded. Please refresh the page and try again.', 'error', false);
                     return;
                 }
+                
+                // Use simplified stored export for now
+                await exportSimpleStoredToJPG(storedCalculations);
+                
+            } catch (error) {
+                console.error('Error exporting to JPG:', error);
+                showError('Error occurred while exporting to JPG. Please try again.', 'error', false);
+            }
+            
+            toggleExportOptions();
+        }
+
+        async function exportCurrentCalculationToJPG(calculation) {
+            try {
+                if (!window.html2canvas) {
+                    showError('Image export library not loaded. Please refresh the page and try again.', 'error', false);
+                    return;
+                }
+
+                const pageWidth = 794;
+                const pageHeight = 1123;
+                const margin = 60;
+                
+                // Get input values
+                const values = getInputValues();
+                
+                // Coal names for title
+                const coalNames = calculation.coalResults.map(coal => coal.name).join(' vs ');
+                
+                // Create page content
+                const pageContent = `
+                    <div style="background: #f0f0f0; padding: 8px; margin: 0 0 15px 0; border-radius: 4px;">
+                        <h2 style="margin: 0; font-size: 18px; font-weight: bold; color: #333;">Analysis: ${coalNames}</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #2c3e50; font-size: 16px; margin: 0 0 8px 0; border-bottom: 2px solid #3498db; padding-bottom: 5px;">Plant Parameters</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+                            <tr style="background: #f8f9fa;"><td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Generation Capacity</td><td style="padding: 5px; border: 0.5px solid #666; color: #000; font-weight: normal;">${values.capacity} MW</td></tr>
+                            <tr><td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Plant Load Factor (PLF)</td><td style="padding: 5px; border: 0.5px solid #666; color: #000; font-weight: normal;">${values.plf}%</td></tr>
+                            <tr style="background: #f8f9fa;"><td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Number of Days</td><td style="padding: 5px; border: 0.5px solid #666; color: #000; font-weight: normal;">${values.days} Days</td></tr>
+                            <tr><td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Station Heat Rate (SHR)</td><td style="padding: 5px; border: 0.5px solid #666; color: #000; font-weight: normal;">${values.shr} kcal/kWh</td></tr>
+                            <tr style="background: #f8f9fa;"><td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Coal Quantity</td><td style="padding: 5px; border: 0.5px solid #666; color: #000; font-weight: normal;">${values.coalQuantity ? (values.coalQuantity/100000).toFixed(2) + ' Lakh MT' : 'Not specified'}</td></tr>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #2c3e50; font-size: 16px; margin: 0 0 8px 0; border-bottom: 2px solid #e74c3c; padding-bottom: 5px;">Coal Input Parameters</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background: #3498db; color: white;">
+                                    <th style="padding: 6px; border: 0.5px solid #666; text-align: left; font-weight: bold;">Coal Type</th>
+                                    <th style="padding: 6px; border: 0.5px solid #666; text-align: center; font-weight: bold;">Cost (Rs/MT)</th>
+                                    <th style="padding: 6px; border: 0.5px solid #666; text-align: center; font-weight: bold;">Freight (Rs/MT)</th>
+                                    <th style="padding: 6px; border: 0.5px solid #666; text-align: center; font-weight: bold;">GCV (kcal/kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${calculation.coalResults.map((coal, index) => `
+                                    <tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">
+                                        <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">${coal.name}</td>
+                                        <td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.cost}</td>
+                                        <td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.freight}</td>
+                                        <td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.gcv}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #2c3e50; font-size: 16px; margin: 0 0 8px 0; border-bottom: 2px solid #e74c3c; padding-bottom: 5px;">Analysis Results</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background: #e74c3c; color: white;">
+                                    <th style="padding: 6px; border: 0.5px solid #666; text-align: left; font-weight: bold;">Parameters</th>
+                                    ${calculation.coalResults.map(coal => `<th style="padding: 6px; border: 0.5px solid #666; text-align: center; font-weight: bold;">${coal.name}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Quantity Required (MT)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${(coal.required * 1000).toFixed(0)}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Landed Cost (Rs/MT)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.landedCost.toFixed(2)}</td>`).join('')}
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Landed Cost (Rs/MCal)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.landedCostMC.toFixed(3)}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Energy Charges (Rs/kWh)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.energyCharges.toFixed(4)}</td>`).join('')}
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">SCC (kg/kWh)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.scc.toFixed(3)}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px; border: 0.5px solid #666; font-weight: normal; color: #000;">Total Expenditure (Rs. Crore)</td>
+                                    ${calculation.coalResults.map(coal => `<td style="padding: 5px; border: 0.5px solid #666; text-align: center; color: #000; font-weight: normal;">${coal.totalCost.toFixed(2)}</td>`).join('')}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="background: #e8f5e8; padding: 10px; border-radius: 8px; border-left: 5px solid #27ae60;">
+                        <h3 style="color: #27ae60; font-size: 14px; margin: 0 0 5px 0; font-weight: bold;">Summary</h3>
+                        <p style="margin: 3px 0; font-size: 12px; color: #000; font-weight: normal;"><strong style="color: #000;">Most Economical:</strong> ${calculation.mostEconomical}</p>
+                        <p style="margin: 3px 0; font-size: 12px; color: #000; font-weight: normal;"><strong style="color: #000;">Most Expensive:</strong> ${calculation.mostExpensive}</p>
+                        <p style="margin: 3px 0; font-size: 12px; color: #000; font-weight: normal;"><strong style="color: #000;">Maximum Savings:</strong> Rs. ${(calculation.maxSavings / 10000000).toFixed(2)} Crore</p>
+                        <p style="margin: 3px 0; font-size: 12px; color: #000; font-weight: normal;"><strong style="color: #000;">Generation:</strong> ${calculation.generation.toFixed(2)} Lakh Units</p>
+                        <p style="margin: 3px 0; font-size: 12px; color: #000; font-weight: normal;"><strong style="color: #000;">Comparing:</strong> ${calculation.coalResults.length} coal types</p>
+                    </div>
+                `;
+
+                // Create the page element
+                const pageDiv = document.createElement('div');
+                pageDiv.style.cssText = `
+                    width: ${pageWidth}px;
+                    height: ${pageHeight}px;
+                    background: white;
+                    font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    position: relative;
+                    box-sizing: border-box;
+                    padding: 0;
+                    margin: 0;
+                    overflow: hidden;
+                `;
+                
+                // Header
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    width: 100%;
+                    height: 60px;
+                    background: linear-gradient(135deg, #4facfe, #00f2fe);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0;
+                    padding: 0;
+                `;
+                
+                const title = document.createElement('h1');
+                title.textContent = 'Coal Cost Analysis Report';
+                title.style.cssText = `
+                    color: white;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 0;
+                    text-align: center;
+                `;
+                header.appendChild(title);
+                
+                // Content
+                const content = document.createElement('div');
+                content.style.cssText = `
+                    padding: ${margin}px;
+                    padding-top: 20px;
+                    height: ${pageHeight - 60 - 40}px;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                `;
+                content.innerHTML = pageContent;
+                
+                // Footer
+                const footer = document.createElement('div');
+                footer.style.cssText = `
+                    position: absolute;
+                    bottom: 10px;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #666;
+                    line-height: 1.4;
+                `;
+                footer.innerHTML = `
+                    <div>Generated by Coal Cost Analysis Calculator</div>
+                    <div>Report Generated: ${new Date().toLocaleString()}</div>
+                `;
+                
+                pageDiv.appendChild(header);
+                pageDiv.appendChild(content);
+                pageDiv.appendChild(footer);
+                
+                // Add to DOM temporarily for rendering
+                const tempContainer = document.createElement('div');
+                tempContainer.style.cssText = 'position: absolute; top: -9999px; left: -9999px;';
+                document.body.appendChild(tempContainer);
+                tempContainer.appendChild(pageDiv);
+                
+                // Convert to image
+                const canvas = await html2canvas(pageDiv, {
+                    width: pageWidth,
+                    height: pageHeight,
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true
+                });
+                
+                // Download
+                const link = document.createElement('a');
+                link.download = 'Coal_Analysis_Report.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.92);
+                link.click();
+                
+                // Cleanup
+                document.body.removeChild(tempContainer);
+                
+                showMessage('JPG exported successfully!', 'success');
+                toggleExportOptions();
+                
+            } catch (error) {
+                console.error('Error exporting current calculation to JPG:', error);
+                showError('Error occurred while exporting to JPG. Please try again.', 'error', false);
+                toggleExportOptions();
+            }
+        }
+
+        async function exportSimpleStoredToJPG(storedCalculations) {
+            // Simplified stored calculations export
+            showMessage('Stored calculations JPG export - Feature being updated for multi-coal support', 'success');
                 const pageWidth = 794; // A4 width at 96 DPI (210mm)
                 const pageHeight = 1123; // A4 height at 96 DPI (297mm)
                 const margin = 60;
@@ -2775,18 +3759,6 @@
                 document.body.removeChild(tempContainer);
                 
                 // Show success message
-                const message = storedCalculations.length > 1 
-                    ? `Successfully exported ${storedCalculations.length} JPG files (one per analysis)`
-                    : 'Successfully exported Professional Coal Analysis Report as JPG';
-                    
-                showMessage(message, 'success');
-                
-            } catch (error) {
-                console.error('Error exporting to JPG:', error);
-                showError('Error occurred while exporting to JPG. Please try again.');
-            }
-            
-            toggleExportOptions();
         }
 
         function setupEventListeners() {
@@ -2796,7 +3768,7 @@
                 
                 input.addEventListener('input', () => {
                     updateInstructionMessage();
-                    calculate();
+                    autoCalculate(); // Use silent auto-calculation
                 });
                 
                 // Restrict numeric inputs
@@ -2900,27 +3872,47 @@
                 return;
             }
             
-            container.innerHTML = storedCalculations.map((calc, index) => `
-                <div class="stored-calculation-item">
-                    <div class="stored-calculation-actions">
-                        <button class="calc-action-btn" onclick="loadCalculation(${index})" title="Load">
-                            <i class="fas fa-upload"></i>
-                        </button>
-                        <button class="calc-action-btn" onclick="deleteCalculation(${index})" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <div class="stored-calculation-header">
-                        <h5 class="stored-calculation-title">${calc.coal1Name || 'Coal A'} vs ${calc.coal2Name || 'Coal B'}</h5>
-                    </div>
-                    <div class="stored-calculation-date">${new Date(calc.timestamp).toLocaleString()}</div>
-                    <div class="stored-calculation-data">
+            container.innerHTML = storedCalculations.map((calc, index) => {
+                // Get coal names for display
+                const coalNames = calc.coalTypes && calc.coalTypes.length > 0 
+                    ? calc.coalTypes.map(coal => coal.name).join(' vs ')
+                    : `${calc.coal1Name || 'Coal A'} vs ${calc.coal2Name || 'Coal B'}`;
+                
+                // Get coal details for display
+                let coalDetails = '';
+                if (calc.coalTypes && calc.coalTypes.length > 0) {
+                    coalDetails = calc.coalTypes.map(coal => 
+                        `<strong>${coal.name}:</strong> ₹${((coal.cost + coal.freight) / coal.gcv).toFixed(3)}/MCal, ${coal.gcv} kcal/kg`
+                    ).join('<br>');
+                } else {
+                    coalDetails = `
                         <strong>${calc.coal1Name || 'Coal A'}:</strong> ₹${((calc.coal1Cost + calc.coal1Freight) / calc.coal1GCV).toFixed(3)}/MCal, ${calc.coal1GCV || 0} kcal/kg<br>
-                        <strong>${calc.coal2Name || 'Coal B'}:</strong> ₹${((calc.coal2Cost + calc.coal2Freight) / calc.coal2GCV).toFixed(3)}/MCal, ${calc.coal2GCV || 0} kcal/kg<br>
-                        <strong>Best Option:</strong> ${calc.bestOption || 'N/A'}
+                        <strong>${calc.coal2Name || 'Coal B'}:</strong> ₹${((calc.coal2Cost + calc.coal2Freight) / calc.coal2GCV).toFixed(3)}/MCal, ${calc.coal2GCV || 0} kcal/kg
+                    `;
+                }
+                
+                return `
+                    <div class="stored-calculation-item">
+                        <div class="stored-calculation-actions">
+                            <button class="calc-action-btn" onclick="loadCalculation(${index})" title="Load">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="calc-action-btn" onclick="deleteCalculation(${index})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="stored-calculation-header">
+                            <h5 class="stored-calculation-title">${coalNames}</h5>
+                        </div>
+                        <div class="stored-calculation-date">${new Date(calc.timestamp).toLocaleString()}</div>
+                        <div class="stored-calculation-data">
+                            ${coalDetails}<br>
+                            <strong>Coal Count:</strong> ${calc.coalCount || 2}<br>
+                            <strong>Best Option:</strong> ${calc.bestOption || 'N/A'}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function loadCalculation(index) {
@@ -2928,15 +3920,37 @@
             const calc = storedCalculations[index];
             
             if (calc) {
-                // Load all form values using correct field IDs
-                document.getElementById('coal1Name').value = calc.coal1Name || '';
-                document.getElementById('coal2Name').value = calc.coal2Name || '';
-                document.getElementById('coal1Cost').value = calc.coal1Cost || '';
-                document.getElementById('coal2Cost').value = calc.coal2Cost || '';
-                document.getElementById('coal1Freight').value = calc.coal1Freight || '';
-                document.getElementById('coal2Freight').value = calc.coal2Freight || '';
-                document.getElementById('coal1GCV').value = calc.coal1GCV || '';
-                document.getElementById('coal2GCV').value = calc.coal2GCV || '';
+                // Clear existing coal cards and reset count
+                const coalCardsContainer = document.getElementById('coalCardsContainer');
+                coalCardsContainer.innerHTML = '';
+                coalCount = 0; // Reset global coal count
+                
+                // Load coal types data
+                if (calc.coalTypes && calc.coalTypes.length > 0) {
+                    // Handle new multi-coal format
+                    calc.coalTypes.forEach((coal, coalIndex) => {
+                        addCoalType();
+                        document.getElementById(`coal${coalIndex + 1}Name`).value = coal.name || '';
+                        document.getElementById(`coal${coalIndex + 1}Cost`).value = coal.cost || '';
+                        document.getElementById(`coal${coalIndex + 1}Freight`).value = coal.freight || '';
+                        document.getElementById(`coal${coalIndex + 1}GCV`).value = coal.gcv || '';
+                    });
+                } else {
+                    // Handle legacy 2-coal format
+                    addCoalType(); // Coal 1
+                    addCoalType(); // Coal 2
+                    
+                    document.getElementById('coal1Name').value = calc.coal1Name || '';
+                    document.getElementById('coal2Name').value = calc.coal2Name || '';
+                    document.getElementById('coal1Cost').value = calc.coal1Cost || '';
+                    document.getElementById('coal2Cost').value = calc.coal2Cost || '';
+                    document.getElementById('coal1Freight').value = calc.coal1Freight || '';
+                    document.getElementById('coal2Freight').value = calc.coal2Freight || '';
+                    document.getElementById('coal1GCV').value = calc.coal1GCV || '';
+                    document.getElementById('coal2GCV').value = calc.coal2GCV || '';
+                }
+                
+                // Load plant parameters
                 document.getElementById('capacity').value = calc.capacity || '';
                 document.getElementById('plf').value = calc.plf || '';
                 document.getElementById('days').value = calc.days || '';
@@ -2946,10 +3960,10 @@
                 // Hide stored calculations
                 toggleStoredCalculations();
                 
-                // Trigger calculation if we have minimum required data
-                if (calc.coal1Cost && calc.coal2Cost && calc.coal1GCV && calc.coal2GCV) {
-                    calculate();
-                }
+                // Auto-trigger calculation if we have minimum required data
+                setTimeout(() => {
+                    autoCalculate();
+                }, 100); // Small delay to ensure DOM is updated
                 
                 showMessage('Calculation loaded successfully!', 'success');
             }
@@ -3046,10 +4060,32 @@
 
         // Enhanced initialization
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
             initializeElements();
+            
+            // Initialize with default two coal cards
+            const coalCardsContainer = document.getElementById('coalCardsContainer');
+            console.log('Coal cards container:', coalCardsContainer);
+            
+            // Clear any existing cards and create fresh ones
+            coalCardsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 2; i++) {
+                const coalCard = createCoalCard(i);
+                coalCardsContainer.appendChild(coalCard);
+                console.log(`Created coal card ${i}`);
+            }
+            coalCount = 2;
+            
+            // Update inputs object AFTER coal cards are created
+            updateInputsObject();
+            console.log('Updated inputs object:', inputs);
+            
             updateStorageCounter();
             updateInstructionMessage();
             setupEventListeners();
+            setupInputEventListeners(); // Setup event listeners for coal inputs
             initializeNightMode(); // Initialize night mode
             updateStoredCalculationsCounter(); // Initialize storage counter
             initializeAnimations(); // Initialize animations

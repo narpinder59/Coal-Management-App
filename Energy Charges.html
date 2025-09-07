@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Energy Charges Calculator</title>
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- jsPDF and html2canvas for export functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <!-- MathJax for Mathematical Expressions -->
     <script>
@@ -31,6 +40,36 @@
 
     <!-- Professional Styling -->
     <style>
+        :root {
+            /* Light theme colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.2);
+            --input-border: rgba(255, 255, 255, 0.3);
+            --btn-primary: linear-gradient(45deg, #00c9ff, #92fe9d);
+            --btn-danger: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            --success-gradient: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme colors */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --bg-secondary: rgba(40, 40, 60, 0.9);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(40, 40, 60, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(50, 50, 70, 0.6);
+            --input-border: rgba(255, 255, 255, 0.2);
+            --btn-primary: linear-gradient(45deg, #0066cc, #004499);
+            --btn-danger: linear-gradient(45deg, #cc4444, #aa3333);
+            --success-gradient: linear-gradient(135deg, #1e6233, #2e7d5a);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -38,25 +77,27 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         .calculator-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             padding: 40px;
             width: 100%;
             max-width: 500px;
             animation: slideIn 0.6s ease-out;
+            position: relative;
         }
 
         @keyframes slideIn {
@@ -232,20 +273,6 @@
             animation: fadeIn 0.5s ease-out;
         }
 
-        .results-header {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .results-title {
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -336,22 +363,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
-        }
-
-        .btn:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover:before {
-            left: 100%;
         }
 
         .btn-primary {
@@ -389,14 +400,23 @@
 
         .btn-outline {
             background: transparent;
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #ff4757;
+            border: 2px solid #ff4757;
         }
 
         .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: white;
+            background: rgba(255, 71, 87, 0.1);
+            border-color: #ff3742;
+            color: #ff3742;
             transform: translateY(-2px);
+        }
+
+        .btn-outline i {
+            color: #ff4757;
+        }
+
+        .btn-outline:hover i {
+            color: #ff3742;
         }
 
         /* Floating Action Buttons */
@@ -429,6 +449,17 @@
         .floating-btn:hover {
             transform: translateY(-3px) scale(1.1);
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Dark theme for floating buttons */
+        [data-theme="dark"] .floating-btn {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .floating-btn:hover {
+            background: linear-gradient(45deg, #34495e, #3d566e);
+            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.1);
         }
 
         /* Formula Sidebar */
@@ -581,30 +612,32 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Back Button */
-        .back-button {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            width: 50px;
-            height: 50px;
+        /* Back Button - Inline */
+        .back-button-inline {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 20px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 16px;
             cursor: pointer;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1002;
+            z-index: 10;
+            border: 1px solid var(--glass-border);
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .back-button-inline:hover {
+            background: var(--input-bg);
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* Storage Counter */
@@ -733,7 +766,6 @@
                 left: 50%;
                 transform: translateX(-50%);
                 right: auto;
-                display: flex;
                 flex-direction: row;
                 gap: 10px;
             }
@@ -741,7 +773,7 @@
 
         @media (max-width: 576px) {
             .calculator-container {
-                margin-top: 60px;
+                margin-top: 10px;
                 padding: 12px;
                 width: calc(100vw - 24px);
                 max-width: calc(100vw - 24px);
@@ -792,18 +824,353 @@
                 max-width: calc(100vw - 20px);
             }
         }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .sun-icon, .moon-icon {
+            position: absolute;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sun-icon {
+            color: #ffd700;
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .moon-icon {
+            color: #c8d6e5;
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        [data-theme="dark"] .sun-icon {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        [data-theme="dark"] .moon-icon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        /* Animated Icon in Title */
+        .animated-icon {
+            animation: pulse 2s infinite;
+            color: #ffd700;
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Floating Storage Button */
+        .storage-btn {
+            position: relative;
+        }
+
+        .floating-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Storage Modal */
+        .storage-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .storage-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .storage-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--input-bg);
+        }
+
+        .storage-header h2 {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .storage-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            color: var(--text-primary);
+        }
+
+        .storage-item {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .storage-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .storage-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .storage-timestamp {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .storage-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .storage-footer {
+            padding: 20px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            background: var(--input-bg);
+        }
+
+        .btn-danger-custom {
+            background: var(--btn-danger);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-danger-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .no-data-message {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        /* Dark theme adjustments */
+        [data-theme="dark"] .storage-modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        [data-theme="dark"] .floating-counter {
+            background: #ff6b6b;
+        }
+
+        /* Dark theme for export dropdown */
+        [data-theme="dark"] .export-dropdown {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .export-option {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .export-option:hover {
+            background: linear-gradient(45deg, #34495e, #3d566e);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dark theme for formula sidebar */
+        [data-theme="dark"] .formula-sidebar {
+            background: var(--bg-primary);
+            border-left: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .formula-header {
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .formula-title {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .close-btn {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .close-btn:hover {
+            background: var(--input-bg);
+        }
+
+        [data-theme="dark"] .formula-item {
+            background: var(--glass-bg);
+            border-left: 4px solid var(--text-primary);
+        }
+
+        [data-theme="dark"] .formula-name {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .formula-expression {
+            color: var(--text-primary);
+            background: var(--input-bg);
+        }
+
+        [data-theme="dark"] .formula-expression .MathJax {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .formula-fallback {
+            color: var(--text-primary);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 5px;
+                right: 5px;
+                width: 30px;
+                height: 30px;
+            }
+
+            .sun-icon, .moon-icon {
+                font-size: 14px;
+            }
+
+            .storage-content {
+                width: 95%;
+                max-height: 85vh;
+            }
+
+            .storage-data {
+                grid-template-columns: 1fr;
+            }
+
+            .storage-footer {
+                flex-direction: column;
+            }
+
+            .floating-counter {
+                width: 16px;
+                height: 16px;
+                font-size: 9px;
+            }
+
+            .export-dropdown {
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                flex-direction: row;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Back Button -->
-    <button class="back-button" onclick="goBackToCalculators()" title="Back to Calculator List">
-        <i class="bi bi-arrow-left"></i>
-    </button>
-
     <!-- Main Calculator Container -->
     <div class="calculator-container">
+        <!-- Back Button -->
+        <button class="back-button-inline" onclick="goBackToCalculators()" title="Back to Calculator List">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        
         <div class="calculator-header">
-            <h1 class="calculator-title">Energy Charges Calculator</h1>
+            <h1 class="calculator-title">
+                <i class="fas fa-bolt animated-icon"></i>
+                Energy Charges Calculator
+            </h1>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Day/Night Mode">
+                <i class="fas fa-sun sun-icon"></i>
+                <i class="fas fa-moon moon-icon"></i>
+            </button>
         </div>
 
         <!-- Instruction Message -->
@@ -817,9 +1184,6 @@
 
         <!-- Results Container -->
         <div class="results-container" id="resultsContainer">
-            <div class="results-header">
-                <h3 class="results-title">Results:</h3>
-            </div>
             <div class="result-item calculated-result">                
                 <span class="result-value" id="calculatedValue">-</span>
             </div>
@@ -839,7 +1203,7 @@
                 <span class="input-group-text1">Coal Cost</span>
                 <span class="input-group-text2">Rs/MT</span>
             </div>
-            <input type="number" class="input-field" id="coalCost" step="0.01" min="0" placeholder="2500">
+            <input type="number" class="input-field" id="coalCost" step="0.01" min="0" placeholder="2500" value="2500">
         </div>
 
         <div class="input-group">
@@ -847,7 +1211,7 @@
                 <span class="input-group-text1">Railway Freight</span>
                 <span class="input-group-text2">Rs/MT</span>
             </div>
-            <input type="number" class="input-field" id="railwayFreight" step="0.01" min="0" placeholder="2500">
+            <input type="number" class="input-field" id="railwayFreight" step="0.01" min="0" placeholder="2500" value="2500">
         </div>
 
         <div class="input-group">
@@ -855,7 +1219,7 @@
                 <span class="input-group-text1">Station Heat Rate</span>
                 <span class="input-group-text2">kcal/kWh</span>
             </div>
-            <input type="number" class="input-field" id="shr" step="0.01" min="0" placeholder="2700">
+            <input type="number" class="input-field" id="shr" step="0.01" min="0" placeholder="2700"    value="2700">
         </div>
 
         <div class="input-group">
@@ -863,7 +1227,7 @@
                 <span class="input-group-text1">Gross Calorific Value</span>
                 <span class="input-group-text2">kcal/kg</span>
             </div>
-            <input type="number" class="input-field" id="gcv" step="0.01" min="0" placeholder="4300">
+            <input type="number" class="input-field" id="gcv" step="0.01" min="0" placeholder="4300"    value="4300">
         </div>
 
         <div class="input-group">
@@ -877,11 +1241,14 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
             <button class="btn btn-primary" onclick="storeCalculation()">
+                <i class="fas fa-save me-2"></i>
                 Store Data
                 <span class="storage-counter" id="storageCounter">0</span>
             </button>
-            <button class="btn btn-danger" onclick="clearStoredData()">Clear Data</button>
-            <button class="btn btn-outline" onclick="clearInputs()">Reset</button>
+            <button class="btn btn-outline" onclick="clearInputs()">
+                <i class="fas fa-trash-alt me-2"></i>
+                Clear
+            </button>
         </div>
     </div>
 
@@ -890,9 +1257,12 @@
         <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
             fx
         </button>
+        <button class="floating-btn storage-btn" onclick="viewStoredCalculations()" title="View Stored Data">
+            <i class="fas fa-database"></i>
+            <span class="floating-counter" id="floating-counter">0</span>
+        </button>
         <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
-                        <i class="fas fa-download"></i>
-
+            <i class="fas fa-download"></i>
         </button>
     </div>
 
@@ -907,6 +1277,26 @@
         <button class="export-option" onclick="exportToExcel()" title="Export to Excel">
             <i class="fas fa-file-excel"></i>
         </button>
+    </div>
+
+    <!-- Storage Modal -->
+    <div class="storage-modal" id="storageModal">
+        <div class="storage-content">
+            <div class="storage-header">
+                <h2><i class="fas fa-database me-2"></i>Stored Calculations</h2>
+                <button class="close-btn" onclick="closeStorageModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="storage-body" id="storageBody">
+                <p class="no-data-message">No calculations stored yet.</p>
+            </div>
+            <div class="storage-footer">
+                <button class="btn btn-danger-custom" onclick="clearStoredData()">
+                    <i class="fas fa-trash me-2"></i>Clear All
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Formula Sidebar -->
@@ -985,6 +1375,27 @@
         // Global variables
         let storedCalculations = JSON.parse(localStorage.getItem('energyCalculations') || '[]');
         let isExportDropdownOpen = false;
+
+        // Theme initialization
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('energyTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateStorageCounter();
+        }
+
+        // Theme toggle function
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('energyTheme', newTheme);
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            updateStorageCounter();
+        });
 
         // DOM elements
         const inputs = {
@@ -1214,7 +1625,7 @@
 
         function clearStoredData() {
             if (storedCalculations.length === 0) {
-                showError('No stored calculations to clear.');
+                alert('No stored calculations to clear.');
                 return;
             }
 
@@ -1222,15 +1633,85 @@
                 storedCalculations = [];
                 localStorage.setItem('energyCalculations', JSON.stringify(storedCalculations));
                 updateStorageCounter();
+                
+                // Update the modal display immediately
+                const body = document.getElementById('storageBody');
+                body.innerHTML = '<p class="no-data-message">No calculations stored yet.</p>';
+                
+                // Show success message
+                alert('All stored calculations have been cleared.');
             }
         }
 
         function updateStorageCounter() {
             const storageCounterElement = document.getElementById('storageCounter');
+            const floatingCounterElement = document.getElementById('floating-counter');
+            
             if (storageCounterElement) {
                 storageCounterElement.textContent = storedCalculations.length;
                 storageCounterElement.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
             }
+            
+            if (floatingCounterElement) {
+                floatingCounterElement.textContent = storedCalculations.length;
+                floatingCounterElement.style.display = storedCalculations.length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // Storage modal functions
+        function viewStoredCalculations() {
+            const modal = document.getElementById('storageModal');
+            const body = document.getElementById('storageBody');
+            
+            if (storedCalculations.length === 0) {
+                body.innerHTML = '<p class="no-data-message">No calculations stored yet.</p>';
+            } else {
+                body.innerHTML = storedCalculations.map((calc, index) => `
+                    <div class="storage-item">
+                        <div class="storage-item-header">
+                            <strong>Calculation #${index + 1}</strong>
+                            <span class="storage-timestamp">${calc.timestamp}</span>
+                        </div>
+                        <div class="storage-data">
+                            <div><strong>Coal Cost:</strong> ₹${calc.coalCost?.toFixed(2) || 'N/A'} /MT</div>
+                            <div><strong>Railway Freight:</strong> ₹${calc.railwayFreight?.toFixed(2) || 'N/A'} /MT</div>
+                            <div><strong>Landed Cost:</strong> ₹${calc.landedCost?.toFixed(2) || 'N/A'} /MT</div>
+                            <div><strong>GCV:</strong> ${calc.gcv?.toFixed(0) || 'N/A'} kcal/kg</div>
+                            <div><strong>SHR:</strong> ${calc.shr?.toFixed(0) || 'N/A'} kcal/kWh</div>
+                            <div><strong>Energy Charges:</strong> ₹${calc.energyCharges?.toFixed(3) || 'N/A'} /kWh</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeStorageModal() {
+            document.getElementById('storageModal').style.display = 'none';
+        }
+
+        function exportStoredData() {
+            if (storedCalculations.length === 0) {
+                alert('No stored calculations to export.');
+                return;
+            }
+
+            const exportData = {
+                title: 'Energy Charges Calculator - Stored Data',
+                timestamp: new Date().toLocaleString(),
+                calculations: storedCalculations
+            };
+
+            // Create and download JSON file
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `energy_calculations_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
         }
 
         // UI functions
@@ -1302,15 +1783,14 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
 
-            // Add professional title
+            // Add professional title - centered
             pdf.setFontSize(24);
             pdf.setTextColor(44, 62, 80);
-            pdf.text('Energy Charges Calculator', 20, 25);
-            
-            // Add subtitle
-            pdf.setFontSize(16);
-            pdf.setTextColor(127, 140, 141);
-            pdf.text('Comprehensive Analysis Report', 20, 35);
+            const title = 'Energy Charges Calculations';
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const textWidth = pdf.getTextWidth(title);
+            const x = (pageWidth - textWidth) / 2;
+            pdf.text(title, x, 35);
 
             // Prepare table data
             const headers = [
@@ -1413,8 +1893,7 @@
 
             reportContainer.innerHTML = `
                 <div style="text-align: center; margin-bottom: 40px;">
-                    <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 32px; font-weight: 700;">Energy Charges Calculator</h1>
-                    <h2 style="color: #7f8c8d; margin: 0 0 30px 0; font-size: 18px; font-weight: 400;">Comprehensive Analysis Report</h2>
+                    <h1 style="color: #2c3e50; margin: 0 0 30px 0; font-size: 32px; font-weight: 700;">Energy Charges Calculations</h1>
                 </div>
                 <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 11px; border: 1px solid #dee2e6;">
                     <thead>
@@ -1573,6 +2052,13 @@
         
         // Initialize instruction message
         updateInstructionMessage();
+
+        // Close storage modal when clicking outside
+        document.getElementById('storageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStorageModal();
+            }
+        });
     </script>
 </body>
 </html>
