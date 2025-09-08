@@ -9,22 +9,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome - Primary CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <!-- Font Awesome - Fallback CDN -->
     <link href="https://use.fontawesome.com/releases/v6.5.0/css/all.css" rel="stylesheet" crossorigin="anonymous">
-    <!-- MathJax -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
 
     <style>
         * {
@@ -36,7 +26,7 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -96,7 +86,112 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 0 40px rgba(79, 172, 254, 0.1);
+            }
+        }
+
+        /* Animated Blending Icon */
+        .blending-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mixer-icon {
+            font-size: 26px;
+            color: #ffd700;
+            animation: mixerSpin 3s linear infinite;
+            text-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+        }
+
+        .coal-particles {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .particle {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: particleFloat 2s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            background: #8B4513;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            background: #654321;
+            animation-delay: 0.3s;
+        }
+
+        .particle:nth-child(3) {
+            background: #A0522D;
+            animation-delay: 0.6s;
+        }
+
+        .particle:nth-child(4) {
+            background: #2F4F4F;
+            animation-delay: 0.9s;
+        }
+
+        @keyframes mixerSpin {
+            0% {
+                transform: rotate(0deg) scale(1);
+                color: #ffd700;
+            }
+            25% {
+                transform: rotate(90deg) scale(1.1);
+                color: #ffed4e;
+            }
+            50% {
+                transform: rotate(180deg) scale(1.15);
+                color: #fff200;
+            }
+            75% {
+                transform: rotate(270deg) scale(1.1);
+                color: #ffed4e;
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+                color: #ffd700;
+            }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.7;
+            }
+            25% {
+                transform: translateY(-3px) scale(1.2);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-6px) scale(1.3);
+                opacity: 1;
+            }
+            75% {
+                transform: translateY(-3px) scale(1.2);
+                opacity: 1;
+            }
         }
 
         .calculator-subtitle {
@@ -183,46 +278,90 @@
             backdrop-filter: blur(10px);
         }
 
-        .results-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
         .results-table {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Inter', 'Roboto', sans-serif;
         }
 
         .results-table th {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #f8f9fa;
             font-weight: 600;
-            padding: 15px 10px;
+            padding: 18px 15px;
             text-align: center;
             border: none;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .results-table th:first-child {
+            border-top-left-radius: 15px;
+            width: 35%;
+        }
+
+        .results-table th:not(:first-child) {
+            width: 21.67%; /* Equal width for remaining 3 columns */
+        }
+
+        .results-table th:last-child {
+            border-top-right-radius: 15px;
         }
 
         .results-table td {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 12px 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            padding: 15px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(52, 58, 64, 0.1);
             font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
         .results-table tbody tr:nth-child(even) td {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(248, 249, 250, 0.8);
         }
 
         .results-table tbody tr:hover td {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(79, 172, 254, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.2);
+        }
+
+        .results-table .parameter-cell {
+            background: rgba(248, 249, 250, 0.8);
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .results-table tbody tr:nth-child(even) .parameter-cell {
+            background: rgba(233, 236, 239, 0.8);
+        }
+
+        /* Special styling for last column's last 2 rows */
+        .results-table tbody tr:nth-last-child(-n+2) td:last-child {
+            background: rgba(248, 215, 218, 0.9) !important;
+            color: #721c24;
+            font-weight: 600;
+        }
+
+        .results-table tbody tr:nth-last-child(-n+2):hover td:last-child {
+            background: rgba(248, 215, 218, 1) !important;
+        }
+
+        .results-table tbody tr:nth-child(even) .parameter-cell {
+            background: rgba(233, 236, 239, 0.8);
         }
 
         .error-message {
@@ -319,6 +458,146 @@
             display: flex;
         }
 
+        /* Export Options Card */
+        .export-options-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            width: 400px;
+            max-width: 90vw;
+        }
+
+        .export-options-card.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .export-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .export-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .export-card-header {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .export-card-body {
+            padding: 25px;
+        }
+
+        .export-option {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(79, 172, 254, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(79, 172, 254, 0.05);
+        }
+
+        .export-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .export-option:hover {
+            border-color: rgba(79, 172, 254, 0.5);
+            background: rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+        }
+
+        .export-icon {
+            font-size: 32px;
+            margin-right: 15px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .pdf-icon {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .jpg-icon {
+            background: rgba(13, 110, 253, 0.1);
+        }
+
+        .export-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .export-details p {
+            margin: 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
         .export-btn {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -331,6 +610,8 @@
             align-items: center;
             gap: 10px;
             font-size: 14px;
+            min-height: 40px;
+            position: relative;
         }
 
         .export-btn:hover {
@@ -338,19 +619,72 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
 
+        /* Force icon visibility */
+        .export-btn i {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            font-style: normal !important;
+            text-rendering: auto !important;
+            -webkit-font-smoothing: antialiased !important;
+        }
+
+        /* Export button icons */
+        .export-btn .fas,
+        .export-btn .fa {
+            font-size: 16px;
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .export-btn .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .export-btn .text-primary {
+            color: #0d6efd !important;
+        }
+
+        /* Emoji fallback styling */
+        .export-btn i::before {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", serif;
+            font-weight: 900;
+        }
+
+        /* Force emoji display if Font Awesome fails */
+        .export-btn .fa-file-pdf::before {
+            content: "\f1c1";
+        }
+        
+        .export-btn .fa-image::before {
+            content: "\f03e";
+        }
+
+        /* Fallback to emoji if Font Awesome doesn't load */
+        .export-btn i:not(:empty) {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-style: normal;
+            font-size: 16px;
+        }
+
         .formula-sidebar {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
+            right: -350px;
+            width: 350px;
             height: 100vh;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
-            border-left: 4px solid rgba(255, 255, 255, 0.3);
+            border-left: 2px solid rgba(79, 172, 254, 0.3);
             padding: 20px;
             transition: right 0.3s ease;
             z-index: 1000;
             overflow-y: auto;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
         }
 
         .formula-sidebar.active {
@@ -363,63 +697,87 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid rgba(79, 172, 254, 0.3);
         }
 
         .formula-title {
-            color: white;
-            font-size: 20px;
+            color: #2c3e50;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .close-btn {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            width: 30px;
-            height: 30px;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            color: #2c3e50;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            z-index: 1002;
+            position: relative;
+        }
+
+        .close-btn:hover {
+            background: rgba(79, 172, 254, 0.1);
+            border-color: rgba(79, 172, 254, 0.5);
         }
 
         .formula-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(79, 172, 254, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(79, 172, 254, 0.2);
         }
 
         .formula-expression {
-            color: white;
-            font-size: 14px;
-            line-height: 1.6;
+            color: #2c3e50;
+            font-size: 12px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            white-space: pre-wrap;
         }
 
         .formula-fallback {
-            display: none;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 12px;
-            margin-top: 8px;
+            display: block;
+            color: #6c757d;
+            font-size: 11px;
+            margin-top: 6px;
             font-style: italic;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+            padding: 6px 8px;
+            background: rgba(108, 117, 125, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid rgba(108, 117, 125, 0.3);
         }
 
         .stored-calculations {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
+            background: rgba(79, 172, 254, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            border: 1px solid rgba(79, 172, 254, 0.2);
         }
 
         .stored-calc-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(79, 172, 254, 0.05);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            font-size: 11px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .calc-header {
@@ -503,6 +861,7 @@
             .calculator-container {
                 padding: 20px;
                 margin: 10px;
+                margin-top: 25px;
             }
             
             .input-section {
@@ -598,8 +957,38 @@
             }
 
             .formula-sidebar {
-                width: 100%;
-                right: -100%;
+                width: 280px;
+                right: -280px;
+                padding: 15px;
+            }
+
+            .formula-title {
+                font-size: 16px;
+            }
+
+            .formula-expression {
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            .formula-fallback {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+
+            .formula-item {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .stored-calculations {
+                padding: 10px;
+                margin-top: 12px;
+            }
+
+            .stored-calc-item {
+                padding: 8px;
+                font-size: 10px;
             }
 
             .results-table {
@@ -640,7 +1029,7 @@
             
             .calculator-container {
                 padding: 15px;
-                margin: 10px 0;
+                margin: 60px 0;
             }
             
             .header-section {
@@ -1020,6 +1409,131 @@
             border-color: rgba(255, 255, 255, 0.5) !important;
         }
 
+        body.night-mode .export-btn .text-danger {
+            color: #ff6b6b !important;
+        }
+
+        body.night-mode .export-btn .text-primary {
+            color: #4dabf7 !important;
+        }
+
+        /* Ensure icons are visible in night mode */
+        body.night-mode .export-btn i {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Night mode table styles */
+        body.night-mode .results-table {
+            background: rgba(40, 40, 60, 0.95);
+        }
+
+        body.night-mode .results-table th {
+            background: linear-gradient(135deg, #1a252f, #2c3e50);
+            color: #ecf0f1;
+        }
+
+        body.night-mode .results-table td {
+            background: rgba(40, 40, 60, 0.8);
+            color: #ecf0f1;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .results-table tbody tr:nth-child(even) td {
+            background: rgba(50, 50, 70, 0.8);
+        }
+
+        body.night-mode .results-table tbody tr:hover td {
+            background: rgba(79, 172, 254, 0.2);
+            color: white;
+        }
+
+        body.night-mode .results-table .parameter-cell {
+            background: rgba(50, 50, 70, 0.8);
+            color: #ecf0f1;
+        }
+
+        body.night-mode .results-table tbody tr:nth-child(even) .parameter-cell {
+            background: rgba(60, 60, 80, 0.8);
+        }
+
+        /* Night mode last column special styling */
+        body.night-mode .results-table tbody tr:nth-last-child(-n+2) td:last-child {
+            background: rgba(220, 53, 69, 0.3) !important;
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        body.night-mode .results-table tbody tr:nth-last-child(-n+2):hover td:last-child {
+            background: rgba(220, 53, 69, 0.4) !important;
+        }
+
+        /* Night mode export card styles */
+        body.night-mode .export-options-card {
+            background: rgba(40, 40, 60, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.night-mode .export-card-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+        }
+
+        body.night-mode .export-option {
+            background: rgba(79, 172, 254, 0.1);
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        body.night-mode .export-option:hover {
+            background: rgba(79, 172, 254, 0.2);
+            border-color: rgba(79, 172, 254, 0.6);
+        }
+
+        body.night-mode .export-details h4 {
+            color: #ecf0f1;
+        }
+
+        body.night-mode .export-details p {
+            color: #bdc3c7;
+        }
+
+        /* Night mode formula sidebar styles */
+        body.night-mode .formula-sidebar {
+            background: rgba(40, 40, 60, 0.95);
+            border-left-color: rgba(79, 172, 254, 0.4);
+        }
+
+        body.night-mode .formula-title {
+            color: #ecf0f1;
+        }
+
+        body.night-mode .close-btn {
+            color: #ecf0f1;
+            border-color: rgba(79, 172, 254, 0.4);
+        }
+
+        body.night-mode .close-btn:hover {
+            background: rgba(79, 172, 254, 0.2);
+        }
+
+        body.night-mode .formula-header {
+            border-bottom-color: rgba(79, 172, 254, 0.4);
+        }
+
+        body.night-mode .formula-item {
+            background: rgba(79, 172, 254, 0.1);
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        body.night-mode .formula-expression {
+            color: #ecf0f1;
+        }
+
+        body.night-mode .formula-fallback {
+            color: #bdc3c7;
+            background: rgba(189, 195, 199, 0.1);
+            border-left-color: rgba(189, 195, 199, 0.3);
+        }
+
         body.night-mode .error-message {
             background: rgba(220, 53, 69, 0.2) !important;
             border: 1px solid rgba(220, 53, 69, 0.4) !important;
@@ -1047,21 +1561,6 @@
         .fa-info-circle::before { content: "ℹ️"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         .fa-tag::before { content: "🏷️"; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         
-        /* Enhanced export button styling */
-        .export-btn {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            transition: all 0.3s ease !important;
-            min-height: 40px !important;
-        }
-
-        .export-btn .fas,
-        .export-btn .fa {
-            font-size: 16px !important;
-            flex-shrink: 0 !important;
-        }
-
         /* Enhanced Entrance Animations */
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-50px); }
@@ -1181,7 +1680,24 @@
     <div class="calculator-container">
         <!-- Header -->
         <div class="calculator-header">
-            <h1 class="calculator-title">Blended Coal Analysis</h1>
+            <h1 class="calculator-title">
+                <div class="blending-icon">
+                    <div class="coal-particles">
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                    </div>
+                    <i class="fas fa-cogs mixer-icon"></i>
+                    <div class="coal-particles">
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                    </div>
+                </div>
+                Blended Coal Analysis
+            </h1>
         </div>
 
         <!-- Error/Instruction Messages -->
@@ -1304,85 +1820,80 @@
         </div>
         </div> <!-- End plantParametersSection -->
 
-        <!-- Results Section -->
-        <div class="results-container" id="resultsContainer" style="display: none;">
-            <h3 class="section-title">
-                <i class="fas fa-chart-bar me-2"></i>Analysis Results
-            </h3>
-
-            <div class="table-responsive">
-                <table class="results-table table">
-                    <thead>
+        <!-- Results Table (Standalone) -->
+        <div class="table-responsive" id="resultsTableContainer" style="display: none;">
+            <table class="results-table table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th id="coalA-header">Indigenous Coal</th>
+                        <th id="coalB-header">Imported Coal</th>
+                        <th>Blended Coal</th>
+                    </tr>
+                </thead>
+                <tbody>
                         <tr>
-                            <th>Parameter</th>
-                            <th id="coalA-header">Indigenous Coal</th>
-                            <th id="coalB-header">Imported Coal</th>
-                            <th>Blended Coal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Quantity Required (Lakh MT)</strong></td>
+                            <td class="parameter-cell"><strong>Quantity Required (Lakh MT)</strong></td>
                             <td><span id="indian-coal-quantity"></span></td>
                             <td>—</td>
                             <td>—</td>
                         </tr>
                         <tr>
-                            <td><strong>Blending Ratio (%)</strong></td>
+                            <td class="parameter-cell"><strong>Blending Ratio (%)</strong></td>
                             <td><span id="indian-coal-quantity-ratio-after-blending"></span></td>
                             <td><span id="imported-coal-quantity-ratio-after-blending"></span></td>
                             <td>—</td>
                         </tr>
                         <tr>
-                            <td><strong>Quantity Required for Blending (Lakh MT)</strong></td>
+                            <td class="parameter-cell"><strong>Quantity Required for Blending (Lakh MT)</strong></td>
                             <td><span id="indian-coal-quantity-after-blending"></span></td>
                             <td><span id="imported-coal-quantity-after-blending"></span></td>
                             <td><span id="blendedcoal"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>GCV ARB (kcal/kg)</strong></td>
+                            <td class="parameter-cell"><strong>GCV ARB (kcal/kg)</strong></td>
                             <td><span id="gcv-arb-Indian-table"></span></td>
                             <td><span id="gcv-arb-Imported-tabel"></span></td>
                             <td><span id="gcv-blended"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Landed Cost (Rs/MT)</strong></td>
+                            <td class="parameter-cell"><strong>Landed Cost (Rs/MT)</strong></td>
                             <td><span id="indian-coal-landed-charges-MT"></span></td>
                             <td><span id="Imported-coal-landed-charges-MT"></span></td>
                             <td><span id="landed-cost-blended-MT"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Landed Cost (Rs/MCal)</strong></td>
+                            <td class="parameter-cell"><strong>Landed Cost (Rs/MCal)</strong></td>
                             <td><span id="indian-coal-landed-charges-MC"></span></td>
                             <td><span id="Imported-coal-landed-charges-MC"></span></td>
                             <td><span id="landed-cost-blended-MC"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Per Unit Cost (Rs/kWh)</strong></td>
+                            <td class="parameter-cell"><strong>Per Unit Cost (Rs/kWh)</strong></td>
                             <td><span id="indian-coal-energy-charges"></span></td>
                             <td><span id="Imported-coal-energy-charges"></span></td>
                             <td><span id="blended-coal-energy-charges"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Specific Coal Consumption (kg/kWh)</strong></td>
+                            <td class="parameter-cell"><strong>Specific Coal Consumption (kg/kWh)</strong></td>
                             <td><span id="indian-coal-SCC"></span></td>
                             <td><span id="Imported-coal-SCC"></span></td>
                             <td><span id="blended-coal-SCC"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Increase in Per Unit Cost (Rs/kWh)</strong></td>
+                            <td class="parameter-cell"><strong>Increase in Per Unit Cost (Rs/kWh)</strong></td>
                             <td>—</td>
                             <td>—</td>
                             <td><span id="comparison-result"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Additional Financial Liability (Rs.)</strong></td>
+                            <td class="parameter-cell"><strong>Additional Financial Liability (Rs.)</strong></td>
                             <td>—</td>
                             <td>—</td>
                             <td><span id="additionalFinancialLiabilityImported-result"></span></td>
                         </tr>
                         <tr>
-                            <td><strong>Units Generated (LUs)</strong></td>
+                            <td class="parameter-cell"><strong>Units Generated (LUs)</strong></td>
                             <td>—</td>
                             <td>—</td>
                             <td><span id="unitsGeneratedBlended-result"></span></td>
@@ -1390,7 +1901,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
         <!-- Stored Calculations -->
         <div class="stored-calculations" id="storedCalculationsContainer" style="display: none;">
@@ -1413,24 +1923,42 @@
             <span class="storage-counter" id="storageCounter">0</span>
         </button>
         <button class="floating-btn" onclick="toggleFormulas()" title="View Formulas">
-            <i class="fas fa-calculator"></i>
+            <span style="font-weight: bold; font-size: 16px;">fx</span>
         </button>
         <button class="floating-btn" onclick="toggleExportOptions()" title="Export Options">
             <i class="fas fa-download"></i>
         </button>
     </div>
 
-    <!-- Export Dropdown -->
-    <div class="export-dropdown" id="exportDropdown">
-        <button class="export-btn" onclick="exportToPDF()">
-            <i class="fas fa-file-pdf text-danger"></i>
-            Export as PDF
-        </button>
-        <button class="export-btn" onclick="exportToJPG()">
-            <i class="fas fa-image text-primary"></i>
-            Export as JPG
-        </button>
+    <!-- Export Overlay -->
+    <div class="export-overlay" id="exportOverlay" onclick="closeExportOptions()"></div>
+
+    <!-- Export Options Card -->
+    <div class="export-options-card" id="exportOptionsCard">
+        <div class="export-card-header">
+            <h3>Export Options</h3>
+            <button class="close-btn" onclick="closeExportOptions()">×</button>
+        </div>
+        <div class="export-card-body">
+            <div class="export-option" onclick="exportToPDF()">
+                <div class="export-icon pdf-icon">📄</div>
+                <div class="export-details">
+                    <h4>Export as PDF</h4>
+                    <p>High-quality document format</p>
+                </div>
+            </div>
+            <div class="export-option" onclick="exportToJPG()">
+                <div class="export-icon jpg-icon">🖼️</div>
+                <div class="export-details">
+                    <h4>Export as JPG</h4>
+                    <p>Image format for sharing</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Export Overlay -->
+    <div class="export-overlay" id="exportOverlay" onclick="closeExportOptions()"></div>
 
     <!-- Formula Sidebar -->
     <div class="formula-sidebar" id="formulaSidebar">
@@ -1442,45 +1970,27 @@
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{Landed Cost (Blended)} = \text{Landed Cost Indian} \times (1 - \frac{\text{Blending Ratio}}{100}) + \text{Landed Cost Imported} \times \frac{\text{Blending Ratio}}{100}$$
-                <div class="formula-fallback">Landed Cost (Blended) = Landed Cost Indian × (1 - Blending Ratio/100) + Landed Cost Imported × (Blending Ratio/100)</div>
-            </div>
+            <div class="formula-fallback">Landed Cost (Blended) = Landed Cost Indian × (1 - Blending Ratio/100) + Landed Cost Imported × (Blending Ratio/100)</div>
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{GCV (Blended)} = \text{GCV Indian} \times (1 - \frac{\text{Blending Ratio}}{100}) + \text{GCV Imported} \times \frac{\text{Blending Ratio}}{100}$$
-                <div class="formula-fallback">GCV (Blended) = GCV Indian × (1 - Blending Ratio/100) + GCV Imported × (Blending Ratio/100)</div>
-            </div>
+            <div class="formula-fallback">GCV (Blended) = GCV Indian × (1 - Blending Ratio/100) + GCV Imported × (Blending Ratio/100)</div>
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{Energy Charges (Blended)} = \frac{\text{Landed Cost (Blended)} \times \text{SHR}}{\text{GCV (Blended)} \times 1000}$$
-                <div class="formula-fallback">Energy Charges (Blended) = (Landed Cost (Blended) × SHR) ÷ (GCV (Blended) × 1000)</div>
-            </div>
+            <div class="formula-fallback">Energy Charges (Blended) = (Landed Cost (Blended) × SHR) ÷ (GCV (Blended) × 1000)</div>
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{Generation} = \text{Capacity} \times \frac{\text{PLF}}{100} \times 24 \times \text{Days}$$
-                <div class="formula-fallback">Generation = Capacity × (PLF ÷ 100) × 24 × Days</div>
-            </div>
+            <div class="formula-fallback">Generation = Capacity × (PLF ÷ 100) × 24 × Days</div>
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{SCC} = \frac{\text{SHR}}{\text{GCV}}$$
-                <div class="formula-fallback">SCC = SHR ÷ GCV</div>
-            </div>
+            <div class="formula-fallback">SCC = SHR ÷ GCV</div>
         </div>
 
         <div class="formula-item">
-            <div class="formula-expression">
-                $$\text{Additional Financial Liability} = (\text{Energy Charges Blended} - \text{Energy Charges Indian}) \times \text{Generation}$$
-                <div class="formula-fallback">Additional Financial Liability = (Energy Charges Blended - Energy Charges Indian) × Generation</div>
-            </div>
+            <div class="formula-fallback">Additional Financial Liability = (Energy Charges Blended - Energy Charges Indian) × Generation</div>
         </div>
     </div>
 
@@ -1488,27 +1998,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <!-- JavaScript for Professional Coal Blending Analysis -->
 <script>
 // Professional JavaScript with advanced features
-window.MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-    },
-    svg: {
-        fontCache: 'global'
-    },
-    startup: {
-        ready() {
-            MathJax.startup.defaultReady();
-            console.log('MathJax is loaded and ready!');
-        }
-    }
-};
 
 // Global variables for professional features
 let storedCalculations = JSON.parse(localStorage.getItem('blendingCalculations')) || [];
@@ -1880,10 +2373,10 @@ function formatIndianStyleNumber(num) {
 
 // Professional state management
 function showErrorState() {
-    // Hide the main results container
-    const resultsContainer = document.getElementById('resultsContainer');
-    if (resultsContainer) {
-        resultsContainer.style.display = 'none';
+    // Hide the results table
+    const resultsTableContainer = document.getElementById('resultsTableContainer');
+    if (resultsTableContainer) {
+        resultsTableContainer.style.display = 'none';
     }
     
     // Show instruction message and hide error message
@@ -1904,10 +2397,10 @@ function showErrorState() {
 }
 
 function showSuccessState(calculations) {
-    // Show the main results container
-    const resultsContainer = document.getElementById('resultsContainer');
-    if (resultsContainer) {
-        resultsContainer.style.display = 'block';
+    // Show the results table
+    const resultsTableContainer = document.getElementById('resultsTableContainer');
+    if (resultsTableContainer) {
+        resultsTableContainer.style.display = 'block';
         // Trigger results animation
         setTimeout(() => {
             const resultItems = document.querySelectorAll('.result-item');
@@ -2171,9 +2664,24 @@ function toggleFormulas() {
 }
 
 function toggleExportOptions() {
-    const dropdown = document.getElementById('exportDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('active');
+    openExportOptions();
+}
+
+function openExportOptions() {
+    const card = document.getElementById('exportOptionsCard');
+    const overlay = document.getElementById('exportOverlay');
+    if (card && overlay) {
+        overlay.classList.add('active');
+        card.classList.add('active');
+    }
+}
+
+function closeExportOptions() {
+    const card = document.getElementById('exportOptionsCard');
+    const overlay = document.getElementById('exportOverlay');
+    if (card && overlay) {
+        overlay.classList.remove('active');
+        card.classList.remove('active');
     }
 }
 
@@ -2246,8 +2754,8 @@ function showNotification(message, type = 'info') {
 function exportToPDF() {
     try {
         // Check if results are available
-        const resultsContainer = document.getElementById('resultsContainer');
-        if (!resultsContainer || resultsContainer.style.display === 'none') {
+        const resultsTableContainer = document.getElementById('resultsTableContainer');
+        if (!resultsTableContainer || resultsTableContainer.style.display === 'none') {
             showNotification('Please calculate results before exporting PDF.', 'warning');
             return;
         }
@@ -2372,8 +2880,8 @@ function exportToPDF() {
 function exportToJPG() {
     try {
         // Check if results are available first
-        const resultsContainer = document.getElementById('resultsContainer');
-        if (!resultsContainer || resultsContainer.style.display === 'none') {
+        const resultsTableContainer = document.getElementById('resultsTableContainer');
+        if (!resultsTableContainer || resultsTableContainer.style.display === 'none') {
             showNotification('Please calculate results before exporting JPG.', 'warning');
             return;
         }
@@ -2384,13 +2892,14 @@ function exportToJPG() {
         const coalAName = document.getElementById('coalA-blending-name').value || 'Indigenous Coal';
         const coalBName = document.getElementById('coalB-blending-name').value || 'Imported Coal';
         
-        // Create A4 portrait container with professional layout
+        // Create responsive container with professional layout
         const exportContainer = document.createElement('div');
         exportContainer.style.cssText = `
             background: #ffffff !important;
-            width: 794px !important;
-            min-height: 1123px !important;
-            padding: 25px !important;
+            width: 100% !important;
+            max-width: 1000px !important;
+            min-height: 1200px !important;
+            padding: 30px !important;
             margin: 0 auto !important;
             font-family: 'Arial', 'Helvetica', sans-serif !important;
             color: #2c3e50 !important;
@@ -2650,7 +3159,7 @@ function exportToJPG() {
         // Add to DOM temporarily
         document.body.appendChild(exportContainer);
         
-        // High-quality rendering
+        // High-quality rendering with responsive width
         html2canvas(exportContainer, {
             scale: 2.5,
             useCORS: true,
@@ -2658,8 +3167,8 @@ function exportToJPG() {
             logging: false,
             allowTaint: false,
             imageTimeout: 15000,
-            width: 794,
-            height: 1123,
+            windowWidth: 1200,
+            windowHeight: 1600,
         }).then(canvas => {
             // Clean up DOM
             document.body.removeChild(exportContainer);

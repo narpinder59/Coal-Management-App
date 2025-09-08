@@ -90,7 +90,7 @@
 
         .calculator-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .calculator-title {
@@ -98,11 +98,21 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 0 40px rgba(79, 172, 254, 0.1);
+            }
         }
 
         /* Animated Comparison Icon */
@@ -114,17 +124,19 @@
         }
 
         .coal-icon {
-            width: 24px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.9);
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #2c3e50;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
-            animation: coalPulse 2s ease-in-out infinite;
+            animation: coalPulse 2.5s ease-in-out infinite;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
 
         .coal-icon:nth-child(1) {
@@ -132,37 +144,58 @@
         }
 
         .coal-icon:nth-child(3) {
-            animation-delay: 1s;
+            animation-delay: 1.2s;
         }
 
         .comparison-arrow {
             color: #ffd700;
-            font-size: 18px;
-            animation: arrowPulse 1.5s ease-in-out infinite;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 20px;
+            animation: arrowFloat 2s ease-in-out infinite;
+            text-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
         }
 
         @keyframes coalPulse {
             0%, 100% {
-                transform: scale(1);
-                background: rgba(255, 255, 255, 0.9);
-                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+                transform: scale(1) rotate(0deg);
+                background: linear-gradient(135deg, #ffd700, #ff8c00);
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3), 0 0 0 0 rgba(255, 215, 0, 0.4);
+            }
+            25% {
+                transform: scale(1.1) rotate(5deg);
+                background: linear-gradient(135deg, #ffed4e, #ffa500);
             }
             50% {
-                transform: scale(1.1);
-                background: rgba(255, 255, 255, 1);
-                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+                transform: scale(1.15) rotate(0deg);
+                background: linear-gradient(135deg, #fff200, #ff6600);
+                box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5), 0 0 0 10px rgba(255, 215, 0, 0);
+            }
+            75% {
+                transform: scale(1.1) rotate(-5deg);
+                background: linear-gradient(135deg, #ffed4e, #ffa500);
             }
         }
 
-        @keyframes arrowPulse {
+        @keyframes arrowFloat {
             0%, 100% {
-                transform: scale(1);
+                transform: translateX(0) scale(1);
                 opacity: 0.8;
+                color: #ffd700;
+            }
+            25% {
+                transform: translateX(2px) scale(1.1);
+                opacity: 1;
+                color: #fff200;
             }
             50% {
-                transform: scale(1.2);
+                transform: translateX(4px) scale(1.2);
                 opacity: 1;
+                color: #ffed4e;
+            }
+            75% {
+                transform: translateX(2px) scale(1.1);
+                opacity: 1;
+                color: #fff200;
             }
         }
 
@@ -187,19 +220,6 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.02); opacity: 0.9; }
-        }
-
-        .section-header {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            padding: 12px 20px;
-            border-radius: 10px;
-            margin: 25px 0 15px 0;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
         }
 
         .input-group {
@@ -926,7 +946,7 @@
             }
 
             .calculator-container {
-                margin-top: 60px;
+                margin-top: 40px;
                 padding: 15px;
                 width: calc(100vw - 20px);
                 max-width: calc(100vw - 20px);
@@ -943,12 +963,6 @@
             .calculator-subtitle {
                 font-size: 14px;
                 margin-bottom: 20px;
-            }
-
-            .section-header {
-                font-size: 16px;
-                padding: 10px 15px;
-                margin: 15px 0 10px 0;
             }
 
             .input-group {
@@ -1135,7 +1149,7 @@
             }
 
             .calculator-container {
-                margin-top: 50px;
+                margin-top: 30px;
                 padding: 10px;
                 width: calc(100vw - 10px);
                 max-width: calc(100vw - 10px);
@@ -1150,12 +1164,6 @@
             .calculator-subtitle {
                 font-size: 12px;
                 margin-bottom: 15px;
-            }
-
-            .section-header {
-                font-size: 14px;
-                padding: 8px 12px;
-                margin: 12px 0 8px 0;
             }
 
             .input-group {
@@ -1329,7 +1337,7 @@
             background: transparent !important;
             border: none !important;
             border-radius: 0 !important;
-            margin-bottom: 30px !important;
+            margin-bottom: 20px !important;
             padding: 0 !important;
         }
 
@@ -1605,7 +1613,7 @@
         /* Mobile responsive adjustments for night mode toggle */
         @media (max-width: 768px) {
             .calculator-container {
-                margin-top: 80px !important;
+                margin-top: 40px !important;
             }
             
             .night-mode-toggle {
@@ -1867,12 +1875,6 @@
             <div class="summary-section" id="summarySection">
                 <!-- Summary results will be displayed here -->
             </div>
-        </div>
-
-        <!-- Coal Types Section -->
-        <div class="section-header">
-            <i class="fas fa-mountain me-2"></i>
-            Coal Types Comparison
         </div>
 
         <!-- Coal Cards Container -->
