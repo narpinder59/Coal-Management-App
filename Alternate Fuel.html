@@ -102,19 +102,139 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Animated Alternate Fuel Icon */
+        .fuel-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            position: relative;
+        }
+
+        .fuel-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-fuel-icon {
+            font-size: 32px;
+            color: #4CAF50;
+            animation: fuelPulse 2s ease-in-out infinite;
+            z-index: 2;
+            position: relative;
+        }
+
+        .fuel-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .fuel-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #81C784, #4CAF50);
+            border-radius: 50%;
+            animation: particleFloat 3s ease-in-out infinite;
+        }
+
+        .fuel-particle:nth-child(1) {
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+            background: radial-gradient(circle, #FFB74D, #FF9800);
+        }
+
+        .fuel-particle:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 0.5s;
+            background: radial-gradient(circle, #81C784, #4CAF50);
+        }
+
+        .fuel-particle:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 1s;
+            background: radial-gradient(circle, #64B5F6, #2196F3);
+        }
+
+        .fuel-particle:nth-child(4) {
+            bottom: 15%;
+            right: 20%;
+            animation-delay: 1.5s;
+            background: radial-gradient(circle, #A1887F, #795548);
+        }
+
+        .rotating-ring {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px solid transparent;
+            border-top: 2px solid rgba(76, 175, 80, 0.6);
+            border-right: 2px solid rgba(255, 152, 0, 0.6);
+            border-radius: 50%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        @keyframes fuelPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.1);
+                filter: brightness(1.2);
+            }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.7;
+            }
+            33% {
+                transform: translateY(-8px) scale(1.2);
+                opacity: 1;
+            }
+            66% {
+                transform: translateY(4px) scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes ringRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         .calculator-title {
             color: white;
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        
 
         .section-title {
             color: white;
             font-size: 20px;
             font-weight: 600;
-            margin: 25px 0 15px 0;
+            margin: 5px 0 15px 0;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
             border-left: 4px solid rgba(255, 255, 255, 0.6);
             padding-left: 15px;
@@ -1378,7 +1498,21 @@
     <div class="calculator-container animate-slide-bottom delay-200">
         <!-- Header -->
         <div class="calculator-header animate-flip-in delay-300">
-            <h1 class="calculator-title">Alternate Fuel Cost Economics Calculator</h1>
+            <h1 class="calculator-title">
+                <div class="fuel-icon">
+                    <div class="fuel-container">
+                        <div class="fuel-particles">
+                            <div class="fuel-particle"></div>
+                            <div class="fuel-particle"></div>
+                            <div class="fuel-particle"></div>
+                            <div class="fuel-particle"></div>
+                        </div>
+                        <div class="rotating-ring"></div>
+                        <i class="fas fa-seedling main-fuel-icon"></i>
+                    </div>
+                </div>
+                Alternate Fuel Cost Economics
+            </h1>
         </div>
 
         <!-- Error/Instruction Messages -->

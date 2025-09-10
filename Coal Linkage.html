@@ -1407,7 +1407,7 @@ body {
         <div class="particles-container" id="particles-container"></div>
         
         <!-- Back Button -->
-        <button class="btn-back" onclick="goBack()" title="Go Back">
+        <button class="btn-back" onclick="goBackToCalculators()" title="Go Back">
             <i class="fas fa-arrow-left"></i>
         </button>
 
@@ -1595,27 +1595,31 @@ body {
 // =============================================================================
 
 // Enhanced back navigation function
-function goBack() {
-    try {
-        // Try to go back in browser history
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            // If no history, try to go to parent directory or homepage
-            const currentPath = window.location.pathname;
-            const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-            if (parentPath) {
-                window.location.href = parentPath + '/';
+function goBackToCalculators() {
+            // Try to go back to parent window if opened from main app
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // If opened from main app, switch focus back and close this tab
+                    window.opener.focus();
+                    // Call function to show calculators page in parent window
+                    if (typeof window.opener.showCalculatorsPage === 'function') {
+                        window.opener.showCalculatorsPage();
+                    }
+                    window.close();
+                } catch (e) {
+                    // If cross-origin or other security issues, fallback to alert
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
             } else {
-                window.location.href = './';
+                // If no parent window, try to navigate to main app
+                try {
+                    window.location.href = 'index.html#calculators';
+                } catch (e) {
+                    alert('Please use the browser back button or close this tab to return to the main application.');
+                }
             }
         }
-    } catch (error) {
-        // Fallback navigation
-        console.log('Navigation fallback triggered');
-        window.location.href = './index.html';
-    }
-}
+        
 
 // =============================================================================
 // THEME TOGGLE FUNCTIONALITY
@@ -3139,31 +3143,7 @@ function formatIndianStyleNumber(number) {
     return formattedNumber;
 }
 
-// Go back to calculators page
-function goBackToCalculators() {
-    // Try to go back to parent window if opened from main app
-    if (window.opener && !window.opener.closed) {
-        try {
-            // If opened from main app, switch focus back and close this tab
-            window.opener.focus();
-            // Call function to show calculators page in parent window
-            if (typeof window.opener.showCalculatorsPage === 'function') {
-                window.opener.showCalculatorsPage();
-            }
-            window.close();
-        } catch (e) {
-            // If cross-origin or other security issues, fallback to alert
-            alert('Please use the browser back button or close this tab to return to the main application.');
-        }
-    } else {
-        // If no parent window, try to navigate to main app
-        try {
-            window.location.href = 'index.html#calculators';
-        } catch (e) {
-            alert('Please use the browser back button to return to the main application.');
-        }
-    }
-}
+
 
 </script>
 

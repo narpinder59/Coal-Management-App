@@ -276,7 +276,7 @@ function showCalculatorsPage() {
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-primary">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-bar-chart-line text-primary me-3 fs-5"></i>
-                                <span class="fw-medium">Coal Scenario</span>
+                                <span class="fw-medium">Coal Scenario Analysis</span>
                             </div>
                             <button class="btn btn-primary btn-sm" onclick="window.open('Coal-Scenario.html', '_blank')">
                                 <i class="bi bi-box-arrow-up-right me-1"></i>Open
@@ -298,7 +298,7 @@ function showCalculatorsPage() {
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-diagram-3 text-info me-3 fs-5"></i>
-                                <span class="fw-medium">Coal Linkage Advance</span>
+                                <span class="fw-medium">Coal Linkage Distribution</span>
                             </div>
                             <button class="btn btn-info btn-sm" onclick="window.open('Coal Linkage Advance.html', '_blank')">
                                 <i class="bi bi-box-arrow-up-right me-1"></i>Open
@@ -331,7 +331,7 @@ function showCalculatorsPage() {
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-info">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-clipboard-data text-info me-3 fs-5"></i>
-                                <span class="fw-medium">Cost Analysis of 2 Types of Coal</span>
+                                <span class="fw-medium">Cost Analysis of Various Types of Coal</span>
                             </div>
                             <button class="btn btn-info btn-sm" onclick="window.open('Cost Analysis of 2 Types of Coal.html', '_blank')">
                                 <i class="bi bi-box-arrow-up-right me-1"></i>Open

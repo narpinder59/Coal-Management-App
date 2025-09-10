@@ -1,42 +1,211 @@
-<nav class="navbar navbar-light bg-light fixed-top shadow-sm">
-  <div class="container-fluid">
-    <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
-      ☰ Menu
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+  <div class="container-fluid px-4">
+    <button class="btn btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+      <i class="fas fa-bars"></i>
     </button>
-    <span class="navbar-brand mb-0 h1">Fuel App</span>
+    <a class="navbar-brand ms-3" href="#">
+      <i class="fas fa-fire text-primary me-2"></i>
+      <span class="brand-text">Coal Management System</span>
+    </a>
+    <div class="navbar-nav ms-auto">
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle user-menu" href="#" role="button" data-bs-toggle="dropdown">
+          <i class="fas fa-user-circle me-1"></i>
+          <span class="d-none d-md-inline">Admin</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+          <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </nav>
 
 <style>
+  /* Import Font Awesome for icons */
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+  
+  /* Main Navbar Styling */
+  .navbar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 70px;
+    padding: 0.5rem 0;
+    position: relative;
+    z-index: 1040;
+    margin-top: 0 !important;
+    top: 0 !important;
+  }
+
+  .navbar .container-fluid {
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  /* Remove any default body margin/padding */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Menu Button */
+  .btn-menu {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-menu:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* Brand Styling */
+  .navbar-brand {
+    color: white !important;
+    font-weight: 600;
+    font-size: 1.4rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .brand-text {
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* User Menu */
+  .user-menu {
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .user-menu:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white !important;
+  }
+
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 8px 0;
+    margin-top: 8px;
+    position: absolute !important;
+    z-index: 1051;
+    max-width: 200px;
+    right: 0 !important;
+    left: auto !important;
+  }
+
+  .dropdown-item {
+    padding: 12px 20px;
+    transition: all 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+  }
+
+  /* Sidebar Styling */
   .offcanvas-start {
-    width: 280px !important;
+    width: 300px !important;
+    border: none;
+    z-index: 1055 !important;
   }
   
   .sidebar-content {
-    background-color: #343a40;
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
     color: white;
     min-height: 100vh;
     margin: -1rem;
-    padding: 1rem 0;
+    padding: 0;
+    z-index: 1055;
   }
 
   .sidebar-content .offcanvas-body {
     padding: 0;
   }
 
-  .sidebar-content .nav-link {
+  /* Sidebar Header */
+  .sidebar-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+
+  .sidebar-header h5 {
     color: white;
-    padding: 0.75rem 1rem;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+  }
+
+  .sidebar-header .btn-close {
+    position: relative;
+    margin: 0;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Navigation Links */
+  .sidebar-content .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    padding: 15px 20px;
     border: none;
     background: none;
     width: 100%;
     text-align: left;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar-content .nav-link i {
+    width: 20px;
+    margin-right: 12px;
+    font-size: 1rem;
   }
 
   .sidebar-content .nav-link:hover {
-    background-color: #495057;
+    background: rgba(255, 255, 255, 0.1);
     color: white;
+    border-left-color: #3498db;
+    padding-left: 24px;
   }
 
   .sidebar-content .nav-link:focus {
@@ -44,46 +213,54 @@
     color: white;
   }
 
+  .sidebar-content .nav-link.active {
+    background: rgba(52, 152, 219, 0.2);
+    color: white;
+    border-left-color: #3498db;
+  }
+
+  /* Submenu Styling */
   .sidebar-content .submenu {
-    background-color: #717375;
+    background: rgba(0, 0, 0, 0.2);
   }
 
   .sidebar-content .submenu .nav-link {
-    padding-left: 2rem;
-    background-color: #717375;
+    padding-left: 50px;
+    font-size: 0.9rem;
   }
 
   .sidebar-content .submenu .nav-link:hover {
-    background-color: #717375;
+    padding-left: 54px;
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .sidebar-content .sub-submenu {
-    background-color: #6c757d;
+    background: rgba(0, 0, 0, 0.3);
   }
 
   .sidebar-content .sub-submenu .nav-link {
-    padding-left: 3rem;
-    background-color: #6c757d;
+    padding-left: 70px;
+    font-size: 0.85rem;
   }
 
   .sidebar-content .sub-submenu .nav-link:hover {
-    background-color: #868e96;
+    padding-left: 74px;
   }
 
-  .sidebar-content .btn-close {
-    filter: invert(1);
-  }
-
+  /* Accordion Buttons */
   .sidebar-content .nav-item button {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
   }
 
   .sidebar-content .nav-item button::after {
-    content: '▼';
+    content: '\f107';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
     font-size: 0.8rem;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
   }
 
   .sidebar-content .nav-item button[aria-expanded="true"]::after {
@@ -93,75 +270,287 @@
   .sidebar-content .collapse.show {
     display: block !important;
   }
+
+  /* Close Button */
+  .sidebar-content .btn-close {
+    filter: invert(1);
+    background-size: 1rem;
+    position: relative;
+    margin: 0;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Prevent dropdown from affecting navbar height */
+  .navbar-nav .dropdown {
+    position: static;
+  }
+
+  .navbar-nav .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    transform: none !important;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .brand-text {
+      font-size: 1rem;
+      max-width: 150px;
+    }
+    
+    .navbar-brand {
+      font-size: 1rem;
+    }
+
+    .navbar-brand i {
+      font-size: 1rem;
+    }
+
+    .offcanvas-start {
+      width: 280px !important;
+    }
+
+    .dropdown-menu {
+      position: fixed !important;
+      top: 70px !important;
+      right: 10px !important;
+      left: auto !important;
+      max-width: 180px;
+      z-index: 1052;
+    }
+
+    .navbar .container-fluid {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .btn-menu {
+      padding: 10px 12px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .brand-text {
+      display: none;
+    }
+    
+    .navbar-brand {
+      font-size: 1.2rem;
+    }
+
+    .navbar-brand::after {
+      content: "CMS";
+      color: white;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .dropdown-menu {
+      max-width: 160px;
+      right: 5px !important;
+    }
+  }
+
+  /* Scrollbar for Sidebar */
+  .sidebar-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Additional mobile fixes */
+  .navbar-toggler {
+    border: none;
+    padding: 0;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
+
+  /* Ensure proper stacking */
+  .navbar {
+    z-index: 1040;
+  }
+
+  .offcanvas {
+    z-index: 1055 !important;
+  }
+
+  .offcanvas-backdrop {
+    z-index: 1050 !important;
+  }
+
+  .dropdown-menu.show {
+    position: absolute !important;
+    z-index: 1060;
+  }
+
+  /* Fix for GitHub Pages deployment */
+  .navbar-brand .brand-text {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* Prevent text wrapping in header */
+  .navbar .container-fluid {
+    flex-wrap: nowrap !important;
+  }
+
+  .navbar-nav {
+    flex-direction: row;
+  }
+
+  /* Additional fixes for white space and positioning */
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  .navbar.fixed-top {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    position: fixed !important;
+  }
+
+  /* Ensure offcanvas appears above navbar */
+  .offcanvas.show {
+    z-index: 1055 !important;
+  }
+
+  .offcanvas-header {
+    z-index: 1056;
+  }
+
+  .offcanvas-body {
+    z-index: 1056;
+  }
 </style>
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar">
   <div class="sidebar-content">
+    <div class="sidebar-header">
+      <h5><i class="fas fa-fire me-2"></i>Coal Management</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
     <div class="offcanvas-body">
       <ul class="nav flex-column">
         <!-- Dashboard -->
         <li class="nav-item">
-          <a class="nav-link" href="#" data-page="dashboard">🏠 Dashboard</a>
+          <a class="nav-link" href="#" data-page="dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+          </a>
         </li>
 
         <!-- Punjab Generation -->
         <li class="nav-item">
-          <a class="nav-link" href="#" data-page="punjabgen">⚡ Punjab Generation</a>
+          <a class="nav-link" href="#" data-page="punjabgen">
+            <i class="fas fa-bolt"></i>
+            Punjab Generation
+          </a>
         </li>
 
         <!-- Daily Reports Accordion -->
         <li class="nav-item">
           <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#dailyReports" aria-expanded="false">
-            📊 Daily Reports
+            <span><i class="fas fa-chart-line"></i>Daily Reports</span>
           </button>
           <div class="collapse submenu" id="dailyReports">
             <!-- Daily Coal Position -->
-            <a class="nav-link progress-menu-item" href="#" data-report="daily-coal-position">📋 Daily Coal Position</a>
+            <a class="nav-link progress-menu-item" href="#" data-report="daily-coal-position">
+              <i class="fas fa-clipboard-list"></i>
+              Daily Coal Position
+            </a>
             <!-- Pachhwara Dashboard -->
-            <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-dashboard">🏭 Pachhwara Dashboard</a>
+            <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-dashboard">
+              <i class="fas fa-industry"></i>
+              Pachhwara Dashboard
+            </a>
           </div>
         </li>
 
         <!-- Progress Reports Accordion -->
         <li class="nav-item">
           <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#progressReports" aria-expanded="false">
-            📈 Progress Reports
+            <span><i class="fas fa-chart-bar"></i>Progress Reports</span>
           </button>
           <div class="collapse submenu" id="progressReports">
             <!-- Loading and Receipt -->
-            <a class="nav-link progress-menu-item" href="#" data-report="loading-receipt">🚛 Loading and Receipt</a>
+            <a class="nav-link progress-menu-item" href="#" data-report="loading-receipt">
+              <i class="fas fa-truck"></i>
+              Loading and Receipt
+            </a>
             
             <!-- Coal Quality & Cost Analysis -->
-            <a class="nav-link progress-menu-item" href="#" data-report="coal-quality-cost">🔬 Coal Quality & Cost Analysis</a>
+            <a class="nav-link progress-menu-item" href="#" data-report="coal-quality-cost">
+              <i class="fas fa-microscope"></i>
+              Coal Quality & Cost Analysis
+            </a>
             
             <!-- MDCWL Submenu -->
             <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#mdcwlSubmenu" aria-expanded="false">
-              🏭 MDCWL
+              <span><i class="fas fa-building"></i>MDCWL</span>
             </button>
             <div class="collapse sub-submenu" id="mdcwlSubmenu">
-              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-lifting">📦 Lifting</a>
-              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-loading">🔄 Loading</a>
+              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-lifting">
+                <i class="fas fa-boxes"></i>
+                Lifting
+              </a>
+              <a class="nav-link progress-menu-item" href="#" data-report="mdcwl-loading">
+                <i class="fas fa-sync-alt"></i>
+                Loading
+              </a>
             </div>
             
             <!-- Pachhwara Submenu -->
             <button class="nav-link" data-bs-toggle="collapse" data-bs-target="#pachhwaraSubmenu" aria-expanded="false">
-              ⛏️ Pachhwara
+              <span><i class="fas fa-hammer"></i>Pachhwara</span>
             </button>
             <div class="collapse sub-submenu" id="pachhwaraSubmenu">
-              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-prod-desp">🏗️ Production & Despatch</a>
-              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-quality">🧪 Quality Analysis</a>
+              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-prod-desp">
+                <i class="fas fa-cogs"></i>
+                Production & Despatch
+              </a>
+              <a class="nav-link progress-menu-item" href="#" data-report="pachhwara-quality">
+                <i class="fas fa-flask"></i>
+                Quality Analysis
+              </a>
             </div>
           </div>
         </li>
 
         <!-- Calculators -->
         <li class="nav-item">
-          <a class="nav-link" href="#" data-page="calculators">🧮 Calculators</a>
+          <a class="nav-link" href="#" data-page="calculators">
+            <i class="fas fa-calculator"></i>
+            Calculators
+          </a>
         </li>
 
         <!-- Settings -->
         <li class="nav-item">
-          <a class="nav-link" href="#" data-page="settings">⚙️ Settings</a>
+          <a class="nav-link" href="#" data-page="settings">
+            <i class="fas fa-cog"></i>
+            Settings
+          </a>
         </li>
       </ul>
     </div>

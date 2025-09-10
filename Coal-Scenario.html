@@ -952,6 +952,301 @@
             color: #ff6b6b;
         }
         
+        /* ==========================================================================
+           SCC CALCULATOR STYLES
+           ========================================================================== */
+        
+        /* SCC Help Button */
+        .scc-help-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: helpPulse 2s ease-in-out infinite;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+            position: relative;
+            vertical-align: middle;
+            line-height: 1;
+            text-align: center;
+            padding: 0;
+        }
+        
+        .scc-help-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+            animation: none;
+        }
+        
+        @keyframes helpPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+            }
+        }
+        
+        /* SCC Calculator Modal */
+        .scc-calculator-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .scc-calculator-window {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideInScale 0.3s ease-out;
+            border: 2px solid #e9ecef;
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                transform: scale(0.8) translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .scc-calculator-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .scc-calculator-title {
+            color: #212529;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .scc-calculator-icon {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .scc-input-group {
+            margin-bottom: 16px;
+        }
+        
+        .scc-input-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9em;
+        }
+        
+        .scc-input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .scc-input-field:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+        }
+        
+        .scc-result-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .scc-result-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .scc-result-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #28a745;
+            margin: 0;
+        }
+        
+        .scc-formula-info {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 16px 0;
+            font-size: 0.85em;
+            color: #004085;
+        }
+        
+        .scc-button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .scc-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .scc-btn-primary {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .scc-btn-primary:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .scc-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .scc-btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .scc-btn-close {
+            background: transparent;
+            border: 2px solid #dc3545;
+            color: #dc3545;
+        }
+        
+        .scc-btn-close:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        /* Dark Theme Styles for SCC Calculator */
+        [data-theme="dark"] .scc-calculator-window {
+            background: #2b3035;
+            border-color: #495057;
+            color: #e9ecef;
+        }
+        
+        [data-theme="dark"] .scc-calculator-header {
+            border-bottom-color: #495057;
+        }
+        
+        [data-theme="dark"] .scc-calculator-title {
+            color: #e9ecef;
+        }
+        
+        [data-theme="dark"] .scc-input-label {
+            color: #adb5bd;
+        }
+        
+        [data-theme="dark"] .scc-input-field {
+            background: #343a40;
+            border-color: #495057;
+            color: #e9ecef;
+        }
+        
+        [data-theme="dark"] .scc-input-field:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        [data-theme="dark"] .scc-result-section {
+            background: #343a40;
+            border-color: #495057;
+        }
+        
+        [data-theme="dark"] .scc-result-label {
+            color: #adb5bd;
+        }
+        
+        [data-theme="dark"] .scc-formula-info {
+            background: #1e3a4f;
+            border-color: #0d6efd;
+            color: #b8daff;
+        }
+        
+        [data-theme="dark"] .scc-btn-secondary {
+            background: #495057;
+            color: #e9ecef;
+        }
+        
+        [data-theme="dark"] .scc-btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .scc-calculator-window {
+                padding: 16px;
+                margin: 10px;
+            }
+            
+            .scc-button-group {
+                flex-direction: column;
+            }
+            
+            .scc-help-btn {
+                width: 18px;
+                height: 18px;
+                font-size: 11px;
+            }
+        }
+        
         /* Floating Warning Icon - Restored for functionality */
         .warning-float-icon {
             position: fixed;
@@ -1303,10 +1598,10 @@
         
         .remove-month-btn {
             position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 18px;
-            height: 14px;
+            top: 0px;
+            right: 0px;
+            width: 12px;
+            height: 10px;
             border-radius: 3px;
             background-color: #dc3545;
             border: none;
@@ -2610,6 +2905,20 @@
                         Include live warning cards
                     </label>
                 </div>
+                
+                <div class="export-section">
+                    <h6>Page Orientation</h6>
+                    <div class="export-radio-group">
+                        <div class="export-radio-item">
+                            <input type="radio" id="orientationPortrait" name="pageOrientation" value="portrait" checked>
+                            <label for="orientationPortrait">Portrait</label>
+                        </div>
+                        <div class="export-radio-item">
+                            <input type="radio" id="orientationLandscape" name="pageOrientation" value="landscape">
+                            <label for="orientationLandscape">Landscape</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2705,7 +3014,7 @@
                 <tr><td>Generation Capacity (MW)</td><td class="total-cell">0</td></tr>
                 <tr><td>PLF (%)</td><td class="total-cell">0</td></tr>
                 <tr><td>Units Generated (MU)</td><td class="total-cell">0</td></tr>
-                <tr><td>Specific Coal Consumption (kg/kWh)</td><td class="total-cell">0</td></tr>
+                    <tr><td>Specific Coal Consumption (kg/kWh) <button class="scc-help-btn" onclick="openSCCCalculator()" title="Calculate SCC using Station Heat Rate ÷ GCV">?</button></td><td class="total-cell">0</td></tr>
                 <tr><td>Coal Requirement (MT)</td><td class="total-cell">0</td></tr>
                 <tr><td>Coal Available (MT)</td><td class="total-cell">0</td></tr>
                 <tr><td>Opening Stock (MT)</td><td class="total-cell">0</td></tr>
@@ -2713,6 +3022,37 @@
                 <tr><td>Closing Stock in Days</td><td class="total-cell">0</td></tr>
         </tbody>
         </table>
+
+            <!-- SCC Calculator Modal -->
+            <div id="sccCalculatorModal" class="scc-calculator-modal">
+                <div class="scc-calculator-window">
+                    <div class="scc-calculator-header">
+                        <span class="scc-calculator-title">
+                            <span class="scc-calculator-icon">?</span>
+                            SCC Calculator
+                        </span>
+                    </div>
+                    <div class="scc-formula-info">
+                        <strong>Formula:</strong> SCC = Station Heat Rate (kCal/kWh) ÷ GCV (kCal/kg)
+                    </div>
+                    <div class="scc-input-group">
+                        <label class="scc-input-label" for="shrInput">Station Heat Rate (kCal/kWh)</label>
+                        <input type="number" id="shrInput" class="scc-input-field" min="0" step="0.01" placeholder="Enter SHR">
+                    </div>
+                    <div class="scc-input-group">
+                        <label class="scc-input-label" for="gcvInput">GCV (kCal/kg)</label>
+                        <input type="number" id="gcvInput" class="scc-input-field" min="0" step="0.01" placeholder="Enter GCV">
+                    </div>
+                    <div class="scc-result-section" id="sccResultSection" style="display:none;">
+                        <div class="scc-result-label">Specific Coal Consumption (kg/kWh)</div>
+                        <div class="scc-result-value" id="sccResultValue">0.00</div>
+                    </div>
+                    <div class="scc-button-group">
+                        <button class="scc-btn scc-btn-secondary" onclick="copySCCToTable()">Copy to Table</button>
+                        <button class="scc-btn scc-btn-close" onclick="closeSCCCalculator()">Close</button>
+                    </div>
+                </div>
+            </div>
         
         <!-- Controls for Table 1 -->        <!-- Section 2: Coal Sources -->
         <div class="section-header">
@@ -2906,32 +3246,13 @@
                 startingYear = currentYear;
             }
             
-            // For the first column, simply check if we need to wrap to next year
-            if (monthColumns.length === 0) {
-                const yearOffset = monthNumber < startingMonth ? 1 : 0;
-                const displayYear = startingYear + yearOffset;
-                return `${months[monthNumber - 1]} ${displayYear}`;
+            // Simple calculation: if month number is less than starting month, increment year
+            let displayYear = startingYear;
+            if (monthNumber < startingMonth) {
+                displayYear = startingYear + 1;
             }
             
-            // For subsequent columns, calculate based on position from first column
-            const firstColumnMonth = monthColumns[0].monthNumber;
-            const firstColumnYear = startingYear + (firstColumnMonth < startingMonth ? 1 : 0);
-            
-            // Calculate how many months ahead this column is from the first column
-            const currentColumnPosition = monthColumns.length; // 0-based position of column being added
-            
-            // Create a date object for the first column
-            const firstDate = new Date(2000 + firstColumnYear, firstColumnMonth - 1, 1);
-            
-            // Add the number of months to get the current column date
-            const currentDate = new Date(firstDate);
-            currentDate.setMonth(currentDate.getMonth() + currentColumnPosition);
-            
-            // Extract year and month from the result
-            const resultYear = currentDate.getFullYear() % 100;
-            const resultMonth = currentDate.getMonth() + 1;
-            
-            return `${months[resultMonth - 1]} ${resultYear}`;
+            return `${months[monthNumber - 1]} ${displayYear}`;
         }
         
         /**
@@ -3033,12 +3354,17 @@
             // Update month columns array with proper sequence
             monthColumns.forEach((col, index) => {
                 col.monthNumber = currentMonth;
-                col.monthName = getMonthNameWithYear(currentMonth, startMonth, startYear);
+                
+                // Calculate the correct year for this month
+                let displayYear = currentMonthYear;
+                
+                // Update the column's month name
+                col.monthName = `${getMonthName(currentMonth).split(' ')[0]} ${displayYear}`;
                 
                 // Move to next month
                 currentMonth = getNextMonth(currentMonth);
                 // If we wrapped around to January, increment the year
-                if (currentMonth === 1 && index > 0) {
+                if (currentMonth === 1) {
                     currentMonthYear++;
                 }
             });
@@ -3051,7 +3377,9 @@
             currentMonthYear = startYear;
             
             for (let i = 0; i < table1Headers.length; i++) {
-                const monthName = getMonthNameWithYear(currentMonth, startMonth, startYear);
+                // Calculate the correct year for this month
+                let displayYear = currentMonthYear;
+                const monthName = `${getMonthName(currentMonth).split(' ')[0]} ${displayYear}`;
                 
                 // Update Table1 header
                 if (i === 0) {
@@ -3076,7 +3404,7 @@
                 // Move to next month
                 currentMonth = getNextMonth(currentMonth);
                 // If we wrapped around to January, increment the year
-                if (currentMonth === 1 && i > 0) {
+                if (currentMonth === 1) {
                     currentMonthYear++;
                 }
             }
@@ -3104,18 +3432,26 @@
             
             if (!table1 || !table2) return;
             
-            // Determine the month number for the new column
-            let monthNumber;
+            // Determine the month number and year for the new column
+            let monthNumber, monthName;
             if (monthColumns.length === 0) {
                 // First column - use current month
                 monthNumber = currentMonthCounter;
+                monthName = `${getMonthName(monthNumber).split(' ')[0]} ${currentYear}`;
             } else {
-                // Subsequent columns - get next month after the last existing month
-                const lastMonth = monthColumns[monthColumns.length - 1].monthNumber;
-                monthNumber = getNextMonth(lastMonth);
+                // Calculate the year for the new column based on the sequence
+                const lastColumn = monthColumns[monthColumns.length - 1];
+                monthNumber = getNextMonth(lastColumn.monthNumber);
+                
+                // Extract year from the last column's name and increment if wrapping to January
+                const lastMonthYear = parseInt(lastColumn.monthName.split(' ')[1]);
+                let newYear = lastMonthYear;
+                if (monthNumber === 1) {
+                    newYear = lastMonthYear + 1;
+                }
+                
+                monthName = `${getMonthName(monthNumber).split(' ')[0]} ${newYear}`;
             }
-            
-            const monthName = getMonthNameWithYear(monthNumber);
             
             // Store month information
             monthColumns.push({
@@ -3321,15 +3657,33 @@
         function recalculateMonthSequence() {
             if (monthColumns.length === 0) return;
             
+            // Get the first month select to determine starting year
+            const firstMonthSelect = document.querySelector('.month-select');
+            let startYear = currentYear;
+            
+            if (firstMonthSelect) {
+                let selectedValue = parseInt(firstMonthSelect.value);
+                if (selectedValue > 12) {
+                    startYear = currentYear + 1;
+                }
+            }
+            
             // Get the first month (which should remain unchanged)
             const firstMonth = monthColumns[0].monthNumber;
             let currentMonth = firstMonth;
+            let currentMonthYear = startYear;
             
             // Update all month columns to maintain sequence
             monthColumns.forEach((col, index) => {
                 col.monthNumber = currentMonth;
-                col.monthName = getMonthNameWithYear(currentMonth, firstMonth);
+                col.monthName = `${getMonthName(currentMonth).split(' ')[0]} ${currentMonthYear}`;
+                
+                // Move to next month
                 currentMonth = getNextMonth(currentMonth);
+                // If we wrapped around to January, increment the year
+                if (currentMonth === 1) {
+                    currentMonthYear++;
+                }
             });
             
             // Update headers in both tables
@@ -3337,15 +3691,22 @@
             const table2Headers = document.querySelectorAll('#Table2 thead th.month-header');
             
             currentMonth = firstMonth;
+            currentMonthYear = startYear;
+            
             for (let i = 0; i < monthColumns.length; i++) {
-                const monthName = getMonthNameWithYear(currentMonth, firstMonth);
+                const monthName = `${getMonthName(currentMonth).split(' ')[0]} ${currentMonthYear}`;
                 
                 // Update Table1 header
                 if (i === 0) {
                     // First column: keep the select element
                     const select = table1Headers[i].querySelector('.month-select');
                     if (select) {
-                        select.value = currentMonth;
+                        // Update select value based on the current month and year
+                        if (currentMonthYear === currentYear) {
+                            select.value = currentMonth;
+                        } else {
+                            select.value = currentMonth + 12;
+                        }
                     }
                 } else {
                     // Subsequent columns: update text and remove button
@@ -3360,7 +3721,12 @@
                     table2Headers[i].textContent = monthName;
                 }
                 
+                // Move to next month
                 currentMonth = getNextMonth(currentMonth);
+                // If we wrapped around to January, increment the year
+                if (currentMonth === 1) {
+                    currentMonthYear++;
+                }
             }
             
             // Update the currentMonthCounter for future additions
@@ -4865,11 +5231,17 @@
                         const spanStyle = window.getComputedStyle(span);
                         const spanInlineStyle = span.style;
                         
-                        // Check inline styles first (more specific)
+                        // Check inline styles first (more specific) and handle !important
                         if (spanInlineStyle.color) {
                             cellColor = spanInlineStyle.color;
                         } else if (spanStyle.color && spanStyle.color !== 'rgb(0, 0, 0)' && spanStyle.color !== 'rgba(0, 0, 0, 1)') {
                             cellColor = spanStyle.color;
+                        }
+                        
+                        // Additional check for specific red color used in the app
+                        if (spanStyle.color === 'rgb(198, 40, 40)' || spanInlineStyle.color === 'rgb(198, 40, 40)' ||
+                            spanStyle.color === '#c62828' || spanInlineStyle.color === '#c62828') {
+                            cellColor = '#c62828';
                         }
                         
                         if (spanInlineStyle.backgroundColor) {
@@ -4894,6 +5266,12 @@
                                 cellColor = cellInlineStyle.color;
                             } else if (cellStyle.color && cellStyle.color !== 'rgb(0, 0, 0)' && cellStyle.color !== 'rgba(0, 0, 0, 1)') {
                                 cellColor = cellStyle.color;
+                            }
+                            
+                            // Additional check for specific red color used in the app
+                            if (cellStyle.color === 'rgb(198, 40, 40)' || cellInlineStyle.color === 'rgb(198, 40, 40)' ||
+                                cellStyle.color === '#c62828' || cellInlineStyle.color === '#c62828') {
+                                cellColor = '#c62828';
                             }
                         }
                         
@@ -4924,9 +5302,10 @@
                         cellIndex: cellIndex
                     });
                     
-                    // Debug logging for closing stock rows
-                    if (rowIndex === 7 || rowIndex === 8) {
-                        console.log(`Row ${rowIndex}, Cell ${cellIndex}: value="${cellValue}", color="${cellColor}", bgColor="${cellBgColor}"`);
+                    // Debug logging for closing stock rows - more comprehensive
+                    if (rowIndex === 6 || rowIndex === 7 || rowIndex === 8) { // Opening, Closing, Stock in Days
+                        console.log(`Row ${rowIndex}, Cell ${cellIndex}: value="${cellValue}", numValue=${parseFloat(cellValue)}, color="${cellColor}", bgColor="${cellBgColor}"`);
+                        console.log(`Row ${rowIndex} label: "${bodyRows[rowIndex] ? bodyRows[rowIndex][0] : 'N/A'}"`);
                     }
                 });
                 bodyRows.push(rowData);
@@ -5044,82 +5423,12 @@
                     const isNumeric = typeof cell === 'number';
                     const rowLabel = row[0]; // First column is the parameter name
                     
-                    // Get color information from captured data
-                    const cellColorInfo = colorData && colorData[rowIndex] && colorData[rowIndex][cellIndex];
-                    let cellColor = '#495057';
-                    let cellBgColor = '';
+                    // Color negative stock values in red
+                    let cellColor = '#495057'; // Default color
                     
-                    if (cellColorInfo) {
-                        // Handle color detection more robustly
-                        if (cellColorInfo.color) {
-                            const colorStr = cellColorInfo.color.toLowerCase();
-                            // Check for red colors (negative values)
-                            if (colorStr.includes('rgb(196, 40, 40)') || colorStr.includes('196, 40, 40') || 
-                                colorStr.includes('#c62828') || colorStr.includes('c62828') ||
-                                colorStr.includes('rgb(220, 53, 69)') || colorStr.includes('220, 53, 69')) {
-                                cellColor = '#c62828'; // Red for negative
-                            }
-                            // Check for green colors (positive values)  
-                            else if (colorStr.includes('rgb(46, 125, 50)') || colorStr.includes('46, 125, 50') ||
-                                     colorStr.includes('#2e7d32') || colorStr.includes('2e7d32') ||
-                                     colorStr.includes('rgb(40, 167, 69)') || colorStr.includes('40, 167, 69')) {
-                                cellColor = '#2e7d32'; // Green for positive
-                            }
-                            // For any other non-black color, use it directly
-                            else if (!colorStr.includes('rgb(0, 0, 0)') && !colorStr.includes('rgba(0, 0, 0') && 
-                                     colorStr !== 'black' && colorStr !== '#000000') {
-                                cellColor = cellColorInfo.color;
-                            }
-                        }
-                        
-                        if (cellColorInfo.backgroundColor) {
-                            const bgColorStr = cellColorInfo.backgroundColor.toLowerCase();
-                            // Check for red background
-                            if (bgColorStr.includes('rgb(255, 235, 238)') || bgColorStr.includes('255, 235, 238') ||
-                                bgColorStr.includes('#ffebee') || bgColorStr.includes('ffebee')) {
-                                cellBgColor = '#ffebee'; // Light red background
-                            }
-                            // Check for green background
-                            else if (bgColorStr.includes('rgb(232, 245, 232)') || bgColorStr.includes('232, 245, 232') ||
-                                     bgColorStr.includes('#e8f5e8') || bgColorStr.includes('e8f5e8')) {
-                                cellBgColor = '#e8f5e8'; // Light green background
-                            }
-                            // For any other non-transparent background
-                            else if (!bgColorStr.includes('rgba(0, 0, 0, 0)') && !bgColorStr.includes('transparent') &&
-                                     bgColorStr !== 'rgba(0, 0, 0, 0)') {
-                                cellBgColor = cellColorInfo.backgroundColor;
-                            }
-                        }
-                    }
-                    
-                    // Fallback: if no colors detected but we know this should be colored based on content
-                    if (cellColor === '#495057' && isNumeric && !isFirstColumn) {
-                        const rowLabel = row[0] ? row[0].toString().toLowerCase() : '';
-                        if ((rowLabel.includes('closing') && rowLabel.includes('stock')) || 
-                            (rowLabel.includes('stock') && rowLabel.includes('days'))) {
-                            if (cell < 0) {
-                                cellColor = '#c62828';
-                                cellBgColor = '#ffebee';
-                            } else if (cell > 0) {
-                                cellColor = '#2e7d32';
-                                cellBgColor = '#e8f5e8';
-                            }
-                        }
-                    }
-                    
-                    // Additional fallback: Check for specific row indices (Closing Stock = row 7, Stock in Days = row 8)
-                    if (cellColor === '#495057' && isNumeric && !isFirstColumn && tableId === 'table1') {
-                        if (rowIndex === 7 || rowIndex === 8) { // Closing Stock or Stock in Days rows
-                            if (cell < 0) {
-                                cellColor = '#c62828';
-                                cellBgColor = '#ffebee';
-                                console.log(`Applied RED to row ${rowIndex}, cell ${cellIndex}, value: ${cell}`);
-                            } else if (cell > 0) {
-                                cellColor = '#2e7d32';
-                                cellBgColor = '#e8f5e8';
-                                console.log(`Applied GREEN to row ${rowIndex}, cell ${cellIndex}, value: ${cell}`);
-                            }
-                        }
+                    if (rowLabel && rowLabel.toLowerCase().includes('stock') && typeof cell === 'number' && cell < 0) {
+                        cellColor = '#dc3545'; // Red color for negative stock
+                        console.log(`NEGATIVE STOCK DETECTED: Row "${rowLabel}", Cell value: ${cell}, Color: ${cellColor}`);
                     }
                     
                     // Format numeric values based on parameter type
@@ -5131,6 +5440,8 @@
                             displayValue = cell.toString(); // No formatting for generation capacity
                         } else if (rowLabel && (rowLabel.toLowerCase().includes('specific') && rowLabel.toLowerCase().includes('coal') && rowLabel.toLowerCase().includes('consumption')) || rowLabel.toLowerCase().includes('scc')) {
                             displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }); // 3 decimal places for SCC
+                        } else if (rowLabel && rowLabel.toLowerCase().includes('stock') && cell < 0) {
+                            displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         } else {
                             displayValue = cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // 2 decimal places for all other values
                         }
@@ -5141,13 +5452,12 @@
                             padding: 6px 4px;
                             border: 1px solid #dee2e6;
                             text-align: ${isFirstColumn ? 'left' : 'center'};
-                            font-weight: ${(isFirstColumn || cellColor !== '#495057') ? '600' : '400'};
+                            font-weight: ${isFirstColumn ? '600' : '400'};
                             color: ${isFirstColumn ? '#2c3e50' : cellColor};
-                            ${cellBgColor ? `background-color: ${cellBgColor};` : ''}
                             font-size: 9px;
                             ${isFirstColumn ? 'padding-left: 8px;' : ''}
-                            ${isLastColumn ? (cellBgColor ? '' : 'background-color: #e8f4f8;') + ' font-weight: 600;' : ''}
-                            ${isNumeric && !isFirstColumn ? 'font-family: monospace;' : ''}
+                            ${isLastColumn ? 'background-color: #e8f4f8; font-weight: 600;' : ''}
+                            ${isNumeric && !isFirstColumn ? 'font-family: Arial;' : ''}
                         ">${displayValue}</td>
                     `;
                 });
@@ -5451,6 +5761,16 @@
                 const highQuality = document.getElementById('highQuality').checked;
                 const includeWarnings = document.getElementById('includeWarnings').checked;
                 
+                // Get orientation setting
+                const orientationRadios = document.querySelectorAll('input[name="pageOrientation"]');
+                let orientation = 'portrait'; // default
+                for (let radio of orientationRadios) {
+                    if (radio.checked) {
+                        orientation = radio.value;
+                        break;
+                    }
+                }
+                
                 // Extract table data
                 const table1 = document.getElementById('Table1');
                 const table1Data = extractTableData(table1);
@@ -5461,13 +5781,19 @@
                     table2Data = extractTableData(table2);
                 }
                 
-                const pdf = new jsPDF('p', 'mm', 'a4');
+                // Create PDF with selected orientation
+                const pdfOrientation = orientation === 'landscape' ? 'l' : 'p';
+                const pdf = new jsPDF(pdfOrientation, 'mm', 'a4');
                 
                 // Page 1: Tables Only
                 showExportProgress('Creating page 1 - Tables...');
                 const tablesContainer = document.createElement('div');
+                
+                // Adjust container width based on orientation
+                const containerWidth = orientation === 'landscape' ? 1123 : 794; // A4 landscape vs portrait width in pixels
+                
                 tablesContainer.style.cssText = `
-                    width: 794px;
+                    width: ${containerWidth}px;
                     background: white;
                     padding: 10px;
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5496,7 +5822,7 @@
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: '#ffffff',
-                    width: 794,
+                    width: containerWidth,
                     height: tablesContainer.scrollHeight,
                     logging: false
                 });
@@ -5518,7 +5844,7 @@
                     
                     const warningsContainer = document.createElement('div');
                     warningsContainer.style.cssText = `
-                        width: 794px;
+                        width: ${containerWidth}px;
                         background: white;
                         padding: 10px;
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5551,7 +5877,7 @@
                         useCORS: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
-                        width: 794,
+                        width: containerWidth,
                         height: warningsContainer.scrollHeight,
                         logging: false
                     });
@@ -5569,7 +5895,8 @@
                 pdf.save(filename);
                 
                 hideExportProgress();
-                alert('Professional PDF report generated successfully!' + (includeWarnings ? '\n• Page 1: Tables\n• Page 2: Warnings' : '\n• Single page: Tables only'));
+                const orientationText = orientation === 'landscape' ? 'Landscape' : 'Portrait';
+                alert(`Professional PDF report generated successfully!\n• Orientation: ${orientationText}` + (includeWarnings ? '\n• Page 1: Tables\n• Page 2: Warnings' : '\n• Single page: Tables only'));
                 
             } catch (error) {
                 console.error('PDF export error:', error);
@@ -5589,6 +5916,16 @@
                 const highQuality = document.getElementById('highQuality').checked;
                 const includeWarnings = document.getElementById('includeWarnings').checked;
                 
+                // Get orientation setting
+                const orientationRadios = document.querySelectorAll('input[name="pageOrientation"]');
+                let orientation = 'portrait'; // default
+                for (let radio of orientationRadios) {
+                    if (radio.checked) {
+                        orientation = radio.value;
+                        break;
+                    }
+                }
+                
                 // Extract table data
                 const table1 = document.getElementById('Table1');
                 const table1Data = extractTableData(table1);
@@ -5602,9 +5939,14 @@
                 // File 1: Tables
                 showExportProgress('Creating Tables report...');
                 const tablesContainer = document.createElement('div');
+                
+                // Adjust dimensions based on orientation
+                const containerWidth = orientation === 'landscape' ? 1123 : 794;
+                const containerHeight = orientation === 'landscape' ? 794 : 1123;
+                
                 tablesContainer.style.cssText = `
-                    width: 794px;
-                    height: 1123px;
+                    width: ${containerWidth}px;
+                    height: ${containerHeight}px;
                     background: white;
                     padding: 10px 25px;
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5634,8 +5976,8 @@
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: '#ffffff',
-                    width: 794,
-                    height: 1123,
+                    width: containerWidth,
+                    height: containerHeight,
                     logging: false
                 });
                 
@@ -5657,8 +5999,8 @@
                     
                     const warningsContainer = document.createElement('div');
                     warningsContainer.style.cssText = `
-                        width: 794px;
-                        height: 1123px;
+                        width: ${containerWidth}px;
+                        height: ${containerHeight}px;
                         background: white;
                         padding: 10px 25px;
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5692,8 +6034,8 @@
                         useCORS: true,
                         allowTaint: true,
                         backgroundColor: '#ffffff',
-                        width: 794,
-                        height: 1123,
+                        width: containerWidth,
+                        height: containerHeight,
                         logging: false
                     });
                     
@@ -5709,7 +6051,8 @@
                 }
                 
                 hideExportProgress();
-                alert(`Professional JPG reports generated successfully!\n• ${downloadCount} file${downloadCount > 1 ? 's' : ''} downloaded:\n  - Tables report\n${includeWarnings ? '  - Warnings report' : ''}`);
+                const orientationText = orientation === 'landscape' ? 'Landscape' : 'Portrait';
+                alert(`Professional JPG reports generated successfully!\n• Orientation: ${orientationText}\n• ${downloadCount} file${downloadCount > 1 ? 's' : ''} downloaded:\n  - Tables report\n${includeWarnings ? '  - Warnings report' : ''}`);
                 
             } catch (error) {
                 console.error('JPG export error:', error);
@@ -5885,8 +6228,85 @@
         // ==========================================================================
         // END OF EXPORT FUNCTIONALITY
         // ==========================================================================
-        
-        // ==========================================================================
+
+        // ========================================================================== 
+        // SCC CALCULATOR FUNCTIONALITY
+        // ========================================================================== 
+        function openSCCCalculator() {
+            document.getElementById('sccCalculatorModal').style.display = 'flex';
+            
+            // Load saved values from localStorage
+            const savedSHR = localStorage.getItem('sccSHR') || '';
+            const savedGCV = localStorage.getItem('sccGCV') || '';
+            
+            document.getElementById('shrInput').value = savedSHR;
+            document.getElementById('gcvInput').value = savedGCV;
+            
+            // Add event listeners for dynamic calculation
+            const shrInput = document.getElementById('shrInput');
+            const gcvInput = document.getElementById('gcvInput');
+            
+            shrInput.removeEventListener('input', calculateSCCDynamic);
+            gcvInput.removeEventListener('input', calculateSCCDynamic);
+            
+            shrInput.addEventListener('input', calculateSCCDynamic);
+            gcvInput.addEventListener('input', calculateSCCDynamic);
+            
+            // Calculate immediately if both values exist
+            calculateSCCDynamic();
+        }
+
+        function closeSCCCalculator() {
+            document.getElementById('sccCalculatorModal').style.display = 'none';
+            
+            // Save values to localStorage
+            const shrValue = document.getElementById('shrInput').value;
+            const gcvValue = document.getElementById('gcvInput').value;
+            
+            localStorage.setItem('sccSHR', shrValue);
+            localStorage.setItem('sccGCV', gcvValue);
+        }
+
+        function calculateSCCDynamic() {
+            const shr = parseFloat(document.getElementById('shrInput').value);
+            const gcv = parseFloat(document.getElementById('gcvInput').value);
+            
+            if (!isNaN(shr) && !isNaN(gcv) && gcv > 0 && shr > 0) {
+                const result = shr / gcv;
+                document.getElementById('sccResultValue').textContent = result.toFixed(4);
+                document.getElementById('sccResultSection').style.display = 'block';
+            } else {
+                document.getElementById('sccResultSection').style.display = 'none';
+            }
+        }
+
+        function calculateSCC() {
+            // Keep this function for backward compatibility but make it call the dynamic version
+            calculateSCCDynamic();
+        }
+
+        function copySCCToTable() {
+            const sccValue = document.getElementById('sccResultValue').textContent;
+            
+            // Find the SCC input fields in Table1 and set their value
+            const table1 = document.getElementById('Table1');
+            if (table1) {
+                const sccRow = table1.querySelectorAll('tbody tr')[3]; // SCC is row index 3
+                if (sccRow) {
+                    const inputs = sccRow.querySelectorAll('input');
+                    inputs.forEach(function(input) {
+                        input.value = sccValue;
+                    });
+                    
+                    // Trigger any change events that might be needed for table updates
+                    inputs.forEach(function(input) {
+                        const event = new Event('change', { bubbles: true });
+                        input.dispatchEvent(event);
+                    });
+                }
+            }
+            closeSCCCalculator();
+        }        // ==========================================================================
         // END OF SCRIPT
         // ==========================================================================
     </script>
