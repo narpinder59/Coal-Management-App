@@ -1,141 +1,55 @@
-<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
-  <div class="container-fluid px-4">
-    <button class="btn btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
-      <i class="fas fa-bars"></i>
-    </button>
-    <a class="navbar-brand ms-3" href="#">
-      <i class="fas fa-fire text-primary me-2"></i>
-      <span class="brand-text">Coal Management System</span>
-    </a>
-    <div class="navbar-nav ms-auto">
-      <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle user-menu" href="#" role="button" data-bs-toggle="dropdown">
-          <i class="fas fa-user-circle me-1"></i>
-          <span class="d-none d-md-inline">Admin</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-          <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</nav>
+<!-- Floating Menu Button -->
+<button class="floating-menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+  <i class="fas fa-bars"></i>
+</button>
 
 <style>
   /* Import Font Awesome for icons */
   @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
   
-  /* Main Navbar Styling */
-  .navbar {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    min-height: 70px;
-    padding: 0.5rem 0;
-    position: relative;
-    z-index: 1040;
-    margin-top: 0 !important;
-    top: 0 !important;
-  }
-
-  .navbar .container-fluid {
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  /* Remove any default body margin/padding */
+  /* Reset body margin/padding */
   body {
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Menu Button */
-  .btn-menu {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Floating Menu Button */
+  .floating-menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: none;
+    border-radius: 50%;
     color: white;
-    border-radius: 8px;
-    padding: 12px 16px;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1040;
     transition: all 0.3s ease;
-  }
-
-  .btn-menu:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    transform: translateY(-1px);
-  }
-
-  /* Brand Styling */
-  .navbar-brand {
-    color: white !important;
-    font-weight: 600;
-    font-size: 1.4rem;
-    text-decoration: none;
     display: flex;
     align-items: center;
-    white-space: nowrap;
-    overflow: hidden;
-    flex-shrink: 1;
-    min-width: 0;
+    justify-content: center;
   }
 
-  .brand-text {
-    background: linear-gradient(135deg, #3498db, #2ecc71);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .floating-menu-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
   }
 
-  /* User Menu */
-  .user-menu {
-    color: white !important;
-    padding: 8px 16px;
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    text-decoration: none;
-  }
-
-  .user-menu:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white !important;
-  }
-
-  .dropdown-menu {
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
-    padding: 8px 0;
-    margin-top: 8px;
-    position: absolute !important;
-    z-index: 1051;
-    max-width: 200px;
-    right: 0 !important;
-    left: auto !important;
-  }
-
-  .dropdown-item {
-    padding: 12px 20px;
-    transition: all 0.2s ease;
-  }
-
-  .dropdown-item:hover {
-    background-color: #f8f9fa;
-    color: #2c3e50;
+  .floating-menu-btn:active {
+    transform: scale(0.95);
   }
 
   /* Sidebar Styling */
   .offcanvas-start {
-    width: 300px !important;
+    width: 320px !important;
     border: none;
     z-index: 1055 !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   }
   
   .sidebar-content {
@@ -144,33 +58,39 @@
     min-height: 100vh;
     margin: -1rem;
     padding: 0;
-    z-index: 1055;
+    position: relative;
   }
 
   .sidebar-content .offcanvas-body {
     padding: 0;
   }
 
-  /* Sidebar Header */
+  /* Enhanced Sidebar Header */
   .sidebar-header {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.3) 0%, rgba(46, 204, 113, 0.3) 100%);
+    padding: 25px 20px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
+    backdrop-filter: blur(10px);
   }
 
   .sidebar-header h5 {
     color: white;
     margin: 0;
-    font-weight: 600;
-    font-size: 1.1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sidebar-header h5 i {
+    font-size: 1.5rem;
+    color: #3498db;
   }
 
   .sidebar-header .btn-close {
@@ -178,34 +98,110 @@
     margin: 0;
     padding: 8px;
     flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-header .btn-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: rotate(90deg);
+  }
+
+  .sidebar-header .btn-close::before {
+    content: '✕';
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  /* User Info Section */
+  .user-info {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .user-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+  }
+
+  .user-details h6 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .user-details small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
   }
 
   /* Navigation Links */
   .sidebar-content .nav-link {
     color: rgba(255, 255, 255, 0.9);
-    padding: 15px 20px;
+    padding: 18px 25px;
     border: none;
     background: none;
     width: 100%;
     text-align: left;
     transition: all 0.3s ease;
-    font-size: 0.95rem;
-    border-left: 3px solid transparent;
+    font-size: 1rem;
+    border-left: 4px solid transparent;
     display: flex;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar-content .nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(52, 152, 219, 0.2), rgba(46, 204, 113, 0.2));
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+
+  .sidebar-content .nav-link:hover::before {
+    width: 100%;
   }
 
   .sidebar-content .nav-link i {
-    width: 20px;
-    margin-right: 12px;
-    font-size: 1rem;
+    width: 24px;
+    margin-right: 15px;
+    font-size: 1.1rem;
+    text-align: center;
   }
 
   .sidebar-content .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
     color: white;
     border-left-color: #3498db;
-    padding-left: 24px;
+    padding-left: 30px;
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .sidebar-content .nav-link:focus {
@@ -214,37 +210,40 @@
   }
 
   .sidebar-content .nav-link.active {
-    background: rgba(52, 152, 219, 0.2);
+    background: linear-gradient(90deg, rgba(52, 152, 219, 0.3), rgba(46, 204, 113, 0.1));
     color: white;
     border-left-color: #3498db;
+    font-weight: 600;
   }
 
   /* Submenu Styling */
   .sidebar-content .submenu {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(52, 152, 219, 0.3);
   }
 
   .sidebar-content .submenu .nav-link {
-    padding-left: 50px;
-    font-size: 0.9rem;
+    padding-left: 55px;
+    font-size: 0.95rem;
   }
 
   .sidebar-content .submenu .nav-link:hover {
-    padding-left: 54px;
+    padding-left: 60px;
     background: rgba(255, 255, 255, 0.1);
   }
 
   .sidebar-content .sub-submenu {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 2px solid rgba(46, 204, 113, 0.3);
   }
 
   .sidebar-content .sub-submenu .nav-link {
-    padding-left: 70px;
-    font-size: 0.85rem;
+    padding-left: 75px;
+    font-size: 0.9rem;
   }
 
   .sidebar-content .sub-submenu .nav-link:hover {
-    padding-left: 74px;
+    padding-left: 80px;
   }
 
   /* Accordion Buttons */
@@ -259,12 +258,16 @@
     content: '\f107';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     transition: transform 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 6px;
+    border-radius: 4px;
   }
 
   .sidebar-content .nav-item button[aria-expanded="true"]::after {
     transform: rotate(180deg);
+    background: rgba(52, 152, 219, 0.3);
   }
 
   .sidebar-content .collapse.show {
@@ -273,82 +276,39 @@
 
   /* Close Button */
   .sidebar-content .btn-close {
-    filter: invert(1);
-    background-size: 1rem;
-    position: relative;
-    margin: 0;
-    padding: 8px;
-    flex-shrink: 0;
+    filter: none;
+    background-size: 0;
+    opacity: 1;
   }
 
-  /* Prevent dropdown from affecting navbar height */
-  .navbar-nav .dropdown {
-    position: static;
-  }
-
-  .navbar-nav .dropdown-menu {
-    position: absolute !important;
-    top: 100% !important;
-    transform: none !important;
+  .sidebar-content .btn-close:hover {
+    opacity: 1;
+    filter: none;
   }
 
   /* Responsive Design */
   @media (max-width: 768px) {
-    .brand-text {
-      font-size: 1rem;
-      max-width: 150px;
-    }
-    
-    .navbar-brand {
-      font-size: 1rem;
-    }
-
-    .navbar-brand i {
-      font-size: 1rem;
-    }
-
     .offcanvas-start {
-      width: 280px !important;
+      width: 300px !important;
     }
 
-    .dropdown-menu {
-      position: fixed !important;
-      top: 70px !important;
-      right: 10px !important;
-      left: auto !important;
-      max-width: 180px;
-      z-index: 1052;
-    }
-
-    .navbar .container-fluid {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
-    .btn-menu {
-      padding: 10px 12px;
+    .floating-menu-btn {
+      width: 50px;
+      height: 50px;
+      top: 15px;
+      left: 15px;
     }
   }
 
   @media (max-width: 576px) {
-    .brand-text {
-      display: none;
-    }
-    
-    .navbar-brand {
-      font-size: 1.2rem;
+    .offcanvas-start {
+      width: 280px !important;
     }
 
-    .navbar-brand::after {
-      content: "CMS";
-      color: white;
-      font-weight: 600;
-      margin-left: 8px;
-    }
-
-    .dropdown-menu {
-      max-width: 160px;
-      right: 5px !important;
+    .floating-menu-btn {
+      width: 45px;
+      height: 45px;
+      font-size: 1rem;
     }
   }
 
@@ -370,86 +330,46 @@
     background: rgba(255, 255, 255, 0.5);
   }
 
-  /* Additional mobile fixes */
-  .navbar-toggler {
-    border: none;
-    padding: 0;
-  }
-
-  .navbar-toggler:focus {
-    box-shadow: none;
-  }
-
-  /* Ensure proper stacking */
-  .navbar {
-    z-index: 1040;
+  /* Backdrop */
+  .offcanvas-backdrop {
+    z-index: 1050 !important;
   }
 
   .offcanvas {
     z-index: 1055 !important;
   }
 
-  .offcanvas-backdrop {
-    z-index: 1050 !important;
+  /* Animation for floating button */
+  @keyframes pulse {
+    0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+    50% { box-shadow: 0 4px 20px rgba(52, 152, 219, 0.4); }
+    100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
   }
 
-  .dropdown-menu.show {
-    position: absolute !important;
-    z-index: 1060;
-  }
-
-  /* Fix for GitHub Pages deployment */
-  .navbar-brand .brand-text {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  /* Prevent text wrapping in header */
-  .navbar .container-fluid {
-    flex-wrap: nowrap !important;
-  }
-
-  .navbar-nav {
-    flex-direction: row;
-  }
-
-  /* Additional fixes for white space and positioning */
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    margin: 0;
-    padding: 0;
-  }
-
-  .navbar.fixed-top {
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    position: fixed !important;
-  }
-
-  /* Ensure offcanvas appears above navbar */
-  .offcanvas.show {
-    z-index: 1055 !important;
-  }
-
-  .offcanvas-header {
-    z-index: 1056;
-  }
-
-  .offcanvas-body {
-    z-index: 1056;
+  .floating-menu-btn:focus {
+    animation: pulse 2s infinite;
+    outline: none;
   }
 </style>
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar">
   <div class="sidebar-content">
     <div class="sidebar-header">
-      <h5><i class="fas fa-fire me-2"></i>Coal Management</h5>
+      <h5><i class="fas fa-fire"></i>Coal Management System</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    
+    <!-- User Info Section -->
+    <div class="user-info">
+      <div class="user-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="user-details">
+        <h6>Administrator</h6>
+        <small>System Manager</small>
+      </div>
+    </div>
+    
     <div class="offcanvas-body">
       <ul class="nav flex-column">
         <!-- Dashboard -->
@@ -550,6 +470,14 @@
           <a class="nav-link" href="#" data-page="settings">
             <i class="fas fa-cog"></i>
             Settings
+          </a>
+        </li>
+        
+        <!-- Logout at bottom -->
+        <li class="nav-item" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
           </a>
         </li>
       </ul>

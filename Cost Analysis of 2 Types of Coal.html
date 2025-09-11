@@ -2629,7 +2629,7 @@
             `).join('');
 
             // Update summary section for multiple coals
-            const totalSavingAmount = maxSavings / 10000000; // Convert to crores
+            const totalSavingAmount = (maxSavings * 100) / 10000000; // Convert to crores
             
             results.summarySection.innerHTML = `
                 <div class="summary-item section-header">
