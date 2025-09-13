@@ -16,15 +16,15 @@
   /* Floating Menu Button */
   .floating-menu-btn {
     position: fixed;
-    top: 20px;
-    left: 20px;
-    width: 55px;
-    height: 55px;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 35px;
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     border: none;
-    border-radius: 50%;
+    border-radius: 8px;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 1040;
@@ -35,7 +35,7 @@
   }
 
   .floating-menu-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
   }
@@ -56,13 +56,52 @@
     background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
     color: white;
     min-height: 100vh;
+    height: 100vh;
     margin: -1rem;
     padding: 0;
     position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
   .sidebar-content .offcanvas-body {
     padding: 0;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbar for Sidebar */
+  .sidebar-content .offcanvas-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-content .offcanvas-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .sidebar-content .offcanvas-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+
+  .sidebar-content .offcanvas-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Firefox scrollbar */
+  .sidebar-content .offcanvas-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+  }
+
+  /* Navigation menu container */
+  .navigation-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
   }
 
   /* Enhanced Sidebar Header */
@@ -293,10 +332,11 @@
     }
 
     .floating-menu-btn {
-      width: 50px;
-      height: 50px;
-      top: 15px;
-      left: 15px;
+      width: 45px;
+      height: 32px;
+      top: 8px;
+      left: 8px;
+      font-size: 1rem;
     }
   }
 
@@ -306,9 +346,11 @@
     }
 
     .floating-menu-btn {
-      width: 45px;
-      height: 45px;
-      font-size: 1rem;
+      width: 40px;
+      height: 28px;
+      top: 5px;
+      left: 5px;
+      font-size: 0.9rem;
     }
   }
 
@@ -371,7 +413,8 @@
     </div>
     
     <div class="offcanvas-body">
-      <ul class="nav flex-column">
+      <div class="navigation-menu">
+        <ul class="nav flex-column">
         <!-- Dashboard -->
         <li class="nav-item">
           <a class="nav-link" href="#" data-page="dashboard">
@@ -481,6 +524,7 @@
           </a>
         </li>
       </ul>
+      </div>
     </div>
   </div>
 </div>
