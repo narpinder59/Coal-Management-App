@@ -58,7 +58,7 @@ function findLastCompleteRow(data) {
 async function fetchPachhwaraQAData(plantName) {
     const SHEET_ID = '1cFngrabiTY-RMGDrw2eRn7Nn8LEY0IZyD0-QJT7UqTI';
     const SHEET_NAME = PLANTS[plantName];
-    const RANGE = 'A2:Z3000'; // Start from row 2 to skip headers
+    const RANGE = 'A2:Z'; // Start from row 2 to skip headers
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
 
     const res = await fetch(SHEET_URL);
@@ -1225,8 +1225,8 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                 html += `</tr>`;
             });
             // Add total/average row
-            html += `<tr class="table-warning fw-bold">
-                <td class="sticky-col table-warning fw-bold" style="left:0;z-index:1;min-width:80px;width:80px;"><b>Total/Avg</b></td>`;
+            html += `<tr class="table-primary fw-bold">
+                <td class="sticky-col bg-primary text-white fw-bold" style="left:0;z-index:1;min-width:80px;width:80px;"><b>Total/Avg</b></td>`;
             for (let i = 1; i < PachhwaraQAHeaders.length; i++) {
                 if (checkedCols.includes(i)) {
                     console.log('Processing total row for column:', i, PachhwaraQAHeaders[i]);
@@ -1292,7 +1292,7 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                         }
                     }
                     const isDateColumn = (i === 3 || i === 5) ? ' data-date-column="true"' : '';
-                    html += `<td${isDateColumn}>${result}</td>`;
+                    html += `<td${isDateColumn} class="fw-bold">${result}</td>`;
                 }
             }
             html += `</tr>`;

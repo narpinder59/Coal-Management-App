@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Formula Calculator with OCR & AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src='https://unpkg.com/tesseract.js@5.0.0/dist/tesseract.min.js'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Day/Night Theme Styles */
+        .light-theme {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .dark-theme {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+        
+        .light-theme .calculator-container {
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+        
+        .dark-theme .calculator-container {
+            background-color: #1f2937;
+            color: #f9fafb;
+            border: 1px solid #374151;
+        }
+        
+        .light-theme .nav-button {
+            background-color: #374151;
+            color: #ffffff;
+        }
+        
+        .light-theme .nav-button:hover {
+            background-color: #4b5563;
+        }
+        
+        .dark-theme .nav-button {
+            background-color: #374151;
+            color: #f9fafb;
+            border: 1px solid #4b5563;
+        }
+        
+        .dark-theme .nav-button:hover {
+            background-color: #4b5563;
+        }
+        
+        .light-theme .input-field {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+            color: #1f2937;
+        }
+        
+        .dark-theme .input-field {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .light-theme .tab-button {
+            color: #6b7280;
+            border-color: transparent;
+        }
+        
+        .light-theme .tab-button.active {
+            border-color: #3b82f6;
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .dark-theme .tab-button {
+            color: #9ca3af;
+            border-color: transparent;
+        }
+        
+        .dark-theme .tab-button.active {
+            border-color: #60a5fa;
+            background-color: #60a5fa;
+            color: #1f2937;
+        }
+        
+        .light-theme .border-style {
+            border-color: #e5e7eb;
+        }
+        
+        .dark-theme .border-style {
+            border-color: #374151;
+        }
+        
+        .light-theme .text-secondary {
+            color: #6b7280;
+        }
+        
+        .dark-theme .text-secondary {
+            color: #9ca3af;
+        }
+        
+        .light-theme .gemini-response {
+            background-color: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        .dark-theme .gemini-response {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        /* Table Theme Styles */
+        .light-theme #wtAvgTable {
+            border-color: #e5e7eb;
+        }
+        
+        .dark-theme #wtAvgTable {
+            border-color: #4b5563;
+        }
+        
+        .light-theme #wtAvgTable thead {
+            background-color: #f9fafb;
+        }
+        
+        .dark-theme #wtAvgTable thead {
+            background-color: #374151;
+        }
+        
+        .light-theme #wtAvgTable tbody {
+            background-color: #ffffff;
+        }
+        
+        .dark-theme #wtAvgTable tbody {
+            background-color: #1f2937;
+        }
+        
+        .light-theme #wtAvgTable tfoot {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .dark-theme #wtAvgTable tfoot {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        
+        .light-theme #wtAvgTable td,
+        .light-theme #wtAvgTable th {
+            border-color: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        .dark-theme #wtAvgTable td,
+        .dark-theme #wtAvgTable th {
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .light-theme .table-input {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+            color: #1f2937;
+        }
+        
+        .dark-theme .table-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .light-theme .table-header-input {
+            background-color: transparent;
+            color: #1f2937;
+        }
+        
+        .dark-theme .table-header-input {
+            background-color: transparent;
+            color: #f9fafb;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #aiProgressModal {
+            transition: opacity 0.3s ease;
+        }
+        .tab-btn.active {
+            border-color: #3b82f6;
+            background-color: #3b82f6;
+            color: white;
+        }
+        .table-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            text-align: right;
+        }
+        .table-header-input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            text-align: center;
+        }
+        .gemini-response {
+            white-space: pre-wrap;
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="light-theme min-h-screen flex flex-col p-2 sm:p-4 overflow-x-hidden">
+
+    <!-- Navigation Header -->
+    <div class="w-full max-w-full mx-auto mb-4 px-2">
+        <div class="flex justify-between items-center">
+            <!-- Back Button -->
+            <button onclick="goBack()" class="nav-button flex items-center justify-center w-10 h-10 rounded-lg font-medium text-sm transition-colors shadow-md">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="nav-button flex items-center justify-center w-10 h-10 rounded-lg font-medium text-sm transition-colors shadow-md">
+                <svg id="sunIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <svg id="moonIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-full max-w-full mx-auto calculator-container rounded-xl shadow-lg p-3 sm:p-6 md:p-8 flex-1 overflow-x-hidden">
+
+        <div class="text-center mb-6">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Intelligent Calculator ✨</h1>
+            <p class="text-secondary mt-2 text-sm sm:text-base">A multi-functional tool with AI-powered analysis for coal-related calculations.</p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="mb-6 border-b border-style">
+            <nav class="flex -mb-px space-x-4" aria-label="Tabs">
+                <button id="formulaModeTab" class="tab-button tab-btn active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Formula Mode
+                </button>
+                <button id="valuesModeTab" class="tab-button tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Values Mode
+                </button>
+                <button id="wtAvgModeTab" class="tab-button tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Wt. Avg.
+                </button>
+            </nav>
+        </div>
+
+        <!-- Formula Mode -->
+        <div id="formulaMode">
+            <p class="text-sm text-secondary mb-4">Enter a formula and the app will create input fields for the variables.</p>
+            <label for="formulaInput" class="block text-sm font-medium mb-2">Your Formula</label>
+            <textarea id="formulaInput" rows="3" class="input-field w-full p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="e.g., GCV = [{154 * (100 - (Moisture + (1.1 * Ash)))} - {108 * Moisture}] / 1.8"></textarea>
+            <p id="ocrReviewMessage" class="text-sm text-green-600 font-medium mt-2 hidden"></p>
+            
+            <input type="file" id="imageInputFormula" accept="image/*" class="hidden">
+            
+            <div class="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="cameraBtnFormula" class="w-auto sm:w-auto flex-shrink-0 bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition shadow-md flex items-center justify-center">
+                    <svg class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H4zm10 3a1 1 0 10-2 0v1a1 1 0 102 0V8zM5 8a1 1 0 011-1h1a1 1 0 110 2H6a1 1 0 01-1-1zm1 5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
+                    Scan Formula
+                </button>
+                <button id="generateFieldsBtn" class="w-auto bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition shadow-md">
+                    Generate Fields
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-3 text-center"><strong>Tip:</strong> For best OCR results, write clearly in print (not cursive).</p>
+
+            <div id="formulaCalculatorWrapper" class="mt-8 hidden">
+                <div id="inputFieldsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"></div>
+                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button id="calculateFormulaBtn" class="w-auto bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-md">
+                        Calculate
+                    </button>
+                     <button id="explainFormulaBtn" class="w-auto bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition shadow-md flex items-center justify-center">
+                        ✨ Explain Formula
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Values Mode -->
+        <div id="valuesMode" class="hidden">
+             <p class="text-sm text-gray-600 mb-4">Enter known values to calculate a result (e.g., Ash=10, GCV=?) or just the target to see available formulas (e.g., GCV=?)</p>
+             <label for="valuesInput" class="block text-sm font-medium text-gray-700 mb-2">Your Inputs & Target</label>
+             <textarea id="valuesInput" rows="3" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="e.g., Coal Cost = 5000, GCV = ?"></textarea>
+
+            <input type="file" id="imageInputValues" accept="image/*" class="hidden">
+
+            <div class="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="cameraBtnValues" class="w-auto sm:w-auto flex-shrink-0 bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition shadow-md flex items-center justify-center">
+                    <svg class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H4zm10 3a1 1 0 10-2 0v1a1 1 0 102 0V8zM5 8a1 1 0 011-1h1a1 1 0 110 2H6a1 1 0 01-1-1zm1 5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
+                    Scan Values
+                </button>
+                <button id="calculateValuesBtn" class="w-auto bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-md">
+                    Find & Calculate
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-3 text-center"><strong>Tip:</strong> For best OCR results, write clearly in print (not cursive).</p>
+        </div>
+
+        <!-- Weighted Average Mode -->
+        <div id="wtAvgMode" class="hidden">
+            <p class="text-sm text-secondary mb-4">Add or remove rows and columns. Totals and weighted averages are calculated automatically.</p>
+            <div class="overflow-x-auto">
+                <table id="wtAvgTable" class="min-w-full divide-y border border-style">
+                    <thead>
+                        <!-- Header row will be dynamically generated -->
+                    </thead>
+                    <tbody class="divide-y">
+                        <!-- Data rows will be dynamically generated -->
+                    </tbody>
+                    <tfoot class="font-bold border-t">
+                        <!-- Footer row will be dynamically generated -->
+                    </tfoot>
+                </table>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-3 justify-center">
+                <button id="addRowBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition shadow-md">Add Row</button>
+                <button id="addColumnBtn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-md">Add Column</button>
+                <button id="removeColumnBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition shadow-md">Remove Last Column</button>
+                <button id="analyzeBlendBtn" class="bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition shadow-md flex items-center justify-center">
+                   ✨ Analyze Blend
+                </button>
+            </div>
+            <div id="blendAnalysisResult" class="mt-6 hidden"></div>
+        </div>
+        
+        <!-- Universal Result Section -->
+        <div id="resultContainer" class="mt-6 text-left bg-gray-50 p-6 rounded-lg hidden">
+             <h2 id="resultHeader" class="text-lg font-medium text-gray-600">Result</h2>
+             <div id="resultDetails" class="mt-2 text-sm text-gray-600"></div>
+             <p id="resultOutput" class="text-3xl sm:text-4xl font-bold text-gray-800 mt-2">0</p>
+             <p id="errorMessage" class="text-red-500 mt-2 font-medium"></p>
+        </div>
+
+    </div>
+
+    <!-- AI/OCR Progress Modal -->
+    <div id="aiProgressModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 pointer-events-none">
+        <div class="bg-white rounded-lg p-6 shadow-xl text-center">
+            <p id="aiModalTitle" class="text-lg font-medium text-gray-800">Processing...</p>
+            <p id="aiModalStatus" class="text-sm text-gray-500 mt-2">Please wait.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- FORMULA DATABASE ---
+        const formulaStore = [
+            // Energy Charges Group
+            { name: "Calculate Energy Charges", outputVar: "EnergyCharges", inputVars: ["CoalCost", "RailwayFreight", "SHR", "GCV"], formula: "((CoalCost + RailwayFreight) * SHR) / (GCV * 1000)" },
+            { name: "Calculate GCV from Energy Charges", outputVar: "GCV", inputVars: ["CoalCost", "RailwayFreight", "SHR", "EnergyCharges"], formula: "((CoalCost + RailwayFreight) * SHR) / (EnergyCharges * 1000)" },
+            { name: "Calculate SHR from Energy Charges", outputVar: "SHR", inputVars: ["EnergyCharges", "GCV", "CoalCost", "RailwayFreight"], formula: "((EnergyCharges * GCV * 1000)) / (CoalCost + RailwayFreight)" },
+            { name: "Calculate Railway Freight", outputVar: "RailwayFreight", inputVars: ["EnergyCharges", "GCV", "SHR", "CoalCost"], formula: "((EnergyCharges * GCV * 1000) / SHR) - CoalCost" },
+            { name: "Calculate Coal Cost", outputVar: "CoalCost", inputVars: ["EnergyCharges", "GCV", "SHR", "RailwayFreight"], formula: "((EnergyCharges * GCV * 1000) / SHR) - RailwayFreight" },
+            
+            // Specific Consumption & Landed Cost
+            { name: "Calculate Specific Coal Consumption", outputVar: "SpecificCoalConsumption", inputVars: ["SHR", "GCV"], formula: "SHR / GCV" },
+            { name: "Calculate Landed Cost", outputVar: "LandedCost", inputVars: ["CoalCost", "RailwayFreight", "GCV"], formula: "(CoalCost + RailwayFreight) / GCV" },
+
+            // Generation Capacity Group
+            { name: "Calculate Generation Capacity", outputVar: "GenerationCapacity", inputVars: ["CoalRequirement", "GCV", "Days", "PLF", "SHR"], formula: "(CoalRequirement * (GCV * 100000000)) / (Days * 24 * PLF * 10 * SHR)" },
+            { name: "Calculate PLF", outputVar: "PLF", inputVars: ["CoalRequirement", "GCV", "Days", "GenerationCapacity", "SHR"], formula: "(CoalRequirement * (GCV * 100000000)) / (Days * 24 * GenerationCapacity * 10 * SHR)" },
+            { name: "Calculate Days", outputVar: "Days", inputVars: ["CoalRequirement", "GCV", "PLF", "GenerationCapacity", "SHR"], formula: "(CoalRequirement * (GCV * 100000000)) / (PLF * 24 * GenerationCapacity * 10 * SHR)" },
+            { name: "Calculate SHR from Generation", outputVar: "SHR", inputVars: ["CoalRequirement", "GCV", "Days", "GenerationCapacity", "PLF"], formula: "(CoalRequirement * (GCV * 100000000)) / (Days * 24 * GenerationCapacity * 10 * PLF)" },
+            { name: "Calculate GCV from Generation", outputVar: "GCV", inputVars: ["PLF", "Days", "GenerationCapacity", "SHR", "CoalRequirement"], formula: "(PLF * (Days * 24 * GenerationCapacity * 10 * SHR)) / (CoalRequirement * 100000000)" },
+            { name: "Calculate Coal Requirement", outputVar: "CoalRequirement", inputVars: ["GenerationCapacity", "Days", "PLF", "SHR", "GCV"], formula: "(GenerationCapacity * Days * 24 * PLF * 10 * SHR) / (GCV * 100000000)" },
+            
+            // Units Generated
+            { name: "Calculate Units Generated", outputVar: "UnitsGenerated", inputVars: ["GenerationCapacity", "PLF", "Days"], formula: "(GenerationCapacity * PLF * Days * 24 * 10 / 100000)" },
+
+            // GCV from Proximate Analysis Group
+            { name: "GCV (from Proximate Analysis)", outputVar: "GCV", inputVars: ["Moisture", "Ash"], formula: "((154 * (100 - (Moisture + (1.1 * Ash)))) - (108 * Moisture)) / 1.8" },
+            { name: "Calculate Ash", outputVar: "Ash", inputVars: ["GCV", "Moisture"], formula: "((100 - (((GCV * 1.8) + (108 * Moisture)) / 154)) - Moisture) / 1.1" },
+            { name: "Calculate Moisture", outputVar: "Moisture", inputVars: ["Ash", "GCV"], formula: "(15400 - (169.4 * Ash) - (1.8 * GCV)) / 262" },
+
+            // GCV ARB / Eq Group
+            { name: "Calculate GCV ARB", outputVar: "GCVARB", inputVars: ["GCVEq", "TM", "EqMoisture"], formula: "(GCVEq * (100 - TM)) / (100 - EqMoisture)" },
+            { name: "Calculate GCV Eq", outputVar: "GCVEq", inputVars: ["GCVARB", "EqMoisture", "TM"], formula: "(GCVARB * (100 - EqMoisture)) / (100 - TM)" },
+            { name: "Calculate TM", outputVar: "TM", inputVars: ["GCVARB", "GCVEq", "EqMoisture"], formula: "100 - ((GCVARB / GCVEq) * (100 - EqMoisture))" },
+            { name: "Calculate Eq Moisture", outputVar: "EqMoisture", inputVars: ["GCVEq", "GCVARB", "TM"], formula: "100 - ((GCVEq / GCVARB) * (100 - TM))" },
+            
+            // Per Unit Cost
+            { name: "Calculate Per Unit Cost", outputVar: "PerUnitCost", inputVars: ["LandedCoalCost", "SHR", "GCV"], formula: "(LandedCoalCost * SHR) / (GCV * 1000)" },
+
+            // Blending & Savings
+            { name: "Calculate Savings (Coal B vs A)", outputVar: "SavingsCoalBCoalA", inputVars: ["LandedCostCoalA", "GCVCoalB", "GCVCoalA", "CoalQuantity"], formula: "LandedCostCoalA * (GCVCoalB / GCVCoalA) * CoalQuantity" },
+            { name: "Calculate Blended Coal Landed Cost", outputVar: "LandedCostBlendedCoal", inputVars: ["LandedCostCoalA", "BlendingRatio", "LandedCostCoalB"], formula: "(LandedCostCoalA * (1 - (BlendingRatio / 100))) + (LandedCostCoalB * (BlendingRatio / 100))" },
+            { name: "Calculate Blended Coal GCV", outputVar: "GCVBlendedCoal", inputVars: ["GCVCoalA", "BlendingRatio", "GCVCoalB"], formula: "(GCVCoalA * (1 - (BlendingRatio / 100))) + (GCVCoalB * (BlendingRatio / 100))" },
+            { name: "Calculate Blended Coal Energy Charges", outputVar: "EnergyChargesBlendedCoal", inputVars: ["LandedCostBlendedCoal", "SHR", "GCVBlendedCoal"], formula: "(LandedCostBlendedCoal * SHR) / (GCVBlendedCoal * 1000)" },
+            
+            // Liability & Consumption
+            { name: "Calculate Additional Financial Liability", outputVar: "AdditionalFinancialLiability", inputVars: ["ACQ", "AlternateFuel", "LandedCostAlternateFuel", "GCVAlternateFuel", "LandedCostLinkedCoal", "GCVLinkedCoal"], formula: "(ACQ * AlternateFuel) * ((LandedCostAlternateFuel * GCVAlternateFuel) - (LandedCostLinkedCoal * GCVLinkedCoal)) / 1000000000" },
+            { name: "Calculate Coal Consumption", outputVar: "CoalConsumption", inputVars: ["UnitsGenerated", "SpecificCoalConsumption"], formula: "UnitsGenerated * SpecificCoalConsumption * 10" }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const formulaModeTab = document.getElementById('formulaModeTab');
+        const valuesModeTab = document.getElementById('valuesModeTab');
+        const wtAvgModeTab = document.getElementById('wtAvgModeTab');
+        const formulaMode = document.getElementById('formulaMode');
+        const valuesMode = document.getElementById('valuesMode');
+        const wtAvgMode = document.getElementById('wtAvgMode');
+        
+        // Formula Mode Elements
+        const formulaInput = document.getElementById('formulaInput');
+        const ocrReviewMessage = document.getElementById('ocrReviewMessage');
+        const generateFieldsBtn = document.getElementById('generateFieldsBtn');
+        const formulaCalculatorWrapper = document.getElementById('formulaCalculatorWrapper');
+        const inputFieldsContainer = document.getElementById('inputFieldsContainer');
+        const calculateFormulaBtn = document.getElementById('calculateFormulaBtn');
+        const explainFormulaBtn = document.getElementById('explainFormulaBtn');
+        const cameraBtnFormula = document.getElementById('cameraBtnFormula');
+        const imageInputFormula = document.getElementById('imageInputFormula');
+
+        // Values Mode Elements
+        const valuesInput = document.getElementById('valuesInput');
+        const calculateValuesBtn = document.getElementById('calculateValuesBtn');
+        const cameraBtnValues = document.getElementById('cameraBtnValues');
+        const imageInputValues = document.getElementById('imageInputValues');
+
+        // Wt. Avg. Mode Elements
+        const wtAvgTable = document.getElementById('wtAvgTable');
+        const addRowBtn = document.getElementById('addRowBtn');
+        const addColumnBtn = document.getElementById('addColumnBtn');
+        const removeColumnBtn = document.getElementById('removeColumnBtn');
+        const analyzeBlendBtn = document.getElementById('analyzeBlendBtn');
+        const blendAnalysisResult = document.getElementById('blendAnalysisResult');
+
+        // Universal Elements
+        const resultContainer = document.getElementById('resultContainer');
+        const resultHeader = document.getElementById('resultHeader');
+        const resultDetails = document.getElementById('resultDetails');
+        const resultOutput = document.getElementById('resultOutput');
+        const errorMessage = document.getElementById('errorMessage');
+        const aiProgressModal = document.getElementById('aiProgressModal');
+        const aiModalTitle = document.getElementById('aiModalTitle');
+        const aiModalStatus = document.getElementById('aiModalStatus');
+
+        // --- STATE VARIABLES ---
+        let currentFormula = '';
+        let formulaModeVariables = [];
+        let formulaModeOutputVariable = null;
+        let formulaModeResultState = { header: '', details: '', output: '', error: '', outputVisible: true, containerVisible: false };
+        let valuesModeResultState = { header: '', details: '', output: '', error: '', outputVisible: true, containerVisible: false };
+
+
+        // --- TAB SWITCHING LOGIC ---
+        function setActiveTab(activeTab) {
+            const tabs = [formulaModeTab, valuesModeTab, wtAvgModeTab];
+            const modes = [formulaMode, valuesMode, wtAvgMode];
+            
+            tabs.forEach((tab, index) => {
+                if (tab === activeTab) {
+                    tab.classList.add('active');
+                    modes[index].classList.remove('hidden');
+                } else {
+                    tab.classList.remove('active');
+                    modes[index].classList.add('hidden');
+                }
+            });
+        }
+        
+        formulaModeTab.addEventListener('click', () => {
+            setActiveTab(formulaModeTab);
+            restoreResultState(formulaModeResultState);
+        });
+
+        valuesModeTab.addEventListener('click', () => {
+            formulaModeResultState = {
+                header: resultHeader.textContent, details: resultDetails.innerHTML, output: resultOutput.textContent,
+                error: errorMessage.textContent, outputVisible: !resultOutput.classList.contains('hidden'), containerVisible: !resultContainer.classList.contains('hidden')
+            };
+            setActiveTab(valuesModeTab);
+            restoreResultState(valuesModeResultState);
+        });
+
+        wtAvgModeTab.addEventListener('click', () => {
+             // Save state of whatever tab was active
+            if (!formulaMode.classList.contains('hidden')) {
+                formulaModeResultState = {
+                    header: resultHeader.textContent, details: resultDetails.innerHTML, output: resultOutput.textContent,
+                    error: errorMessage.textContent, outputVisible: !resultOutput.classList.contains('hidden'), containerVisible: !resultContainer.classList.contains('hidden')
+                };
+            } else if (!valuesMode.classList.contains('hidden')) {
+                 valuesModeResultState = {
+                    header: resultHeader.textContent, details: resultDetails.innerHTML, output: resultOutput.textContent,
+                    error: errorMessage.textContent, outputVisible: !resultOutput.classList.contains('hidden'), containerVisible: !resultContainer.classList.contains('hidden')
+                };
+            }
+            setActiveTab(wtAvgModeTab);
+            resultContainer.classList.add('hidden'); // Wt Avg tab doesn't use the universal result container
+        });
+
+        // --- GEMINI API FUNCTION ---
+        async function callGeminiAPI(prompt) {
+            aiModalTitle.textContent = '✨ Calling Gemini...';
+            aiModalStatus.textContent = 'Generating insights, please wait.';
+            aiProgressModal.classList.remove('hidden', 'opacity-0');
+
+            const apiKey = ""; // This will be handled by the execution environment.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) {
+                    throw new Error("No content received from Gemini API.");
+                }
+                return text;
+
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                return `Error: Could not get a response. ${error.message}`;
+            } finally {
+                aiProgressModal.classList.add('opacity-0');
+                setTimeout(() => aiProgressModal.classList.add('hidden'), 300);
+            }
+        }
+
+
+        // --- OCR GENERIC FUNCTION ---
+        async function preprocessImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imageData.data;
+                        for (let i = 0; i < data.length; i += 4) {
+                            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                            let val = avg > 128 ? 255 : 0;
+                            data[i] = val; data[i + 1] = val; data[i + 2] = val;
+                        }
+                        ctx.putImageData(imageData, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    }
+                    img.onerror = reject;
+                    img.src = event.target.result;
+                }
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function performOCR(file, targetTextarea, callback) {
+            if (!file) return;
+            aiModalTitle.textContent = 'Processing Image...';
+            aiProgressModal.classList.remove('hidden', 'opacity-0');
+            try {
+                aiModalStatus.textContent = "Pre-processing image for better accuracy...";
+                const processedImage = await preprocessImage(file);
+                const whitelist = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=?!@#$%^&\'":<>,.~/+-*()[]{} ';
+                
+                const { data: { text } } = await Tesseract.recognize(processedImage, 'eng', {
+                    tessedit_char_whitelist: whitelist,
+                    logger: m => aiModalStatus.textContent = m.status === 'recognizing text' ? `Recognizing... ${Math.round(m.progress * 100)}%` : m.status
+                });
+
+                targetTextarea.value = text;
+                if (callback) callback();
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred during OCR processing.');
+            } finally {
+                aiProgressModal.classList.add('opacity-0');
+                setTimeout(() => aiProgressModal.classList.add('hidden'), 300);
+            }
+        }
+
+        // --- FORMULA MODE LOGIC ---
+        cameraBtnFormula.addEventListener('click', () => imageInputFormula.click());
+        imageInputFormula.addEventListener('change', (e) => {
+            performOCR(e.target.files[0], formulaInput, () => {
+                ocrReviewMessage.textContent = "OCR complete. Please review and correct the formula, then click 'Generate Input Fields'.";
+                ocrReviewMessage.classList.remove('hidden');
+                setTimeout(() => ocrReviewMessage.classList.add('hidden'), 7000);
+            });
+            e.target.value = null;
+        });
+
+        generateFieldsBtn.addEventListener('click', () => {
+            formulaModeResultState = { header: '', details: '', output: '', error: '', outputVisible: true, containerVisible: false };
+            resultContainer.classList.add('hidden');
+            currentFormula = formulaInput.value;
+            if (!currentFormula.trim()) return alert('Please enter a formula.');
+
+            const mathKeywords = ['PI', 'E', 'sqrt', 'abs', 'sin', 'cos', 'tan', 'log', 'pow', 'max', 'min'];
+            const operators = ['+', '-', '*', '/', '=', '(', ')', '{', '}', '[', ']'];
+            const delimiterRegex = /([+\-*/=()\[\]{}])/;
+            const parts = currentFormula.split(delimiterRegex);
+            const foundVariables = [];
+
+            parts.forEach(part => {
+                const trimmedPart = part.trim();
+                if (!trimmedPart || operators.includes(trimmedPart) || !isNaN(parseFloat(trimmedPart)) && isFinite(trimmedPart) || mathKeywords.find(kw => kw.toLowerCase() === trimmedPart.toLowerCase())) return;
+                foundVariables.push(trimmedPart);
+            });
+
+            const allFound = foundVariables;
+
+            if (allFound.length === 0) {
+                 return alert('Could not find any variables in the formula.');
+            }
+            
+            const uniqueVariables = [...new Set(allFound)];
+            const assignmentParts = currentFormula.split('=');
+            formulaModeOutputVariable = null;
+            if (assignmentParts.length > 1) {
+                const potentialOutput = assignmentParts[0].trim();
+                if (uniqueVariables.includes(potentialOutput)) {
+                    formulaModeOutputVariable = potentialOutput;
+                }
+            }
+            
+            formulaModeVariables = uniqueVariables.filter(v => v !== formulaModeOutputVariable);
+
+            if (formulaModeVariables.length === 0 && !formulaModeOutputVariable) {
+                 formulaModeVariables = uniqueVariables;
+            } else if (formulaModeVariables.length === 0) {
+                return alert('Could not find any input variables in the formula.');
+            }
+
+            inputFieldsContainer.innerHTML = '';
+            formulaModeVariables.forEach(variable => {
+                inputFieldsContainer.innerHTML += `
+                    <div class="fade-in">
+                        <label for="input-${variable}" class="block text-sm font-medium text-gray-700 mb-2 capitalize">${variable}</label>
+                        <input type="number" min="0" id="input-${variable}" data-variable="${variable}" placeholder="Enter value for ${variable}" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
+                    </div>`;
+            });
+            formulaCalculatorWrapper.classList.remove('hidden');
+            formulaCalculatorWrapper.classList.add('fade-in');
+        });
+
+        calculateFormulaBtn.addEventListener('click', () => {
+            let formulaToEvaluate = formulaModeOutputVariable ? currentFormula.substring(currentFormula.indexOf('=') + 1) : currentFormula;
+            formulaToEvaluate = normalizeFormula(formulaToEvaluate);
+            try {
+                let allInputsValid = true;
+                formulaModeVariables.forEach(variable => {
+                    const value = document.getElementById(`input-${variable}`).value;
+                    if (value === '') allInputsValid = false;
+                    const escapedVariable = variable.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    formulaToEvaluate = formulaToEvaluate.replace(new RegExp(escapedVariable, 'g'), value);
+                });
+
+                if (!allInputsValid) throw new Error('Please fill in all input fields.');
+                if (/[^0-9\.\+\-\*\/\(\)\s]/.test(formulaToEvaluate)) throw new Error('Invalid characters or unrecognized variables in formula.');
+
+                const result = new Function(`return ${formulaToEvaluate}`)();
+                if (isNaN(result) || !isFinite(result)) throw new Error('Calculation resulted in an invalid number.');
+
+                displayResult({
+                    header: `Result for ${formulaModeOutputVariable || 'Formula'}`,
+                    output: result,
+                    details: `<p><strong>Formula:</strong> <code>${currentFormula}</code></p>`
+                });
+            } catch (error) {
+                displayError(error.message);
+            }
+        });
+        
+        explainFormulaBtn.addEventListener('click', async () => {
+            const formula = formulaInput.value;
+            if (!formula.trim()) {
+                alert("Please enter a formula to explain.");
+                return;
+            }
+            const prompt = `You are an expert in thermal power plant operations. Explain the following formula in a simple and concise way. Describe what each variable likely represents and the formula's practical application in the context of coal-based power generation. Format your response clearly.\n\nFormula: ${formula}`;
+            const explanation = await callGeminiAPI(prompt);
+            displayInfo({
+                header: '✨ AI Formula Explanation',
+                details: `<div class="gemini-response">${explanation}</div>`
+            });
+        });
+
+        // --- VALUES MODE LOGIC ---
+        cameraBtnValues.addEventListener('click', () => imageInputValues.click());
+        imageInputValues.addEventListener('change', (e) => {
+            performOCR(e.target.files[0], valuesInput);
+            e.target.value = null;
+        });
+
+        calculateValuesBtn.addEventListener('click', () => {
+            const text = valuesInput.value;
+            if (!text.trim()) return alert('Please enter your values.');
+            try {
+                const { inputs, outputVar } = parseValuesText(text);
+
+                if (!outputVar) {
+                    throw new Error("Could not determine a variable to look up or calculate. Use '?' (e.g., GCV = ?).");
+                }
+
+                if (Object.keys(inputs).length === 0) {
+                    const formulasForOutput = formulaStore.filter(f => f.outputVar.toLowerCase().includes(outputVar));
+                    if (formulasForOutput.length === 0) {
+                        throw new Error(`No formulas found where output contains '${outputVar}'.`);
+                    }
+                    const formulasHtml = formulasForOutput.map(f => `
+                        <div class="p-3 mb-3 border rounded-lg bg-white shadow-sm">
+                            <p class="font-semibold text-gray-800">${f.name}</p>
+                            <code class="block text-sm text-blue-800 bg-blue-50 p-2 mt-2 rounded">${f.outputVar} = ${f.formula}</code>
+                            <p class="text-xs mt-2 text-gray-600"><strong>Requires:</strong> ${f.inputVars.join(', ')}</p>
+                        </div>`).join('');
+                    displayInfo({ header: `Available Formulas for ${outputVar.toUpperCase()}`, details: formulasHtml });
+                    return;
+                }
+
+                const providedInputKeys = Object.keys(inputs);
+                const matchingFormula = findFormula(outputVar, providedInputKeys);
+
+                if (!matchingFormula) {
+                    const potentialFormulas = formulaStore.filter(f => f.outputVar.toLowerCase() === outputVar);
+                    if (potentialFormulas.length > 0) {
+                        const missingVars = potentialFormulas[0].inputVars.filter(v => !providedInputKeys.includes(v.toLowerCase()));
+                        throw new Error(`No formula found. You might be missing: ${missingVars.join(', ')}`);
+                    }
+                    throw new Error(`No formula found to calculate '${outputVar}' with the provided inputs.`);
+                }
+                let formulaToEvaluate = matchingFormula.formula;
+                matchingFormula.inputVars.forEach(varName => {
+                    const inputKey = varName.replace(/\s+/g, '').toLowerCase();
+                    const replacementValue = inputs[inputKey];
+                    formulaToEvaluate = formulaToEvaluate.replace(new RegExp(varName, 'g'), replacementValue);
+                });
+                const result = new Function(`return ${formulaToEvaluate}`)();
+                if (isNaN(result) || !isFinite(result)) throw new Error('Calculation with found formula failed.');
+                const inputsHtml = Object.entries(inputs).map(([key, val]) => {
+                     const originalVar = matchingFormula.inputVars.find(iv => iv.replace(/\s+/g, '').toLowerCase() === key) || key;
+                    return `<li><strong>${originalVar}:</strong> ${val}</li>`
+                }).join('');
+                displayResult({ header: `Calculated ${matchingFormula.outputVar}`, output: result, details: `...` });
+            } catch (error) {
+                displayError(error.message);
+            }
+        });
+
+        function parseValuesText(text) {
+            const inputs = {};
+            let outputVar = null;
+            const lines = text.split(/,|\n/).filter(line => line.trim());
+            lines.forEach(line => {
+                if (line.includes('=')) {
+                    const parts = line.split('=');
+                    const varName = parts[0].trim();
+                    const varKey = varName.replace(/\s+/g, '').toLowerCase();
+                    const value = parts[1].trim();
+                    if (value === '?') {
+                        outputVar = varKey;
+                    } else if (value !== '' && !isNaN(parseFloat(value)) && isFinite(value)) {
+                        inputs[varKey] = parseFloat(value);
+                    }
+                }
+            });
+            return { inputs, outputVar };
+        }
+
+        function findFormula(outputVar, providedInputKeys) {
+            return formulaStore.find(f => {
+                if (f.outputVar.toLowerCase() !== outputVar) return false;
+                const requiredInputs = f.inputVars.map(v => v.replace(/\s+/g, '').toLowerCase());
+                return requiredInputs.every(reqVar => providedInputKeys.includes(reqVar));
+            });
+        }
+
+        // --- WEIGHTED AVERAGE LOGIC ---
+        const wtAvgTableHead = wtAvgTable.querySelector('thead');
+        const wtAvgTableBody = wtAvgTable.querySelector('tbody');
+        const wtAvgTableFoot = wtAvgTable.querySelector('tfoot');
+        let colCount = 2; // Initial data columns
+
+        function calculateWtAvgTotals() {
+            const rows = wtAvgTableBody.querySelectorAll('tr');
+            const totalWeightCell = document.getElementById('total-weight');
+            let totalWeight = 0;
+            
+            rows.forEach(row => {
+                const weightInput = row.querySelector('.weight-input');
+                totalWeight += parseFloat(weightInput.value) || 0;
+            });
+            totalWeightCell.textContent = totalWeight.toFixed(2);
+            
+            for (let i = 1; i <= colCount; i++) {
+                const totalCell = document.getElementById(`total-col-${i}`);
+                let weightedSum = 0;
+                let relevantTotalWeight = 0;
+
+                rows.forEach(row => {
+                    const weight = parseFloat(row.querySelector('.weight-input').value) || 0;
+                    const val = parseFloat(row.querySelector(`.col-${i}-input`).value) || 0;
+                    
+                    if (val !== 0) {
+                        weightedSum += val * weight;
+                        relevantTotalWeight += weight;
+                    }
+                });
+
+                const weightedAverage = relevantTotalWeight > 0 ? weightedSum / relevantTotalWeight : 0;
+                totalCell.textContent = weightedAverage.toFixed(2);
+            }
+        }
+
+        function renderWtAvgTable() {
+            // Header
+            let headerHTML = '<tr>';
+            headerHTML += '<th class="p-3 text-left text-xs font-semibold uppercase tracking-wider border border-style">Name</th>';
+            headerHTML += '<th class="p-3 text-center text-xs font-semibold uppercase tracking-wider border border-style">Weight</th>';
+            for (let i = 1; i <= colCount; i++) {
+                headerHTML += `<th class="p-3 text-center text-xs font-semibold uppercase tracking-wider border border-style"><input type="text" value="Col ${i}" class="table-header-input col-header-${i}"></th>`;
+            }
+            headerHTML += '<th class="p-3 border border-style"></th></tr>'; // For delete buttons
+            wtAvgTableHead.innerHTML = headerHTML;
+
+            // Footer
+            let footerHTML = '<tr>';
+            footerHTML += '<td class="p-3 border border-style">Total/WtAv</td>';
+            footerHTML += `<td id="total-weight" class="p-3 text-right border border-style">0.00</td>`;
+            for (let i = 1; i <= colCount; i++) {
+                footerHTML += `<td id="total-col-${i}" class="p-3 text-right border border-style">0.00</td>`;
+            }
+            footerHTML += '<td class="border border-style"></td></tr>';
+            wtAvgTableFoot.innerHTML = footerHTML;
+            
+            for (let i = 1; i <= colCount; i++) {
+                 wtAvgTableHead.querySelector(`.col-header-${i}`).addEventListener('change', calculateWtAvgTotals);
+            }
+        }
+
+        function createWtAvgRow() {
+            const row = document.createElement('tr');
+            let rowHTML = `
+                <td class="p-2 border border-style"><input type="text" class="table-input" style="text-align: left;" placeholder="Component Name"></td>
+                <td class="p-2 border border-style"><input type="number" min="0" class="table-input weight-input" value="0"></td>`;
+            for (let i = 1; i <= colCount; i++) {
+                rowHTML += `<td class="p-2 border border-style"><input type="number" min="0" class="table-input col-${i}-input" value="0"></td>`;
+            }
+            rowHTML += `<td class="p-2 text-center border border-style"><button class="text-red-500 hover:text-red-700 delete-row-btn">&times;</button></td>`;
+            row.innerHTML = rowHTML;
+            
+            row.querySelectorAll('input').forEach(input => input.addEventListener('input', calculateWtAvgTotals));
+            row.querySelector('.delete-row-btn').addEventListener('click', () => {
+                row.remove();
+                calculateWtAvgTotals();
+            });
+            return row;
+        }
+
+        addRowBtn.addEventListener('click', () => {
+            wtAvgTableBody.appendChild(createWtAvgRow());
+        });
+
+        addColumnBtn.addEventListener('click', () => {
+            colCount++;
+            renderWtAvgTable();
+            const existingRows = Array.from(wtAvgTableBody.querySelectorAll('tr'));
+            wtAvgTableBody.innerHTML = '';
+            existingRows.forEach(oldRow => {
+                const newRow = createWtAvgRow();
+                newRow.querySelector('td:nth-child(1) input').value = oldRow.querySelector('td:nth-child(1) input').value;
+                newRow.querySelector('.weight-input').value = oldRow.querySelector('.weight-input').value;
+                for (let i = 1; i < colCount; i++) {
+                    const oldInput = oldRow.querySelector(`.col-${i}-input`);
+                    if(oldInput) newRow.querySelector(`.col-${i}-input`).value = oldInput.value;
+                }
+                wtAvgTableBody.appendChild(newRow);
+            });
+            calculateWtAvgTotals();
+        });
+
+        removeColumnBtn.addEventListener('click', () => {
+            if (colCount <= 1) {
+                alert("At least one data column is required.");
+                return;
+            }
+
+            const existingRows = Array.from(wtAvgTableBody.querySelectorAll('tr'));
+            const data = existingRows.map(row => {
+                const rowData = {
+                    name: row.querySelector('td:nth-child(1) input').value,
+                    weight: row.querySelector('.weight-input').value,
+                    values: []
+                };
+                for (let i = 1; i < colCount; i++) {
+                    rowData.values.push(row.querySelector(`.col-${i}-input`).value);
+                }
+                return rowData;
+            });
+
+            colCount--;
+            renderWtAvgTable();
+
+            wtAvgTableBody.innerHTML = '';
+            data.forEach(rowData => {
+                const newRow = createWtAvgRow();
+                newRow.querySelector('td:nth-child(1) input').value = rowData.name;
+                newRow.querySelector('.weight-input').value = rowData.weight;
+                rowData.values.forEach((val, index) => {
+                    newRow.querySelector(`.col-${index + 1}-input`).value = val;
+                });
+                wtAvgTableBody.appendChild(newRow);
+            });
+            calculateWtAvgTotals();
+        });
+        
+        analyzeBlendBtn.addEventListener('click', async () => {
+            const headers = Array.from(wtAvgTableHead.querySelectorAll('.table-header-input')).map(input => input.value);
+            const totals = Array.from(wtAvgTableFoot.querySelectorAll('td')).slice(2, -1).map(td => td.textContent);
+            
+            if (totals.length === 0) {
+                alert("Please add some data to analyze.");
+                return;
+            }
+
+            let blendDataString = "Here are the weighted average properties of a coal blend:\n";
+            headers.forEach((header, index) => {
+                blendDataString += `- ${header}: ${totals[index]}\n`;
+            });
+
+            const prompt = `You are a senior analyst at a thermal power plant. Analyze the following coal blend based on its weighted average properties. Provide a concise summary of its quality, potential operational impacts (e.g., on boiler efficiency, slagging, emissions), and one actionable recommendation for improvement. Format your response clearly with headings.\n\n${blendDataString}`;
+
+            const analysis = await callGeminiAPI(prompt);
+            blendAnalysisResult.innerHTML = `<h3 class="text-lg font-semibold mb-2">✨ AI Blend Analysis</h3><div class="gemini-response">${analysis}</div>`;
+            blendAnalysisResult.classList.remove('hidden');
+        });
+
+        // Initialize Wt. Avg. Table
+        renderWtAvgTable();
+        wtAvgTableBody.appendChild(createWtAvgRow());
+        wtAvgTableBody.appendChild(createWtAvgRow());
+        calculateWtAvgTotals();
+
+        // --- UTILITY & DISPLAY FUNCTIONS ---
+        function normalizeFormula(formula) {
+            return formula.replace(/×/g, '*').replace(/÷/g, '/').replace(/[\[\{]/g, '(').replace(/[\]\}]/g, ')');
+        }
+
+        function displayResult({ header, output, details = '' }) {
+            resultHeader.textContent = header;
+            resultOutput.textContent = output.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+            resultDetails.innerHTML = details;
+            errorMessage.textContent = '';
+            resultOutput.classList.remove('hidden');
+            resultContainer.classList.remove('hidden');
+            const state = { header, details, output: resultOutput.textContent, error: '', outputVisible: true, containerVisible: true };
+            if (!formulaMode.classList.contains('hidden')) formulaModeResultState = state; else valuesModeResultState = state;
+        }
+
+        function displayError(message) {
+            resultHeader.textContent = 'Error';
+            resultOutput.textContent = '—';
+            resultDetails.innerHTML = '';
+            errorMessage.textContent = message;
+            resultOutput.classList.remove('hidden');
+            resultContainer.classList.remove('hidden');
+            const state = { header: 'Error', details: '', output: '—', error: message, outputVisible: true, containerVisible: true };
+            if (!formulaMode.classList.contains('hidden')) formulaModeResultState = state; else valuesModeResultState = state;
+        }
+
+        function displayInfo({ header, details }) {
+            resultHeader.textContent = header;
+            resultDetails.innerHTML = details;
+            errorMessage.textContent = '';
+            resultOutput.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            const state = { header, details, output: '', error: '', outputVisible: false, containerVisible: true };
+            if (!formulaMode.classList.contains('hidden')) formulaModeResultState = state; else valuesModeResultState = state;
+        }
+
+        function restoreResultState(state) {
+            resultHeader.textContent = state.header;
+            resultDetails.innerHTML = state.details;
+            resultOutput.textContent = state.output;
+            errorMessage.textContent = state.error;
+            if (state.containerVisible) resultContainer.classList.remove('hidden'); else resultContainer.classList.add('hidden');
+            if (state.outputVisible) resultOutput.classList.remove('hidden'); else resultOutput.classList.add('hidden');
+        }
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = currentTheme === 'dark' ? 'dark-theme min-h-screen flex flex-col p-2 sm:p-4 overflow-x-hidden' : 'light-theme min-h-screen flex flex-col p-2 sm:p-4 overflow-x-hidden';
+        
+        // Update toggle button based on current theme
+        function updateThemeToggle() {
+            if (document.body.classList.contains('dark-theme')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+        
+        // Initialize theme toggle
+        updateThemeToggle();
+        
+        // Theme toggle event listener
+        themeToggle.addEventListener('click', () => {
+            const isDarkMode = document.body.classList.contains('dark-theme');
+            
+            if (isDarkMode) {
+                document.body.className = 'light-theme min-h-screen flex flex-col p-2 sm:p-4 overflow-x-hidden';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.className = 'dark-theme min-h-screen flex flex-col p-2 sm:p-4 overflow-x-hidden';
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            updateThemeToggle();
+        });
+        
+        // Back Button Functionality
+        function goBack() {
+           // Try to go back to parent window if opened from main app
+    if (window.opener && !window.opener.closed) {
+        try {
+            // If opened from main app, switch focus back and close this tab
+            window.opener.focus();
+            // Call function to show calculators page in parent window
+            if (typeof window.opener.showCalculatorsPage === 'function') {
+                window.opener.showCalculatorsPage();
+            }
+            window.close();
+        } catch (e) {
+            // If cross-origin or other security issues, fallback to alert
+            alert('Please use the browser back button or close this tab to return to the main application.');
+        }
+    } else {
+        // If no parent window, try to navigate to main app
+        try {
+            window.location.href = 'index.html#calculators';    
+        } catch (e) {
+            alert('Please use the browser back button to return to the main application.');
+        }
+    }
+        }
+        
+        // Apply theme classes to all inputs and elements
+        function applyThemeToElements() {
+            const inputs = document.querySelectorAll('input, textarea, select');
+            const tables = document.querySelectorAll('table');
+            
+            inputs.forEach(input => {
+                input.classList.add('input-field');
+            });
+        }
+        
+        // Initialize theme for existing elements
+        applyThemeToElements();
+        
+        // Observer to apply theme to dynamically created elements
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) { // Element node
+                            const inputs = node.querySelectorAll ? node.querySelectorAll('input, textarea, select') : [];
+                            inputs.forEach(input => {
+                                input.classList.add('input-field');
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    </script>
+</body>
+</html>
+

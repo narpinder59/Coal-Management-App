@@ -370,6 +370,17 @@ function showCalculatorsPage() {
                                 <i class="bi bi-box-arrow-up-right me-1"></i>Open
                             </button>
                         </div>
+
+                        <!-- Intelligent Calculator -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-dark">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-robot text-dark me-3 fs-5"></i>
+                                <span class="fw-medium">Intelligent Calculator</span>
+                            </div>
+                            <button class="btn btn-dark btn-sm" onclick="window.open('Intelligent Calculator.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Info Footer -->
