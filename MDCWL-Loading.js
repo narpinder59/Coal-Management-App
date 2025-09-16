@@ -5,30 +5,74 @@ let mdcwlLoadingData = [];
 async function fetchMDCWLLoadingHeaders() {
     const SHEET_ID = '1cFngrabiTY-RMGDrw2eRn7Nn8LEY0IZyD0-QJT7UqTI';
     const SHEET_NAME = 'MDCWL-Loading';
-    const RANGE = 'A1:Z1'; // Expanded range to capture all headers
+    const RANGE = 'A1:Z2'; // Fetch both header rows
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
     const res = await fetch(SHEET_URL);
     const text = await res.text();
     const json = JSON.parse(text.substr(47).slice(0, -2));
     const table = json.table;
-    mdcwlLoadingHeaders = table.rows[0].c.map(cell => cell ? cell.v : "");
-    console.log("Loaded Loading Headers:", mdcwlLoadingHeaders);
+    
+    // Extract both rows
+    const row1 = table.rows[0] ? table.rows[0].c.map(cell => cell ? cell.v : "") : [];
+    const row2 = table.rows[1] ? table.rows[1].c.map(cell => cell ? cell.v : "") : [];
+    
+    // Build headers automatically
+    mdcwlLoadingHeaders = ['Date']; // First column is always Date
+    
+    // For remaining columns, combine plant name with parameter
+    for (let i = 1; i < Math.max(row1.length, row2.length); i++) {
+        const plantName = row1[i] || ''; // Current cell
+        const parameter = row2[i] || ''; // Parameter (Rake, Quantity, etc.)
+        
+        if (parameter) {
+            // If we have a parameter, use it with plant name (if available)
+            if (plantName) {
+                mdcwlLoadingHeaders.push(`${plantName} ${parameter}`);
+            } else {
+                // If no plant name in current cell, find the most recent plant name
+                let lastPlantName = '';
+                for (let j = i - 1; j >= 1; j--) {
+                    if (row1[j] && row1[j].trim() !== '') {
+                        lastPlantName = row1[j];
+                        break;
+                    }
+                }
+                mdcwlLoadingHeaders.push(lastPlantName ? `${lastPlantName} ${parameter}` : parameter);
+            }
+        } else {
+            // If no parameter, just use plant name or create generic column
+            mdcwlLoadingHeaders.push(plantName || `Column${i}`);
+        }
+    }
+    
+    console.log("Auto-generated Headers:", mdcwlLoadingHeaders);
 }
 
 // Fetch data from Google Sheets
 async function fetchMDCWLLoadingData() {
     const SHEET_ID = '1cFngrabiTY-RMGDrw2eRn7Nn8LEY0IZyD0-QJT7UqTI';
     const SHEET_NAME = 'MDCWL-Loading';
-    const RANGE = 'A2:Z1000'; // Start from row 2 to skip headers
+    const RANGE = 'A3:Z1000'; // Start from row 3 to skip both header rows
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
     const res = await fetch(SHEET_URL);
     const text = await res.text();
     const json = JSON.parse(text.substr(47).slice(0, -2));
     const table = json.table;
+    
+    console.log("Raw table rows from Google Sheets:", table.rows);
+    
+    // More permissive filtering - only skip completely empty rows
     mdcwlLoadingData = table.rows
-        .filter(row => row.c && row.c[0] && row.c[0].v) // skip empty rows
+        .filter(row => {
+            // Check if row exists and has any data in any cell
+            if (!row || !row.c) return false;
+            
+            // Check if at least one cell has data
+            return row.c.some(cell => cell && cell.v !== null && cell.v !== undefined && cell.v !== '');
+        })
         .map(row => row.c.map(cell => cell ? cell.v : ""));
-    console.log("Loaded Loading Data:", mdcwlLoadingData);
+    
+    console.log("Loaded", mdcwlLoadingData.length, "data rows");
 }
 
 function showMDCWLLoadingReport() {
@@ -141,27 +185,36 @@ function mdcwlLoadingToggleCard(bodyId, chevronId) {
 }
 
 function renderMDCWLLoadingFilters() {
-    // Get unique dates and find date range
-    const dateIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('date'));
-    const dates = [...new Set(mdcwlLoadingData.map(row => row[dateIdx]).filter(Boolean))];
+    // Get unique dates from the data (first column is always date)
+    const dates = [...new Set(mdcwlLoadingData.map(row => row[0]).filter(Boolean))];
     dates.sort((a, b) => parseDate(a) - parseDate(b));
     
     if (dates.length > 0) {
         const startDate = document.getElementById('mdcwlStartDate');
         const endDate = document.getElementById('mdcwlEndDate');
         
-        // Convert first and last dates to YYYY-MM-DD format for date inputs
+        // Get first and last dates
         const firstDate = parseDate(dates[0]);
         const lastDate = parseDate(dates[dates.length - 1]);
         
-        startDate.value = firstDate.toISOString().split('T')[0];
-        endDate.value = lastDate.toISOString().split('T')[0];
+        // Simple date formatting to avoid timezone issues
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
         
-        // Set min and max dates to prevent selection outside data range
-        startDate.min = firstDate.toISOString().split('T')[0];
-        startDate.max = lastDate.toISOString().split('T')[0];
-        endDate.min = firstDate.toISOString().split('T')[0];
-        endDate.max = lastDate.toISOString().split('T')[0];
+        const firstDateStr = formatDate(firstDate);
+        const lastDateStr = formatDate(lastDate);
+        
+        // Set the date inputs
+        startDate.value = firstDateStr;
+        endDate.value = lastDateStr;
+        startDate.min = firstDateStr;
+        startDate.max = lastDateStr;
+        endDate.min = firstDateStr;
+        endDate.max = lastDateStr;
     }
 }
 
@@ -251,6 +304,7 @@ function parseDate(dateStr) {
         const [day, month, year] = dateStr.split('/').map(Number);
         return new Date(year, month - 1, day);
     }
+    // Handle other formats
     return new Date(dateStr);
 }
 
@@ -285,23 +339,20 @@ function renderMDCWLLoadingTable() {
     const consolidate = document.getElementById('mdcwlConsolidateMonth').checked;
     const consolidateFY = document.getElementById('mdcwlConsolidateFY').checked;
 
-    // Convert date picker values to Date objects for comparison
-    const startDateObj = new Date(startDateInput);
-    const endDateObj = new Date(endDateInput);
+    // Convert date picker values to Date objects for comparison (ensure local timezone)
+    const startDateObj = new Date(startDateInput + 'T00:00:00');
+    const endDateObj = new Date(endDateInput + 'T23:59:59');
 
-    // Find column indices
-    const dateIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('date'));
-    const ggsstpIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('ggsstp'));
-    const ghtpIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('ghtp'));
-    const totalIdx = mdcwlLoadingHeaders.findIndex(h => h.toLowerCase().includes('total'));
+    // Find date column (always first column)
+    const dateIdx = 0;
 
-    // Filter by date range using date comparison
+    // Filter by date range
     let filtered = mdcwlLoadingData.filter(row => {
         const rowDate = parseDate(row[dateIdx]);
         return rowDate >= startDateObj && rowDate <= endDateObj;
     });
 
-    // Consolidate by FY if checked (takes priority over monthly consolidation)
+    // Consolidate by FY if checked
     if (consolidateFY) {
         const grouped = {};
         filtered.forEach(row => {
@@ -311,15 +362,14 @@ function renderMDCWLLoadingTable() {
                 grouped[fyKey][dateIdx] = fyKey;
             }
             // Sum all numeric columns except the date column
-            for (let i = 0; i < mdcwlLoadingHeaders.length; i++) {
-                if (i !== dateIdx && !isNaN(Number(row[i]))) {
-                    grouped[fyKey][i] = (Number(grouped[fyKey][i]) || 0) + (Number(row[i]) || 0);
-                }
+            for (let i = 1; i < mdcwlLoadingHeaders.length; i++) {
+                const value = Number(row[i]) || 0;
+                grouped[fyKey][i] = (Number(grouped[fyKey][i]) || 0) + value;
             }
         });
         filtered = Object.values(grouped);
     } else if (consolidate) {
-        // Consolidate by month if checked and FY is not checked
+        // Consolidate by month
         const grouped = {};
         filtered.forEach(row => {
             const monthKey = getMonthYearFromDate(row[dateIdx]);
@@ -328,42 +378,34 @@ function renderMDCWLLoadingTable() {
                 grouped[monthKey][dateIdx] = monthKey;
             }
             // Sum all numeric columns except the date column
-            for (let i = 0; i < mdcwlLoadingHeaders.length; i++) {
-                if (i !== dateIdx && !isNaN(Number(row[i]))) {
-                    grouped[monthKey][i] = (Number(grouped[monthKey][i]) || 0) + (Number(row[i]) || 0);
-                }
+            for (let i = 1; i < mdcwlLoadingHeaders.length; i++) {
+                const value = Number(row[i]) || 0;
+                grouped[monthKey][i] = (Number(grouped[monthKey][i]) || 0) + value;
             }
         });
         filtered = Object.values(grouped);
     }
 
-    // Calculate totals
-    let totalGGSSTP = 0, totalGHTP = 0, totalTotal = 0;
+    // Calculate totals for all numeric columns
+    const columnTotals = Array(mdcwlLoadingHeaders.length).fill(0);
     filtered.forEach(row => {
-        totalGGSSTP += Number(row[ggsstpIdx]) || 0;
-        totalGHTP += Number(row[ghtpIdx]) || 0;
-        totalTotal += Number(row[totalIdx]) || 0;
+        for (let i = 1; i < mdcwlLoadingHeaders.length; i++) {
+            columnTotals[i] += Number(row[i]) || 0;
+        }
     });
 
-    // Create table headers dynamically - show all headers
-    const visibleHeaders = mdcwlLoadingHeaders.filter(h => h && h.trim() !== '');
-    const visibleIndices = mdcwlLoadingHeaders.map((h, idx) => h && h.trim() !== '' ? idx : -1).filter(idx => idx !== -1);
-
-    // Table headers
+    // Create table HTML
     let html = `<div class="table-responsive" style="max-height: 70vh; overflow: auto;">
 <table class="table table-sm table-bordered table-striped align-middle mdcwl-loading-data-table">
         <thead class="table-primary">
             <tr>
-                ${visibleHeaders.map((h, index) => {
-                    // If consolidating by FY and this is the Date column, show "FY"
-                    if (consolidateFY && h.toLowerCase().includes('date')) {
-                        return `<th class="${index === 0 ? 'sticky-col' : ''}">FY</th>`;
+                ${mdcwlLoadingHeaders.map((header, index) => {
+                    if (consolidateFY && index === 0) {
+                        return `<th class="sticky-col">FY</th>`;
+                    } else if (consolidate && index === 0) {
+                        return `<th class="sticky-col">Month-Year</th>`;
                     }
-                    // If consolidating by Month and this is the Date column, show "Month-Year"
-                    if (consolidate && h.toLowerCase().includes('date')) {
-                        return `<th class="${index === 0 ? 'sticky-col' : ''}">Month-Year</th>`;
-                    }
-                    return `<th class="${index === 0 ? 'sticky-col' : ''}">${h}</th>`;
+                    return `<th class="${index === 0 ? 'sticky-col' : ''}">${header}</th>`;
                 }).join('')}
             </tr>
         </thead>
@@ -371,62 +413,50 @@ function renderMDCWLLoadingTable() {
     `;
     
     if (filtered.length) {
+        // Data rows
         filtered.forEach(row => {
             html += `<tr>`;
-            visibleIndices.forEach((idx, colIndex) => {
+            mdcwlLoadingHeaders.forEach((header, idx) => {
                 let val = row[idx] || '';
-                if (idx === dateIdx) {
-                    if (consolidateFY) {
-                        val = val; // Already formatted as "FY YYYY-YY"
+                if (idx === 0) {
+                    // Date column
+                    if (consolidateFY || consolidate) {
+                        val = val; // Already formatted
                     } else {
                         val = formatDateDMY(val);
                     }
-                } else if (idx === ggsstpIdx || idx === ghtpIdx || idx === totalIdx) {
+                } else {
+                    // Numeric columns
                     val = Number(val) || 0;
                 }
-                const cellClass = colIndex === 0 ? 'sticky-col' : '';
+                const cellClass = idx === 0 ? 'sticky-col' : '';
                 html += `<td class="${cellClass}">${val}</td>`;
             });
             html += `</tr>`;
         });
         
-        // Total Row
+        // Total row
         html += `<tr class="total-row table-primary" style="font-weight: bold;">`;
-        visibleIndices.forEach((idx, colIndex) => {
-            let val = '';
-            if (idx === dateIdx) {
-                val = 'TOTAL';
-            } else if (idx === ggsstpIdx) {
-                val = totalGGSSTP;
-            } else if (idx === ghtpIdx) {
-                val = totalGHTP;
-            } else if (idx === totalIdx) {
-                val = totalTotal;
-            } else {
-                // For other numeric columns, calculate total
-                let colTotal = 0;
-                filtered.forEach(row => {
-                    colTotal += Number(row[idx]) || 0;
-                });
-                val = colTotal || '';
-            }
-            const cellClass = colIndex === 0 ? 'sticky-col' : '';
+        mdcwlLoadingHeaders.forEach((header, idx) => {
+            let val = idx === 0 ? 'TOTAL' : columnTotals[idx];
+            const cellClass = idx === 0 ? 'sticky-col' : '';
             html += `<th class="${cellClass}" style="font-weight: bold;">${val}</th>`;
         });
         html += `</tr>`;
     } else {
-        html += `<tr><td colspan="${visibleHeaders.length}" class="text-center">No data found.</td></tr>`;
+        html += `<tr><td colspan="${mdcwlLoadingHeaders.length}" class="text-center">No data found.</td></tr>`;
     }
+    
     html += `</tbody></table></div>`;
     
+    // Render the table
     const tableContainer = document.getElementById('mdcwl-loading-table-container');
     if (tableContainer) {
         tableContainer.innerHTML = `
-            <!-- Table Header Card -->
             <div class="pachhwara-pd-card mb-2">
                 <div class="pachhwara-pd-section-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <h6 class="mb-0"><i class="bi bi-table"></i>Data Table (Rakes)</h6>
+                        <h6 class="mb-0"><i class="bi bi-table"></i>Loading Position Data</h6>
                         <span class="badge bg-light text-dark ms-2">${filtered.length} entries</span>
                     </div>
                     <div class="d-flex gap-2">
@@ -436,14 +466,10 @@ function renderMDCWLLoadingTable() {
                     </div>
                 </div>
             </div>
-            
-            <!-- Table Outside Card -->
-            <div class="mb-3">
-                ${html}
-            </div>
+            <div class="mb-3">${html}</div>
         `;
         
-        // Add event listener for the refresh button in the table header
+        // Add refresh button functionality
         const tableRefreshBtn = document.getElementById('mdcwlLoadingTableRefreshBtn');
         if (tableRefreshBtn) {
             tableRefreshBtn.addEventListener('click', function() {

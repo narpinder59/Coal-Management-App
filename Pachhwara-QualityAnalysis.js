@@ -5,6 +5,61 @@ let PachhwaraQASortState = {
     direction: 'none' // 'none', 'asc', 'desc'
 };
 
+// Indian number formatting function with comma separation
+function formatIndianNumber(num) {
+    if (isNaN(num) || num === '' || num === null || num === undefined) return num;
+    
+    const number = parseFloat(num);
+    if (number === 0) return '0';
+    
+    // Convert to string with 2 decimal places
+    let numStr = number.toFixed(2);
+    const parts = numStr.split('.');
+    let integerPart = parts[0];
+    const decimalPart = parts[1];
+    
+    // Handle negative numbers
+    const isNegative = integerPart.startsWith('-');
+    if (isNegative) {
+        integerPart = integerPart.substring(1);
+    }
+    
+    // Apply Indian comma formatting
+    let result = '';
+    const len = integerPart.length;
+    
+    if (len <= 3) {
+        result = integerPart;
+    } else {
+        // First group from right (3 digits)
+        result = integerPart.slice(-3);
+        let remaining = integerPart.slice(0, -3);
+        
+        // Subsequent groups (2 digits each)
+        while (remaining.length > 0) {
+            if (remaining.length <= 2) {
+                result = remaining + ',' + result;
+                break;
+            } else {
+                result = remaining.slice(-2) + ',' + result;
+                remaining = remaining.slice(0, -2);
+            }
+        }
+    }
+    
+    // Add decimal part if not .00
+    if (decimalPart !== '00') {
+        result += '.' + decimalPart;
+    }
+    
+    // Add negative sign if needed
+    if (isNegative) {
+        result = '-' + result;
+    }
+    
+    return result;
+}
+
 // Plant configurations
 const PLANTS = {
     'GGSSTP': 'Pachhwara-GGSSTPanalysis',
@@ -624,8 +679,8 @@ function pachhwaraQAGenerateReportHTML(plant, startDate, endDate, stats, data) {
                         <div class="col-md-6">
                             <h6 class="mb-2">Total Weights</h6>
                             <table class="table table-striped mb-0" style="font-size: 0.75rem;">
-                                <tr><td><strong>Total Plant Weight:</strong></td><td>${formatNumber(stats.weightStats.totalPlantWeight)} MT</td></tr>
-                                <tr><td><strong>Total RR Weight:</strong></td><td>${formatNumber(stats.weightStats.totalRRWeight)} MT</td></tr>
+                                <tr><td><strong>Total Plant Weight:</strong></td><td>${formatIndianNumber(stats.weightStats.totalPlantWeight)} MT</td></tr>
+                                <tr><td><strong>Total RR Weight:</strong></td><td>${formatIndianNumber(stats.weightStats.totalRRWeight)} MT</td></tr>
                                 <tr><td><strong>Weight Difference:</strong></td><td class="${stats.weightStats.weightDifference >= 0 ? 'text-success' : 'text-danger'}">${formatNumber(stats.weightStats.weightDifference)} MT</td></tr>
                                 <tr><td><strong>Variance (%):</strong></td><td class="${Math.abs(stats.weightStats.weightDifference / stats.weightStats.totalPlantWeight * 100) <= 2 ? 'text-success' : 'text-warning'}">${formatNumber(Math.abs(stats.weightStats.weightDifference / stats.weightStats.totalPlantWeight * 100))}%</td></tr>
                             </table>
@@ -633,8 +688,8 @@ function pachhwaraQAGenerateReportHTML(plant, startDate, endDate, stats, data) {
                         <div class="col-md-6">
                             <h6 class="mb-2">Average Weights</h6>
                             <table class="table table-striped mb-0" style="font-size: 0.75rem;">
-                                <tr><td><strong>Avg Plant Weight/Rake:</strong></td><td>${formatNumber(stats.weightStats.avgPlantWeight)} MT</td></tr>
-                                <tr><td><strong>Avg RR Weight/Rake:</strong></td><td>${formatNumber(stats.weightStats.avgRRWeight)} MT</td></tr>
+                                <tr><td><strong>Avg Plant Weight/Rake:</strong></td><td>${formatIndianNumber(stats.weightStats.avgPlantWeight)} MT</td></tr>
+                                <tr><td><strong>Avg RR Weight/Rake:</strong></td><td>${formatIndianNumber(stats.weightStats.avgRRWeight)} MT</td></tr>
                                 <tr><td><strong>Total Rakes:</strong></td><td>${stats.rakeStats.totalRakes}</td></tr>
                             </table>
                         </div>
@@ -1259,7 +1314,16 @@ if (gcvEqIdx !== -1 && gcvBandEqIdx !== -1) {
                     // Handle sum columns (columns 7 and 8)
                     else if (i === 7 || i === 8) {
                         const values = finalData.map(r => parseFloat(r[i])).filter(v => !isNaN(v));
-                        if (values.length > 0) { result = values.reduce((a, b) => a + b, 0).toFixed(2); }
+                        if (values.length > 0) { 
+                            const total = values.reduce((a, b) => a + b, 0);
+                            // Check if this is a weight column that should use Indian formatting
+                            const headerName = PachhwaraQAHeaders[i].trim().toLowerCase();
+                            if (headerName.includes('weight')) {
+                                result = formatIndianNumber(total);
+                            } else {
+                                result = total.toFixed(2);
+                            }
+                        }
                     }
                     // Check for columns that should be blank in total row
                     else {

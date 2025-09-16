@@ -628,6 +628,27 @@ let PachhwaraPDSortState = {
     direction: 'none' // 'none', 'asc', 'desc'
 };
 
+// Function to format numbers in Indian style (lakhs/crores)
+function formatIndianNumber(num) {
+    if (isNaN(num) || num === 0) return '0';
+    
+    const absNum = Math.abs(num);
+    const sign = num < 0 ? '-' : '';
+    
+    if (absNum >= 10000000) { // 1 crore and above
+        const crores = (absNum / 10000000).toFixed(2);
+        return `${sign}${crores} Cr`;
+    } else if (absNum >= 100000) { // 1 lakh and above
+        const lakhs = (absNum / 100000).toFixed(2);
+        return `${sign}${lakhs} L`;
+    } else if (absNum >= 1000) { // 1 thousand and above
+        const thousands = (absNum / 1000).toFixed(2);
+        return `${sign}${thousands} K`;
+    } else {
+        return `${sign}${absNum.toLocaleString('en-IN')}`;
+    }
+}
+
 // Fetch headers from Google Sheets
 async function fetchPachhwaraPDHeaders() {
     const SHEET_ID = '1cFngrabiTY-RMGDrw2eRn7Nn8LEY0IZyD0-QJT7UqTI';
@@ -1338,15 +1359,32 @@ html += `</tr></thead><tbody>`;
         checkedCols.forEach(i => {
     if ([2, 3, 6, 7, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20].includes(i)) { // Sum columns (added column 20)
         let sum = filtered.reduce((sum, r) => sum + (Number(r[i]) || 0), 0);
+        
+        // Check if this column header contains 'plant' or 'RR' for Indian formatting
+        const headerName = PachhwaraPDHeaders[i] ? PachhwaraPDHeaders[i].toLowerCase() : '';
+        const isPlantOrRR = headerName.includes('plant') || headerName.includes('rr') || headerName.includes('weight');
+        
         // Format columns 3, 9, 10 with 0 decimal places
         if ([3, 9, 10].includes(i)) {
-            totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            if (isPlantOrRR) {
+                totalRow[i] = formatIndianNumber(sum);
+            } else {
+                totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
         }
         // Format with comma separation and 2 decimals for specific columns (excluding 3, 9, 10)
         else if ([1,2,7,8,14,22].includes(i)) {
-            totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (isPlantOrRR) {
+                totalRow[i] = formatIndianNumber(sum);
+            } else {
+                totalRow[i] = sum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
         } else {
-            totalRow[i] = sum.toLocaleString();
+            if (isPlantOrRR) {
+                totalRow[i] = formatIndianNumber(sum);
+            } else {
+                totalRow[i] = sum.toLocaleString();
+            }
         }
     } else if ([1, 5, 8, 11, 13, 21, 22].includes(i)) { // Avg columns (removed column 20)
         const nums = filtered.map(r => Number(r[i])).filter(n => !isNaN(n));
