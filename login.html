@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coal Management App - Login</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -528,15 +527,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Global variables
+        // Global variables (simplified - no OTP needed)
         let currentUserData = {};
-        let generatedOTP = '';
         
-        // Configuration - Update these with your actual values
+        // Configuration - Only Google Sheets needed now
         const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwtgVB7koUdakeP0XcCLBahfNlXZsR55RMhxywjw2aexB6GKkTpoLihPQ849LusscH6/exec'; // From Apps Script deployment
-        const EMAILJS_SERVICE_ID = 'service_vnsg3up';
-        const EMAILJS_TEMPLATE_ID = 'template_4tpqyol';
-        const EMAILJS_PUBLIC_KEY = 'p4PPfGc_IGOHzaBD7';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -549,11 +544,6 @@
             document.getElementById('registerForm').classList.remove('hidden');
         }
 
-        function showOTPForm() {
-            hideAllForms();
-            document.getElementById('otpForm').classList.remove('hidden');
-        }
-
         function showSuccessForm() {
             hideAllForms();
             document.getElementById('successForm').classList.remove('hidden');
@@ -562,7 +552,6 @@
         function hideAllForms() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('otpForm').classList.add('hidden');
             document.getElementById('successForm').classList.add('hidden');
         }
 
@@ -675,21 +664,33 @@
 
             try {
                 // Show loading state
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Verification...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
                 submitBtn.disabled = true;
 
-                // Store user data temporarily
-                currentUserData = { name, mobile, email, company, purpose, password };
+                // Prepare user data
+                const userData = {
+                    name: name,
+                    mobile: mobile,
+                    email: email,
+                    company: company,
+                    purpose: purpose,
+                    password: password,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                // Submit registration directly to Google Sheets
+                const response = await submitRegistration(userData);
                 
-                // Generate and send OTP
-                generatedOTP = generateOTP();
-                await sendOTPEmail(email, generatedOTP);
-                
-                showOTPForm();
-                showAlert('otpAlert', 'Verification code sent to your email address. Please check your inbox and spam folder.', 'success');
+                if (response.success) {
+                    showSuccessForm();
+                    showAlert('successAlert', 'Registration successful! Please wait for admin approval. You will be able to login once approved.', 'success');
+                } else {
+                    showAlert('registerAlert', response.message || 'Registration failed. Please try again.');
+                }
                 
             } catch (error) {
-                showAlert('registerAlert', 'Failed to send verification code. Please check your email address and try again.');
+                showAlert('registerAlert', 'Registration failed. Please check your connection and try again.');
                 console.error('Registration error:', error);
             } finally {
                 // Reset button state
@@ -713,95 +714,41 @@
             });
         });
 
-        // Generate 6-digit OTP
-        function generateOTP() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
+        // Remove OTP-related code - Direct registration approach
+        // Login functionality
 
-        // Send OTP via Email (using EmailJS)
-        async function sendOTPEmail(email, otp) {
+        // Test Google Apps Script Connection
+        async function testConnection() {
             try {
-                const templateParams = {
-                    to_email: email,
-                    to_name: currentUserData.name,
-                    otp_code: otp,
-                    app_name: 'Coal Management System',
-                    company_name: currentUserData.company
-                };
-
-                const response = await emailjs.send('service_vnsg3up', 'template_4tpqyol', templateParams);
-                console.log('Email sent successfully:', response);
-                return response;
-            } catch (error) {
-                console.error('Email sending failed:', error);
-                throw error;
-            }
-        }
-
-        // Verify OTP
-        function verifyOTP() {
-            let enteredOTP = '';
-            for (let i = 1; i <= 6; i++) {
-                enteredOTP += document.getElementById(`otp${i}`).value;
-            }
-
-            if (enteredOTP.length !== 6) {
-                showAlert('otpAlert', 'Please enter the complete 6-digit verification code');
-                return;
-            }
-
-            if (enteredOTP === generatedOTP) {
-                // OTP verified, register user
-                registerUser();
-            } else {
-                showAlert('otpAlert', 'Invalid verification code. Please check and try again.');
-                // Clear OTP inputs
-                for (let i = 1; i <= 6; i++) {
-                    document.getElementById(`otp${i}`).value = '';
-                }
-                document.getElementById('otp1').focus();
-            }
-        }
-
-        // Register User to Google Sheets
-        async function registerUser() {
-            try {
-                // Add timestamp and status
-                const userData = {
-                    ...currentUserData,
-                    timestamp: new Date().toISOString(),
-                    status: 'pending',
-                    emailVerified: true
-                };
-
-                // Call Google Sheets API
-                const response = await submitRegistration(userData);
+                console.log('Testing connection to Google Apps Script...');
                 
-                if (response.success) {
-                    showSuccessForm();
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'GET'
+                });
+                
+                console.log('Test response status:', response.status);
+                const text = await response.text();
+                console.log('Test response:', text);
+                
+                if (response.ok) {
+                    console.log('✅ Connection successful!');
+                    alert('✅ Google Apps Script connection successful!');
                 } else {
-                    showAlert('otpAlert', response.message || 'Registration failed. Please try again.');
+                    console.log('❌ Connection failed');
+                    alert('❌ Connection failed: ' + response.status);
                 }
             } catch (error) {
-                showAlert('otpAlert', 'Registration failed. Please check your connection and try again.');
-                console.error('Registration error:', error);
-            }
-        }
-
-        // Resend OTP
-        async function resendOTP() {
-            try {
-                generatedOTP = generateOTP();
-                await sendOTPEmail(currentUserData.email, generatedOTP);
-                showAlert('otpAlert', 'New verification code sent to your email address.', 'success');
-            } catch (error) {
-                showAlert('otpAlert', 'Failed to resend verification code. Please try again.');
+                console.error('❌ Connection test failed:', error);
+                alert('❌ Connection test failed: ' + error.message);
             }
         }
 
         // API Functions for Google Sheets integration
         async function submitRegistration(userData) {
             try {
+                console.log('Submitting registration to:', GOOGLE_SHEETS_URL);
+                console.log('User data:', userData);
+                
                 const response = await fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
                     headers: {
@@ -813,11 +760,28 @@
                     })
                 });
                 
-                const result = await response.json();
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseText = await response.text();
+                console.log('Response text:', responseText);
+                
+                const result = JSON.parse(responseText);
+                console.log('Parsed result:', result);
+                
                 return result;
             } catch (error) {
                 console.error('Registration API error:', error);
-                return { success: false, message: 'Network error occurred' };
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    url: GOOGLE_SHEETS_URL
+                });
+                return { success: false, message: 'Network error occurred: ' + error.message };
             }
         }
 
@@ -871,11 +835,6 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize EmailJS
-            if (typeof emailjs !== 'undefined') {
-                emailjs.init('p4PPfGc_IGOHzaBD7');
-            }
-            
             checkExistingSession();
             showLoginForm();
         });
