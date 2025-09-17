@@ -3,10 +3,10 @@
 
 // Configuration - Update this with your actual Google Sheet ID
 const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE'; // Replace with your Google Sheet ID
-const SHEET_NAME = 'Users'; // Name of the sheet tab
+const SHEET_NAME = 'Sheet1'; // Default sheet name (change if needed)
 
 /**
- * Main function to handle all API requests
+ * Main function to handle all API requests with CORS support
  */
 function doPost(e) {
   try {
@@ -16,43 +16,72 @@ function doPost(e) {
     // Log the request for debugging
     console.log('API Request:', action, data);
     
+    let result;
     switch(action) {
       case 'register':
-        return ContentService
-          .createTextOutput(JSON.stringify(registerUser(data.userData)))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = registerUser(data.userData);
+        break;
           
       case 'authenticate':
-        return ContentService
-          .createTextOutput(JSON.stringify(authenticateUser(data.mobile, data.password)))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = authenticateUser(data.mobile, data.password);
+        break;
           
       case 'checkStatus':
-        return ContentService
-          .createTextOutput(JSON.stringify(checkUserStatus(data.mobile)))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = checkUserStatus(data.mobile);
+        break;
           
       case 'getAllUsers':
-        return ContentService
-          .createTextOutput(JSON.stringify(getAllUsers()))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = getAllUsers();
+        break;
           
       case 'updateUserStatus':
-        return ContentService
-          .createTextOutput(JSON.stringify(updateUserStatus(data.mobile, data.status)))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = updateUserStatus(data.mobile, data.status);
+        break;
           
       default:
-        return ContentService
-          .createTextOutput(JSON.stringify({success: false, message: 'Invalid action'}))
-          .setMimeType(ContentService.MimeType.JSON);
+        result = {success: false, message: 'Invalid action'};
     }
+    
+    // Return with CORS headers
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      
   } catch (error) {
     console.error('Error in doPost:', error);
+    const errorResult = {success: false, message: 'Server error: ' + error.message};
     return ContentService
-      .createTextOutput(JSON.stringify({success: false, message: 'Server error: ' + error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
+      .createTextOutput(JSON.stringify(errorResult))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
   }
+}
+
+/**
+ * Handle OPTIONS requests for CORS preflight
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+/**
+ * Handle OPTIONS requests for CORS preflight
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
 /**

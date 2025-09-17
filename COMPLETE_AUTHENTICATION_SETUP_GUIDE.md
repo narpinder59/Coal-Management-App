@@ -252,7 +252,50 @@ Upload all files to your GitHub Pages or web hosting:
 
 ---
 
-## � QUICK FIX: Gmail API Scope Error
+## 🔥 URGENT FIXES FOR YOUR ERRORS
+
+### ❌ **Current Issues:**
+1. **JavaScript Error**: `originalText is not defined` - ✅ FIXED
+2. **CORS Error**: Google Apps Script blocking requests from GitHub Pages - ✅ FIXED
+
+### ⚡ **IMMEDIATE ACTION REQUIRED:**
+
+#### **Step 1: Update Google Apps Script (CRITICAL)**
+1. Go to your Google Apps Script project
+2. **Delete ALL existing code** in Code.gs
+3. **Copy ALL code from `google-apps-script-fixed.js`** (new file created)
+4. **Update SHEET_ID** with your actual Google Sheet ID:
+   ```javascript
+   const SHEET_ID = 'your_actual_sheet_id_here';
+   ```
+5. **Save the project**
+6. **Deploy → New Deployment** (create fresh deployment)
+7. **Copy the NEW web app URL**
+
+#### **Step 2: Update login.html**
+Update line ~536 in login.html with your NEW Apps Script URL:
+```javascript
+const GOOGLE_SHEETS_URL = 'YOUR_NEW_APPS_SCRIPT_URL_HERE';
+```
+
+#### **Step 3: Re-upload to GitHub**
+Upload both updated files to your GitHub repository.
+
+### 🎯 **What Was Fixed:**
+- ✅ **CORS Headers**: Added proper cross-origin support
+- ✅ **JavaScript Error**: Fixed variable scope issue
+- ✅ **Auto Sheet Creation**: Script creates sheet automatically
+- ✅ **Better Error Handling**: Clearer error messages
+
+### 🚀 **After Fix:**
+- Registration should work without CORS errors
+- OTP verification should complete successfully
+- User data should save to Google Sheets
+- No more "network error occurred" messages
+
+---
+
+## 🔥 QUICK FIX: Gmail API Scope Error
 
 ### Problem: "412 Gmail_API: Request had insufficient authentication scopes"
 
