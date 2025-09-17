@@ -30,6 +30,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Chart.js for interactive charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- Authentication Script - Must be first -->
+    <script>
+        // Authentication check - must run before any other scripts
+        function checkAuthentication() {
+            const session = localStorage.getItem('userSession');
+            
+            if (!session) {
+                // Redirect to login if no session
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            try {
+                const sessionData = JSON.parse(session);
+                const loginTime = new Date(sessionData.loginTime);
+                const now = new Date();
+                const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
+                
+                // Session expires after 24 hours
+                if (hoursDiff >= 24) {
+                    localStorage.removeItem('userSession');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                
+                return true;
+                
+            } catch (error) {
+                localStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userSession');
+            window.location.href = 'login.html';
+        }
+
+        // Check authentication immediately when script loads
+        if (!checkAuthentication()) {
+            // Will redirect to login.html
+        }
+    </script>
 </head>
 <body>
     <!-- Navbar will be loaded here -->

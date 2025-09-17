@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coal Management App - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2ecc71 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(52, 152, 219, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(155, 89, 182, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.8s ease;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .auth-header .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .auth-header h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .auth-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(149, 165, 166, 0.4);
+        }
+
+        .form-switch {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .form-switch a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-switch a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .otp-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 8px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: scale(1.05);
+        }
+
+        .resend-otp {
+            margin-top: 20px;
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .resend-otp:hover {
+            color: #2980b9;
+        }
+
+        .company-info {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #d5dbdb;
+        }
+
+        .company-info h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .company-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .feature-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .feature-list h4 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #7f8c8d;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 576px) {
+            .auth-container {
+                margin: 10px;
+                max-width: 100%;
+            }
+            
+            .auth-form {
+                padding: 30px 20px;
+            }
+            
+            .auth-header {
+                padding: 30px 20px;
+            }
+            
+            .otp-input {
+                width: 45px;
+                height: 45px;
+                margin: 0 4px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">
+                <i class="fas fa-fire"></i>
+            </div>
+            <h1>Coal Management System</h1>
+            <p>Professional Fuel Management & Optimization Platform</p>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form">
+            <div class="company-info">
+                <h3><i class="fas fa-industry"></i> Industrial Coal Management</h3>
+                <p>Advanced analytics and optimization tools for coal-based power generation</p>
+            </div>
+
+            <div class="feature-list">
+                <h4>🔧 System Features</h4>
+                <ul>
+                    <li>Real-time coal consumption tracking</li>
+                    <li>Quality analysis and cost optimization</li>
+                    <li>Production and despatch monitoring</li>
+                    <li>Interactive dashboards and reports</li>
+                    <li>Multi-plant management system</li>
+                </ul>
+            </div>
+
+            <div id="loginAlert"></div>
+
+            <form id="loginFormElement">
+                <div class="form-group">
+                    <label for="loginMobile"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                    <input type="tel" id="loginMobile" placeholder="Enter your mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Access Dashboard
+                </button>
+            </form>
+
+            <div class="form-switch">
+                <p>New to the system? <a href="#" onclick="showRegisterForm()">Request Access</a></p>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="registerForm" class="auth-form hidden">
+            <div id="registerAlert"></div>
+
+            <form id="registerFormElement">
+                <div class="form-group">
+                    <label for="registerName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerMobile"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                    <input type="tel" id="registerMobile" placeholder="Enter your mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerCompany"><i class="fas fa-building"></i> Company/Organization</label>
+                    <input type="text" id="registerCompany" placeholder="Enter your company name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPurpose"><i class="fas fa-question-circle"></i> Purpose of Access</label>
+                    <input type="text" id="registerPurpose" placeholder="e.g., Coal plant management, optimization analysis" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword"><i class="fas fa-key"></i> Create Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a strong password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-check-circle"></i> Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter your password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Request Access & Verify Email
+                </button>
+            </form>
+
+            <div class="form-switch">
+                <p>Already have access? <a href="#" onclick="showLoginForm()">Sign In</a></p>
+            </div>
+        </div>
+
+        <!-- OTP Verification Form -->
+        <div id="otpForm" class="auth-form hidden">
+            <div id="otpAlert"></div>
+
+            <div class="otp-container">
+                <h3><i class="fas fa-envelope-open"></i> Email Verification</h3>
+                <p>We've sent a 6-digit verification code to your email address</p>
+                
+                <div style="margin: 25px 0;">
+                    <input type="text" class="otp-input" maxlength="1" id="otp1">
+                    <input type="text" class="otp-input" maxlength="1" id="otp2">
+                    <input type="text" class="otp-input" maxlength="1" id="otp3">
+                    <input type="text" class="otp-input" maxlength="1" id="otp4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp5">
+                    <input type="text" class="otp-input" maxlength="1" id="otp6">
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="verifyOTP()">
+                    <i class="fas fa-check"></i> Verify & Complete Request
+                </button>
+                
+                <div class="resend-otp" onclick="resendOTP()">
+                    <i class="fas fa-redo"></i> Didn't receive the code? Resend OTP
+                </div>
+            </div>
+
+            <div class="form-switch">
+                <p><a href="#" onclick="showRegisterForm()">← Back to Registration</a></p>
+            </div>
+        </div>
+
+        <!-- Success Form -->
+        <div id="successForm" class="auth-form hidden">
+            <div class="otp-container">
+                <h3><i class="fas fa-check-circle text-success"></i> Request Submitted Successfully!</h3>
+                <p>Your access request has been submitted and is pending admin approval.</p>
+                
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-info-circle"></i> What happens next?</strong><br>
+                    • System administrator will review your request<br>
+                    • You'll receive an email notification upon approval<br>
+                    • Once approved, you can login to access all features<br>
+                    • Please save your login credentials for future use
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="showLoginForm()">
+                    <i class="fas fa-arrow-left"></i> Return to Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Global variables
+        let currentUserData = {};
+        let generatedOTP = '';
+        
+        // Configuration - Update these with your actual values
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz9ljjHEfPrjYdJixTxuo7ItY9XfFw_30Wl_eEKsyCETfTP_gUnthkj5achNE7KUgGQ/exec'; // From Apps Script deployment
+        const EMAILJS_SERVICE_ID = 'service_vnsg3up';
+        const EMAILJS_TEMPLATE_ID = 'template_4tpqyol';
+        const EMAILJS_PUBLIC_KEY = 'p4PPfGc_IGOHzaBD7';
+        
+        // Show/Hide Forms
+        function showLoginForm() {
+            hideAllForms();
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function showRegisterForm() {
+            hideAllForms();
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showOTPForm() {
+            hideAllForms();
+            document.getElementById('otpForm').classList.remove('hidden');
+        }
+
+        function showSuccessForm() {
+            hideAllForms();
+            document.getElementById('successForm').classList.remove('hidden');
+        }
+
+        function hideAllForms() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
+            document.getElementById('successForm').classList.add('hidden');
+        }
+
+        // Show Alert Messages
+        function showAlert(containerId, message, type = 'error') {
+            const alertContainer = document.getElementById(containerId);
+            alertContainer.innerHTML = `<div class="alert alert-${type}"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle'}"></i> ${message}</div>`;
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Login Form Handler
+        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const mobile = document.getElementById('loginMobile').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!mobile || !password) {
+                showAlert('loginAlert', 'Please fill in all fields');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                submitBtn.disabled = true;
+
+                // Call authentication API
+                const response = await authenticateUser(mobile, password);
+                
+                if (response.success) {
+                    if (response.status === 'approved') {
+                        // Store user session
+                        localStorage.setItem('userSession', JSON.stringify({
+                            mobile: mobile,
+                            name: response.name,
+                            email: response.email,
+                            company: response.company || '',
+                            loginTime: new Date().toISOString()
+                        }));
+                        
+                        // Redirect to main app
+                        window.location.href = 'index.html';
+                    } else if (response.status === 'pending') {
+                        showAlert('loginAlert', 'Your access request is pending admin approval. Please wait for confirmation.', 'info');
+                    } else {
+                        showAlert('loginAlert', 'Your access request has been rejected. Please contact the administrator.', 'error');
+                    }
+                } else {
+                    showAlert('loginAlert', response.message || 'Invalid mobile number or password');
+                }
+            } catch (error) {
+                showAlert('loginAlert', 'Authentication failed. Please check your connection and try again.');
+                console.error('Login error:', error);
+            } finally {
+                // Reset button state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Registration Form Handler
+        document.getElementById('registerFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const mobile = document.getElementById('registerMobile').value;
+            const email = document.getElementById('registerEmail').value;
+            const company = document.getElementById('registerCompany').value;
+            const purpose = document.getElementById('registerPurpose').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!name || !mobile || !email || !company || !purpose || !password || !confirmPassword) {
+                showAlert('registerAlert', 'Please fill in all required fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAlert('registerAlert', 'Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('registerAlert', 'Password must be at least 6 characters long');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('registerAlert', 'Please enter a valid email address');
+                return;
+            }
+
+            const mobileRegex = /^[6-9]\d{9}$/;
+            if (!mobileRegex.test(mobile)) {
+                showAlert('registerAlert', 'Please enter a valid 10-digit mobile number');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Verification...';
+                submitBtn.disabled = true;
+
+                // Store user data temporarily
+                currentUserData = { name, mobile, email, company, purpose, password };
+                
+                // Generate and send OTP
+                generatedOTP = generateOTP();
+                await sendOTPEmail(email, generatedOTP);
+                
+                showOTPForm();
+                showAlert('otpAlert', 'Verification code sent to your email address. Please check your inbox and spam folder.', 'success');
+                
+            } catch (error) {
+                showAlert('registerAlert', 'Failed to send verification code. Please check your email address and try again.');
+                console.error('Registration error:', error);
+            } finally {
+                // Reset button state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // OTP Input Auto-focus
+        document.querySelectorAll('.otp-input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1 && index < 5) {
+                    document.getElementById(`otp${index + 2}`).focus();
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    document.getElementById(`otp${index}`).focus();
+                }
+            });
+        });
+
+        // Generate 6-digit OTP
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Send OTP via Email (using EmailJS)
+        async function sendOTPEmail(email, otp) {
+            try {
+                const templateParams = {
+                    to_email: email,
+                    to_name: currentUserData.name,
+                    otp_code: otp,
+                    app_name: 'Coal Management System',
+                    company_name: currentUserData.company
+                };
+
+                const response = await emailjs.send('service_vnsg3up', 'template_4tpqyol', templateParams);
+                console.log('Email sent successfully:', response);
+                return response;
+            } catch (error) {
+                console.error('Email sending failed:', error);
+                throw error;
+            }
+        }
+
+        // Verify OTP
+        function verifyOTP() {
+            let enteredOTP = '';
+            for (let i = 1; i <= 6; i++) {
+                enteredOTP += document.getElementById(`otp${i}`).value;
+            }
+
+            if (enteredOTP.length !== 6) {
+                showAlert('otpAlert', 'Please enter the complete 6-digit verification code');
+                return;
+            }
+
+            if (enteredOTP === generatedOTP) {
+                // OTP verified, register user
+                registerUser();
+            } else {
+                showAlert('otpAlert', 'Invalid verification code. Please check and try again.');
+                // Clear OTP inputs
+                for (let i = 1; i <= 6; i++) {
+                    document.getElementById(`otp${i}`).value = '';
+                }
+                document.getElementById('otp1').focus();
+            }
+        }
+
+        // Register User to Google Sheets
+        async function registerUser() {
+            try {
+                // Add timestamp and status
+                const userData = {
+                    ...currentUserData,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending',
+                    emailVerified: true
+                };
+
+                // Call Google Sheets API
+                const response = await submitRegistration(userData);
+                
+                if (response.success) {
+                    showSuccessForm();
+                } else {
+                    showAlert('otpAlert', response.message || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                showAlert('otpAlert', 'Registration failed. Please check your connection and try again.');
+                console.error('Registration error:', error);
+            }
+        }
+
+        // Resend OTP
+        async function resendOTP() {
+            try {
+                generatedOTP = generateOTP();
+                await sendOTPEmail(currentUserData.email, generatedOTP);
+                showAlert('otpAlert', 'New verification code sent to your email address.', 'success');
+            } catch (error) {
+                showAlert('otpAlert', 'Failed to resend verification code. Please try again.');
+            }
+        }
+
+        // API Functions for Google Sheets integration
+        async function submitRegistration(userData) {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'register',
+                        userData: userData
+                    })
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Registration API error:', error);
+                return { success: false, message: 'Network error occurred' };
+            }
+        }
+
+        async function authenticateUser(mobile, password) {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'authenticate',
+                        mobile: mobile,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Authentication API error:', error);
+                return { success: false, message: 'Network error occurred' };
+            }
+        }
+
+        // Check if user is already logged in
+        function checkExistingSession() {
+            const session = localStorage.getItem('userSession');
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    const loginTime = new Date(sessionData.loginTime);
+                    const now = new Date();
+                    const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
+                    
+                    // Session expires after 24 hours
+                    if (hoursDiff < 24) {
+                        // Redirect to main app if session is valid
+                        window.location.href = 'index.html';
+                        return;
+                    } else {
+                        // Clear expired session
+                        localStorage.removeItem('userSession');
+                    }
+                } catch (error) {
+                    // Clear invalid session data
+                    localStorage.removeItem('userSession');
+                }
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize EmailJS
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init('p4PPfGc_IGOHzaBD7');
+            }
+            
+            checkExistingSession();
+            showLoginForm();
+        });
+    </script>
+</body>
+</html>
