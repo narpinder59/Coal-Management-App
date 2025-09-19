@@ -95,6 +95,20 @@ function handleRequest(e) {
     }
     
     console.log('Final result:', result);
+    
+    // Handle JSONP callback for CORS fallback
+    if (requestData.callback) {
+      console.log('Returning JSONP response with callback:', requestData.callback);
+      const jsonpResponse = `${requestData.callback}(${JSON.stringify(result)});`;
+      return ContentService
+        .createTextOutput(jsonpResponse)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/javascript'
+        });
+    }
+    
     return createResponse(result, corsHeaders);
     
   } catch (error) {
@@ -221,6 +235,13 @@ function handleLogin(data) {
             return {
               success: true,
               message: 'Login successful',
+              status: status,
+              name: row[0],
+              email: row[2],
+              company: row[3],
+              mobile: row[1],
+              purpose: row[4],
+              lastLogin: currentDate,
               user: {
                 name: row[0],
                 mobile: row[1],
@@ -234,7 +255,8 @@ function handleLogin(data) {
           } else {
             return {
               success: false,
-              message: 'Account pending approval. Please contact admin.'
+              message: 'Account pending approval. Please contact admin.',
+              status: status
             };
           }
         } else {

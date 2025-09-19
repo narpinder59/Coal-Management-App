@@ -575,7 +575,7 @@
         let currentUserData = {};
         
         // Configuration - Update this with your NEW Apps Script deployment URL
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4SfExp3-GikiHjWkK2K7kaXZVSOVCXl1X66Vrl-Bopj1QWZAokni5G20gqL-yUflx/exec';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyfC_QCTVu9jxiFY4-U-mjjyYsiuS4O8s7zMIHoZ9wmji2Rj3tFOpM4R_ydSJUFDhWR/exec';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -651,12 +651,18 @@
                 } else {
                     showAlert('loginAlert', response.message || 'Invalid mobile number or password');
                 }
+                
+                // Reset button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
             } catch (error) {
                 showAlert('loginAlert', 'Authentication failed. Please check your connection and try again.');
                 console.error('Login error:', error);
-            } finally {
+                
                 // Reset button state
                 const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.getAttribute('data-original-text') || 'Login';
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
@@ -868,28 +874,89 @@
             try {
                 console.log('Attempting login for mobile:', mobile);
                 
-                const response = await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'login',
-                        mobile: mobile,
-                        password: password
-                    })
-                });
-                
-                console.log('Login response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Try modern fetch first
+                try {
+                    const response = await fetch(GOOGLE_SHEETS_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'login',
+                            mobile: mobile,
+                            password: password
+                        })
+                    });
+                    
+                    console.log('Login response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Login result:', result);
+                    return result;
+                    
+                } catch (fetchError) {
+                    console.log('Login fetch failed, trying GET request fallback:', fetchError.message);
+                    
+                    // Fallback: Use GET request (bypasses CORS more easily)
+                    try {
+                        const getUrl = `${GOOGLE_SHEETS_URL}?action=login&mobile=${encodeURIComponent(mobile)}&password=${encodeURIComponent(password)}&t=${Date.now()}`;
+                        
+                        const getResponse = await fetch(getUrl, {
+                            method: 'GET',
+                            mode: 'cors'
+                        });
+                        
+                        if (!getResponse.ok) {
+                            throw new Error(`GET request failed: ${getResponse.status}`);
+                        }
+                        
+                        const getResult = await getResponse.json();
+                        console.log('Login result via GET:', getResult);
+                        return getResult;
+                        
+                    } catch (getError) {
+                        console.log('GET request also failed:', getError.message);
+                        
+                        // Final fallback: Use JSONP-style approach
+                        return new Promise((resolve, reject) => {
+                            // Create script tag for JSONP (bypasses CORS completely)
+                            const script = document.createElement('script');
+                            const callbackName = 'loginCallback_' + Date.now();
+                            
+                            // Set up global callback
+                            window[callbackName] = function(data) {
+                                document.head.removeChild(script);
+                                delete window[callbackName];
+                                resolve(data);
+                            };
+                            
+                            // Set timeout
+                            setTimeout(() => {
+                                if (window[callbackName]) {
+                                    document.head.removeChild(script);
+                                    delete window[callbackName];
+                                    // If no response, assume credentials are wrong
+                                    resolve({ 
+                                        success: false, 
+                                        message: 'Login timeout - please check credentials' 
+                                    });
+                                }
+                            }, 10000);
+                            
+                            // Use GET with callback parameter
+                            script.src = `${GOOGLE_SHEETS_URL}?action=login&mobile=${encodeURIComponent(mobile)}&password=${encodeURIComponent(password)}&callback=${callbackName}&t=${Date.now()}`;
+                            document.head.appendChild(script);
+                            
+                            console.log('Login attempted via JSONP fallback');
+                        });
+                    }
                 }
                 
-                const result = await response.json();
-                console.log('Login result:', result);
-                
-                return result;
             } catch (error) {
                 console.error('Login error:', error);
                 return { success: false, message: 'Login failed: ' + error.message };
