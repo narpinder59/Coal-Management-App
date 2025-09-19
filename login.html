@@ -575,7 +575,7 @@
         let currentUserData = {};
         
         // Configuration - Update this with your NEW Apps Script deployment URL
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzkK3Ella62Ck4vM62bL6oRThWAc9mG2G5uDYhP0QlICw29s1bnZY2IDMKes2V8mIzm/exec';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbysvI1m12JQ85VhnhGbr9s0vYhrbPvnynIUJ7_B7xu4nfNwu97u-RoHsHMTRZmS3DnP/exec';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -588,6 +588,11 @@
             document.getElementById('registerForm').classList.remove('hidden');
         }
 
+        function showOtpForm() {
+            hideAllForms();
+            document.getElementById('otpForm').classList.remove('hidden');
+        }
+
         function showSuccessForm() {
             hideAllForms();
             document.getElementById('successForm').classList.remove('hidden');
@@ -596,6 +601,7 @@
         function hideAllForms() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
             document.getElementById('successForm').classList.add('hidden');
         }
 
@@ -706,11 +712,41 @@
                 return;
             }
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // Enhanced email validation
+            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
             if (!emailRegex.test(email)) {
-                showAlert('registerAlert', 'Please enter a valid email address');
+                showAlert('registerAlert', 'Please enter a valid email address (e.g., user@company.com)');
                 return;
             }
+
+            // Check for suspicious email patterns
+            const suspiciousPatterns = [
+                /test@test\.com/i,
+                /example@example\.com/i,
+                /fake@fake\.com/i,
+                /temp@temp\.com/i,
+                /dummy@dummy\.com/i,
+                /nomail@nomail\.com/i
+            ];
+            
+            const isSuspicious = suspiciousPatterns.some(pattern => pattern.test(email));
+            if (isSuspicious) {
+                showAlert('registerAlert', 'Please provide a valid business email address, not a test email.');
+                return;
+            }
+
+            // Check for valid business domains (optional)
+            const businessDomains = [
+                'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 
+                'company.com', 'organization.org', 'business.in'
+            ];
+            const emailDomain = email.split('@')[1].toLowerCase();
+            
+            // You can uncomment this if you want to restrict to specific domains
+            // if (!businessDomains.includes(emailDomain)) {
+            //     showAlert('registerAlert', 'Please use a recognized business email domain.');
+            //     return;
+            // }
 
             const mobileRegex = /^[6-9]\d{9}$/;
             if (!mobileRegex.test(mobile)) {
@@ -737,12 +773,29 @@
                     password: password
                 };
 
-                // Submit registration to Google Sheets
+                // Submit registration to Google Sheets (Step 1: Send OTP)
                 const response = await submitRegistration(userData);
                 
-                if (response.success) {
+                if (response.success && response.step === 'email-verification') {
+                    // Store email for verification
+                    window.currentVerificationEmail = response.email;
+                    
+                    // Show OTP form
+                    showOtpForm();
+                    showAlert('otpAlert', `Verification code sent to ${response.email}. Please check your inbox (including spam folder).`, 'info');
+                    
+                    // Clear OTP inputs
+                    for (let i = 1; i <= 6; i++) {
+                        document.getElementById(`otp${i}`).value = '';
+                    }
+                    
+                    // Focus first OTP input
+                    document.getElementById('otp1').focus();
+                    
+                } else if (response.success) {
+                    // Direct registration success (fallback)
                     showSuccessForm();
-                    showAlert('successAlert', 'Registration successful! Please wait for admin approval. You will be able to login once approved.', 'success');
+                    showAlert('successAlert', 'Registration successful! Please wait for admin approval.', 'success');
                 } else {
                     showAlert('registerAlert', response.message || 'Registration failed. Please try again.');
                 }
@@ -1038,6 +1091,158 @@
                 }
             }
         }
+
+        // OTP Verification Functions
+        function verifyOTP() {
+            const otp = getOTPValue();
+            if (!otp) {
+                showAlert('otpAlert', 'Please enter the complete 6-digit verification code.');
+                return;
+            }
+
+            if (!window.currentVerificationEmail) {
+                showAlert('otpAlert', 'Verification session expired. Please restart registration.');
+                showRegisterForm();
+                return;
+            }
+
+            verifyEmailOTP(window.currentVerificationEmail, otp);
+        }
+
+        function getOTPValue() {
+            let otp = '';
+            for (let i = 1; i <= 6; i++) {
+                const value = document.getElementById(`otp${i}`).value;
+                if (!value) return '';
+                otp += value;
+            }
+            return otp;
+        }
+
+        async function verifyEmailOTP(email, otp) {
+            try {
+                const submitBtn = document.querySelector('#otpForm .btn-primary');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+                submitBtn.disabled = true;
+
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'verify-email',
+                        email: email,
+                        otp: otp
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // OTP verified, now complete registration
+                    const completeResult = await completeRegistration(email);
+                    
+                    if (completeResult.success) {
+                        showSuccessForm();
+                        showAlert('successAlert', 'Email verified! Registration completed successfully. Please wait for admin approval.', 'success');
+                        window.currentVerificationEmail = null;
+                    } else {
+                        showAlert('otpAlert', completeResult.message || 'Registration completion failed.');
+                    }
+                } else {
+                    showAlert('otpAlert', result.message || 'Verification failed. Please try again.');
+                }
+
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+
+            } catch (error) {
+                console.error('OTP verification error:', error);
+                showAlert('otpAlert', 'Verification failed. Please check your connection and try again.');
+                
+                const submitBtn = document.querySelector('#otpForm .btn-primary');
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Verify & Complete Request';
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function completeRegistration(email) {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'complete-registration',
+                        email: email
+                    })
+                });
+
+                return await response.json();
+            } catch (error) {
+                console.error('Complete registration error:', error);
+                return { success: false, message: 'Registration completion failed: ' + error.message };
+            }
+        }
+
+        function resendOTP() {
+            if (!window.currentVerificationEmail) {
+                showAlert('otpAlert', 'Verification session expired. Please restart registration.');
+                showRegisterForm();
+                return;
+            }
+
+            // You can implement resend functionality here
+            showAlert('otpAlert', 'Please check your email again. If you still don\'t receive the code, please restart registration.', 'info');
+        }
+
+        // OTP Input Management
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus and auto-advance OTP inputs
+            for (let i = 1; i <= 6; i++) {
+                const input = document.getElementById(`otp${i}`);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        const value = e.target.value;
+                        if (value.length === 1 && i < 6) {
+                            document.getElementById(`otp${i + 1}`).focus();
+                        }
+                        if (value.length === 0 && i > 1) {
+                            document.getElementById(`otp${i - 1}`).focus();
+                        }
+                        
+                        // Auto-submit when all fields are filled
+                        if (i === 6 && value.length === 1) {
+                            setTimeout(() => {
+                                const fullOtp = getOTPValue();
+                                if (fullOtp.length === 6) {
+                                    verifyOTP();
+                                }
+                            }, 100);
+                        }
+                    });
+
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Backspace' && e.target.value === '' && i > 1) {
+                            document.getElementById(`otp${i - 1}`).focus();
+                        }
+                    });
+
+                    // Only allow numbers
+                    input.addEventListener('keypress', function(e) {
+                        if (!/[0-9]/.test(e.key) && e.key !== 'Backspace') {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            }
+
+            checkExistingSession();
+            showLoginForm();
+        });
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
