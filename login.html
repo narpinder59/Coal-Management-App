@@ -527,11 +527,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Global variables (simplified - no OTP needed)
+        // Simple Authentication System - No OTP needed
         let currentUserData = {};
         
-        // Configuration - Only Google Sheets needed now
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwtgVB7koUdakeP0XcCLBahfNlXZsR55RMhxywjw2aexB6GKkTpoLihPQ849LusscH6/exec'; // From Apps Script deployment
+        // Configuration - Update this with your NEW Apps Script deployment URL
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwdQkHHl8KB5Ovvto_hEs0PyJMgmamsVFs9GtDzlepmUYPfoZULRpsmFok4KriA2pTT/exec';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -667,19 +667,17 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
                 submitBtn.disabled = true;
 
-                // Prepare user data
+                // Prepare user data for your Google Sheet structure
                 const userData = {
                     name: name,
                     mobile: mobile,
                     email: email,
                     company: company,
                     purpose: purpose,
-                    password: password,
-                    timestamp: new Date().toISOString(),
-                    status: 'pending'
+                    password: password
                 };
 
-                // Submit registration directly to Google Sheets
+                // Submit registration to Google Sheets
                 const response = await submitRegistration(userData);
                 
                 if (response.success) {
@@ -699,22 +697,6 @@
             }
         });
 
-        // OTP Input Auto-focus
-        document.querySelectorAll('.otp-input').forEach((input, index) => {
-            input.addEventListener('input', function() {
-                if (this.value.length === 1 && index < 5) {
-                    document.getElementById(`otp${index + 2}`).focus();
-                }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && this.value === '' && index > 0) {
-                    document.getElementById(`otp${index}`).focus();
-                }
-            });
-        });
-
-        // Remove OTP-related code - Direct registration approach
         // Login functionality
 
         // Test Google Apps Script Connection
@@ -743,7 +725,7 @@
             }
         }
 
-        // API Functions for Google Sheets integration
+        // Simple API Functions for Google Sheets
         async function submitRegistration(userData) {
             try {
                 console.log('Submitting registration to:', GOOGLE_SHEETS_URL);
@@ -756,54 +738,60 @@
                     },
                     body: JSON.stringify({
                         action: 'register',
-                        userData: userData
+                        name: userData.name,
+                        mobile: userData.mobile,
+                        email: userData.email,
+                        company: userData.company,
+                        purpose: userData.purpose,
+                        password: userData.password
                     })
                 });
                 
                 console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const responseText = await response.text();
-                console.log('Response text:', responseText);
-                
-                const result = JSON.parse(responseText);
-                console.log('Parsed result:', result);
+                const result = await response.json();
+                console.log('Registration result:', result);
                 
                 return result;
             } catch (error) {
-                console.error('Registration API error:', error);
-                console.error('Error details:', {
-                    message: error.message,
-                    stack: error.stack,
-                    url: GOOGLE_SHEETS_URL
-                });
-                return { success: false, message: 'Network error occurred: ' + error.message };
+                console.error('Registration error:', error);
+                return { success: false, message: 'Network error: ' + error.message };
             }
         }
 
         async function authenticateUser(mobile, password) {
             try {
+                console.log('Attempting login for mobile:', mobile);
+                
                 const response = await fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        action: 'authenticate',
+                        action: 'login',
                         mobile: mobile,
                         password: password
                     })
                 });
                 
+                console.log('Login response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const result = await response.json();
+                console.log('Login result:', result);
+                
                 return result;
             } catch (error) {
-                console.error('Authentication API error:', error);
-                return { success: false, message: 'Network error occurred' };
+                console.error('Login error:', error);
+                return { success: false, message: 'Login failed: ' + error.message };
             }
         }
 
