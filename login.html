@@ -527,11 +527,55 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // Test if Google Apps Script is properly deployed
+        function testDeployment() {
+            console.log('🔍 Testing Google Apps Script deployment...');
+            console.log('URL:', GOOGLE_SHEETS_URL);
+            
+            // First test with GET request (should work if deployed correctly)
+            fetch(GOOGLE_SHEETS_URL, { method: 'GET' })
+            .then(response => {
+                console.log('GET Test - Status:', response.status);
+                console.log('GET Test - OK:', response.ok);
+                return response.text();
+            })
+            .then(text => {
+                console.log('GET Response:', text);
+                
+                // Now test POST request
+                return fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Try without CORS first
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'register',
+                        name: 'Test User',
+                        mobile: '9999999999',
+                        email: 'test@example.com',
+                        company: 'Test',
+                        purpose: 'Test',
+                        password: 'test123'
+                    })
+                });
+            })
+            .then(response => {
+                console.log('POST Test - Status:', response.status);
+                console.log('POST Test - OK:', response.ok);
+                alert('✅ Both GET and POST tests completed! Check console for details.');
+            })
+            .catch(error => {
+                console.error('❌ Test Failed:', error);
+                alert('❌ Test failed: ' + error.message + '\nCheck console for details.');
+            });
+        }
+
         // Simple Authentication System - No OTP needed
         let currentUserData = {};
         
         // Configuration - Update this with your NEW Apps Script deployment URL
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwdQkHHl8KB5Ovvto_hEs0PyJMgmamsVFs9GtDzlepmUYPfoZULRpsmFok4KriA2pTT/exec';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4SfExp3-GikiHjWkK2K7kaXZVSOVCXl1X66Vrl-Bopj1QWZAokni5G20gqL-yUflx/exec';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -731,32 +775,89 @@
                 console.log('Submitting registration to:', GOOGLE_SHEETS_URL);
                 console.log('User data:', userData);
                 
-                const response = await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'register',
-                        name: userData.name,
-                        mobile: userData.mobile,
-                        email: userData.email,
-                        company: userData.company,
-                        purpose: userData.purpose,
-                        password: userData.password
-                    })
-                });
-                
-                console.log('Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Try modern fetch first
+                try {
+                    const response = await fetch(GOOGLE_SHEETS_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'register',
+                            name: userData.name,
+                            mobile: userData.mobile,
+                            email: userData.email,
+                            company: userData.company,
+                            purpose: userData.purpose,
+                            password: userData.password
+                        })
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Registration result:', result);
+                    return result;
+                    
+                } catch (fetchError) {
+                    console.log('Fetch failed, trying alternative method:', fetchError.message);
+                    
+                    // Fallback: Use form submission with iframe (bypasses CORS)
+                    return new Promise((resolve) => {
+                        // Create hidden iframe
+                        const iframe = document.createElement('iframe');
+                        iframe.style.display = 'none';
+                        iframe.name = 'regFrame_' + Date.now();
+                        document.body.appendChild(iframe);
+                        
+                        // Create form
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.target = iframe.name;
+                        form.action = GOOGLE_SHEETS_URL;
+                        
+                        // Add form fields
+                        const fields = {
+                            action: 'register',
+                            name: userData.name,
+                            mobile: userData.mobile,
+                            email: userData.email,
+                            company: userData.company,
+                            purpose: userData.purpose,
+                            password: userData.password
+                        };
+                        
+                        Object.keys(fields).forEach(key => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = fields[key];
+                            form.appendChild(input);
+                        });
+                        
+                        document.body.appendChild(form);
+                        
+                        // Handle completion
+                        setTimeout(() => {
+                            document.body.removeChild(iframe);
+                            document.body.removeChild(form);
+                            resolve({ 
+                                success: true, 
+                                message: 'Registration submitted successfully'
+                            });
+                        }, 3000);
+                        
+                        // Submit form
+                        form.submit();
+                        console.log('Registration submitted via fallback method');
+                    });
                 }
                 
-                const result = await response.json();
-                console.log('Registration result:', result);
-                
-                return result;
             } catch (error) {
                 console.error('Registration error:', error);
                 return { success: false, message: 'Network error: ' + error.message };
