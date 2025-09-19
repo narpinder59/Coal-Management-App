@@ -807,6 +807,28 @@
             }
         }
 
+        // Test Google Apps Script Connection - DIAGNOSTIC FUNCTION
+        function testGoogleScript() {
+            console.log('🔍 Testing Google Apps Script connection...');
+            console.log('URL:', GOOGLE_SHEETS_URL);
+            
+            // Test GET request first
+            fetch(GOOGLE_SHEETS_URL)
+            .then(response => {
+                console.log('✅ GET Test Status:', response.status);
+                console.log('✅ GET Test OK:', response.ok);
+                return response.text();
+            })
+            .then(text => {
+                console.log('✅ GET Response:', text);
+                alert('✅ Google Apps Script connection successful!\nCheck console for details.');
+            })
+            .catch(error => {
+                console.error('❌ GET Test Failed:', error);
+                alert('❌ Connection failed: ' + error.message + '\nCheck console for details.');
+            });
+        }
+
         // Check if user is already logged in
         function checkExistingSession() {
             const session = localStorage.getItem('userSession');
