@@ -1,17 +1,10 @@
 /**
  * Coal Management App - Google Apps Script Backend
- * Handles user registration and authentication with robust CORS support
+ * Compatible with all Google Apps Script versions
  */
 
 // Configuration
 const SHEET_ID = '1bJJVYDRTLf7SSKcrWp9KQEEr6dhGFfZ4yt6mnoDYEVw';
-const ALLOWED_ORIGINS = [
-  'https://narpinder59.github.io',
-  'https://narpinder59.github.io/Coal-Management-App',
-  'http://localhost:3000',
-  'http://127.0.0.1:5500',
-  '*' // Allow all origins for now
-];
 
 /**
  * Handle all HTTP requests (GET and POST)
@@ -25,31 +18,12 @@ function doGet(e) {
 }
 
 /**
- * Main request handler with comprehensive CORS support
+ * Main request handler with CORS support
  */
 function handleRequest(e) {
   try {
     console.log('=== REQUEST RECEIVED ===');
-    console.log('Request type:', e ? 'POST' : 'GET');
     console.log('Request data:', e);
-    
-    // Set CORS headers for all responses
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-      'Access-Control-Max-Age': '86400',
-      'Content-Type': 'application/json'
-    };
-    
-    // Handle preflight OPTIONS request
-    if (e && e.parameter && e.parameter.method === 'OPTIONS') {
-      console.log('Handling OPTIONS preflight request');
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'ok', message: 'CORS preflight handled' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(corsHeaders);
-    }
     
     // Parse request data
     let requestData = {};
@@ -75,7 +49,7 @@ function handleRequest(e) {
         message: 'Google Apps Script is working! CORS enabled.',
         timestamp: new Date().toISOString(),
         available_actions: ['register', 'login']
-      }, corsHeaders);
+      });
     }
     
     // Route to appropriate handler
@@ -99,17 +73,13 @@ function handleRequest(e) {
     // Handle JSONP callback for CORS fallback
     if (requestData.callback) {
       console.log('Returning JSONP response with callback:', requestData.callback);
-      const jsonpResponse = `${requestData.callback}(${JSON.stringify(result)});`;
+      const jsonpResponse = requestData.callback + '(' + JSON.stringify(result) + ');';
       return ContentService
         .createTextOutput(jsonpResponse)
-        .setMimeType(ContentService.MimeType.JAVASCRIPT)
-        .setHeaders({
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/javascript'
-        });
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
     }
     
-    return createResponse(result, corsHeaders);
+    return createResponse(result);
     
   } catch (error) {
     console.error('Request handler error:', error);
@@ -117,9 +87,6 @@ function handleRequest(e) {
       success: false,
       message: 'Server error: ' + error.message,
       error: error.toString()
-    }, {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json'
     });
   }
 }
@@ -134,11 +101,12 @@ function handleRegistration(data) {
     
     // Validate required fields
     const requiredFields = ['name', 'mobile', 'email', 'company', 'purpose', 'password'];
-    for (const field of requiredFields) {
+    for (var i = 0; i < requiredFields.length; i++) {
+      var field = requiredFields[i];
       if (!data[field] || data[field].toString().trim() === '') {
         return {
           success: false,
-          message: `Missing required field: ${field}`
+          message: 'Missing required field: ' + field
         };
       }
     }
@@ -149,7 +117,7 @@ function handleRegistration(data) {
     
     // Check if mobile number already exists
     const existingData = sheet.getDataRange().getValues();
-    for (let i = 1; i < existingData.length; i++) {
+    for (var i = 1; i < existingData.length; i++) {
       if (existingData[i][1] && existingData[i][1].toString() === data.mobile.toString()) {
         return {
           success: false,
@@ -217,7 +185,7 @@ function handleLogin(data) {
     const allData = sheet.getDataRange().getValues();
     
     // Find user
-    for (let i = 1; i < allData.length; i++) {
+    for (var i = 1; i < allData.length; i++) {
       const row = allData[i];
       
       if (row[1] && row[1].toString() === data.mobile.toString()) {
@@ -283,22 +251,13 @@ function handleLogin(data) {
 }
 
 /**
- * Create properly formatted response with CORS headers
+ * Create properly formatted response (Compatible version)
  */
-function createResponse(data, headers = {}) {
-  const defaultHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-    'Content-Type': 'application/json'
-  };
-  
-  const allHeaders = { ...defaultHeaders, ...headers };
-  
+function createResponse(data) {
+  // Simple response without setHeaders for compatibility
   return ContentService
     .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(allHeaders);
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 /**
