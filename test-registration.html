@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Test Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Registration Troubleshooting Tool</h1>
+        
+        <div class="info">
+            <strong>Instructions:</strong><br>
+            1. Update the Google Apps Script URL below<br>
+            2. Test the connection first<br>
+            3. Try test registration<br>
+            4. Check your Google Sheet for new data
+        </div>
+
+        <div class="test-section">
+            <h3>📡 Configuration</h3>
+            <label for="scriptUrl">Google Apps Script URL:</label>
+            <input type="url" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbysvI1m12JQ85VhnhGbr9s0vYhrbPvnynIUJ7_B7xu4nfNwu97u-RoHsHMTRZmS3DnP/exec" placeholder="Paste your Apps Script web app URL here">
+            <button onclick="updateUrl()">Update URL</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Connection Test</h3>
+            <p>First, let's check if your Google Apps Script is accessible:</p>
+            <button onclick="testConnection()">Test Connection</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Registration Test</h3>
+            <p>Test the registration functionality with sample data:</p>
+            
+            <label for="testName">Name:</label>
+            <input type="text" id="testName" value="John Test User">
+            
+            <label for="testMobile">Mobile:</label>
+            <input type="tel" id="testMobile" value="9876543210">
+            
+            <label for="testEmail">Email:</label>
+            <input type="email" id="testEmail" value="johntest@company.com">
+            
+            <label for="testCompany">Company:</label>
+            <input type="text" id="testCompany" value="Test Company Ltd">
+            
+            <label for="testPurpose">Purpose:</label>
+            <input type="text" id="testPurpose" value="Testing registration system">
+            
+            <label for="testPassword">Password:</label>
+            <input type="password" id="testPassword" value="test123">
+            
+            <button onclick="testRegistration()">Test Registration</button>
+            <button onclick="testWithFormMethod()">Test with Form Method</button>
+            <div id="registrationResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Google Sheet Check</h3>
+            <p>After testing registration, check your Google Sheet:</p>
+            <button onclick="openGoogleSheet()">Open Google Sheet</button>
+            <div class="info">
+                Sheet ID: <strong>1bJJVYDRTLf7SSKcrWp9KQEEr6dhGFfZ4yt6mnoDYEVw</strong>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛠️ Common Solutions</h3>
+            <div class="info">
+                <strong>If registration fails:</strong><br>
+                1. ✅ Make sure Google Apps Script is deployed as "Web app"<br>
+                2. ✅ Execute as: "Me" (your account)<br>
+                3. ✅ Who has access: "Anyone"<br>
+                4. ✅ Redeploy and get new URL if needed<br>
+                5. ✅ Check Google Apps Script logs for errors<br>
+                6. ✅ Verify your Google Sheet permissions
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScriptUrl = document.getElementById('scriptUrl').value;
+
+        function updateUrl() {
+            currentScriptUrl = document.getElementById('scriptUrl').value;
+            showResult('connectionResult', 'URL updated to: ' + currentScriptUrl, 'info');
+        }
+
+        function showResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        function showDetailedResult(containerId, data) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="result">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        async function testConnection() {
+            showResult('connectionResult', 'Testing connection...', 'info');
+            
+            try {
+                console.log('Testing URL:', currentScriptUrl);
+                
+                const response = await fetch(currentScriptUrl, {
+                    method: 'GET'
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                if (response.ok) {
+                    showResult('connectionResult', '✅ Connection successful!', 'success');
+                    showDetailedResult('connectionResult', {
+                        status: response.status,
+                        response: text
+                    });
+                } else {
+                    showResult('connectionResult', `❌ Connection failed: ${response.status}`, 'error');
+                    showDetailedResult('connectionResult', {
+                        status: response.status,
+                        error: text
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Connection test error:', error);
+                showResult('connectionResult', `❌ Connection error: ${error.message}`, 'error');
+                showDetailedResult('connectionResult', {
+                    error: error.message,
+                    stack: error.stack
+                });
+            }
+        }
+
+        async function testRegistration() {
+            showResult('registrationResult', 'Testing registration...', 'info');
+            
+            const userData = {
+                action: 'register',
+                name: document.getElementById('testName').value,
+                mobile: document.getElementById('testMobile').value,
+                email: document.getElementById('testEmail').value,
+                company: document.getElementById('testCompany').value,
+                purpose: document.getElementById('testPurpose').value,
+                password: document.getElementById('testPassword').value
+            };
+            
+            try {
+                console.log('Testing registration with data:', userData);
+                
+                // Try POST method first
+                const response = await fetch(currentScriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                console.log('Registration response status:', response.status);
+                const result = await response.text();
+                console.log('Registration response:', result);
+                
+                if (response.ok) {
+                    showResult('registrationResult', '✅ Registration test successful!', 'success');
+                    showDetailedResult('registrationResult', {
+                        method: 'POST',
+                        status: response.status,
+                        response: result
+                    });
+                } else {
+                    showResult('registrationResult', `❌ Registration failed: ${response.status}`, 'error');
+                    showDetailedResult('registrationResult', {
+                        method: 'POST',
+                        status: response.status,
+                        error: result
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Registration test error:', error);
+                showResult('registrationResult', `❌ Registration error: ${error.message}`, 'error');
+                
+                // Try GET fallback
+                try {
+                    const params = new URLSearchParams(userData);
+                    const getUrl = `${currentScriptUrl}?${params.toString()}`;
+                    
+                    console.log('Trying GET fallback:', getUrl);
+                    const getResponse = await fetch(getUrl);
+                    const getResult = await getResponse.text();
+                    
+                    showDetailedResult('registrationResult', {
+                        'POST_error': error.message,
+                        'GET_fallback_status': getResponse.status,
+                        'GET_fallback_response': getResult
+                    });
+                    
+                } catch (getError) {
+                    showDetailedResult('registrationResult', {
+                        'POST_error': error.message,
+                        'GET_fallback_error': getError.message
+                    });
+                }
+            }
+        }
+
+        async function testWithFormMethod() {
+            showResult('registrationResult', 'Testing with form submission method...', 'info');
+            
+            const userData = {
+                action: 'register',
+                name: document.getElementById('testName').value,
+                mobile: document.getElementById('testMobile').value,
+                email: document.getElementById('testEmail').value,
+                company: document.getElementById('testCompany').value,
+                purpose: document.getElementById('testPurpose').value,
+                password: document.getElementById('testPassword').value
+            };
+            
+            return new Promise((resolve) => {
+                // Create hidden iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.name = 'testFrame_' + Date.now();
+                document.body.appendChild(iframe);
+                
+                // Create form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.target = iframe.name;
+                form.action = currentScriptUrl;
+                
+                // Add form fields
+                Object.keys(userData).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = userData[key];
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                
+                // Handle completion
+                setTimeout(() => {
+                    try {
+                        document.body.removeChild(iframe);
+                        document.body.removeChild(form);
+                    } catch (e) {
+                        console.log('Cleanup error:', e);
+                    }
+                    
+                    showResult('registrationResult', '✅ Form submission completed!', 'success');
+                    showDetailedResult('registrationResult', {
+                        method: 'Form submission',
+                        message: 'Data submitted via hidden form. Check your Google Sheet to verify if data was added.',
+                        data: userData
+                    });
+                    
+                    resolve();
+                }, 3000);
+                
+                // Submit form
+                form.submit();
+                console.log('Form submitted to:', currentScriptUrl);
+            });
+        }
+
+        function openGoogleSheet() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1bJJVYDRTLf7SSKcrWp9KQEEr6dhGFfZ4yt6mnoDYEVw/edit';
+            window.open(sheetUrl, '_blank');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showResult('connectionResult', 'Click "Test Connection" to verify your Google Apps Script is working.', 'info');
+            showResult('registrationResult', 'Click "Test Registration" to check if data is being sent to your Google Sheet.', 'info');
+        });
+    </script>
+</body>
+</html>

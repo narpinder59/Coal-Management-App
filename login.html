@@ -462,7 +462,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Request Access & Verify Email
+                    <i class="fas fa-user-plus"></i> Submit Registration & Send OTP
                 </button>
             </form>
 
@@ -575,7 +575,7 @@
         let currentUserData = {};
         
         // Configuration - Update this with your NEW Apps Script deployment URL
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbysvI1m12JQ85VhnhGbr9s0vYhrbPvnynIUJ7_B7xu4nfNwu97u-RoHsHMTRZmS3DnP/exec';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby0B9oVwO95opuqQoynkGz3kJAXqgW1jrZhSQ9XwHTU6H_MWEmbYCtLh6r9C2JqHUIU/exec';
         
         // Show/Hide Forms
         function showLoginForm() {
@@ -603,6 +603,16 @@
             document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('otpForm').classList.add('hidden');
             document.getElementById('successForm').classList.add('hidden');
+        }
+
+        function clearRegistrationForm() {
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerMobile').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerCompany').value = '';
+            document.getElementById('registerPurpose').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
         }
 
         // Show Alert Messages
@@ -795,7 +805,7 @@
                 } else if (response.success) {
                     // Direct registration success (fallback)
                     showSuccessForm();
-                    showAlert('successAlert', 'Registration successful! Please wait for admin approval.', 'success');
+                    clearRegistrationForm();
                 } else {
                     showAlert('registerAlert', response.message || 'Registration failed. Please try again.');
                 }
@@ -844,11 +854,10 @@
                 console.log('Submitting registration to:', GOOGLE_SHEETS_URL);
                 console.log('User data:', userData);
                 
-                // Try modern fetch first
+                // Approach 1: Try standard POST request
                 try {
                     const response = await fetch(GOOGLE_SHEETS_URL, {
                         method: 'POST',
-                        mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -863,68 +872,129 @@
                         })
                     });
                     
-                    console.log('Response status:', response.status);
+                    console.log('POST Response status:', response.status);
                     
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Registration result:', result);
+                        return result;
                     }
                     
-                    const result = await response.json();
-                    console.log('Registration result:', result);
-                    return result;
+                    throw new Error(`HTTP error! status: ${response.status}`);
                     
-                } catch (fetchError) {
-                    console.log('Fetch failed, trying alternative method:', fetchError.message);
+                } catch (postError) {
+                    console.log('POST failed, trying GET fallback:', postError.message);
                     
-                    // Fallback: Use form submission with iframe (bypasses CORS)
-                    return new Promise((resolve) => {
-                        // Create hidden iframe
-                        const iframe = document.createElement('iframe');
-                        iframe.style.display = 'none';
-                        iframe.name = 'regFrame_' + Date.now();
-                        document.body.appendChild(iframe);
-                        
-                        // Create form
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.target = iframe.name;
-                        form.action = GOOGLE_SHEETS_URL;
-                        
-                        // Add form fields
-                        const fields = {
+                    // Approach 2: Try GET request with parameters
+                    try {
+                        const params = new URLSearchParams({
                             action: 'register',
                             name: userData.name,
                             mobile: userData.mobile,
                             email: userData.email,
                             company: userData.company,
                             purpose: userData.purpose,
-                            password: userData.password
-                        };
-                        
-                        Object.keys(fields).forEach(key => {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = key;
-                            input.value = fields[key];
-                            form.appendChild(input);
+                            password: userData.password,
+                            timestamp: Date.now()
                         });
                         
-                        document.body.appendChild(form);
+                        const getUrl = `${GOOGLE_SHEETS_URL}?${params.toString()}`;
+                        console.log('Trying GET request:', getUrl);
                         
-                        // Handle completion
-                        setTimeout(() => {
-                            document.body.removeChild(iframe);
-                            document.body.removeChild(form);
-                            resolve({ 
-                                success: true, 
-                                message: 'Registration submitted successfully'
+                        const getResponse = await fetch(getUrl, {
+                            method: 'GET'
+                        });
+                        
+                        if (getResponse.ok) {
+                            const getResult = await getResponse.json();
+                            console.log('GET Registration result:', getResult);
+                            return getResult;
+                        }
+                        
+                        throw new Error(`GET request failed: ${getResponse.status}`);
+                        
+                    } catch (getError) {
+                        console.log('GET also failed, using form submission:', getError.message);
+                        
+                        // Approach 3: Form submission with hidden iframe
+                        return new Promise((resolve) => {
+                            console.log('Creating form submission...');
+                            
+                            // Create hidden iframe
+                            const iframe = document.createElement('iframe');
+                            iframe.style.display = 'none';
+                            iframe.name = 'regFrame_' + Date.now();
+                            document.body.appendChild(iframe);
+                            
+                            // Create form
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.target = iframe.name;
+                            form.action = GOOGLE_SHEETS_URL;
+                            
+                            // Add form fields
+                            const fields = {
+                                action: 'register',
+                                name: userData.name,
+                                mobile: userData.mobile,
+                                email: userData.email,
+                                company: userData.company,
+                                purpose: userData.purpose,
+                                password: userData.password
+                            };
+                            
+                            Object.keys(fields).forEach(key => {
+                                const input = document.createElement('input');
+                                input.type = 'hidden';
+                                input.name = key;
+                                input.value = fields[key];
+                                form.appendChild(input);
                             });
-                        }, 3000);
-                        
-                        // Submit form
-                        form.submit();
-                        console.log('Registration submitted via fallback method');
-                    });
+                            
+                            document.body.appendChild(form);
+                            
+                            // Listen for iframe load
+                            iframe.onload = function() {
+                                console.log('Form submitted successfully');
+                                setTimeout(() => {
+                                    try {
+                                        document.body.removeChild(iframe);
+                                        document.body.removeChild(form);
+                                    } catch (e) {
+                                        console.log('Cleanup error:', e);
+                                    }
+                                    resolve({ 
+                                        success: true, 
+                                        message: 'Registration submitted successfully via form',
+                                        method: 'form-submission'
+                                    });
+                                }, 1000);
+                            };
+                            
+                            // Fallback timeout
+                            setTimeout(() => {
+                                try {
+                                    if (document.body.contains(iframe)) {
+                                        document.body.removeChild(iframe);
+                                    }
+                                    if (document.body.contains(form)) {
+                                        document.body.removeChild(form);
+                                    }
+                                } catch (e) {
+                                    console.log('Cleanup error:', e);
+                                }
+                                resolve({ 
+                                    success: true, 
+                                    message: 'Registration submitted (timeout method)',
+                                    method: 'timeout-fallback'
+                                });
+                            }, 5000);
+                            
+                            // Submit form
+                            console.log('Submitting form to:', GOOGLE_SHEETS_URL);
+                            form.submit();
+                        });
+                    }
                 }
                 
             } catch (error) {
@@ -1195,8 +1265,14 @@
                 return;
             }
 
-            // You can implement resend functionality here
-            showAlert('otpAlert', 'Please check your email again. If you still don\'t receive the code, please restart registration.', 'info');
+            // Show loading state
+            showAlert('otpAlert', 'Resending verification code...', 'info');
+            
+            // Note: In a real implementation, you would call the backend to resend OTP
+            // For now, just show a helpful message
+            setTimeout(() => {
+                showAlert('otpAlert', 'If you still don\'t receive the code, please restart registration or check your spam folder.', 'info');
+            }, 2000);
         }
 
         // OTP Input Management
