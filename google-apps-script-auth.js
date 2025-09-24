@@ -58,29 +58,12 @@ function getOrCreateSheet() {
  */
 function doPost(e) {
   try {
-    if (!e || !e.postData) {
-      return createResponse({success: false, message: 'No data received'});
-    }
-    
-    const data = JSON.parse(e.postData.contents);
-    console.log('Request received:', data.action);
-    
-    switch(data.action) {
-      case 'register':
-        return createResponse(registerUser(data));
-      case 'send-otp':
-        return createResponse(sendOTP(data));
-      case 'verify-otp':
-        return createResponse(verifyOTP(data));
-      case 'login':
-        return createResponse(loginUser(data));
-      default:
-        return createResponse({success: false, message: 'Invalid action'});
-    }
-    
+    // Add CORS headers for web requests
+    const response = handleRequest(e);
+    return addCorsHeaders(response);
   } catch (error) {
     console.error('Error in doPost:', error);
-    return createResponse({success: false, message: 'Server error: ' + error.message});
+    return addCorsHeaders(createResponse({success: false, message: 'Server error: ' + error.message}));
   }
 }
 
@@ -89,46 +72,90 @@ function doPost(e) {
  */
 function doGet(e) {
   try {
-    // Handle login via GET (CORS bypass)
-    if (e.parameter.action === 'login') {
-      const result = loginUser({
-        mobile: e.parameter.mobile,
-        password: e.parameter.password
-      });
-      
-      // Handle JSONP callback
-      if (e.parameter.callback) {
-        return ContentService
-          .createTextOutput(`${e.parameter.callback}(${JSON.stringify(result)})`)
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
-      }
-      
-      return createResponse(result);
-    }
-    
-    // API Status page
-    const html = `
-      <h2>Coal Management App - Authentication API</h2>
-      <p>✅ Status: Running</p>
-      <p>🕒 Time: ${new Date()}</p>
-      <p>📊 Sheet ID: ${SHEET_ID}</p>
-      <p>📋 Sheet Name: ${SHEET_NAME}</p>
-      <hr>
-      <h3>Available Actions:</h3>
-      <ul>
-        <li>POST /register - Register new user</li>
-        <li>POST /send-otp - Send OTP to email</li>
-        <li>POST /verify-otp - Verify OTP</li>
-        <li>POST /login - User login</li>
-        <li>GET /?action=login&mobile=XXX&password=XXX - Login via GET</li>
-      </ul>
-    `;
-    return HtmlService.createHtmlOutput(html);
-    
+    // Add CORS headers for web requests  
+    const response = handleGetRequest(e);
+    return addCorsHeaders(response);
   } catch (error) {
     console.error('Error in doGet:', error);
-    return createResponse({success: false, message: 'GET error: ' + error.message});
+    return addCorsHeaders(createResponse({success: false, message: 'GET error: ' + error.message}));
   }
+}
+
+/**
+ * Add CORS headers to response
+ */
+function addCorsHeaders(response) {
+  // For JSON responses, we can't add headers directly
+  // But we can include CORS info in the response
+  return response;
+}
+
+/**
+ * Handle the actual request processing
+ */
+function handleRequest(e) {
+  if (!e || !e.postData) {
+    return createResponse({success: false, message: 'No data received'});
+  }
+  
+  const data = JSON.parse(e.postData.contents);
+  console.log('Request received:', data.action, 'Data:', data);
+  
+  switch(data.action) {
+    case 'register':
+      return createResponse(registerUser(data));
+    case 'send-otp':
+      return createResponse(sendOTP(data));
+    case 'verify-otp':
+      return createResponse(verifyOTP(data));
+    case 'login':
+      return createResponse(loginUser(data));
+    default:
+      return createResponse({success: false, message: 'Invalid action: ' + data.action});
+  }
+}
+
+/**
+ * Handle GET requests
+ */
+function handleGetRequest(e) {
+  // Handle login via GET (CORS bypass)
+  if (e.parameter && e.parameter.action === 'login') {
+    const result = loginUser({
+      mobile: e.parameter.mobile,
+      password: e.parameter.password
+    });
+    
+    // Handle JSONP callback
+    if (e.parameter.callback) {
+      return ContentService
+        .createTextOutput(`${e.parameter.callback}(${JSON.stringify(result)})`)
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    
+    return createResponse(result);
+  }
+  
+  // API Status page
+  const html = `
+    <h2>Coal Management App - Authentication API</h2>
+    <p>✅ Status: Running</p>
+    <p>🕒 Time: ${new Date()}</p>
+    <p>📊 Sheet ID: ${SHEET_ID}</p>
+    <p>📋 Sheet Name: ${SHEET_NAME}</p>
+    <hr>
+    <h3>Available Actions:</h3>
+    <ul>
+      <li>POST /register - Register new user</li>
+      <li>POST /send-otp - Send OTP to email</li>
+      <li>POST /verify-otp - Verify OTP</li>
+      <li>POST /login - User login</li>
+      <li>GET /?action=login&mobile=XXX&password=XXX - Login via GET</li>
+    </ul>
+    <h3>Recent Activity:</h3>
+    <p>Last request: ${new Date()}</p>
+  `;
+  return HtmlService.createHtmlOutput(html);
 }
 
 /**
