@@ -30,29 +30,56 @@
     </script>
 
     <style>
+        /* ========================================
+           GLOBAL STYLES & RESET
+        ======================================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        html {
+            overflow-x: hidden;
         }
 
+        /* ========================================
+           BODY & LAYOUT
+        ======================================== */
+        body {
+            background: #f9fafb;
+            min-height: 100vh;
+            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px 20px 40px 20px;
+            overflow-x: hidden;
+            width: 100%;
+            color: #1f2937;
+        }
+
+        /* ========================================
+           MAIN CONTENT & LAYOUT
+        ======================================== */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           NAVIGATION & BUTTONS
+        ======================================== */
         .back-button {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #374151;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -60,32 +87,29 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             z-index: 1000;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
         .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #f3f4f6;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
+        /* ========================================
+           CALCULATOR CONTAINER
+        ======================================== */
         .calculator-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 10px;
             width: 100%;
             max-width: 800px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .calculator-header {
@@ -94,16 +118,23 @@
         }
 
         .calculator-title {
-            color: white;
+            color: #1f2937;
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
             animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        /* ========================================
+           ANIMATIONS & KEYFRAMES
+        ======================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes titleGlow {
@@ -200,21 +231,22 @@
         }
 
         .calculator-subtitle {
-            color: rgba(255, 255, 255, 0.8);
+            color: #6b7280;
             font-size: 16px;
             font-weight: 300;
         }
 
         .instruction-message {
-            background: rgba(74, 144, 226, 0.2);
+            background: #1e40af;
             color: white;
             padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 8px;
+            border: 1px solid #1d4ed8;
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 25px;
             animation: pulse 2s infinite;
+            box-shadow: 0 2px 4px rgba(30, 64, 175, 0.1);
         }
 
         @keyframes pulse {
@@ -354,6 +386,263 @@
             transform: scale(1.1);
         }
 
+        /* Coal Input Table Style */
+        .coal-input-table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .coal-input-table-wrapper {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .coal-input-table {
+            width: 100%;
+            min-width: 350px; /* Reduced from 600px for better mobile support */
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.95);
+            position: relative;
+        }
+
+        .coal-input-table th {
+            background: linear-gradient(135deg, #495057, #343a40);
+            color: white;
+            padding: 10px 8px; /* Reduced from 15px 10px */
+            font-weight: 600;
+            text-align: center;
+            font-size: 12px; /* Reduced from 14px */
+            position: relative;
+        }
+
+        .coal-input-table th.parameter-header {
+            background: linear-gradient(135deg, #3150b4, #1e40af);
+            min-width: 140px; /* Reduced from 180px */
+            text-align: left;
+            padding-left: 12px; /* Reduced from 15px */
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+
+        .coal-input-table th.coal-type-header {
+            min-width: 120px; /* Reduced from 150px */
+            position: relative;
+        }
+
+        .coal-type-remove-btn {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 15px;
+            height: 15px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 15;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+        }
+
+        .coal-type-remove-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+            z-index: 20;
+        }
+
+        .coal-input-table td {
+            padding: 0;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .coal-input-table td.parameter-cell {
+            background: #f8f9fa;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 12px; /* Reduced from 12px 15px */
+            color: #495057;
+            border-right: 2px solid #1e40af;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            min-width: 140px; /* Reduced from 180px */
+            font-size: 12px; /* Added smaller font size */
+        }
+
+        .coal-table-input {
+            width: 100%;
+            border: none;
+            padding: 8px 8px; /* Reduced from 12px 10px */
+            font-size: 12px; /* Reduced from 14px */
+            font-weight: 500;
+            color: #374151;
+            background: #f9fafb !important;
+            text-align: center;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .coal-table-input:focus {
+            background: rgba(37, 99, 235, 0.05) !important;
+            box-shadow: inset 0 0 0 2px #2563eb;
+        }
+
+        .coal-table-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Add Coal Column Button */
+        .add-coal-column-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .add-coal-column-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .add-coal-column-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #20c997, #28a745);
+        }
+
+        /* Table header row styling */
+        .coal-input-table tbody tr:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .coal-input-table tbody tr:hover {
+            background: rgba(79, 172, 254, 0.05);
+        }
+
+        /* Mobile Responsive for Table */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                overflow-x: hidden; /* Ensure no horizontal scroll */
+            }
+            
+            .main-content {
+                gap: 15px;
+                width: 100%;
+                max-width: calc(100vw - 20px); /* Ensure it fits within viewport */
+            }
+            
+            .coal-input-table-container {
+                padding: 10px;
+                margin: 10px 0;
+                overflow-x: auto;
+                border: 1px solid #007bff;
+                width: 100%;
+                max-width: calc(100vw - 20px); /* Constrain to viewport */
+            }
+            
+            .coal-input-table {
+                min-width: 280px; /* Reduced to match new compact sizing */
+                font-size: 11px; /* Slightly reduced */
+            }
+            
+            .coal-input-table th,
+            .coal-input-table td {
+                padding: 6px 4px; /* Further reduced for mobile */
+            }
+            
+            .coal-input-table th.parameter-header {
+                min-width: 80px; /* Further reduced from 100px for mobile */
+                padding-left: 6px; /* Reduced padding */
+            }
+            
+            .coal-input-table td.parameter-cell {
+                min-width: 80px; /* Match header width */
+                padding: 8px 6px; /* Reduced padding for mobile */
+                font-size: 11px; /* Smaller font for mobile */
+            }
+            
+            .coal-input-table th.coal-type-header {
+                min-width: 70px; /* Reduced from 80px */
+            }
+            
+            .coal-table-input {
+                padding: 6px 4px; /* Reduced for mobile */
+                font-size: 11px;
+            }
+            
+            .coal-type-remove-btn {
+                width: 12px;
+                height: 12px;
+                font-size: 9px;
+                top: 0px;
+                right: 0px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .main-content {
+                gap: 10px;
+                max-width: calc(100vw - 10px);
+            }
+            
+            .coal-input-table-container {
+                padding: 8px;
+                margin: 8px 0;
+                max-width: calc(100vw - 10px);
+            }
+            
+            .coal-input-table {
+                min-width: 240px; /* Very compact for small screens */
+                font-size: 10px;
+            }
+            
+            .coal-input-table th.parameter-header {
+                min-width: 70px; /* Further reduced from 80px for very small screens */
+            }
+            
+            .coal-input-table td.parameter-cell {
+                min-width: 70px; /* Match header width */
+                padding: 6px 4px; /* Very compact padding */
+                font-size: 10px; /* Smaller font for very small screens */
+            }
+            
+            .coal-input-table th.coal-type-header {
+                min-width: 60px; /* Reduced from 70px */
+            }
+            
+            .coal-type-remove-btn {
+                width: 13px;
+                height: 13px;
+                font-size: 8px;
+                top: 0px;
+                right: 0px;
+            }
+        }
+
         /* Coal Cards Grid */
         .coal-cards-grid {
             display: grid;
@@ -369,19 +658,20 @@
         }
 
         .add-coal-btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
+            background: #16a34a;
             border: none;
             color: white;
             padding: 12px 25px;
-            border-radius: 25px;
+            border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
         .add-coal-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             background: linear-gradient(135deg, #20c997, #28a745);
         }
 
@@ -414,14 +704,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .coal-card-title {
-            color: white;
+            color: #1f2937;
             font-size: 16px;
             font-weight: 600;
             margin: 0;
+            margin-bottom: 10px;
         }
 
         .coal-card-remove {
@@ -450,61 +741,161 @@
             gap: 15px;
         }
 
+        /* ========================================
+           FLOATING LABEL INPUT SYSTEM
+        ======================================== */
         .coal-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+            position: relative;
+            margin-bottom: 5px;
         }
 
         .coal-input-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 12px;
-            font-weight: 500;
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 400;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+            padding: 2px 6px;
         }
 
         .coal-input-field {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            padding: 12px 15px;
-            color: white;
-            font-size: 14px;
+            padding: 24px 15px 10px 15px;
+            color: #374151;
+            font-size: 16px;
+            font-weight: 500;
             width: 100%;
             min-width: 200px;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .coal-input-field:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
             transform: translateY(-1px);
         }
 
         .coal-input-field::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: transparent;
+        }
+
+        /* Floating label behavior */
+        .coal-input-field:focus + .coal-input-label,
+        .coal-input-field:not(:placeholder-shown) + .coal-input-label {
+            top: 12px;
+            left: 6px;
+            font-size: 14px;
+            color: #2563eb;
+            font-weight: 500;
+            background: transparent !important;
+            padding: 1px 4px;
+        }
+
+        .coal-input-field:focus + .coal-input-label {
+            color: #2563eb;
+            background: transparent !important;
+        }
+
+        /* Autofill prevention */
+        .coal-input-field:-webkit-autofill,
+        .coal-input-field:-webkit-autofill:hover,
+        .coal-input-field:-webkit-autofill:focus,
+        .coal-input-field:-webkit-autofill:active,
+        .coal-table-input:-webkit-autofill,
+        .coal-table-input:-webkit-autofill:hover,
+        .coal-table-input:-webkit-autofill:focus,
+        .coal-table-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #f9fafb inset !important;
+            -webkit-text-fill-color: #374151 !important;
+            background-color: #f9fafb !important;
+            transition: background-color 5000s ease-in-out 0s !important;
         }
 
         /* Plant Parameters Card */
         .plant-parameters-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            border: 2px solid #17a2b8;
-            margin: 20px 0;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            margin: 10px 0;
+            transition: all 0.3s ease; /* Add transition for smooth padding change */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .plant-parameters-card.collapsed {
+            padding: 8px; /* Minimal padding - just enough for header */
         }
 
         .plant-params-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        /* Collapsible Plant Parameters Styles */
+        .collapse-toggle-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .collapse-toggle-btn:hover {
+            background: #e5e7eb;
+            transform: scale(1.1);
+        }
+
+        .collapse-toggle-btn.collapsed {
+            transform: rotate(180deg);
+        }
+
+        .collapse-toggle-btn.collapsed:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .plant-params-content {
+            transition: all 0.3s ease;
+            overflow: hidden;
+            opacity: 1;
+            max-height: 1000px;
+        }
+
+        .plant-params-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0; /* Remove all margins when collapsed */
+            padding: 0; /* Remove all padding when collapsed */
         }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
+
+              .coal-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
             .coal-cards-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -517,13 +908,49 @@
             .plant-params-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .collapse-toggle-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+            
+            .coal-card-title {
+                font-size: 14px;
+                flex-grow: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .plant-parameters-card.collapsed {
+                padding: 8px 10px ; /* Even more compact on mobile */
+            }
         }
 
         @media (max-width: 480px) {
             .coal-card-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: nowrap;
+            }
+            
+            .coal-card-title {
+                font-size: 13px;
+                flex-grow: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .collapse-toggle-btn {
+                width: 18px;
+                height: 18px;
+                font-size: 11px;
+                flex-shrink: 0;
             }
             
             .coal-card-remove {
@@ -552,13 +979,13 @@
         }
 
         .input-field {
-            border: 1px solid #dee2e6;
+            border: 1px solid #d1d5db;
             border-left: none;
             padding: 10px 15px;
             font-size: 0.95rem;
             font-weight: 500;
-            color: #333;
-            background: rgba(255, 255, 255, 0.9);
+            color: #374151;
+            background: #f9fafb;
             flex: 1;
             transition: all 0.3s ease;
             outline: none;
@@ -579,21 +1006,21 @@
         }
 
         .input-field:focus {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: #4facfe;
-            box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
-            transform: scale(1.02);
+            background: white;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: scale(1.01);
         }
 
         .results-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
             padding: 25px;
             margin: 25px 0;
             display: none;
             animation: fadeInUp 0.5s ease-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         @keyframes fadeInUp {
@@ -602,10 +1029,10 @@
         }
 
         .results-title {
-            color: white;
+            color: #1f2937;
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 5px; /* Reduced from 10px to 5px */
             text-align: center;
         }
 
@@ -613,35 +1040,79 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 10px;
+            border: 2px solid #c9cace;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-collapse: collapse;
         }
 
         .comparison-table th {
-            background: linear-gradient(135deg, #495057, #343a40);
-            color: white;
+            background: #f3f4f6;
+            color: #374151;
             padding: 12px 8px;
             font-weight: 600;
             text-align: center;
             font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table th:first-child {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            font-weight: 900;
+            text-align: left;
+            padding-left: 15px;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            min-width: 180px;
+            border-right: 1px solid #e5e7eb;
         }
 
         .comparison-table td {
             padding: 10px 8px;
             text-align: center;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid #e5e7eb;
             font-size: 13px;
+            color: #374151;
         }
 
         .comparison-table tr:nth-child(even) {
-            background: rgba(248, 249, 250, 0.5);
+            background: #f9fafb;
         }
 
         .comparison-table .parameter-cell {
-            background: #f8f9fa;
+            background: #f3f4f6 !important;
+            color: #374151 !important;
             font-weight: 600;
             text-align: left;
-            padding-left: 12px;
+            padding-left: 15px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            min-width: 180px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .comparison-table td:first-child {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 15px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            min-width: 180px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        /* Results Container outside calculator */
+        .results-table-wrapper {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 5px; /* Reduced from 10px to 5px */
         }
 
         .economical-header {
@@ -661,8 +1132,20 @@
             color: white;
             padding: 15px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 5px;
             text-align: center;
+        }
+
+        /* Results Container - Wraps all result elements */
+        .results-container-wrapper {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            margin: 15px 0;
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .summary-item {
@@ -699,14 +1182,105 @@
         }
 
         @media (max-width: 768px) {
-            .comparison-table th,
-            .comparison-table td {
-                min-width: 100px;
-                font-size: 11px;
+            .results-table-wrapper {
+                overflow-x: auto;
+                margin: 15px 0;
+                width: 100%;
+                max-width: calc(100vw - 20px);
             }
             
             .comparison-table {
-                min-width: 600px;
+                min-width: 320px; /* Reduced for better mobile fit */
+                font-size: 11px;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px 5px;
+                min-width: 70px; /* Reduced for mobile */
+                font-size: 11px;
+            }
+            
+            .comparison-table th:first-child {
+                position: sticky !important; /* Ensure sticky is maintained */
+                left: 0 !important;
+                z-index: 10 !important;
+                min-width: 120px; /* Reduced from 180px for mobile */
+                padding-left: 10px;
+                background: linear-gradient(135deg, #007bff, #0056b3) !important;
+                color: #ffffff !important;
+            }
+            
+            .comparison-table .parameter-cell {
+                position: sticky !important; /* Ensure sticky is maintained */
+                left: 0 !important;
+                z-index: 5 !important;
+                min-width: 120px; /* Reduced from 180px for mobile */
+                padding-left: 10px;
+                background: #f8f9fa !important;
+                color: #333333 !important;
+                border-right: 2px solid #007bff !important;
+            }
+            
+            .comparison-table td:first-child {
+                position: sticky !important; /* Ensure sticky is maintained */
+                left: 0 !important;
+                z-index: 5 !important;
+                min-width: 120px; /* Reduced from 180px for mobile */
+                padding-left: 10px;
+                background: #f8f9fa !important;
+                color: #333333 !important;
+                border-right: 2px solid #007bff !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .results-table-wrapper {
+                max-width: calc(100vw - 10px);
+            }
+            
+            .comparison-table {
+                min-width: 260px; /* Very compact for small screens */
+                font-size: 10px;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 6px 3px;
+                min-width: 50px;
+                font-size: 10px;
+            }
+            
+            .comparison-table th:first-child {
+                position: sticky !important;
+                left: 0 !important;
+                z-index: 10 !important;
+                min-width: 100px;
+                padding-left: 8px;
+                background: linear-gradient(135deg, #007bff, #0056b3) !important;
+                color: #ffffff !important;
+            }
+            
+            .comparison-table .parameter-cell {
+                position: sticky !important;
+                left: 0 !important;
+                z-index: 5 !important;
+                min-width: 100px;
+                padding-left: 8px;
+                background: #f8f9fa !important;
+                color: #333333 !important;
+                border-right: 2px solid #007bff !important;
+            }
+            
+            .comparison-table td:first-child {
+                position: sticky !important;
+                left: 0 !important;
+                z-index: 5 !important;
+                min-width: 100px;
+                padding-left: 8px;
+                background: #f8f9fa !important;
+                color: #333333 !important;
+                border-right: 2px solid #007bff !important;
             }
         }
 
@@ -756,14 +1330,28 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: #2563eb;
             color: white;
             position: relative;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #dc3545, #b02a37);
+            background: #dc2626;
             color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
         }
 
         .storage-counter {
@@ -787,9 +1375,9 @@
         }
 
         .floating-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #374151;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -797,13 +1385,13 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             font-size: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .floating-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #f3f4f6;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
@@ -940,19 +1528,36 @@
         /* Mobile Responsive */
         @media (max-width: 768px) {
             body {
-                align-items: flex-start;
                 padding: 10px;
-                min-height: 100vh;
+            }
+
+            .main-content {
+                gap: 20px;
+                width: 100%;
+                padding: 0;
             }
 
             .calculator-container {
                 margin-top: 40px;
                 padding: 15px;
-                width: calc(100vw - 20px);
-                max-width: calc(100vw - 20px);
+                width: 100%;
+                max-width: 100%;
                 box-sizing: border-box;
-                overflow-x: hidden;
-                min-height: calc(100vh - 80px);
+            }
+
+            .results-container {
+                width: 100%;
+                max-width: 100%;
+                padding: 20px 15px;
+                margin: 0;
+            }
+
+            .results-container-wrapper {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px;
+                margin: 20px 0;
+                box-sizing: border-box;
             }
 
             .calculator-title {
@@ -1054,20 +1659,76 @@
 
             .action-buttons {
                 flex-direction: row;
-                gap: 10px;
-                margin-top: 20px;
-                justify-content: center;
+                gap: 8px;
+                margin-top: 15px;
+                padding: 0 10px;
             }
 
             .action-buttons .btn {
                 flex: 1;
-                max-width: 48%;
-                padding: 10px 8px;
-                font-size: 13px;
+                min-width: 0;
+                padding: 10px 6px;
+                font-size: 10px;
                 text-align: center;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border-radius: 6px;
+                white-space: nowrap;
+            }
+
+            .action-buttons .btn i {
+                margin-right: 4px;
+                font-size: 11px;
+            }
+
+            .add-coal-column-container {
+                padding: 0 10px;
+                margin-top: 12px;
+            }
+
+            .add-coal-column-btn {
+                padding: 8px 16px !important;
+                font-size: 12px !important;
+                max-width: 200px;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .plant-parameters-card {
+                margin: 15px 10px !important;
+                padding: 12px !important;
+                border-radius: 8px !important;
+            }
+
+            .plant-parameters-card.collapsed {
+                padding: 10px 12px !important;
+            }
+
+            .plant-params-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            .coal-input-group {
+                margin-bottom: 5px !important;
+            }
+
+            .coal-input-field {
+                padding: 20px 12px 5px 12px !important;
+                font-size: 14px !important;
+                min-width: unset !important;
+            }
+
+            .coal-input-label {
+                font-size: 13px !important;
+                left: 10px !important;
+            }
+
+            .coal-input-field:focus + .coal-input-label,
+            .coal-input-field:not(:placeholder-shown) + .coal-input-label {
+                left: 6px !important;
+                font-size: 14px !important;
             }
 
             .formula-sidebar {
@@ -1148,12 +1809,19 @@
                 padding: 5px;
             }
 
+            .main-content {
+                gap: 15px;
+            }
+
             .calculator-container {
                 margin-top: 30px;
                 padding: 10px;
-                width: calc(100vw - 10px);
-                max-width: calc(100vw - 10px);
-                min-height: calc(100vh - 60px);
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .results-container {
+                padding: 15px 10px;
             }
 
             .calculator-title {
@@ -1277,27 +1945,28 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            background: white;
             padding: 8px 15px;
             border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
         .toggle-label {
             font-size: 16px;
             user-select: none;
+            color: #374151;
         }
 
         .toggle-switch {
             position: relative;
             width: 50px;
             height: 25px;
-            background: rgba(255, 255, 255, 0.3);
+            background: #fbbf24;
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+
         }
 
         .toggle-switch::before {
@@ -1323,14 +1992,14 @@
 
         /* Night Mode Styles */
         body.night-mode {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
-            color: #ecf0f1 !important;
+            background-color: #111827 !important;
+            color: #e5e7eb !important;
         }
 
         body.night-mode .calculator-container {
-            background: rgba(26, 26, 46, 0.95) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
         }
 
         body.night-mode .calculator-header {
@@ -1343,62 +2012,226 @@
 
         body.night-mode .calculator-title {
             color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+            text-shadow: none !important;
         }
 
         body.night-mode .coal-icon {
-            background: rgba(255, 255, 255, 0.9) !important;
-            color: #1a1a1a !important;
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            border: 1px solid #e5e7eb !important;
         }
 
         body.night-mode .comparison-arrow {
-            color: #ffd700 !important;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+            color: #fbbf24 !important;
+            text-shadow: none !important;
         }
 
         body.night-mode .calculator-subtitle {
-            color: rgba(255, 255, 255, 0.8) !important;
+            color: #d1d5db !important;
         }
 
         body.night-mode .input-section {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
         }
 
         body.night-mode .section-title {
-            color: #74b9ff !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .coal-card-title {
+            color: #ffffff !important;
+        }
+
+        /* Additional text elements for night mode */
+        body.night-mode h1,
+        body.night-mode h2,
+        body.night-mode h3,
+        body.night-mode h4,
+        body.night-mode h5,
+        body.night-mode h6 {
+            color: #ffffff !important;
+        }
+
+        body.night-mode p {
+            color: #d1d5db !important;
+        }
+
+        body.night-mode .plant-parameters-card {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+        }
+
+        body.night-mode .summary-section {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .summary-item {
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .section-header {
+            color: #ffffff !important;
         }
 
         body.night-mode .form-control {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: #ecf0f1 !important;
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
         }
 
         body.night-mode .form-control:focus {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-color: #74b9ff !important;
-            box-shadow: 0 0 0 0.25rem rgba(116, 185, 255, 0.25) !important;
+            background-color: #374151 !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25) !important;
+            outline: none !important;
         }
 
         body.night-mode .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.6) !important;
+            color: #9ca3af !important;
+        }
+
+        /* Coal Table Inputs */
+        body.night-mode .coal-table-input {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .coal-table-input:focus {
+            background-color: #374151 !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 0.125rem rgba(37, 99, 235, 0.25) !important;
+            outline: none !important;
+        }
+
+        body.night-mode .coal-table-input::placeholder {
+            color: #9ca3af !important;
+        }
+
+        /* Coal Input Fields */
+        body.night-mode .coal-input-field {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .coal-input-field:focus {
+            background-color: #374151 !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 0.125rem rgba(37, 99, 235, 0.25) !important;
+            outline: none !important;
+        }
+
+        body.night-mode .coal-input-field::placeholder {
+            color: #9ca3af !important;
+        }
+
+        /* Prevent autofill styling in night mode */
+        body.night-mode .coal-input-field:-webkit-autofill,
+        body.night-mode .coal-input-field:-webkit-autofill:hover,
+        body.night-mode .coal-input-field:-webkit-autofill:focus,
+        body.night-mode .coal-input-field:-webkit-autofill:active,
+        body.night-mode .coal-table-input:-webkit-autofill,
+        body.night-mode .coal-table-input:-webkit-autofill:hover,
+        body.night-mode .coal-table-input:-webkit-autofill:focus,
+        body.night-mode .coal-table-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #374151 inset !important;
+            -webkit-text-fill-color: #e5e7eb !important;
+            background-color: #374151 !important;
+            transition: background-color 5000s ease-in-out 0s !important;
         }
 
         body.night-mode .input-label {
-            color: #ddd !important;
+            color: #d1d5db !important;
+        }
+
+        body.night-mode .coal-input-label {
+            color: #d1d5db !important;
+            background: #374151 !important;
+            padding: 2px 6px !important;
+        }
+
+        /* Night mode floating label behavior */
+        body.night-mode .coal-input-field:focus + .coal-input-label,
+        body.night-mode .coal-input-field:not(:placeholder-shown) + .coal-input-label {
+            top: 12px !important;
+            left: 6px !important;
+            font-size: 14px !important;
+            background: transparent!important;
+            color: #3b82f6 !important;
+            padding: 1px 4px !important;
         }
 
         body.night-mode .unit-label {
-            color: #bbb !important;
+            color: #9ca3af !important;
         }
 
         body.night-mode .calculate-btn {
-            background: linear-gradient(135deg, #74b9ff, #0984e3) !important;
+            background: #2563eb !important;
+            border: none !important;
+            color: white !important;
         }
 
         body.night-mode .calculate-btn:hover {
-            background: linear-gradient(135deg, #0984e3, #74b9ff) !important;
+            background: #1d4ed8 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        /* Night Mode Button Styles */
+        body.night-mode .btn-success {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+
+        body.night-mode .btn-success:hover {
+            background-color: #1d4ed8 !important;
+            border-color: #1d4ed8 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        body.night-mode .btn-primary {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+
+        body.night-mode .btn-primary:hover {
+            background-color: #1d4ed8 !important;
+            border-color: #1d4ed8 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        body.night-mode .btn-danger {
+            background-color: #dc2626 !important;
+            border-color: #dc2626 !important;
+            color: white !important;
+        }
+
+        body.night-mode .btn-danger:hover {
+            background-color: #b91c1c !important;
+            border-color: #b91c1c !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+        }
+
+        body.night-mode .add-coal-column-btn {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .add-coal-column-btn:hover {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(75, 85, 99, 0.4) !important;
         }
 
         body.night-mode .results-container {
@@ -1406,99 +2239,228 @@
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
+        body.night-mode .results-container-wrapper {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+        }
+
         body.night-mode .results-title {
-            color: #74b9ff !important;
+            color: #ffffff !important;
         }
 
         body.night-mode .comparison-table {
-            color: #ecf0f1 !important;
-            background: rgba(255, 255, 255, 0.05) !important;
+            color: #e5e7eb !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
         }
 
         body.night-mode .comparison-table th {
-            background: rgba(116, 185, 255, 0.3) !important;
-            color: #fff !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background-color: #374151 !important;
+            color: #ffffff !important;
+            border: 1px solid #4b5563 !important;
         }
 
         body.night-mode .comparison-table td {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: #ecf0f1 !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
         }
 
         body.night-mode .comparison-table tr:nth-child(even) td {
-            background: rgba(255, 255, 255, 0.12) !important;
+            background-color: #374151 !important;
         }
 
         body.night-mode .comparison-table .best-value {
-            background: rgba(39, 174, 96, 0.4) !important;
-            color: #2ecc71 !important;
+            background-color: #065f46 !important;
+            color: #10b981 !important;
             font-weight: bold !important;
         }
 
+        /* Coal Input Table Night Mode Styles */
+        body.night-mode .coal-input-table-container {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+        }
+
+        body.night-mode .coal-input-table {
+            background-color: #1f2937 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .coal-input-table th {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+            border: 1px solid #4b5563 !important;
+        }
+
+        body.night-mode .coal-input-table th.parameter-header {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .coal-input-table th.coal-type-header {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .coal-input-table td {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .coal-input-table td.parameter-cell {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+        }
+
+        body.night-mode .coal-input-table tbody tr:nth-child(even) {
+            background-color: #374151 !important;
+        }
+
+        body.night-mode .coal-input-table tbody tr:hover {
+            background-color: #4b5563 !important;
+        }
+
+        /* Results Table Wrapper */
+        body.night-mode .results-table-wrapper {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+        }
+
         body.night-mode .floating-btn {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: #ecf0f1 !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
         }
 
         body.night-mode .floating-btn:hover {
-            background: rgba(255, 255, 255, 0.2) !important;
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
         }
 
         /* Mobile night mode floating buttons - enhanced visibility */
         @media (max-width: 768px) {
             body.night-mode .floating-btn {
-                background: rgba(30, 30, 30, 0.95) !important;
-                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                background-color: #1f2937 !important;
+                border: 1px solid #374151 !important;
                 color: #ffffff !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
             }
 
             body.night-mode .floating-btn:hover {
-                background: rgba(45, 45, 45, 0.98) !important;
-                transform: scale(1.05);
+                background-color: #374151 !important;
+                transform: scale(1.05) !important;
             }
         }
 
         body.night-mode .export-dropdown {
-            background: rgba(26, 26, 46, 0.95) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
         }
 
         body.night-mode .export-btn {
-            color: #ecf0f1 !important;
+            color: #e5e7eb !important;
         }
 
         body.night-mode .export-btn:hover {
-            background: rgba(255, 255, 255, 0.1) !important;
+            background-color: #374151 !important;
         }
 
         body.night-mode .instruction-message {
-            background: rgba(116, 185, 255, 0.2) !important;
-            border: 1px solid rgba(116, 185, 255, 0.3) !important;
-            color: #74b9ff !important;
+            background-color: #1e40af !important;
+            border: 1px solid #2563eb !important;
+            color: #ffffff !important;
         }
 
         body.night-mode .error-message {
-            background: rgba(231, 76, 60, 0.2) !important;
-            border: 1px solid rgba(231, 76, 60, 0.3) !important;
-            color: #e74c3c !important;
+            background-color: #7f1d1d !important;
+            border: 1px solid #dc2626 !important;
+            color: #fecaca !important;
         }
 
         body.night-mode .night-mode-toggle {
-            background: rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
         }
 
         body.night-mode .toggle-label {
-            color: #ecf0f1 !important;
+            color: #e5e7eb !important;
         }
 
         body.night-mode .back-button {
-            background: rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .back-button:hover {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+        }
+
+        /* Collapse Toggle Button */
+        body.night-mode .collapse-toggle-btn {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .collapse-toggle-btn:hover {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+        }
+
+        body.night-mode .collapse-toggle-btn.collapsed {
+            background-color: #374151 !important;
+        }
+
+        /* Formula Sidebar */
+        body.night-mode .formula-sidebar {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .formula-title {
+            color: #ffffff !important;
+        }
+
+        body.night-mode .formula-item {
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .close-btn {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        body.night-mode .close-btn:hover {
+            background-color: #4b5563 !important;
+        }
+
+        /* Stored Calculations */
+        body.night-mode .stored-calculations {
+            background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        /* Coal Type Remove Button */
+        body.night-mode .coal-type-remove-btn {
+            background-color: #dc2626 !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+
+        body.night-mode .coal-type-remove-btn:hover {
+            background-color: #b91c1c !important;
         }
 
         /* Storage Counter */
@@ -1559,6 +2521,7 @@
             font-size: 16px;
             font-weight: bold;
             margin: 0;
+            margin-top: 25px;
         }
 
         .stored-calculation-date {
@@ -1630,7 +2593,7 @@
 
         @media (max-width: 480px) {
             .calculator-container {
-                margin-top: 70px !important;
+                margin-top: 50px !important;
             }
             
             .night-mode-toggle {
@@ -1829,13 +2792,15 @@
 
     <!-- Night Mode Toggle -->
     <div class="night-mode-toggle">
-        <span class="toggle-label">🌙</span>
-        <div class="toggle-switch" onclick="toggleNightMode()"></div>
         <span class="toggle-label">☀️</span>
+        <div class="toggle-switch" onclick="toggleNightMode()"></div>
+        <span class="toggle-label">🌙</span>
     </div>
 
-    <!-- Main Calculator Container -->
-    <div class="calculator-container">
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+        <!-- Main Calculator Container -->
+        <div class="calculator-container">
         <div class="calculator-header">
             <h1 class="calculator-title">
                 <div class="comparison-icon">
@@ -1857,33 +2822,123 @@
         <!-- Error Message -->
         <div class="error-message" id="errorMessage"></div>
 
-        <!-- Results Container -->
-        <div class="results-container" id="resultsContainer">
-            <h3 class="results-title" id="resultsTitle">Cost Analysis Results</h3>
-            <table class="comparison-table" id="comparisonTable">
+        <!-- Coal Input Table Title -->
+        <div class="coal-input-table-container">
+            <div class="coal-card-header">
+                <h6 class="coal-card-title">
+                    <i class="fas fa-table me-2"></i>
+                    Coal Types Parameters
+                </h6>
+            </div>
+        
+        <!-- Coal Input Table (Outside Card for Sticky Columns) -->
+        <div class="coal-input-table-wrapper">
+            <table class="coal-input-table" id="coalInputTable">
                 <thead>
                     <tr>
-                        <th>Parameter</th>
-                        <th id="coal1Header">Coal Type 1</th>
-                        <th id="coal2Header">Coal Type 2</th>
+                        <th class="parameter-header">Parameter</th>
+                        <th class="coal-type-header" id="coalHeader1">
+                            Coal Type 1
+                        </th>
+                        <th class="coal-type-header" id="coalHeader2">
+                            Coal Type 2
+                        </th>
                     </tr>
                 </thead>
-                <tbody id="comparisonTableBody">
-                    <!-- Dynamic content will be inserted here -->
+                <tbody>
+                    <tr>
+                        <td class="parameter-cell">Coal Name</td>
+                        <td>
+                            <input type="text" 
+                                   class="coal-table-input" 
+                                   id="coal1Name" 
+                                   placeholder="Enter coal name"
+                                   data-allow-text="true">
+                        </td>
+                        <td>
+                            <input type="text" 
+                                   class="coal-table-input" 
+                                   id="coal2Name" 
+                                   placeholder="Enter coal name"
+                                   data-allow-text="true">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="parameter-cell">Coal Cost (Rs/MT)</td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal1Cost" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="2400">
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal2Cost" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="2600">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="parameter-cell">Freight (Rs/MT)</td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal1Freight" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="2500">
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal2Freight" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="2700">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="parameter-cell">GCV (kcal/kg)</td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal1GCV" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="4300">
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="coal-table-input" 
+                                   id="coal2GCV" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="4500">
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            <div class="summary-section" id="summarySection">
-                <!-- Summary results will be displayed here -->
-            </div>
+        </div>        </div>
+
+        
+        <!-- Add Coal Column Button -->
+        <div class="add-coal-column-container">
+            <button class="add-coal-column-btn" onclick="addCoalColumn()" title="Add Coal Type Column">
+                <i class="fas fa-plus me-2"></i> Add Coal Type
+            </button>
         </div>
 
-        <!-- Coal Cards Container -->
-        <div id="coalCardsContainer" class="coal-cards-grid">
+        <!-- Legacy Coal Cards Container (Hidden) -->
+        <div id="coalCardsContainer" class="coal-cards-grid" style="display: none;">
             <!-- Coal cards will be dynamically generated here -->
         </div>
 
-        <!-- Add Coal Button -->
-        <div class="add-coal-section">
+        <!-- Add Coal Button (Hidden) -->
+        <div class="add-coal-section" style="display: none;">
             <button class="btn btn-success add-coal-btn" onclick="addCoalType()" title="Add Coal Type">
                 <i class="fas fa-plus me-2"></i> Add Coal Type
             </button>
@@ -1896,33 +2951,38 @@
                     <i class="fas fa-industry me-2"></i>
                     Plant Parameters
                 </h6>
+                <button class="collapse-toggle-btn" onclick="togglePlantParameters()" id="plantParametersToggle">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
             </div>
             
-            <div class="plant-params-grid">
+            <div class="plant-params-content" id="plantParametersContent">
+                <div class="plant-params-grid">
                 <div class="coal-input-group">
+                    <input type="number" class="coal-input-field" id="capacity" step="1" min="0" placeholder=" ">
                     <label class="coal-input-label">Generation Capacity (MW)</label>
-                    <input type="number" class="coal-input-field" id="capacity" step="1" min="0" placeholder="2300">
                 </div>
 
                 <div class="coal-input-group">
+                    <input type="number" class="coal-input-field" id="plf" step="0.01" min="0" max="100" placeholder=" ">
                     <label class="coal-input-label">PLF (%)</label>
-                    <input type="number" class="coal-input-field" id="plf" step="0.01" min="0" max="100" placeholder="85">
                 </div>
 
                 <div class="coal-input-group">
+                    <input type="number" class="coal-input-field" id="days" step="1" min="0" max="365" placeholder=" ">
                     <label class="coal-input-label">Number of Days</label>
-                    <input type="number" class="coal-input-field" id="days" step="1" min="0" max="365" placeholder="365">
                 </div>
 
                 <div class="coal-input-group">
+                    <input type="number" class="coal-input-field" id="shr" step="0.01" min="0" placeholder=" ">
                     <label class="coal-input-label">Station Heat Rate (kcal/kWh)</label>
-                    <input type="number" class="coal-input-field" id="shr" step="0.01" min="0" placeholder="2700">
                 </div>
 
                 <div class="coal-input-group">
+                    <input type="number" class="coal-input-field" id="coalQuantity" step="1" min="0" placeholder=" ">
                     <label class="coal-input-label">Coal Quantity (MT) - Optional</label>
-                    <input type="number" class="coal-input-field" id="coalQuantity" step="1" min="0" placeholder="100000">
                 </div>
+            </div>
             </div>
         </div>
 
@@ -1943,6 +3003,35 @@
             </button>
         </div>
     </div>
+
+    <!-- Results Container - Wraps all result elements -->
+    <div class="results-container-wrapper" id="resultsContainerWrapper" style="display: none;">
+        <!-- Results Title -->
+        <h3 class="results-title" id="resultsTitle">Cost Analysis Results</h3>
+        
+        <!-- Results Table -->
+        <div class="results-table-wrapper" id="resultsTableWrapper">
+            <table class="comparison-table" id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th id="coal1Header">Coal Type 1</th>
+                        <th id="coal2Header">Coal Type 2</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Results Summary -->
+        <div class="summary-section" id="summarySection">
+            <!-- Summary results will be displayed here -->
+        </div>
+    </div>
+    
+    </div> <!-- End Main Content -->
 
     <!-- Floating Action Buttons -->
     <div class="floating-actions">
@@ -2291,6 +3380,194 @@
                     newRemoveBtn.innerHTML = '<i class="fas fa-times"></i>';
                     header.appendChild(newRemoveBtn);
                 }
+            });
+        }
+
+        // New Table-Based Coal Management Functions
+        function addCoalColumn() {
+            if (coalCount >= maxCoalTypes) {
+                showError(`Maximum ${maxCoalTypes} coal types allowed.`);
+                return;
+            }
+
+            coalCount++;
+            
+            const table = document.getElementById('coalInputTable');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+            
+            // Add header column
+            const newHeader = document.createElement('th');
+            newHeader.className = 'coal-type-header';
+            newHeader.id = `coalHeader${coalCount}`;
+            newHeader.innerHTML = `
+                Coal Type ${coalCount}
+                ${coalCount > 2 ? `
+                    <button type="button" class="coal-type-remove-btn" onclick="removeCoalColumn(${coalCount})" title="Remove Coal Type">
+                        <i class="fas fa-times"></i>
+                    </button>
+                ` : ''}
+            `;
+            thead.appendChild(newHeader);
+            
+            // Add data cells to each row
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, rowIndex) => {
+                const newCell = document.createElement('td');
+                const input = document.createElement('input');
+                
+                // Configure input based on row type
+                if (rowIndex === 0) { // Coal Name
+                    input.type = 'text';
+                    input.className = 'coal-table-input';
+                    input.placeholder = 'Enter coal name';
+                    input.setAttribute('data-allow-text', 'true');
+                } else { // Numeric inputs
+                    input.type = 'number';
+                    input.className = 'coal-table-input';
+                    input.step = '0.01';
+                    input.min = '0';
+                    
+                    // Set placeholder based on parameter type
+                    const placeholders = {
+                        1: (2400 + (coalCount - 1) * 200).toString(), // Cost
+                        2: (2500 + (coalCount - 1) * 200).toString(), // Freight
+                        3: (4300 + (coalCount - 1) * 200).toString()  // GCV
+                    };
+                    input.placeholder = placeholders[rowIndex] || '';
+                }
+                
+                // Set input ID
+                const fieldNames = ['Name', 'Cost', 'Freight', 'GCV'];
+                input.id = `coal${coalCount}${fieldNames[rowIndex]}`;
+                
+                newCell.appendChild(input);
+                row.appendChild(newCell);
+                
+                // Add event listener
+                input.addEventListener('input', () => {
+                    updateInstructionMessage();
+                });
+            });
+            
+            updateInputsObject();
+            updateInstructionMessage();
+            
+            // Auto-update results if they are currently displayed
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer && resultsContainer.style.display !== 'none') {
+                setTimeout(() => {
+                    autoCalculate();
+                }, 100); // Small delay to ensure DOM updates are complete
+            }
+            
+            // Show success message
+            showError(`Coal Type ${coalCount} added successfully!`, 'success');
+        }
+
+        function removeCoalColumn(coalIndex, skipConfirmation = false) {
+            if (coalCount <= 2) {
+                if (!skipConfirmation) {
+                    showError('Minimum 2 coal types required.');
+                }
+                return;
+            }
+
+            // Add confirmation dialog only if not skipping
+            if (!skipConfirmation && !confirm(`Are you sure you want to remove Coal Type ${coalIndex}?`)) {
+                return;
+            }
+
+            const table = document.getElementById('coalInputTable');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+            
+            // Find and remove header column
+            const headerToRemove = document.getElementById(`coalHeader${coalIndex}`);
+            if (headerToRemove) {
+                const headerIndex = Array.from(thead.children).indexOf(headerToRemove);
+                headerToRemove.remove();
+                
+                // Remove corresponding cells from each row
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    if (row.children[headerIndex]) {
+                        row.children[headerIndex].remove();
+                    }
+                });
+            }
+            
+            // Reindex remaining columns
+            reindexCoalColumns();
+            
+            coalCount--;
+            updateInputsObject();
+            updateInstructionMessage();
+            
+            // Auto-update results if they are currently displayed
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer && resultsContainer.style.display !== 'none') {
+                setTimeout(() => {
+                    autoCalculate();
+                }, 100); // Small delay to ensure DOM updates are complete
+            }
+            
+            // Show success message only if not skipping confirmation
+            if (!skipConfirmation) {
+                showError(`Coal type removed successfully!`, 'success');
+            }
+        }
+
+        function reindexCoalColumns() {
+            const table = document.getElementById('coalInputTable');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+            const headers = thead.querySelectorAll('.coal-type-header');
+            
+            headers.forEach((header, index) => {
+                const newIndex = index + 1;
+                
+                // Update header ID and text
+                header.id = `coalHeader${newIndex}`;
+                const removeBtn = header.querySelector('.coal-type-remove-btn');
+                if (removeBtn) {
+                    header.innerHTML = `
+                        Coal Type ${newIndex}
+                        ${newIndex > 2 ? `
+                            <button type="button" class="coal-type-remove-btn" onclick="removeCoalColumn(${newIndex})" title="Remove Coal Type">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                    `;
+                } else {
+                    header.textContent = `Coal Type ${newIndex}`;
+                }
+                
+                // Update input IDs in corresponding column
+                const columnIndex = index + 1; // +1 because first column is parameter names
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach((row, rowIndex) => {
+                    const cell = row.children[columnIndex];
+                    if (cell && cell.querySelector('input')) {
+                        const input = cell.querySelector('input');
+                        const fieldNames = ['Name', 'Cost', 'Freight', 'GCV'];
+                        input.id = `coal${newIndex}${fieldNames[rowIndex]}`;
+                    }
+                });
+            });
+        }
+
+        // Setup event listeners for table inputs
+        function setupTableInputEventListeners() {
+            const tableInputs = document.querySelectorAll('.coal-table-input');
+            tableInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updateInstructionMessage();
+                    // Auto-calculate silently when all required fields are filled
+                    setTimeout(() => {
+                        autoCalculate();
+                    }, 300);
+                });
             });
         }
 
@@ -2650,13 +3927,39 @@
                 </div>
             `;
 
-            results.container.style.display = 'block';
+            // Show results container wrapper
+            const resultsContainerWrapper = document.getElementById('resultsContainerWrapper');
+            
+            if (resultsContainerWrapper) {
+                resultsContainerWrapper.style.display = 'block';
+            }
         }
 
         function calculate() {
             const calculation = calculateComparison();
             displayResults(calculation);
             return calculation;
+        }
+
+        function togglePlantParameters() {
+            const content = document.getElementById('plantParametersContent');
+            const toggleBtn = document.getElementById('plantParametersToggle');
+            const card = document.querySelector('.plant-parameters-card');
+            const icon = toggleBtn.querySelector('i');
+            
+            if (content.classList.contains('collapsed')) {
+                // Expand
+                content.classList.remove('collapsed');
+                toggleBtn.classList.remove('collapsed');
+                card.classList.remove('collapsed');
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                // Collapse
+                content.classList.add('collapsed');
+                toggleBtn.classList.add('collapsed');
+                card.classList.add('collapsed');
+                icon.className = 'fas fa-chevron-down';
+            }
         }
 
         function autoCalculate() {
@@ -2803,17 +4106,18 @@
         }
 
         function clearInputs() {
-            // Clear coal name inputs
-            document.getElementById('coal1Name').value = '';
-            document.getElementById('coal2Name').value = '';
-            
-            // Clear coal properties
-            document.getElementById('coal1Cost').value = '';
-            document.getElementById('coal2Cost').value = '';
-            document.getElementById('coal1Freight').value = '';
-            document.getElementById('coal2Freight').value = '';
-            document.getElementById('coal1GCV').value = '';
-            document.getElementById('coal2GCV').value = '';
+            // Clear all coal inputs dynamically based on current coal count
+            for (let i = 1; i <= coalCount; i++) {
+                const nameInput = document.getElementById(`coal${i}Name`);
+                const costInput = document.getElementById(`coal${i}Cost`);
+                const freightInput = document.getElementById(`coal${i}Freight`);
+                const gcvInput = document.getElementById(`coal${i}GCV`);
+                
+                if (nameInput) nameInput.value = '';
+                if (costInput) costInput.value = '';
+                if (freightInput) freightInput.value = '';
+                if (gcvInput) gcvInput.value = '';
+            }
             
             // Clear plant parameters
             document.getElementById('capacity').value = '';
@@ -2822,10 +4126,18 @@
             document.getElementById('shr').value = '';
             document.getElementById('coalQuantity').value = '';
             
-            // Clear results section
-            document.getElementById('results').innerHTML = '';
+            // Hide results container wrapper
+            const resultsContainerWrapper = document.getElementById('resultsContainerWrapper');
             
-            console.log('All input fields cleared successfully!');
+            if (resultsContainerWrapper) {
+                resultsContainerWrapper.style.display = 'none';
+            }
+            
+            // Update instruction message
+            updateInstructionMessage();
+            hideError();
+            
+            console.log(`All input fields cleared successfully! (${coalCount} coal types)`);
         }
 
         function clearData() {
@@ -3922,26 +5234,42 @@
             const calc = storedCalculations[index];
             
             if (calc) {
-                // Clear existing coal cards and reset count
-                const coalCardsContainer = document.getElementById('coalCardsContainer');
-                coalCardsContainer.innerHTML = '';
-                coalCount = 0; // Reset global coal count
+                // Reset to exactly 2 columns first (skip confirmation during loading)
+                while (coalCount > 2) {
+                    removeCoalColumn(coalCount, true); // true = skip confirmation
+                }
+                coalCount = 2; // Ensure count is reset
                 
                 // Load coal types data
                 if (calc.coalTypes && calc.coalTypes.length > 0) {
                     // Handle new multi-coal format
+                    // Add additional columns if needed
+                    while (coalCount < calc.coalTypes.length) {
+                        addCoalColumn();
+                    }
+                    
+                    // Clear all existing values first
+                    for (let i = 1; i <= coalCount; i++) {
+                        const nameInput = document.getElementById(`coal${i}Name`);
+                        const costInput = document.getElementById(`coal${i}Cost`);
+                        const freightInput = document.getElementById(`coal${i}Freight`);
+                        const gcvInput = document.getElementById(`coal${i}GCV`);
+                        
+                        if (nameInput) nameInput.value = '';
+                        if (costInput) costInput.value = '';
+                        if (freightInput) freightInput.value = '';
+                        if (gcvInput) gcvInput.value = '';
+                    }
+                    
+                    // Now populate with saved data
                     calc.coalTypes.forEach((coal, coalIndex) => {
-                        addCoalType();
                         document.getElementById(`coal${coalIndex + 1}Name`).value = coal.name || '';
                         document.getElementById(`coal${coalIndex + 1}Cost`).value = coal.cost || '';
                         document.getElementById(`coal${coalIndex + 1}Freight`).value = coal.freight || '';
                         document.getElementById(`coal${coalIndex + 1}GCV`).value = coal.gcv || '';
                     });
                 } else {
-                    // Handle legacy 2-coal format
-                    addCoalType(); // Coal 1
-                    addCoalType(); // Coal 2
-                    
+                    // Handle legacy 2-coal format (default 2 columns already exist)
                     document.getElementById('coal1Name').value = calc.coal1Name || '';
                     document.getElementById('coal2Name').value = calc.coal2Name || '';
                     document.getElementById('coal1Cost').value = calc.coal1Cost || '';
@@ -3962,8 +5290,9 @@
                 // Hide stored calculations
                 toggleStoredCalculations();
                 
-                // Auto-trigger calculation if we have minimum required data
+                // Update the instruction message after loading with a small delay
                 setTimeout(() => {
+                    updateInstructionMessage();
                     autoCalculate();
                 }, 100); // Small delay to ensure DOM is updated
                 
@@ -4066,28 +5395,17 @@
             
             initializeElements();
             
-            // Initialize with default two coal cards
-            const coalCardsContainer = document.getElementById('coalCardsContainer');
-            console.log('Coal cards container:', coalCardsContainer);
-            
-            // Clear any existing cards and create fresh ones
-            coalCardsContainer.innerHTML = '';
-            
-            for (let i = 1; i <= 2; i++) {
-                const coalCard = createCoalCard(i);
-                coalCardsContainer.appendChild(coalCard);
-                console.log(`Created coal card ${i}`);
-            }
+            // Initialize with default table structure (2 coal types already present in HTML)
             coalCount = 2;
             
-            // Update inputs object AFTER coal cards are created
+            // Update inputs object to include table inputs
             updateInputsObject();
             console.log('Updated inputs object:', inputs);
             
             updateStorageCounter();
             updateInstructionMessage();
             setupEventListeners();
-            setupInputEventListeners(); // Setup event listeners for coal inputs
+            setupTableInputEventListeners(); // Setup event listeners for table inputs
             initializeNightMode(); // Initialize night mode
             updateStoredCalculationsCounter(); // Initialize storage counter
             initializeAnimations(); // Initialize animations

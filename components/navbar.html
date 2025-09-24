@@ -407,26 +407,10 @@
         <i class="fas fa-user"></i>
       </div>
       <div class="user-details">
-        <h6 id="userDisplayName">Administrator</h6>
-        <small id="userEmail">System Manager</small>
+        <h6>Administrator</h6>
+        <small>System Manager</small>
       </div>
     </div>
-
-    <script>
-      // Load user info from session
-      document.addEventListener('DOMContentLoaded', function() {
-        const session = localStorage.getItem('userSession');
-        if (session) {
-          try {
-            const sessionData = JSON.parse(session);
-            document.getElementById('userDisplayName').textContent = sessionData.name || 'User';
-            document.getElementById('userEmail').textContent = sessionData.email || 'user@example.com';
-          } catch (error) {
-            console.error('Error loading user session:', error);
-          }
-        }
-      });
-    </script>
     
     <div class="offcanvas-body">
       <div class="navigation-menu">

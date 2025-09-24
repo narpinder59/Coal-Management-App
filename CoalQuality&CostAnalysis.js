@@ -208,6 +208,23 @@ function formatMonthForDisplay(monthStr) {
         return 'Invalid Date';
     }
     
+    // Handle YYYY-MM format first (e.g., "2025-01")
+    if (typeof monthStr === 'string' && /^\d{4}-\d{2}$/.test(monthStr)) {
+        const [year, month] = monthStr.split('-');
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const monthIndex = parseInt(month) - 1; // Convert to 0-based index
+        if (monthIndex >= 0 && monthIndex < 12) {
+            const result = `${monthNames[monthIndex]}-${year}`;
+            console.log("formatMonthForDisplay: SUCCESS - YYYY-MM format converted to:", result);
+            return result;
+        } else {
+            console.log("formatMonthForDisplay: ERROR - Invalid month in YYYY-MM format:", month);
+            return 'Invalid Date';
+        }
+    }
+    
     // Handle Google Sheets Date format: Date(2025,3,1)
     if (typeof monthStr === 'string' && monthStr.includes('Date(')) {
         // Use a more specific regex pattern
@@ -234,11 +251,39 @@ function formatMonthForDisplay(monthStr) {
             console.log("formatMonthForDisplay: ERROR - Failed to match Date pattern in:", monthStr);
         }
     } else {
-        console.log("formatMonthForDisplay: ERROR - Not a Google Sheets Date format:", typeof monthStr, monthStr);
+        console.log("formatMonthForDisplay: ERROR - Not a recognized date format:", typeof monthStr, monthStr);
     }
     
     console.log("formatMonthForDisplay: FALLBACK - Returning Invalid Date");
     return 'Invalid Date';
+}
+
+// Calculate Financial Year from a date (April to March)
+function getFinancialYear(date) {
+    if (!date) return null;
+    
+    const year = date.getFullYear();
+    const month = date.getMonth(); // 0-based (0 = January, 3 = April, 11 = December)
+    
+    // Financial Year: April (month 3) to March (month 2 of next year)
+    if (month >= 3) { // April to December
+        return `FY ${year}-${(year + 1).toString().slice(-2)}`;
+    } else { // January to March
+        return `FY ${year - 1}-${year.toString().slice(-2)}`;
+    }
+}
+
+// Get Financial Year display format
+function getFinancialYearDisplay(fyString) {
+    return fyString; // Already in desired format like "FY 2024-25"
+}
+
+// Check if a date falls within a specific Financial Year
+function isDateInFinancialYear(date, fyString) {
+    if (!date || !fyString) return false;
+    
+    const fyFromDate = getFinancialYear(date);
+    return fyFromDate === fyString;
 }
 
 // Get unique months from data for dropdown - SIMPLE VERSION
@@ -600,6 +645,9 @@ function showQualityCostAnalysis() {
             <button class="btn export-btn print-btn" id="QCPrintReportBtn" title="Print">
                 <i class="bi bi-printer"></i>
             </button>
+            <button class="btn export-btn special-report-btn" id="QCSpecialReportBtn" title="Special Report">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+            </button>
         </div>
 
         <!-- Filter Toggle Button -->
@@ -682,12 +730,127 @@ function showQualityCostAnalysis() {
                 <div id="QCColumnSelector" class="d-flex flex-column gap-1" style="max-height: 200px; overflow-y: auto;">
                     <!-- Column checkboxes will be populated here -->
                 </div>
+                
+                <!-- Month-wise Display Option -->
+                <div class="mt-2 pt-2 border-top">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="QCMonthWiseDisplay" onchange="QCToggleMonthWiseMode()">
+                        <label class="form-check-label small" for="QCMonthWiseDisplay">
+                            <i class="bi bi-calendar-month"></i> Show Month-wise Data
+                        </label>
+                    </div>
+                    <small class="text-muted">Display data grouped by individual months</small>
+                </div>
             </div>
             <hr>
 
             <button class="btn btn-primary w-100" id="QCApplyFilters">
                 <i class="bi bi-check-circle"></i> Apply Filters
             </button>
+        </div>
+
+        <!-- Special Report Modal -->
+        <div class="modal fade" id="QCSpecialReportModal" tabindex="-1" aria-labelledby="QCSpecialReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="QCSpecialReportModalLabel">
+                            <i class="bi bi-file-earmark-bar-graph"></i> Special Report Generator
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-calendar-range"></i> Period Selection</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">From Date</label>
+                                    <input type="month" class="form-control" id="QCSpecialFromDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">To Date</label>
+                                    <input type="month" class="form-control" id="QCSpecialToDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Grouping</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="QCSpecialGrouping" id="QCSpecialMonthWise" value="month" checked>
+                                        <label class="form-check-label" for="QCSpecialMonthWise">Month-wise</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="QCSpecialGrouping" id="QCSpecialYearWise" value="year">
+                                        <label class="form-check-label" for="QCSpecialYearWise">Year-wise</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-collection"></i> Consolidation Options</h6>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="QCSpecialPlantWise">
+                                        <label class="form-check-label" for="QCSpecialPlantWise">Plant-wise consolidation</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="QCSpecialCoalCompanyWise">
+                                        <label class="form-check-label" for="QCSpecialCoalCompanyWise">Coal Company-wise consolidation</label>
+                                    </div>
+                                </div>
+                                <h6><i class="bi bi-download"></i> Export Options</h6>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="QCSpecialExportPDF" checked>
+                                        <label class="form-check-label" for="QCSpecialExportPDF">Export as PDF</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="QCSpecialExportExcel" checked>
+                                        <label class="form-check-label" for="QCSpecialExportExcel">Export as Excel</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Selection Filters -->
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-building"></i> Plant Selection</h6>
+                                <div class="mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="QCSelectAllPlants">Select All</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-1" id="QCDeselectAllPlants">Deselect All</button>
+                                </div>
+                                <div id="QCPlantSelection" class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <!-- Plant checkboxes will be populated here -->
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-truck"></i> Coal Company Selection</h6>
+                                <div class="mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="QCSelectAllCoalCompanies">Select All</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-1" id="QCDeselectAllCoalCompanies">Deselect All</button>
+                                </div>
+                                <div id="QCCoalCompanySelection" class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <!-- Coal company checkboxes will be populated here -->
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="bi bi-table"></i> Column Selection</h6>
+                                <div class="mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="QCSelectAllColumns">Select All</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-1" id="QCDeselectAllColumns">Deselect All</button>
+                                </div>
+                                <div id="QCColumnSelection" class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <!-- Column checkboxes will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="QCGenerateSpecialReport">
+                            <i class="bi bi-play-circle"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
@@ -854,7 +1017,8 @@ function QCPopulateColumnSelector() {
         { id: 'distance', label: 'Distance (KMs)', default: false },
         { id: 'landedCostMT', label: 'Landed Cost (Rs/MT)', default: true },
         { id: 'landedCostMcal', label: 'Landed Cost (Rs/Mcal)', default: true },
-        { id: 'perUnitCost', label: 'Per Unit Cost (Rs/kWh)', default: true }
+        { id: 'perUnitCost', label: 'Per Unit Cost (Rs/kWh)', default: true },
+        { id: 'totalAmount', label: 'Total Amount (Rs. Crore)', default: true }
     ];
     
     const columnSelector = document.getElementById('QCColumnSelector');
@@ -887,39 +1051,102 @@ function QCPopulateColumnSelector() {
 }
 
 // Get visible columns based on user selection
-function QCGetVisibleColumns() {
+function QCGetVisibleColumns(useSpecialReportColumns = null, forMonthWiseTable = false) {
     // Always include Plant Name and Coal Company as they are essential columns
-    const visibleColumns = [
-        { id: 'plant', header: 'Plant Name', index: 1 },
-        { id: 'coalCompany', header: 'Coal Company', index: 2 }
-    ];
+    const visibleColumns = [];
+    
+    // Add Month column ONLY if this is specifically for the month-wise table
+    if (forMonthWiseTable) {
+        visibleColumns.push({ id: 'month', header: 'Month', index: 0 });
+    }
+    
+    // Add standard essential columns (adjust indices based on month column for month-wise table only)
+    const indexOffset = forMonthWiseTable ? 1 : 0;
+    visibleColumns.push(
+        { id: 'plant', header: 'Plant Name', index: 1 + indexOffset },
+        { id: 'coalCompany', header: 'Coal Company', index: 2 + indexOffset }
+    );
     
     const selectableColumns = [
-        { id: 'qtyDispatched', header: 'Qty. Dispatched (Lakh MT)', index: 3 },
-        { id: 'qtyReceived', header: 'Qty. Received (Lakh MT)', index: 4 },
-        { id: 'rakesReceived', header: 'Rakes Received', index: 5 },
-        { id: 'transitLoss', header: 'Transit Loss (%)', index: 6 },
-        { id: 'moisture', header: 'Moisture (%)', index: 7 },
-        { id: 'ash', header: 'Ash (%)', index: 8 },
-        { id: 'volatileMatter', header: 'Volatile Matter (%)', index: 9 },
-        { id: 'fixedCarbon', header: 'Fixed Carbon (%)', index: 10 },
-        { id: 'gcv', header: 'GCV (Kcal/Kg)', index: 11 },
-        { id: 'coalCost', header: 'Coal Cost (Rs/MT)', index: 12 },
-        { id: 'railwayFreight', header: 'Railway Freight (Rs/MT)', index: 13 },
-        { id: 'distance', header: 'Distance (KMs)', index: 14 },
-        { id: 'landedCostMT', header: 'Landed Cost (Rs/MT)', index: 15 },
-        { id: 'landedCostMcal', header: 'Landed Cost (Rs/Mcal)', index: 16 },
-        { id: 'perUnitCost', header: 'Per Unit Cost (Rs/kWh)', index: 17 }
+        { id: 'qtyDispatched', header: 'Qty. Dispatched (Lakh MT)', index: 3 + indexOffset },
+        { id: 'qtyReceived', header: 'Qty. Received (Lakh MT)', index: 4 + indexOffset },
+        { id: 'rakesReceived', header: 'Rakes Received', index: 5 + indexOffset },
+        { id: 'transitLoss', header: 'Transit Loss (%)', index: 6 + indexOffset },
+        { id: 'moisture', header: 'Moisture (%)', index: 7 + indexOffset },
+        { id: 'ash', header: 'Ash (%)', index: 8 + indexOffset },
+        { id: 'volatileMatter', header: 'Volatile Matter (%)', index: 9 + indexOffset },
+        { id: 'fixedCarbon', header: 'Fixed Carbon (%)', index: 10 + indexOffset },
+        { id: 'gcv', header: 'GCV (Kcal/Kg)', index: 11 + indexOffset },
+        { id: 'coalCost', header: 'Coal Cost (Rs/MT)', index: 12 + indexOffset },
+        { id: 'railwayFreight', header: 'Railway Freight (Rs/MT)', index: 13 + indexOffset },
+        { id: 'distance', header: 'Distance (KMs)', index: 14 + indexOffset },
+        { id: 'landedCostMT', header: 'Landed Cost (Rs/MT)', index: 15 + indexOffset },
+        { id: 'landedCostMcal', header: 'Landed Cost (Rs/Mcal)', index: 16 + indexOffset },
+        { id: 'perUnitCost', header: 'Per Unit Cost (Rs/kWh)', index: 17 + indexOffset },
+        { id: 'totalAmount', header: 'Total Amount (Rs. Crore)', index: 18 + indexOffset }
     ];
     
-    // Add selected columns to the visible columns
-    selectableColumns.forEach(col => {
-        const checkbox = document.getElementById(`QCCol_${col.id}`);
-        if (checkbox && checkbox.checked) {
-            visibleColumns.push(col);
-        }
-    });
+    // Debug: Log checkbox selection status
+    console.log('QCGetVisibleColumns - Checking column selections:');
+    console.log('useSpecialReportColumns parameter:', useSpecialReportColumns);
     
+    // Determine which column selection system to use
+    const specialReportColumns = document.querySelectorAll('.column-checkbox');
+    const shouldUseSpecialReport = useSpecialReportColumns === true || 
+                                   (useSpecialReportColumns === null && specialReportColumns.length > 0);
+    
+    if (shouldUseSpecialReport && specialReportColumns.length > 0) {
+        console.log("Using Special Report column selections");
+        const selectedColumnKeys = Array.from(document.querySelectorAll('.column-checkbox:checked')).map(cb => cb.value);
+        console.log("Selected column keys from Special Report:", selectedColumnKeys);
+        
+        // Create mapping between Special Report keys and selectableColumns IDs
+        const keyMapping = {
+            'Date': null, // Date is not in selectableColumns (it's always included in data)
+            'Plant': null, // Plant Name is always included
+            'Coal Company': null, // Coal Company is always included
+            'Qty Dispatched (MT)': 'qtyDispatched',
+            'Qty Received (MT)': 'qtyReceived', 
+            'Rakes Received': 'rakesReceived',
+            'Transit Loss %': 'transitLoss',
+            'Moisture %': 'moisture',
+            'Ash %': 'ash',
+            'Volatile Matter %': 'volatileMatter',
+            'Fixed Carbon %': 'fixedCarbon',
+            'GCV (Kcal/Kg)': 'gcv',
+            'Coal Cost (Rs/MT)': 'coalCost',
+            'Railway Freight (Rs/MT)': 'railwayFreight',
+            'Distance (KMs)': 'distance',
+            'Landed Cost Rs/MT': 'landedCostMT',
+            'Landed Cost Rs/Mcal': 'landedCostMcal',
+            'Per Unit Cost': 'perUnitCost',
+            'Total Amount (Rs. Crore)': 'totalAmount'
+        };
+        
+        // Add selected columns to the visible columns using mapping
+        selectableColumns.forEach(col => {
+            // Find the Special Report key that maps to this column ID
+            const specialReportKey = Object.keys(keyMapping).find(key => keyMapping[key] === col.id);
+            if (specialReportKey && selectedColumnKeys.includes(specialReportKey)) {
+                visibleColumns.push(col);
+                console.log(`Adding column ${col.id}: ${col.header} (mapped from "${specialReportKey}")`);
+            }
+        });
+    } else {
+        console.log("Using regular column selections (QCCol_ checkboxes)");
+        // Add selected columns to the visible columns (original logic)
+        selectableColumns.forEach(col => {
+            const checkbox = document.getElementById(`QCCol_${col.id}`);
+            const isChecked = checkbox && checkbox.checked;
+            console.log(`Column ${col.id}: checkbox found = ${!!checkbox}, checked = ${isChecked}`);
+            
+            if (checkbox && checkbox.checked) {
+                visibleColumns.push(col);
+            }
+        });
+    }
+    
+    console.log('Final visible columns:', visibleColumns.map(col => col.header));
     return visibleColumns;
 }
 
@@ -1049,6 +1276,11 @@ function QCSetupExportListeners() {
             window.print();
         }
     });
+    
+    // Special Report
+    document.getElementById('QCSpecialReportBtn').addEventListener('click', () => {
+        QCShowSpecialReportModal();
+    });
 }
 
 // Helper functions for loading states
@@ -1117,6 +1349,33 @@ function QCToggleFilters() {
         filterOptionsDiv.style.display = 'none';
     }
     
+    QCRenderTables();
+}
+
+// Toggle month-wise display mode
+function QCToggleMonthWiseMode() {
+    const monthWiseDisplay = document.getElementById('QCMonthWiseDisplay').checked;
+    const consolidatePlantCheckbox = document.getElementById('QCConsolidatePlant');
+    const consolidateCoalCompanyCheckbox = document.getElementById('QCConsolidateCoalCompany');
+    
+    if (monthWiseDisplay) {
+        // When month-wise is enabled, disable consolidation options
+        if (consolidatePlantCheckbox.checked) {
+            consolidatePlantCheckbox.checked = false;
+        }
+        if (consolidateCoalCompanyCheckbox.checked) {
+            consolidateCoalCompanyCheckbox.checked = false;
+        }
+        
+        // Update filter visibility
+        QCToggleFilters();
+        
+        console.log("Month-wise display enabled - consolidation options disabled");
+    } else {
+        console.log("Month-wise display disabled - consolidation options re-enabled");
+    }
+    
+    // Re-render tables
     QCRenderTables();
 }
 
@@ -1463,6 +1722,28 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
                     }
                     cellClass += ' qc-calculated-col';
                     break;
+                case 18: // Total Amount (Rs. Crore) - sum of individual row total amounts
+                    if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
+                        const totalAmount = totalRowData.individualRows.reduce((sum, row) => {
+                            const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                            const coalCost = parseFloat(row[12]) || 0;
+                            const railwayFreight = parseFloat(row[13]) || 0;
+                            const landedCostPerMT = coalCost + railwayFreight;
+                            const rowTotalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert to crores
+                            return sum + rowTotalAmount;
+                        }, 0);
+                        value = totalAmount.toFixed(2);
+                    } else {
+                        // Fallback to simple calculation
+                        const qtyReceived = parseFloat(totalRowData[4]) || 0;
+                        const coalCost = parseFloat(totalRowData[12]) || 0;
+                        const railwayFreight = parseFloat(totalRowData[13]) || 0;
+                        const landedCostPerMT = coalCost + railwayFreight;
+                        const totalAmount = (qtyReceived * landedCostPerMT) / 100;
+                        value = totalAmount.toFixed(2);
+                    }
+                    cellClass += ' qc-calculated-col';
+                    break;
                 default:
                     value = '&nbsp;';
             }
@@ -1498,33 +1779,43 @@ function shortenPlantName(plantName) {
 function QCRenderTableCells(row, visibleColumns, extendedData = {}) {
     let html = '';
     
+    // Check if this column set includes a month column (for offset calculation)
+    const hasMonthColumn = visibleColumns.some(col => col.id === 'month');
+    
     visibleColumns.forEach(col => {
         let value = '';
         
-        if (col.index <= 14) {
-            // Original data columns
+        // Check if this is the month column (index 0)
+        if (col.id === 'month') {
+            // Month column - show as-is
+            value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
+        } else if (col.index <= 14) {
+            // Original data columns (adjusted for month column if present)
             value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
             
-            // Apply plant name shortening for column 1 (plant name)
-            if (col.index === 1) {
+            // Apply plant name shortening for plant name column
+            if (col.id === 'plant') {
                 value = shortenPlantName(value);
             }
             
-            // Format numbers for better display
+            // Format numbers for better display (skip month, plant, and coal company columns)
             if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
-                if (col.index === 3 || col.index === 4) { // Qty columns - 4 decimals
+                const baseIndex = col.index - (hasMonthColumn ? 1 : 0);
+                
+                if (baseIndex === 3 || baseIndex === 4) { // Qty columns - 4 decimals
                     value = parseFloat(value).toFixed(4);
-                } else if (col.index === 5) { // Rakes
+                } else if (baseIndex === 5) { // Rakes
                     value = Math.round(parseFloat(value));
-                } else if (col.index === 11 || col.index === 12 || col.index === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
+                } else if (baseIndex === 11 || baseIndex === 12 || baseIndex === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
                     value = Math.round(parseFloat(value));
-                } else if (col.index >= 6) { // Percentages and other costs
+                } else if (baseIndex >= 6) { // Percentages and other costs
                     value = parseFloat(value).toFixed(2);
                 }
             }
         } else {
             // Extended/calculated columns
-            switch (col.index) {
+            const baseIndex = col.index - (hasMonthColumn ? 1 : 0);
+            switch (baseIndex) {
                 case 15: // Landed Cost Rs/MT
                     value = extendedData.landedCostPerMT ? extendedData.landedCostPerMT.toFixed(0) : '&nbsp;';
                     break;
@@ -1533,6 +1824,9 @@ function QCRenderTableCells(row, visibleColumns, extendedData = {}) {
                     break;
                 case 17: // Per Unit Cost - 3 decimals
                     value = extendedData.perUnitCost ? extendedData.perUnitCost.toFixed(3) : '&nbsp;';
+                    break;
+                case 18: // Total Amount (Rs. Crore)
+                    value = extendedData.totalAmount ? extendedData.totalAmount.toFixed(2) : '&nbsp;';
                     break;
             }
         }
@@ -1553,8 +1847,8 @@ function QCRenderMainTable(processedData) {
         return '<div class="alert alert-info">No data available for the selected period.</div>';
     }
     
-    // Get visible columns based on user selection
-    const visibleColumns = QCGetVisibleColumns();
+    // Get visible columns based on user selection - NEVER include month column for main table
+    const visibleColumns = QCGetVisibleColumns(false, false);
     
     // Generate dynamic table header
     const startMonth = document.getElementById('QCStartMonth').value;
@@ -1574,6 +1868,7 @@ function QCRenderMainTable(processedData) {
         periodText = 'for selected period';
     }
     
+    // Main table header should NEVER mention month-wise - it's always consolidated
     const tableHeader = `Details of coal received at PSPCL thermal power stations from all linked sources ${periodText}`;
     
     let html = `
@@ -1595,6 +1890,7 @@ function QCRenderMainTable(processedData) {
     const consolidateCoalCompany = document.getElementById('QCConsolidateCoalCompany').checked;
     const noConsolidation = !consolidatePlant && !consolidateCoalCompany;
     
+    // MAIN TABLE SHOULD NEVER USE MONTH-WISE RENDERING - always use normal consolidation logic
     if (noConsolidation) {
         // For no consolidation, merge PSPCL and SHR cells
         let psppclRowCount = processedData.length;
@@ -1629,11 +1925,16 @@ function QCRenderMainTable(processedData) {
             const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
             const perUnitCost = psppclSHR * landedCostPerMcal / 1000;
             
+            // Calculate Total Amount (Rs. Crore)
+            const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+            const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert to crores
+            
             const extendedData = {
                 shr: psppclSHR,
                 landedCostPerMT: landedCostPerMT,
                 landedCostPerMcal: landedCostPerMcal,
-                perUnitCost: perUnitCost
+                perUnitCost: perUnitCost,
+                totalAmount: totalAmount
             };
             
             // Handle visual merging for Plant Name
@@ -1681,6 +1982,12 @@ function QCRenderMainTable(processedData) {
                                 break;
                             case 17:
                                 value = perUnitCost.toFixed(3);
+                                break;
+                            case 18:
+                                // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
+                                const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                                const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert Lakh MT to MT (multiply by 100000) then divide by 10000000 for crore = divide by 100
+                                value = totalAmount.toFixed(2);
                                 break;
                         }
                     }
@@ -1761,11 +2068,16 @@ function QCRenderMainTable(processedData) {
                     const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
                     const perUnitCost = shr * landedCostPerMcal / 1000;
                     
+                    // Calculate Total Amount (Rs. Crore)
+                    const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                    const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert to crores
+                    
                     const extendedData = {
                         shr: shr,
                         landedCostPerMT: landedCostPerMT,
                         landedCostPerMcal: landedCostPerMcal,
-                        perUnitCost: perUnitCost
+                        perUnitCost: perUnitCost,
+                        totalAmount: totalAmount
                     };
                     
                     // Handle visual merging for Plant Name based on visible columns
@@ -1814,6 +2126,12 @@ function QCRenderMainTable(processedData) {
                                         break;
                                     case 17:
                                         value = perUnitCost.toFixed(3);
+                                        break;
+                                    case 18:
+                                        // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
+                                        const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                                        const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert Lakh MT to MT (multiply by 100000) then divide by 10000000 for crore = divide by 100
+                                        value = totalAmount.toFixed(2);
                                         break;
                                 }
                             }
@@ -1876,11 +2194,16 @@ function QCRenderMainTable(processedData) {
                 const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
                 const perUnitCost = shr * landedCostPerMcal / 1000;
                 
+                // Calculate Total Amount (Rs. Crore)
+                const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert to crores
+                
                 const extendedData = {
                     shr: shr,
                     landedCostPerMT: landedCostPerMT,
                     landedCostPerMcal: landedCostPerMcal,
-                    perUnitCost: perUnitCost
+                    perUnitCost: perUnitCost,
+                    totalAmount: totalAmount
                 };
                 
                 // Render cells based on visible columns
@@ -2114,6 +2437,367 @@ function QCRenderSummaryTable(processedData) {
     return html;
 }
 
+// Get processed data specifically for month-wise display
+function QCGetMonthWiseData() {
+    console.log("QCGetMonthWiseData: Starting");
+    
+    // Filter data by month range first
+    const monthFilteredData = QCFilterDataByMonth(QualityCostData1);
+    console.log("QCGetMonthWiseData: Month filtered data length:", monthFilteredData.length);
+    
+    if (!monthFilteredData || monthFilteredData.length === 0) {
+        return [];
+    }
+    
+    // Filter out RCR Mode and Imported rows based on consolidation settings
+    let filteredData = QCFilterRCRAndImported(monthFilteredData);
+    console.log("QCGetMonthWiseData: After RCR/Imported filter:", filteredData.length);
+    
+    // Apply plant and coal company filters if any consolidation options are set
+    const consolidatePlant = document.getElementById('QCConsolidatePlant').checked;
+    const consolidateCoalCompany = document.getElementById('QCConsolidateCoalCompany').checked;
+    
+    if (consolidatePlant) {
+        const selectedPlants = Array.from(document.getElementById('QCPlantFilter').selectedOptions).map(option => option.value);
+        if (selectedPlants.length > 0) {
+            filteredData = filteredData.filter(row => selectedPlants.includes(row[1]));
+            console.log("QCGetMonthWiseData: After plant filter:", filteredData.length);
+        }
+    }
+    
+    if (consolidateCoalCompany && consolidatePlant) {
+        const selectedCoalCompanies = Array.from(document.getElementById('QCCoalCompanyFilter').selectedOptions).map(option => option.value);
+        if (selectedCoalCompanies.length > 0) {
+            filteredData = filteredData.filter(row => selectedCoalCompanies.includes(row[2]));
+            console.log("QCGetMonthWiseData: After coal company filter:", filteredData.length);
+        }
+    }
+    
+    // Sort data by month chronologically
+    filteredData.sort((a, b) => {
+        const dateA = parseMonthYear(a[0]);
+        const dateB = parseMonthYear(b[0]);
+        if (!dateA || !dateB) return 0;
+        return dateA - dateB;
+    });
+    
+    // Process each row to add month information
+    const monthWiseData = filteredData.map(row => {
+        const monthStr = row[0]; // Month is in first column
+        const monthDisplay = formatMonthForDisplay(monthStr);
+        
+        // Create new row with month display as first column, preserving all original data
+        const newRow = [monthDisplay, ...row];
+        return newRow;
+    });
+    
+    console.log("QCGetMonthWiseData: Final processed data length:", monthWiseData.length);
+    console.log("QCGetMonthWiseData: First few months:", monthWiseData.slice(0, 3).map(row => row[0]));
+    return monthWiseData;
+}
+
+// Render month-wise table (separate from main table)
+function QCRenderMonthWiseTable() {
+    console.log("QCRenderMonthWiseTable: Starting");
+    
+    const monthWiseData = QCGetMonthWiseData();
+    
+    if (!monthWiseData || monthWiseData.length === 0) {
+        return '<div class="alert alert-info">No month-wise data available for the selected period.</div>';
+    }
+    
+    // Get visible columns for month-wise display
+    const visibleColumns = QCGetVisibleColumns(false, true);
+    
+    // Generate table header
+    const startMonth = document.getElementById('QCStartMonth').value;
+    const endMonth = document.getElementById('QCEndMonth').value;
+    
+    let periodText = '';
+    if (startMonth && endMonth) {
+        const startDisplay = formatMonthForDisplay(startMonth);
+        const endDisplay = formatMonthForDisplay(endMonth);
+        
+        if (startDisplay === endDisplay) {
+            periodText = `during ${startDisplay}`;
+        } else {
+            periodText = `from ${startDisplay} to ${endDisplay}`;
+        }
+    } else {
+        periodText = 'for selected period';
+    }
+    
+    const tableHeader = `Month-wise details of coal received at PSPCL thermal power stations ${periodText}`;
+    
+    let html = `
+        <div class="quality-cost-card mb-3">
+            <div class="quality-cost-section-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-month"></i> ${tableHeader}</h5>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm table-fixed-first">
+                <thead class="table-primary">
+                    <tr>
+    `;
+    
+    // Add headers based on visible columns
+    visibleColumns.forEach(col => {
+        html += `<th class="text-center">${col.header}</th>`;
+    });
+    
+    html += `</tr></thead><tbody>`;
+    
+    // Group data by month for totals
+    const monthGroups = {};
+    monthWiseData.forEach(row => {
+        const month = row[0]; // Month is first column
+        if (!monthGroups[month]) {
+            monthGroups[month] = [];
+        }
+        monthGroups[month].push(row);
+    });
+    
+    // Get month order chronologically
+    const monthOrder = Object.keys(monthGroups).sort((a, b) => {
+        // Try to parse the month display format for sorting
+        const monthA = a.includes('-') ? new Date(a.split('-')[1] + '-' + (a.split('-')[0] === 'Jan' ? '01' : 
+                                                                              a.split('-')[0] === 'Feb' ? '02' :
+                                                                              a.split('-')[0] === 'Mar' ? '03' :
+                                                                              a.split('-')[0] === 'Apr' ? '04' :
+                                                                              a.split('-')[0] === 'May' ? '05' :
+                                                                              a.split('-')[0] === 'Jun' ? '06' :
+                                                                              a.split('-')[0] === 'Jul' ? '07' :
+                                                                              a.split('-')[0] === 'Aug' ? '08' :
+                                                                              a.split('-')[0] === 'Sep' ? '09' :
+                                                                              a.split('-')[0] === 'Oct' ? '10' :
+                                                                              a.split('-')[0] === 'Nov' ? '11' : '12') + '-01') : new Date();
+        const monthB = b.includes('-') ? new Date(b.split('-')[1] + '-' + (b.split('-')[0] === 'Jan' ? '01' : 
+                                                                              b.split('-')[0] === 'Feb' ? '02' :
+                                                                              b.split('-')[0] === 'Mar' ? '03' :
+                                                                              b.split('-')[0] === 'Apr' ? '04' :
+                                                                              b.split('-')[0] === 'May' ? '05' :
+                                                                              b.split('-')[0] === 'Jun' ? '06' :
+                                                                              b.split('-')[0] === 'Jul' ? '07' :
+                                                                              b.split('-')[0] === 'Aug' ? '08' :
+                                                                              b.split('-')[0] === 'Sep' ? '09' :
+                                                                              b.split('-')[0] === 'Oct' ? '10' :
+                                                                              b.split('-')[0] === 'Nov' ? '11' : '12') + '-01') : new Date();
+        return monthA - monthB;
+    });
+    
+    // Render data grouped by month with plant-wise totals
+    const allRows = [];
+    monthOrder.forEach(month => {
+        const monthRows = monthGroups[month];
+        
+        // Group month rows by plant
+        const plantGroups = {};
+        monthRows.forEach(row => {
+            let plantName = row[2]; // Plant name at index 2
+            if (typeof plantName === 'object' && plantName.v !== undefined) {
+                plantName = plantName.v;
+            } else {
+                plantName = String(plantName).trim();
+            }
+            
+            if (!plantGroups[plantName]) {
+                plantGroups[plantName] = [];
+            }
+            plantGroups[plantName].push(row);
+        });
+        
+        // Get plant order (maintain consistent order)
+        const plantOrder = Object.keys(plantGroups).sort();
+        
+        // Render each plant's data with plant totals
+        plantOrder.forEach(plantName => {
+            const plantRows = plantGroups[plantName];
+            
+            // Add data rows for this plant in this month
+            plantRows.forEach(row => {
+                html += '<tr>';
+                
+                // Calculate extended data for each row
+                const coalCost = parseFloat(row[13]) || 0; // Coal cost at index 13
+                const railwayFreight = parseFloat(row[14]) || 0; // Railway freight at index 14
+                const gcv = parseFloat(row[12]) || 1; // GCV at index 12
+                const qtyReceived = parseFloat(row[5]) || 0; // Qty received at index 5
+                
+                const landedCostPerMT = coalCost + railwayFreight;
+                const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
+                
+                const plantSHR = getWeightedAverageSHRForPlant(plantName) || getWeightedAverageSHRForPlant('PSPCL');
+                const perUnitCost = plantSHR * landedCostPerMcal / 1000;
+                
+                // Calculate Total Amount (Rs. Crore)
+                const coalCostTotal = (qtyReceived * 100000 * coalCost) / 10000000;
+                const railwayFreightTotal = (qtyReceived * 100000 * railwayFreight) / 10000000;
+                const totalAmount = coalCostTotal + railwayFreightTotal;
+                
+                const extendedData = {
+                    landedCostPerMT,
+                    landedCostPerMcal,
+                    perUnitCost,
+                    totalAmount
+                };
+                
+                html += QCRenderTableCells(row, visibleColumns, extendedData);
+                html += '</tr>';
+                
+                // Store for grand total calculation
+                allRows.push(row);
+            });
+            
+            // Add plant total row for this month (only if there are multiple coal companies for this plant)
+            if (plantRows.length > 1) {
+                const plantTotalRow = QCCalculateMonthWiseTotalRow(plantRows, `${shortenPlantName(plantName)} Total`, visibleColumns);
+                html += QCRenderMonthWiseTotalRow(plantTotalRow, visibleColumns, `${shortenPlantName(plantName)} Total`, 'table-info plant-total-row');
+            }
+        });
+        
+        // Add month total row (only if there are multiple plants in this month)
+        if (plantOrder.length > 1) {
+            const monthTotalRow = QCCalculateMonthWiseTotalRow(monthRows, `${month} Total`, visibleColumns);
+            html += QCRenderMonthWiseTotalRow(monthTotalRow, visibleColumns, `${month} Total`, 'table-warning total-row');
+        }
+    });
+    
+    // Add grand total row
+    if (monthOrder.length > 1) {
+        const grandTotalRow = QCCalculateMonthWiseTotalRow(allRows, 'Grand Total', visibleColumns);
+        html += QCRenderMonthWiseTotalRow(grandTotalRow, visibleColumns, 'Grand Total', 'table-success calculated-total-row');
+    }
+    
+    html += '</tbody></table></div>';
+    
+    console.log("QCRenderMonthWiseTable: Generated HTML length:", html.length);
+    return html;
+}
+
+// Helper function to calculate total row for month-wise data
+function QCCalculateMonthWiseTotalRow(dataRows, label, visibleColumns) {
+    if (!dataRows || dataRows.length === 0) return null;
+    
+    // Initialize totals with month column if present
+    const totalRow = [];
+    
+    // Set month column (empty for totals)
+    totalRow[0] = ''; // Month column empty for totals
+    totalRow[1] = ''; // Original month data column (empty for totals)
+    totalRow[2] = label; // Plant name becomes the label (was index 1 in original, now index 2)
+    totalRow[3] = ''; // Empty coal company column for totals (was index 2 in original, now index 3)
+    
+    // Sum columns that should be totaled (Qty Dispatched, Qty Received, Rakes Received)
+    // These are now at indices 4, 5, 6 (were 3, 4, 5 in original)
+    [4, 5, 6].forEach(colIdx => {
+        totalRow[colIdx] = dataRows.reduce((sum, row) => {
+            return sum + (parseFloat(row[colIdx]) || 0);
+        }, 0);
+    });
+    
+    // Calculate Transit Loss for total (now at index 7, was 6)
+    const qtyDispatched = parseFloat(totalRow[4]) || 0;
+    const qtyReceived = parseFloat(totalRow[5]) || 0;
+    totalRow[7] = qtyDispatched > 0 ? (((qtyDispatched - qtyReceived) / qtyDispatched) * 100) : 0;
+    
+    // Calculate weighted averages for columns 8-14 w.r.t. Quantity Received (were 7-13)
+    for (let colIdx = 8; colIdx <= 14; colIdx++) {
+        const values = dataRows.map(row => row[colIdx]);
+        const weights = dataRows.map(row => row[5]); // Qty Received as weight (now at index 5)
+        totalRow[colIdx] = calculateWeightedAverage(values, weights);
+    }
+    
+    // Simple average for column 15 (Distance) (was 14)
+    const columnOValues = dataRows.map(row => row[15]);
+    totalRow[15] = calculateSimpleAverage(columnOValues);
+    
+    // Add individual rows for calculated column calculations
+    totalRow.individualRows = dataRows;
+    
+    return totalRow;
+}
+
+// Helper function to render a month-wise total row
+function QCRenderMonthWiseTotalRow(totalRowData, visibleColumns, label, cssClass = 'table-warning total-row') {
+    if (!totalRowData) return '';
+    
+    let html = `<tr class="${cssClass} fw-bold">`;
+    
+    visibleColumns.forEach(col => {
+        let value = '';
+        let cellClass = 'text-center';
+        
+        if (col.id === 'month') {
+            // Month column - empty for totals
+            value = '&nbsp;';
+        } else if (col.id === 'plant') {
+            // Plant/Label column (now at index 2 in totalRowData)
+            const shortenedLabel = shortenPlantName(label);
+            value = `<strong>${shortenedLabel}</strong>`;
+        } else if (col.id === 'coalCompany') {
+            // Coal company column - empty for totals
+            value = '&nbsp;';
+        } else if (col.index >= 4 && col.index <= 15) {
+            // Data columns (adjusted for month column shift)
+            const rawValue = totalRowData[col.index];
+            if (rawValue !== undefined && rawValue !== '') {
+                if (col.index === 4 || col.index === 5) { // Qty columns (were 3,4)
+                    value = parseFloat(rawValue).toFixed(4);
+                } else if (col.index === 6) { // Rakes (was 5)
+                    value = Math.round(parseFloat(rawValue));
+                } else if (col.index >= 7) { // Other columns (were 6+)
+                    value = parseFloat(rawValue).toFixed(2);
+                }
+            } else {
+                value = '&nbsp;';
+            }
+        } else if (col.index >= 16) {
+            // Extended/calculated columns (indices shifted by 1)
+            let calcValue = 0;
+            
+            switch (col.index) {
+                case 16: // Landed Cost Rs/MT (coal cost + railway freight at indices 13, 14)
+                    const coalCost = parseFloat(totalRowData[13]) || 0;
+                    const railwayFreight = parseFloat(totalRowData[14]) || 0;
+                    calcValue = coalCost + railwayFreight;
+                    value = calcValue.toFixed(0);
+                    break;
+                case 17: // Landed Cost Rs/Mcal
+                    const landedCostMT = (parseFloat(totalRowData[13]) || 0) + (parseFloat(totalRowData[14]) || 0);
+                    const gcv = parseFloat(totalRowData[12]) || 1;
+                    calcValue = gcv > 0 ? landedCostMT / gcv : 0;
+                    value = calcValue.toFixed(4);
+                    break;
+                case 18: // Per Unit Cost
+                    const landedCostMcal = ((parseFloat(totalRowData[13]) || 0) + (parseFloat(totalRowData[14]) || 0)) / (parseFloat(totalRowData[12]) || 1);
+                    const shr = getWeightedAverageSHRForPlant('PSPCL');
+                    calcValue = shr * landedCostMcal / 1000;
+                    value = calcValue.toFixed(3);
+                    break;
+                case 19: // Total Amount (Rs. Crore)
+                    const qtyRec = parseFloat(totalRowData[5]) || 0; // Qty received at index 5
+                    const coalCostAmt = parseFloat(totalRowData[13]) || 0;
+                    const railwayFreightAmt = parseFloat(totalRowData[14]) || 0;
+                    const coalCostTotalCalc = (qtyRec * 100000 * coalCostAmt) / 10000000;
+                    const railwayFreightTotalCalc = (qtyRec * 100000 * railwayFreightAmt) / 10000000;
+                    calcValue = coalCostTotalCalc + railwayFreightTotalCalc;
+                    value = calcValue.toFixed(2);
+                    break;
+                default:
+                    value = '&nbsp;';
+            }
+        } else {
+            value = '&nbsp;';
+        }
+        
+        html += `<td class="${cellClass}">${value}</td>`;
+    });
+    
+    html += '</tr>';
+    return html;
+}
+
 // Main table rendering function
 function QCRenderTables() {
     console.log("Rendering Quality Cost Analysis tables");
@@ -2196,6 +2880,38 @@ function QCRenderTables() {
         console.log("QCRenderTables: Summary table HTML length:", summaryTableHtml.length);
         document.getElementById('QC-summary-table').innerHTML = summaryTableHtml;
         console.log("QCRenderTables: Summary table inserted into DOM");
+        
+        // Check if month-wise display is enabled and render month-wise table
+        const monthWiseDisplay = document.getElementById('QCMonthWiseDisplay')?.checked || false;
+        if (monthWiseDisplay) {
+            console.log("QCRenderTables: Month-wise display enabled, rendering month-wise table");
+            
+            // Create or update month-wise table container
+            let monthWiseContainer = document.getElementById('QC-month-wise-table');
+            if (!monthWiseContainer) {
+                monthWiseContainer = document.createElement('div');
+                monthWiseContainer.id = 'QC-month-wise-table';
+                monthWiseContainer.className = 'mb-4 month-wise-container';
+                
+                // Insert after summary table
+                const summaryTable = document.getElementById('QC-summary-table');
+                summaryTable.parentNode.insertBefore(monthWiseContainer, summaryTable.nextSibling);
+            }
+            
+            // Render month-wise table
+            const monthWiseTableHtml = QCRenderMonthWiseTable();
+            monthWiseContainer.innerHTML = monthWiseTableHtml;
+            monthWiseContainer.style.display = 'block';
+            
+            console.log("QCRenderTables: Month-wise table rendered successfully");
+        } else {
+            // Hide month-wise table if it exists
+            const monthWiseContainer = document.getElementById('QC-month-wise-table');
+            if (monthWiseContainer) {
+                monthWiseContainer.style.display = 'none';
+            }
+            console.log("QCRenderTables: Month-wise display disabled, hiding month-wise table");
+        }
         
         console.log("Tables rendered successfully");
         
@@ -2323,20 +3039,127 @@ function QCExportToImage() {
 // Helper function to get processed data for export functions
 function QCGetProcessedData() {
     try {
-        // Filter data by month range
-        const monthFilteredData = QCFilterDataByMonth(QualityCostData1);
+        // Check if month-wise display is enabled
+        const monthWiseDisplay = document.getElementById('QCMonthWiseDisplay')?.checked || false;
         
-        // Filter out RCR Mode and Imported rows unless coal company consolidation is selected
-        const filteredData = QCFilterRCRAndImported(monthFilteredData);
-        
-        // Consolidate data based on selected options
-        const processedData = QCConsolidateData(filteredData);
-        
-        return processedData;
+        if (monthWiseDisplay) {
+            return QCGetMonthWiseProcessedData();
+        } else {
+            // Original logic for consolidated data
+            // Filter data by month range
+            const monthFilteredData = QCFilterDataByMonth(QualityCostData1);
+            
+            // Filter out RCR Mode and Imported rows unless coal company consolidation is selected
+            const filteredData = QCFilterRCRAndImported(monthFilteredData);
+            
+            // Consolidate data based on selected options
+            const processedData = QCConsolidateData(filteredData);
+            
+            return processedData;
+        }
     } catch (error) {
         console.error('Error getting processed data:', error);
         return [];
     }
+}
+
+// New function to get month-wise processed data
+function QCGetMonthWiseProcessedData() {
+    try {
+        const startMonth = document.getElementById('QCStartMonth').value;
+        const endMonth = document.getElementById('QCEndMonth').value;
+        
+        if (!startMonth || !endMonth) {
+            return [];
+        }
+        
+        // Parse start and end dates
+        const startDate = parseMonthYear(startMonth);
+        const endDate = parseMonthYear(endMonth);
+        
+        if (!startDate || !endDate) {
+            return [];
+        }
+        
+        // Generate list of months in the range
+        const monthsInRange = [];
+        let currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+            const shortYear = String(currentDate.getFullYear()).slice(-2);
+            const monthName = currentDate.toLocaleDateString('en-US', { month: 'short' });
+            const displayName = `${monthName}-${shortYear}`;
+            
+            monthsInRange.push({
+                key: monthKey,
+                date: new Date(currentDate),
+                displayName: displayName
+            });
+            currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+        
+        const allMonthWiseData = [];
+        
+        // Process each month separately
+        monthsInRange.forEach(month => {
+            // Filter data for this specific month
+            const monthFilteredData = QCFilterDataBySpecificMonth(QualityCostData1, month.key);
+            
+            if (monthFilteredData.length === 0) {
+                return; // Skip months with no data
+            }
+            
+            // Filter out RCR Mode and Imported rows unless coal company consolidation is selected
+            const filteredData = QCFilterRCRAndImported(monthFilteredData);
+            
+            if (filteredData.length === 0) {
+                return; // Skip months with no data after filtering
+            }
+            
+            // For month-wise display, we want to show individual rows, not consolidated data
+            // So we'll create separate entries for each row with month prepended
+            filteredData.forEach(row => {
+                // Create a new row with month as first column
+                const monthWiseRow = [month.displayName, ...row.slice(1)]; // Skip the original date column, add month, then rest of data
+                allMonthWiseData.push(monthWiseRow);
+            });
+        });
+        
+        return allMonthWiseData;
+    } catch (error) {
+        console.error('Error getting month-wise processed data:', error);
+        return [];
+    }
+}
+
+// Helper function to filter data by a specific month
+function QCFilterDataBySpecificMonth(data, monthKey) {
+    if (!data || !Array.isArray(data)) {
+        return [];
+    }
+    
+    return data.filter(row => {
+        if (!row || row.length === 0) return false;
+        
+        const rowDate = row[0];
+        if (!rowDate) return false;
+        
+        // Handle different date formats
+        let rowMonthKey;
+        if (typeof rowDate === 'object' && rowDate.v !== undefined) {
+            // Google Sheets date object
+            const date = new Date(rowDate.v);
+            rowMonthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        } else if (typeof rowDate === 'string') {
+            // String format like "2024-04"
+            rowMonthKey = rowDate.substring(0, 7); // Extract YYYY-MM
+        } else {
+            return false;
+        }
+        
+        return rowMonthKey === monthKey;
+    });
 }
 
 // Helper function to get summary data for export functions
@@ -2524,7 +3347,7 @@ function QCGeneratePDFFromScratch() {
         
         // Get current data - only what's visible on the web page
         const processedData = QCGetProcessedData();
-        const visibleColumns = QCGetVisibleColumns(); // This respects user's column selection
+        const visibleColumns = QCGetVisibleColumns(false); // This respects user's column selection
         
         if (!processedData || processedData.length === 0) {
             alert('No data to export. Please select a valid date range and ensure data is loaded.');
@@ -2631,6 +3454,12 @@ function QCGeneratePDFFromScratch() {
                         case 17: // Per Unit Cost
                             const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
                             value = (shr * landedCostPerMcal / 1000).toFixed(3);
+                            break;
+                        case 18: // Total Amount (Rs. Crore)
+                            const qtyReceived = parseFloat(row[4]) || 0;
+                            const landedCostTotal = coalCost + railwayFreight;
+                            const totalAmount = (qtyReceived * landedCostTotal) / 100;
+                            value = totalAmount.toFixed(2);
                             break;
                         default:
                             value = '';
@@ -2815,6 +3644,7 @@ function QCCalculateOptimalColumnWidths(visibleColumns, totalWidth) {
         if (header.includes('distance')) return 12;
         if (header.includes('landed cost')) return 15;
         if (header.includes('per unit cost')) return 15;
+        if (header.includes('total amount')) return 18;
         
         return 12; // Default width
     };
@@ -2876,6 +3706,12 @@ function QCFormatTotalRowForPDF(totalRow, visibleColumns) {
                 case 17:
                     const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
                     return (shr * landedCostPerMcal / 1000).toFixed(3);
+                case 18:
+                    // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
+                    const qtyReceived = parseFloat(totalRow[4]) || 0; // Qty Received in Lakh MT
+                    const landedCostTotal = coalCost + railwayFreight;
+                    const totalAmount = (qtyReceived * landedCostTotal) / 100; // Convert Lakh MT to MT then divide by 10000000 for crore = divide by 100
+                    return totalAmount.toFixed(2);
                 default:
                     return '';
             }
@@ -2925,5 +3761,2616 @@ function QCGetSummaryTableDataForPDF() {
     } catch (error) {
         console.error('Error extracting summary table data:', error);
         return null;
+    }
+}
+
+// Excel Export Function
+function QCExportToExcel() {
+    try {
+        // Check if SheetJS is available
+        if (typeof XLSX === 'undefined') {
+            alert('Excel library not loaded. Please ensure SheetJS is included.');
+            return;
+        }
+        
+        // Get current data and visible columns
+        const processedData = QCGetProcessedData();
+        const visibleColumns = QCGetVisibleColumns(false);
+        
+        if (!processedData || processedData.length === 0) {
+            alert('No data to export. Please select a valid date range and ensure data is loaded.');
+            return;
+        }
+        
+        // Prepare headers
+        const headers = visibleColumns.map(col => col.header);
+        
+        // Prepare data rows
+        const excelData = [];
+        excelData.push(headers); // Add headers as first row
+        
+        // Process each row of data
+        processedData.forEach(row => {
+            const rowData = visibleColumns.map(col => {
+                let value = '';
+                
+                if (col.index <= 14) {
+                    // Original data columns
+                    value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
+                    
+                    // Apply plant name shortening for column 1
+                    if (col.index === 1) {
+                        value = shortenPlantName(value);
+                    }
+                    
+                    // Keep numbers as numbers for Excel
+                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                        value = parseFloat(value);
+                    }
+                } else {
+                    // Extended/calculated columns
+                    const coalCost = parseFloat(row[12]) || 0;
+                    const railwayFreight = parseFloat(row[13]) || 0;
+                    const gcv = parseFloat(row[11]) || 1;
+                    const plantName = row[1] || 'PSPCL';
+                    
+                    // Determine SHR based on consolidation
+                    const consolidateCoalCompany = document.getElementById('QCConsolidateCoalCompany').checked;
+                    const consolidatePlant = document.getElementById('QCConsolidatePlant').checked;
+                    
+                    let shr;
+                    if (consolidateCoalCompany && !consolidatePlant) {
+                        const coalCompany = row[2];
+                        const coalCompanyRows = processedData.filter(r => r[2] === coalCompany);
+                        shr = getWeightedAverageSHRForCoalCompany(coalCompany, coalCompanyRows);
+                    } else {
+                        shr = getWeightedAverageSHRForPlant(plantName);
+                    }
+                    
+                    switch (col.index) {
+                        case 15: // Landed Cost Rs/MT
+                            value = coalCost + railwayFreight;
+                            break;
+                        case 16: // Landed Cost Rs/Mcal
+                            const landedCostPerMT = coalCost + railwayFreight;
+                            value = gcv > 0 ? landedCostPerMT / gcv : 0;
+                            break;
+                        case 17: // Per Unit Cost
+                            const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
+                            value = shr * landedCostPerMcal / 1000;
+                            break;
+                        case 18: // Total Amount (Rs. Crore)
+                            const qtyReceived = parseFloat(row[4]) || 0;
+                            const landedCostTotal = coalCost + railwayFreight;
+                            value = (qtyReceived * landedCostTotal) / 100;
+                            break;
+                        default:
+                            value = '';
+                    }
+                }
+                
+                return value;
+            });
+            
+            excelData.push(rowData);
+        });
+        
+        // Add total row if multiple entries exist
+        if (processedData.length > 1) {
+            const totalRow = QCCalculateTotalRow(processedData, 'Grand Total', visibleColumns);
+            if (totalRow) {
+                const totalRowData = visibleColumns.map(col => {
+                    if (col.index === 1) {
+                        return 'Grand Total';
+                    } else if (col.index === 2) {
+                        return '';
+                    } else if (col.index <= 14) {
+                        const val = parseFloat(totalRow[col.index]);
+                        return !isNaN(val) ? val : '';
+                    } else {
+                        // Calculate extended columns for total
+                        const coalCost = parseFloat(totalRow[12]) || 0;
+                        const railwayFreight = parseFloat(totalRow[13]) || 0;
+                        const gcv = parseFloat(totalRow[11]) || 1;
+                        const shr = getWeightedAverageSHRForPlant('PSPCL');
+                        
+                        switch (col.index) {
+                            case 15:
+                                return coalCost + railwayFreight;
+                            case 16:
+                                const landedCostPerMT = coalCost + railwayFreight;
+                                return gcv > 0 ? landedCostPerMT / gcv : 0;
+                            case 17:
+                                const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
+                                return shr * landedCostPerMcal / 1000;
+                            case 18:
+                                const qtyReceived = parseFloat(totalRow[4]) || 0;
+                                const landedCostTotal = coalCost + railwayFreight;
+                                return (qtyReceived * landedCostTotal) / 100;
+                            default:
+                                return '';
+                        }
+                    }
+                });
+                excelData.push(totalRowData);
+            }
+        }
+        
+        // Create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+        
+        // Add the worksheet to workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Coal Quality Analysis');
+        
+        // Generate filename
+        const startMonth = document.getElementById('QCStartMonth').value;
+        const endMonth = document.getElementById('QCEndMonth').value;
+        const startDisplay = formatMonthForDisplay(startMonth);
+        const endDisplay = formatMonthForDisplay(endMonth);
+        const filename = `Coal_Quality_Analysis_${startDisplay}_to_${endDisplay}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g, '_');
+        
+        // Save the file
+        XLSX.writeFile(workbook, filename);
+        
+        console.log('Excel file generated successfully');
+        
+    } catch (error) {
+        console.error('Excel export error:', error);
+        alert(`Error generating Excel file: ${error.message}`);
+    }
+}
+
+// Show Special Report Modal
+function QCShowSpecialReportModal() {
+    // Set default dates to current period
+    const startMonth = document.getElementById('QCStartMonth').value;
+    const endMonth = document.getElementById('QCEndMonth').value;
+    
+    if (startMonth && endMonth) {
+        // Convert the Google Sheets date format to month input format
+        const startDate = parseMonthYear(startMonth);
+        const endDate = parseMonthYear(endMonth);
+        
+        if (startDate && endDate) {
+            const startFormatted = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
+            const endFormatted = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}`;
+            
+            document.getElementById('QCSpecialFromDate').value = startFormatted;
+            document.getElementById('QCSpecialToDate').value = endFormatted;
+        }
+    }
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('QCSpecialReportModal'));
+    modal.show();
+    
+    // Populate selection options
+    QCPopulateSpecialReportSelections();
+    
+    // Restore saved preferences after populating selections
+    QCRestoreModalPreferences();
+    
+    // Set up the generate button listener
+    document.getElementById('QCGenerateSpecialReport').onclick = QCGenerateSpecialReport;
+}
+
+// Save Modal Preferences to localStorage
+function QCSaveModalPreferences() {
+    const preferences = {
+        // Date preferences
+        fromDate: document.getElementById('QCSpecialFromDate').value,
+        toDate: document.getElementById('QCSpecialToDate').value,
+        
+        // Grouping preferences
+        grouping: document.querySelector('input[name="QCSpecialGrouping"]:checked')?.value || 'month',
+        
+        // Consolidation preferences
+        plantWise: document.getElementById('QCSpecialPlantWise').checked,
+        coalCompanyWise: document.getElementById('QCSpecialCoalCompanyWise').checked,
+        
+        // Export preferences
+        exportPDF: document.getElementById('QCSpecialExportPDF').checked,
+        exportExcel: document.getElementById('QCSpecialExportExcel').checked,
+        
+        // Selection preferences
+        selectedPlants: [],
+        selectedCoalCompanies: [],
+        selectedColumns: []
+    };
+    
+    // Get selected plants
+    const plantCheckboxes = document.querySelectorAll('#QCPlantSelection input[type="checkbox"]');
+    plantCheckboxes.forEach(cb => {
+        if (cb.checked) {
+            preferences.selectedPlants.push(cb.value);
+        }
+    });
+    
+    // Get selected coal companies
+    const coalCompanyCheckboxes = document.querySelectorAll('#QCCoalCompanySelection input[type="checkbox"]');
+    coalCompanyCheckboxes.forEach(cb => {
+        if (cb.checked) {
+            preferences.selectedCoalCompanies.push(cb.value);
+        }
+    });
+    
+    // Get selected columns
+    const columnCheckboxes = document.querySelectorAll('#QCColumnSelection input[type="checkbox"]');
+    columnCheckboxes.forEach(cb => {
+        if (cb.checked) {
+            preferences.selectedColumns.push(cb.value);
+        }
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('QCSpecialReportPreferences', JSON.stringify(preferences));
+    console.log('Modal preferences saved:', preferences);
+}
+
+// Restore Modal Preferences from localStorage
+function QCRestoreModalPreferences() {
+    try {
+        const savedPreferences = localStorage.getItem('QCSpecialReportPreferences');
+        if (!savedPreferences) {
+            console.log('No saved preferences found');
+            return;
+        }
+        
+        const preferences = JSON.parse(savedPreferences);
+        console.log('Restoring modal preferences:', preferences);
+        
+        // Restore date preferences
+        if (preferences.fromDate) {
+            document.getElementById('QCSpecialFromDate').value = preferences.fromDate;
+        }
+        if (preferences.toDate) {
+            document.getElementById('QCSpecialToDate').value = preferences.toDate;
+        }
+        
+        // Restore grouping preferences
+        if (preferences.grouping) {
+            const groupingRadio = document.querySelector(`input[name="QCSpecialGrouping"][value="${preferences.grouping}"]`);
+            if (groupingRadio) {
+                groupingRadio.checked = true;
+            }
+        }
+        
+        // Restore consolidation preferences
+        if (preferences.plantWise !== undefined) {
+            document.getElementById('QCSpecialPlantWise').checked = preferences.plantWise;
+        }
+        if (preferences.coalCompanyWise !== undefined) {
+            document.getElementById('QCSpecialCoalCompanyWise').checked = preferences.coalCompanyWise;
+        }
+        
+        // Restore export preferences
+        if (preferences.exportPDF !== undefined) {
+            document.getElementById('QCSpecialExportPDF').checked = preferences.exportPDF;
+        }
+        if (preferences.exportExcel !== undefined) {
+            document.getElementById('QCSpecialExportExcel').checked = preferences.exportExcel;
+        }
+        
+        // Restore plant selections (only if preferences exist, otherwise keep default checked state)
+        if (preferences.selectedPlants && preferences.selectedPlants.length >= 0) {
+            // First uncheck all plants
+            document.querySelectorAll('.plant-checkbox').forEach(cb => cb.checked = false);
+            // Then check the saved ones
+            preferences.selectedPlants.forEach(plantValue => {
+                const checkbox = document.querySelector(`.plant-checkbox[value="${plantValue}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        
+        // Restore coal company selections (only if preferences exist, otherwise keep default checked state)
+        if (preferences.selectedCoalCompanies && preferences.selectedCoalCompanies.length >= 0) {
+            // First uncheck all coal companies
+            document.querySelectorAll('.coal-company-checkbox').forEach(cb => cb.checked = false);
+            // Then check the saved ones
+            preferences.selectedCoalCompanies.forEach(companyValue => {
+                const checkbox = document.querySelector(`.coal-company-checkbox[value="${companyValue}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        
+        // Restore column selections (only if preferences exist, otherwise keep default checked state)
+        if (preferences.selectedColumns && preferences.selectedColumns.length >= 0) {
+            // First uncheck all columns
+            document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = false);
+            // Then check the saved ones
+            preferences.selectedColumns.forEach(columnValue => {
+                const checkbox = document.querySelector(`.column-checkbox[value="${columnValue}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error restoring modal preferences:', error);
+    }
+}
+
+// Populate Special Report Selection Options
+function QCPopulateSpecialReportSelections() {
+    console.log("QCPopulateSpecialReportSelections called");
+    
+    // Check if containers exist
+    const plantContainer = document.getElementById('QCPlantSelection');
+    const coalCompanyContainer = document.getElementById('QCCoalCompanySelection');
+    const columnContainer = document.getElementById('QCColumnSelection');
+    
+    console.log("Containers found:", {
+        plant: !!plantContainer,
+        coalCompany: !!coalCompanyContainer,
+        column: !!columnContainer
+    });
+    
+    if (!plantContainer || !coalCompanyContainer || !columnContainer) {
+        console.error("Selection containers not found in DOM");
+        return;
+    }
+    
+    // Get unique plants and coal companies from the available data
+    const allData = [...(QualityCostData1 || []), ...(QualityCostData2 || [])];
+    const uniquePlants = [...new Set(allData.map(row => row[1]).filter(plant => plant && plant !== ''))].sort();
+    
+    // Filter coal companies to only include non-numeric values (actual company names)
+    const uniqueCoalCompanies = [...new Set(allData.map(row => row[2])
+        .filter(company => company && 
+                          company !== '' && 
+                          typeof company === 'string' && 
+                          isNaN(parseFloat(company)) && // Exclude numeric values
+                          company.length > 1))].sort(); // Ensure it's more than 1 character
+    
+    console.log("Data found:", {
+        totalRows: allData.length,
+        plants: uniquePlants.length,
+        companies: uniqueCoalCompanies.length,
+        samplePlants: uniquePlants.slice(0, 3),
+        sampleCompanies: uniqueCoalCompanies.slice(0, 3)
+    });
+    
+    // Column options (based on the headers used in reports)
+    const columnOptions = [
+        { key: 'Date', label: 'Date', checked: true },
+        { key: 'Plant', label: 'Plant', checked: true },
+        { key: 'Coal Company', label: 'Coal Company', checked: true },
+        { key: 'Qty Dispatched (MT)', label: 'Qty Dispatched (MT)', checked: true },
+        { key: 'Qty Received (MT)', label: 'Qty Received (MT)', checked: true },
+        { key: 'Rakes Received', label: 'Rakes Received', checked: true },
+        { key: 'GCV (Kcal/Kg)', label: 'GCV (Kcal/Kg)', checked: true },
+        { key: 'Ash %', label: 'Ash %', checked: true },
+        { key: 'Moisture %', label: 'Moisture %', checked: true },
+        { key: 'Coal Cost (Rs/MT)', label: 'Coal Cost (Rs/MT)', checked: true },
+        { key: 'Railway Freight (Rs/MT)', label: 'Railway Freight (Rs/MT)', checked: true },
+        { key: 'Transit Loss %', label: 'Transit Loss %', checked: true },
+        { key: 'Landed Cost Rs/MT', label: 'Landed Cost Rs/MT', checked: true },
+        { key: 'Landed Cost Rs/Mcal', label: 'Landed Cost Rs/Mcal', checked: true },
+        { key: 'Per Unit Cost', label: 'Per Unit Cost', checked: true },
+        { key: 'Total Amount (Rs. Crore)', label: 'Total Amount (Rs. Crore)', checked: true }
+    ];
+    
+    // Populate plant selection
+    plantContainer.innerHTML = '';
+    console.log("Populating plant container with", uniquePlants.length, "plants");
+    uniquePlants.forEach((plant, index) => {
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        const safeId = `plant_${index}`;
+        div.innerHTML = `
+            <input class="form-check-input plant-checkbox" type="checkbox" value="${plant}" id="${safeId}" checked>
+            <label class="form-check-label" for="${safeId}">${plant}</label>
+        `;
+        plantContainer.appendChild(div);
+    });
+    
+    // Populate coal company selection
+    coalCompanyContainer.innerHTML = '';
+    console.log("Populating coal company container with", uniqueCoalCompanies.length, "companies");
+    uniqueCoalCompanies.forEach((company, index) => {
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        const safeId = `company_${index}`;
+        div.innerHTML = `
+            <input class="form-check-input coal-company-checkbox" type="checkbox" value="${company}" id="${safeId}" checked>
+            <label class="form-check-label" for="${safeId}">${company}</label>
+        `;
+        coalCompanyContainer.appendChild(div);
+    });
+    
+    // Populate column selection
+    columnContainer.innerHTML = '';
+    console.log("Populating column container with", columnOptions.length, "columns");
+    columnOptions.forEach((column, index) => {
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        const safeId = `column_${index}`;
+        div.innerHTML = `
+            <input class="form-check-input column-checkbox" type="checkbox" value="${column.key}" id="${safeId}" ${column.checked ? 'checked' : ''}>
+            <label class="form-check-label" for="${safeId}">${column.label}</label>
+        `;
+        columnContainer.appendChild(div);
+    });
+    
+    // Add event listeners for select/deselect all buttons
+    document.getElementById('QCSelectAllPlants').onclick = () => {
+        document.querySelectorAll('.plant-checkbox').forEach(cb => cb.checked = true);
+        QCSaveModalPreferences(); // Save preferences after select all
+    };
+    document.getElementById('QCDeselectAllPlants').onclick = () => {
+        document.querySelectorAll('.plant-checkbox').forEach(cb => cb.checked = false);
+        QCSaveModalPreferences(); // Save preferences after deselect all
+    };
+    
+    document.getElementById('QCSelectAllCoalCompanies').onclick = () => {
+        document.querySelectorAll('.coal-company-checkbox').forEach(cb => cb.checked = true);
+        QCSaveModalPreferences(); // Save preferences after select all
+    };
+    document.getElementById('QCDeselectAllCoalCompanies').onclick = () => {
+        document.querySelectorAll('.coal-company-checkbox').forEach(cb => cb.checked = false);
+        QCSaveModalPreferences(); // Save preferences after deselect all
+    };
+    
+    document.getElementById('QCSelectAllColumns').onclick = () => {
+        document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = true);
+        QCSaveModalPreferences(); // Save preferences after select all
+    };
+    document.getElementById('QCDeselectAllColumns').onclick = () => {
+        document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = false);
+        QCSaveModalPreferences(); // Save preferences after deselect all
+    };
+    
+    // Add event listeners to save preferences when individual checkboxes change
+    document.querySelectorAll('.plant-checkbox, .coal-company-checkbox, .column-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', QCSaveModalPreferences);
+    });
+    
+    // Add event listeners for form controls
+    document.getElementById('QCSpecialFromDate').addEventListener('change', QCSaveModalPreferences);
+    document.getElementById('QCSpecialToDate').addEventListener('change', QCSaveModalPreferences);
+    document.getElementById('QCSpecialPlantWise').addEventListener('change', QCSaveModalPreferences);
+    document.getElementById('QCSpecialCoalCompanyWise').addEventListener('change', QCSaveModalPreferences);
+    document.getElementById('QCSpecialExportPDF').addEventListener('change', QCSaveModalPreferences);
+    document.getElementById('QCSpecialExportExcel').addEventListener('change', QCSaveModalPreferences);
+    
+    // Add event listeners for radio buttons
+    document.querySelectorAll('input[name="QCSpecialGrouping"]').forEach(radio => {
+        radio.addEventListener('change', QCSaveModalPreferences);
+    });
+}
+
+// Generate Special Report
+function QCGenerateSpecialReport() {
+    try {
+        // Get form values
+        const fromDate = document.getElementById('QCSpecialFromDate').value;
+        const toDate = document.getElementById('QCSpecialToDate').value;
+        const grouping = document.querySelector('input[name="QCSpecialGrouping"]:checked').value;
+        const plantWise = document.getElementById('QCSpecialPlantWise').checked;
+        const coalCompanyWise = document.getElementById('QCSpecialCoalCompanyWise').checked;
+        const exportPDF = document.getElementById('QCSpecialExportPDF').checked;
+        const exportExcel = document.getElementById('QCSpecialExportExcel').checked;
+        
+        // Get selected filters
+        const selectedPlants = Array.from(document.querySelectorAll('.plant-checkbox:checked')).map(cb => cb.value);
+        const selectedCoalCompanies = Array.from(document.querySelectorAll('.coal-company-checkbox:checked')).map(cb => cb.value);
+        const selectedColumns = Array.from(document.querySelectorAll('.column-checkbox:checked')).map(cb => cb.value);
+        
+        // Save current preferences before generating report
+        QCSaveModalPreferences();
+        
+        console.log("Selected filters:", {
+            plants: selectedPlants,
+            coalCompanies: selectedCoalCompanies,
+            columns: selectedColumns,
+            plantCount: selectedPlants.length,
+            companyCount: selectedCoalCompanies.length,
+            columnCount: selectedColumns.length
+        });
+        
+        // Validate inputs
+        if (!fromDate || !toDate) {
+            alert('Please select both from and to dates.');
+            return;
+        }
+        
+        if (new Date(fromDate) > new Date(toDate)) {
+            alert('From date cannot be after to date.');
+            return;
+        }
+        
+        if (!exportPDF && !exportExcel) {
+            alert('Please select at least one export format.');
+            return;
+        }
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('QCSpecialReportModal'));
+        modal.hide();
+        
+        // Show loading indication
+        const loadingAlert = document.createElement('div');
+        loadingAlert.className = 'alert alert-info position-fixed top-50 start-50 translate-middle';
+        loadingAlert.style.zIndex = '9999';
+        loadingAlert.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating special report...';
+        document.body.appendChild(loadingAlert);
+        
+        // Generate the report data
+        setTimeout(() => {
+            try {
+                const reportData = QCPrepareSpecialReportData(fromDate, toDate, grouping, plantWise, coalCompanyWise, selectedPlants, selectedCoalCompanies, selectedColumns);
+                
+                if (exportPDF) {
+                    QCGenerateSpecialReportPDF(reportData, fromDate, toDate, grouping, plantWise, coalCompanyWise);
+                }
+                
+                if (exportExcel) {
+                    QCGenerateSpecialReportExcel(reportData, fromDate, toDate, grouping, plantWise, coalCompanyWise);
+                }
+                
+                // Remove loading indication
+                document.body.removeChild(loadingAlert);
+                
+                // Show success message
+                const successAlert = document.createElement('div');
+                successAlert.className = 'alert alert-success position-fixed top-50 start-50 translate-middle';
+                successAlert.style.zIndex = '9999';
+                successAlert.innerHTML = '<i class="bi bi-check-circle"></i> Special report generated successfully!';
+                document.body.appendChild(successAlert);
+                
+                setTimeout(() => {
+                    if (document.body.contains(successAlert)) {
+                        document.body.removeChild(successAlert);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Special report generation error:', error);
+                document.body.removeChild(loadingAlert);
+                alert(`Error generating special report: ${error.message}`);
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('Special report setup error:', error);
+        alert(`Error setting up special report: ${error.message}`);
+    }
+}
+
+// Calculate totals and averages for a group of data
+function QCCalculateGroupTotals(dataArray) {
+    if (!dataArray || dataArray.length === 0) {
+        return null;
+    }
+    
+    // Initialize totals object
+    const totals = {
+        rowCount: dataArray.length,
+        qtyDispatched: 0,       // Index 3 - should be summed
+        qtyReceived: 0,         // Index 4 - should be summed (not averaged)
+        rakesReceived: 0,       // Index 5 - should be summed
+        transitLoss: { sum: 0, count: 0, avg: 0 },  // Index 6 - should be averaged
+        moisture: { sum: 0, count: 0, avg: 0 },     // Index 7 - weighted average
+        ash: { sum: 0, count: 0, avg: 0 },          // Index 8 - weighted average
+        vm: { sum: 0, count: 0, avg: 0 },           // Index 9 - weighted average
+        fc: { sum: 0, count: 0, avg: 0 },           // Index 10 - weighted average
+        gcv: { sum: 0, count: 0, avg: 0 },          // Index 11 - weighted average
+        coalCost: { sum: 0, count: 0, avg: 0 },     // Index 12 - weighted average
+        railwayFreight: { sum: 0, count: 0, avg: 0 }, // Index 13 - weighted average
+        distance: { sum: 0, count: 0, avg: 0 },     // Index 14 - weighted average
+        // Extended calculated columns
+        landedCostPerMT: { sum: 0, count: 0, avg: 0 },
+        landedCostPerMcal: { sum: 0, count: 0, avg: 0 },
+        perUnitCost: { sum: 0, count: 0, avg: 0 },
+        totalAmount: 0
+    };
+    
+    // Calculate sums and counts
+    dataArray.forEach(row => {
+        // Direct sums for quantities
+        const qtyDispatched = parseFloat(row[3]) || 0;
+        const qtyReceived = parseFloat(row[4]) || 0;
+        const rakesReceived = parseFloat(row[5]) || 0;
+        const coalCost = parseFloat(row[12]) || 0;
+        const railwayFreight = parseFloat(row[13]) || 0;
+        const gcv = parseFloat(row[11]) || 1;
+        const plantName = row[1] || 'PSPCL';
+        
+        // Sum quantities and rakes
+        totals.qtyDispatched += qtyDispatched;
+        totals.qtyReceived += qtyReceived;
+        totals.rakesReceived += rakesReceived;
+        
+        // Calculate extended columns for each row
+        const landedCostPerMT = coalCost + railwayFreight;
+        const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
+        const shr = getWeightedAverageSHRForPlant(plantName);
+        const perUnitCost = shr * landedCostPerMcal / 1000;
+        const totalAmount = (qtyReceived * landedCostPerMT) / 100;
+        
+        totals.totalAmount += totalAmount;
+        
+        // Weighted averages for quality parameters and costs (weighted by qtyReceived)
+        if (qtyReceived > 0) {
+            // Add to weighted averages
+            const addToWeightedAverage = (value, property, weight) => {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue)) {
+                    totals[property].sum += numValue * weight;
+                    totals[property].count += weight;
+                }
+            };
+            
+            addToWeightedAverage(row[6], 'transitLoss', qtyReceived);  // Transit Loss
+            addToWeightedAverage(row[7], 'moisture', qtyReceived);     // Moisture
+            addToWeightedAverage(row[8], 'ash', qtyReceived);          // Ash
+            addToWeightedAverage(row[9], 'vm', qtyReceived);           // Volatile Matter
+            addToWeightedAverage(row[10], 'fc', qtyReceived);          // Fixed Carbon
+            addToWeightedAverage(row[11], 'gcv', qtyReceived);         // GCV
+            addToWeightedAverage(row[12], 'coalCost', qtyReceived);    // Coal Cost
+            addToWeightedAverage(row[13], 'railwayFreight', qtyReceived); // Railway Freight
+            addToWeightedAverage(row[14], 'distance', qtyReceived);    // Distance
+        }
+    });
+    
+    // Calculate weighted averages
+    Object.keys(totals).forEach(key => {
+        if (typeof totals[key] === 'object' && totals[key].count > 0) {
+            totals[key].avg = totals[key].sum / totals[key].count;
+        }
+    });
+    
+    // Calculate extended columns from total values (not weighted averages)
+    const totalCoalCost = totals.coalCost.avg || 0;
+    const totalRailwayFreight = totals.railwayFreight.avg || 0;
+    const totalGCV = totals.gcv.avg || 1;
+    
+    // Landed Cost Rs/MT = Coal Cost + Railway Freight
+    totals.landedCostPerMT = {
+        sum: 0,
+        count: 0,
+        avg: totalCoalCost + totalRailwayFreight
+    };
+    
+    // Landed Cost Rs/Mcal = Landed Cost Rs/MT / GCV
+    totals.landedCostPerMcal = {
+        sum: 0,
+        count: 0,
+        avg: totalGCV > 0 ? (totalCoalCost + totalRailwayFreight) / totalGCV : 0
+    };
+    
+    // Per Unit Cost Rs/kWh = SHR * Landed Cost Rs/Mcal / 1000
+    const avgSHR = getWeightedAverageSHRForPlant('PSPCL'); // Use average SHR
+    totals.perUnitCost = {
+        sum: 0,
+        count: 0,
+        avg: avgSHR * (totals.landedCostPerMcal.avg) / 1000
+    };
+    
+    // Fix transit loss - multiply by 100 if it's in decimal form
+    if (totals.transitLoss.avg < 1 && totals.transitLoss.avg > 0) {
+        totals.transitLoss.avg *= 100;
+    }
+    
+    return totals;
+}
+
+// Prepare Special Report Data
+function QCPrepareSpecialReportData(fromDate, toDate, grouping, plantWise, coalCompanyWise, selectedPlants = [], selectedCoalCompanies = [], selectedColumns = []) {
+    if (!QualityCostData1 || QualityCostData1.length === 0) {
+        throw new Error('No data available for the selected period.');
+    }
+    
+    // Parse the from and to dates
+    const fromDateObj = new Date(fromDate + '-01');
+    const toDateObj = new Date(toDate + '-01');
+    
+    console.log("Date filtering:", {
+        fromDate: fromDate,
+        toDate: toDate,
+        fromDateObj: fromDateObj,
+        toDateObj: toDateObj,
+        totalDataRows: QualityCostData1.length
+    });
+    
+    // Filter data based on date range
+    let filteredData = QualityCostData1.filter(row => {
+        if (!row || !row[0]) return false;
+        
+        const rowDate = parseMonthYear(row[0]);
+        if (!rowDate) return false;
+        
+        const rowMonthYear = new Date(rowDate.getFullYear(), rowDate.getMonth(), 1);
+        const fromMonthYear = new Date(fromDateObj.getFullYear(), fromDateObj.getMonth(), 1);
+        const toMonthYear = new Date(toDateObj.getFullYear(), toDateObj.getMonth(), 1);
+        
+        return rowMonthYear >= fromMonthYear && rowMonthYear <= toMonthYear;
+    });
+    
+    // Apply plant and coal company filters
+    console.log("Initial filtered data after date range:", filteredData.length);
+    
+    if (selectedPlants.length > 0) {
+        console.log("Filtering by plants:", selectedPlants);
+        const beforePlantFilter = filteredData.length;
+        filteredData = filteredData.filter(row => selectedPlants.includes(row[1])); // Fix: use row[1] for plant names
+        console.log("After plant filter:", filteredData.length, "rows (was", beforePlantFilter, ")");
+    } else {
+        console.log("No plant filter applied (all plants selected)");
+    }
+    
+    if (selectedCoalCompanies.length > 0) {
+        console.log("Filtering by coal companies:", selectedCoalCompanies);
+        const beforeCoalFilter = filteredData.length;
+        // More lenient coal company filtering - check if row[2] contains any of the selected companies
+        filteredData = filteredData.filter(row => {
+            const company = row[2];
+            return selectedCoalCompanies.some(selected => 
+                company && company.toString().includes(selected) || selected.includes(company?.toString())
+            );
+        });
+        console.log("After coal company filter:", filteredData.length, "rows (was", beforeCoalFilter, ")");
+    } else {
+        console.log("No coal company filter applied (all companies selected)");
+    }
+    
+    console.log("Final filtered data length:", filteredData.length);
+    console.log("Filter summary:", {
+        originalData: QualityCostData1?.length || 0,
+        afterDateFilter: filteredData.length,
+        selectedPlants: selectedPlants.length,
+        selectedCoalCompanies: selectedCoalCompanies.length,
+        fromDate: fromDate,
+        toDate: toDate
+    });
+    
+    if (filteredData.length === 0) {
+        throw new Error('No data found for the selected period and filters.');
+    }
+    
+    let groupedData = {};
+    
+    if (grouping === 'month') {
+        // Group by month first
+        filteredData.forEach(row => {
+            const rowDate = parseMonthYear(row[0]);
+            if (!rowDate) return;
+            
+            const monthKey = `${rowDate.getFullYear()}-${String(rowDate.getMonth() + 1).padStart(2, '0')}`;
+            const monthDisplayKey = formatMonthForDisplay(row[0]);
+            
+            if (!groupedData[monthKey]) {
+                groupedData[monthKey] = {
+                    monthDisplay: monthDisplayKey,
+                    monthKey: monthKey,
+                    data: [],
+                    subGroups: {}
+                };
+            }
+            
+            // Add the row to month data
+            groupedData[monthKey].data.push(row);
+            
+            // Sub-group by coal company if selected
+            if (coalCompanyWise) {
+                const coalCompany = row[2] || 'Unknown';
+                if (!groupedData[monthKey].subGroups[coalCompany]) {
+                    groupedData[monthKey].subGroups[coalCompany] = {
+                        name: coalCompany,
+                        data: [],
+                        plantGroups: {}
+                    };
+                }
+                groupedData[monthKey].subGroups[coalCompany].data.push(row);
+                
+                // Sub-group by plant if both are selected
+                if (plantWise) {
+                    const plant = row[1] || 'Unknown';
+                    if (!groupedData[monthKey].subGroups[coalCompany].plantGroups[plant]) {
+                        groupedData[monthKey].subGroups[coalCompany].plantGroups[plant] = {
+                            name: plant,
+                            data: []
+                        };
+                    }
+                    groupedData[monthKey].subGroups[coalCompany].plantGroups[plant].data.push(row);
+                }
+            } else if (plantWise) {
+                // Group by plant only (no coal company grouping)
+                const plant = row[1] || 'Unknown';
+                if (!groupedData[monthKey].subGroups[plant]) {
+                    groupedData[monthKey].subGroups[plant] = {
+                        name: plant,
+                        data: [],
+                        plantGroups: {}
+                    };
+                }
+                groupedData[monthKey].subGroups[plant].data.push(row);
+            }
+        });
+    } else {
+        // Financial Year-wise grouping (April to March)
+        filteredData.forEach(row => {
+            const rowDate = parseMonthYear(row[0]);
+            if (!rowDate) return;
+            
+            const fyKey = getFinancialYear(rowDate);
+            if (!fyKey) return;
+            
+            if (!groupedData[fyKey]) {
+                groupedData[fyKey] = {
+                    monthDisplay: getFinancialYearDisplay(fyKey),
+                    monthKey: fyKey,
+                    data: [],
+                    subGroups: {}
+                };
+            }
+            
+            groupedData[fyKey].data.push(row);
+            
+            // Apply same sub-grouping logic for financial year-wise
+            if (coalCompanyWise) {
+                const coalCompany = row[2] || 'Unknown';
+                if (!groupedData[fyKey].subGroups[coalCompany]) {
+                    groupedData[fyKey].subGroups[coalCompany] = {
+                        name: coalCompany,
+                        data: [],
+                        plantGroups: {}
+                    };
+                }
+                groupedData[fyKey].subGroups[coalCompany].data.push(row);
+                
+                if (plantWise) {
+                    const plant = row[1] || 'Unknown';
+                    if (!groupedData[fyKey].subGroups[coalCompany].plantGroups[plant]) {
+                        groupedData[fyKey].subGroups[coalCompany].plantGroups[plant] = {
+                            name: plant,
+                            data: []
+                        };
+                    }
+                    groupedData[fyKey].subGroups[coalCompany].plantGroups[plant].data.push(row);
+                }
+            } else if (plantWise) {
+                const plant = row[1] || 'Unknown';
+                if (!groupedData[fyKey].subGroups[plant]) {
+                    groupedData[fyKey].subGroups[plant] = {
+                        name: plant,
+                        data: [],
+                        plantGroups: {}
+                    };
+                }
+                groupedData[fyKey].subGroups[plant].data.push(row);
+            }
+        });
+    }
+    
+    // Sort the grouped data by month/year
+    const sortedKeys = Object.keys(groupedData).sort();
+    const sortedGroupedData = {};
+    sortedKeys.forEach(key => {
+        const group = groupedData[key];
+        
+        // Calculate totals for main group
+        group.totals = QCCalculateGroupTotals(group.data);
+        
+        // Calculate totals for sub-groups
+        Object.keys(group.subGroups).forEach(subKey => {
+            const subGroup = group.subGroups[subKey];
+            subGroup.totals = QCCalculateGroupTotals(subGroup.data);
+            
+            // Calculate totals for plant groups within coal company
+            Object.keys(subGroup.plantGroups || {}).forEach(plantKey => {
+                const plantGroup = subGroup.plantGroups[plantKey];
+                plantGroup.totals = QCCalculateGroupTotals(plantGroup.data);
+            });
+        });
+        
+        sortedGroupedData[key] = group;
+    });
+    
+    // Calculate grand totals
+    const allData = Object.values(sortedGroupedData).reduce((acc, group) => {
+        return acc.concat(group.data);
+    }, []);
+    const grandTotals = QCCalculateGroupTotals(allData);
+    
+    return {
+        groupedData: sortedGroupedData,
+        grandTotals: grandTotals,
+        fromDate: fromDate,
+        toDate: toDate,
+        grouping: grouping,
+        plantWise: plantWise,
+        coalCompanyWise: coalCompanyWise,
+        totalRecords: filteredData.length,
+        selectedColumns: selectedColumns
+    };
+}
+
+// Generate Special Report PDF
+function QCGenerateSpecialReportPDF(reportData, fromDate, toDate, grouping, plantWise, coalCompanyWise) {
+    try {
+        if (typeof window.jspdf === 'undefined') {
+            alert('PDF library not loaded. Please ensure jsPDF is included.');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4'); // Landscape for better table fit
+        
+        // Page settings - reduced margins
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 8; // Reduced from 10
+        let currentY = 15; // Reduced from 20
+        let pageNumber = 1; // Track page numbers
+        
+        // Calculate dynamic column widths
+        const plantNameWidth = 20; // mm
+        const coalCompanyWidth = 18; // mm
+        const availableWidth = pageWidth - (2 * margin) - plantNameWidth - coalCompanyWidth; // Total width minus margins minus first two columns
+        const visibleColumns = QCGetVisibleColumns(true);
+        const dataColumnCount = visibleColumns.length - 2; // Exclude Plant Name and Coal Company columns
+        const dataColumnWidth = Math.floor(availableWidth / dataColumnCount); // Equal width for all data columns
+        
+        // Function to add page number to footer
+        const addPageNumber = () => {
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            const pageText = `Page ${pageNumber}`;
+            const pageTextWidth = doc.getTextWidth(pageText);
+            doc.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - 5); // 5mm from bottom, right aligned
+        };
+        
+        // Add title - single line with period
+        doc.setFontSize(14); // Reduced font size to fit in one line
+        doc.setFont("helvetica", "bold");
+        // Format period - handle both YYYY-MM format and Google Sheets Date format
+        const fromDateFormatted = fromDate.includes('Date(') ? formatMonthForDisplay(fromDate) : 
+                                 fromDate.match(/^\d{4}-\d{2}$/) ? fromDate.replace(/(\d{4})-(\d{2})/, (match, year, month) => {
+                                     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                     return `${monthNames[parseInt(month) - 1]}-${year}`;
+                                 }) : formatMonthForDisplay(fromDate);
+        const toDateFormatted = toDate.includes('Date(') ? formatMonthForDisplay(toDate) : 
+                               toDate.match(/^\d{4}-\d{2}$/) ? toDate.replace(/(\d{4})-(\d{2})/, (match, year, month) => {
+                                   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                   return `${monthNames[parseInt(month) - 1]}-${year}`;
+                               }) : formatMonthForDisplay(toDate);
+        const title = `Details of coal received at PSPCL thermal power stations during ${fromDateFormatted} to ${toDateFormatted}`;
+        const titleWidth = doc.getTextWidth(title);
+        doc.text(title, (pageWidth - titleWidth) / 2, currentY);
+        currentY += 8; // Reduced margin between main heading and month heading
+        
+        // Get visible columns for headers (already defined above for width calculation)
+        const headers = visibleColumns.map(col => col.header);
+        
+        // Function to format a row for PDF
+        const formatRowForPDF = (row) => {
+            return visibleColumns.map(col => {
+                let value = '';
+                
+                if (col.index <= 14) {
+                    value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
+                    if (col.index === 1) value = shortenPlantName(value);
+                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                        if (col.index === 3 || col.index === 4) {
+                            value = parseFloat(value).toFixed(4);
+                        } else {
+                            value = parseFloat(value).toFixed(2);
+                        }
+                    }
+                } else {
+                    // Calculate extended columns
+                    const coalCost = parseFloat(row[12]) || 0;
+                    const railwayFreight = parseFloat(row[13]) || 0;
+                    const gcv = parseFloat(row[11]) || 1;
+                    const qtyReceived = parseFloat(row[4]) || 0;
+                    const plantName = row[1] || 'PSPCL';
+                    
+                    switch (col.index) {
+                        case 15: // Landed Cost Rs/MT
+                            const landedCostPerMT = coalCost + railwayFreight;
+                            value = landedCostPerMT.toFixed(0);
+                            break;
+                        case 16: // Landed Cost Rs/Mcal
+                            const landedCostPerMT2 = coalCost + railwayFreight;
+                            const landedCostPerMcal = gcv > 0 ? landedCostPerMT2 / gcv : 0;
+                            value = landedCostPerMcal.toFixed(4);
+                            break;
+                        case 17: // Per Unit Cost Rs./Kwh
+                            const landedCostPerMT3 = coalCost + railwayFreight;
+                            const landedCostPerMcal3 = gcv > 0 ? landedCostPerMT3 / gcv : 0;
+                            const shr = getWeightedAverageSHRForPlant(plantName);
+                            const perUnitCost = shr * landedCostPerMcal3 / 1000;
+                            value = perUnitCost.toFixed(3);
+                            break;
+                        case 18: // Total Amount (Rs. Crore)
+                            const landedCostPerMT4 = coalCost + railwayFreight;
+                            const totalAmount = (qtyReceived * landedCostPerMT4) / 100; // Convert to crores
+                            value = totalAmount.toFixed(2);
+                            break;
+                        default:
+                            value = '';
+                    }
+                }
+                
+                return value;
+            });
+        };
+        
+        // Function to format totals row for PDF
+        const formatTotalsForPDF = (totals) => {
+            return visibleColumns.map(col => {
+                let value = '';
+                
+                switch (col.index) {
+                    case 0: value = 'TOTAL/AVG'; break;
+                    case 1: value = ''; break;
+                    case 2: value = ''; break;
+                    case 3: value = totals.qtyDispatched.toFixed(4); break;      // Qty Dispatched - Sum
+                    case 4: value = totals.qtyReceived.toFixed(4); break;        // Qty Received - Sum 
+                    case 5: value = totals.rakesReceived.toFixed(0); break;      // Rakes Received - Sum
+                    case 6: value = totals.transitLoss.avg.toFixed(2); break;    // Transit Loss - Avg
+                    case 7: value = totals.moisture.avg.toFixed(2); break;       // Moisture - Weighted Avg
+                    case 8: value = totals.ash.avg.toFixed(2); break;            // Ash - Weighted Avg
+                    case 9: value = totals.vm.avg.toFixed(2); break;             // Volatile Matter - Weighted Avg
+                    case 10: value = totals.fc.avg.toFixed(2); break;            // Fixed Carbon - Weighted Avg
+                    case 11: value = totals.gcv.avg.toFixed(0); break;           // GCV - Weighted Avg
+                    case 12: value = totals.coalCost.avg.toFixed(0); break;      // Coal Cost - Weighted Avg
+                    case 13: value = totals.railwayFreight.avg.toFixed(0); break; // Railway Freight - Weighted Avg
+                    case 14: value = totals.distance.avg.toFixed(0); break;      // Distance - Weighted Avg
+                    case 15: value = totals.landedCostPerMT.avg.toFixed(0); break; // Landed Cost Rs/MT - Weighted Avg
+                    case 16: value = totals.landedCostPerMcal.avg.toFixed(4); break; // Landed Cost Rs/Mcal - Weighted Avg
+                    case 17: value = totals.perUnitCost.avg.toFixed(3); break;   // Per Unit Cost - Weighted Avg
+                    case 18: value = totals.totalAmount.toFixed(2); break;       // Total Amount - Sum
+                    default: value = '';
+                }
+                
+                return value;
+            });
+        };
+        
+        // Function to check if new page is needed
+        const checkNewPage = (additionalHeight) => {
+            if (currentY + additionalHeight > pageHeight - margin - 5) { // Further reduced bottom margin from 10 to 5
+                doc.addPage();
+                currentY = 15; // Reduced top margin for new pages
+                return true;
+            }
+            return false;
+        };
+        
+        // Generate report based on grouping
+        const groupedData = reportData.groupedData;
+        
+        // Handle Financial Year grouping differently
+        if (grouping === 'year') {
+            // Financial Year specific table structure
+            Object.keys(groupedData).forEach(fyKey => {
+                const fyGroup = groupedData[fyKey];
+                
+                // Generate FY title
+                checkNewPage(30);
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text(`${fyGroup.monthDisplay} - Financial Year Report`, margin, currentY);
+                currentY += 10;
+                
+                // Group data by plant for FY structure
+                const fyPlantGroups = {};
+                fyGroup.data.forEach(row => {
+                    const plantName = row[1] || 'Unknown Plant';
+                    if (!fyPlantGroups[plantName]) {
+                        fyPlantGroups[plantName] = [];
+                    }
+                    fyPlantGroups[plantName].push(row);
+                });
+                
+                const fyPlantNames = Object.keys(fyPlantGroups);
+                
+                // Generate plant-wise tables with coal company-wise consolidated values
+                fyPlantNames.forEach(plantName => {
+                    const plantData = fyPlantGroups[plantName];
+                    
+                    checkNewPage(20);
+                    // Removed plant header as requested
+                    
+                    // Group plant data by coal company
+                    const coalCompanyGroups = {};
+                    plantData.forEach(row => {
+                        const coalCompany = row[2] || 'Unknown';
+                        if (!coalCompanyGroups[coalCompany]) {
+                            coalCompanyGroups[coalCompany] = [];
+                        }
+                        coalCompanyGroups[coalCompany].push(row);
+                    });
+                    
+                    // Create table data with coal company totals
+                    const plantTableData = [];
+                    const plantRowSpans = []; // Track plant name rows for merging
+                    let plantStartRow = 0;
+                    
+                    Object.keys(coalCompanyGroups).forEach((coalCompany, index) => {
+                        const companyData = coalCompanyGroups[coalCompany];
+                        const companyTotals = QCCalculateGroupTotals(companyData);
+                        const companyRow = formatTotalsForPDF(companyTotals);
+                        
+                        // Show plant name only in first row, empty for others (for merging)
+                        if (index === 0) {
+                            companyRow[0] = plantName;  // Plant name only in first row
+                        } else {
+                            companyRow[0] = '';  // Empty for merging effect
+                        }
+                        companyRow[1] = coalCompany;  // Coal company
+                        plantTableData.push(companyRow);
+                    });
+                    
+                    // Track plant name span for styling
+                    const coalCompanyCount = Object.keys(coalCompanyGroups).length;
+                    const hasMultipleCoalCompanies = coalCompanyCount > 1;
+                    
+                    if (coalCompanyCount > 0) {
+                        plantRowSpans.push({
+                            startRow: plantStartRow,
+                            endRow: coalCompanyCount - 1,
+                            rowCount: coalCompanyCount
+                        });
+                    }
+                    
+                    // Add plant total row only if multiple coal companies
+                    if (hasMultipleCoalCompanies) {
+                        const plantTotals = QCCalculateGroupTotals(plantData);
+                        const plantTotalRow = formatTotalsForPDF(plantTotals);
+                        plantTotalRow[0] = plantName;  // Show plant name separately for total
+                        plantTotalRow[1] = 'All Sources';
+                        plantTableData.push(plantTotalRow);
+                    }
+                    
+                    // Generate the table
+                    doc.autoTable({
+                        head: [headers],
+                        body: plantTableData,
+                        startY: currentY,
+                        margin: { left: margin, right: margin },
+                        styles: { fontSize: 8, cellPadding: 1 },
+                        headStyles: { fillColor: [220, 220, 220], fontSize: 8, textColor: [0, 0, 0], halign: 'center' },
+                        bodyStyles: { fontSize: 8 },
+                        columnStyles: {
+                            0: { halign: 'center', cellWidth: plantNameWidth },
+                            1: { halign: 'center', cellWidth: coalCompanyWidth },
+                            2: { halign: 'center', cellWidth: dataColumnWidth },
+                            3: { halign: 'center', cellWidth: dataColumnWidth },
+                            4: { halign: 'center', cellWidth: dataColumnWidth },
+                            5: { halign: 'center', cellWidth: dataColumnWidth },
+                            6: { halign: 'center', cellWidth: dataColumnWidth },
+                            7: { halign: 'center', cellWidth: dataColumnWidth },
+                            8: { halign: 'center', cellWidth: dataColumnWidth },
+                            9: { halign: 'center', cellWidth: dataColumnWidth },
+                            10: { halign: 'center', cellWidth: dataColumnWidth },
+                            11: { halign: 'center', cellWidth: dataColumnWidth },
+                            12: { halign: 'center', cellWidth: dataColumnWidth },
+                            13: { halign: 'center', cellWidth: dataColumnWidth },
+                            14: { halign: 'center', cellWidth: dataColumnWidth },
+                            15: { halign: 'center', cellWidth: dataColumnWidth },
+                            16: { halign: 'center', cellWidth: dataColumnWidth },
+                            17: { halign: 'center', cellWidth: dataColumnWidth },
+                            18: { halign: 'center', cellWidth: dataColumnWidth },
+                            19: { halign: 'center', cellWidth: dataColumnWidth },
+                            20: { halign: 'center', cellWidth: dataColumnWidth }
+                        },
+                        theme: 'striped',
+                        didParseCell: function(data) {
+                            // Handle plant name cell merging
+                            if (data.column.index === 0 && hasMultipleCoalCompanies) {
+                                const isPlantTotalRow = data.row.index === plantTableData.length - 1;
+                                const isFirstCompanyRow = data.row.index === 0;
+                                
+                                if (!isPlantTotalRow) {
+                                    if (isFirstCompanyRow) {
+                                        // First row shows plant name with styling
+                                        data.cell.styles.fillColor = [245, 245, 245]; // Light gray
+                                        data.cell.styles.fontStyle = 'bold';
+                                    } else {
+                                        // Subsequent rows should be empty for visual merging
+                                        data.cell.text = '';
+                                        data.cell.styles.fillColor = [245, 245, 245]; // Same background
+                                    }
+                                } else {
+                                    // Plant total row styling - grey like headers
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Grey like headers
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.fontStyle = 'bold';
+                                }
+                            }
+                            
+                            // Style coal company column for total row
+                            if (data.column.index === 1) {
+                                const isPlantTotalRow = data.row.index === plantTableData.length - 1;
+                                if (isPlantTotalRow && hasMultipleCoalCompanies) {
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Grey like headers
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.fontStyle = 'bold';
+                                }
+                            }
+                        }
+                    });
+                    
+                    currentY = doc.lastAutoTable.finalY + 8;
+                });
+                
+                // Generate consolidated grand totals table for all plants in FY
+                if (fyPlantNames.length > 1) {
+                    checkNewPage(20);
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`${fyGroup.monthDisplay} - All Plants Consolidated`, margin, currentY);
+                    currentY += 8;
+                    
+                    // Create grand totals by coal company (like overall period grand total)
+                    const grandTotalsData = [];
+                    const allCoalCompanyGroups = {};
+                    
+                    // Group all FY data by coal company
+                    fyGroup.data.forEach(row => {
+                        const coalCompany = row[2] || 'Unknown';
+                        if (!allCoalCompanyGroups[coalCompany]) {
+                            allCoalCompanyGroups[coalCompany] = [];
+                        }
+                        allCoalCompanyGroups[coalCompany].push(row);
+                    });
+                    
+                    // Add coal company totals
+                    Object.keys(allCoalCompanyGroups).forEach((coalCompany, index) => {
+                        const companyData = allCoalCompanyGroups[coalCompany];
+                        const companyTotals = QCCalculateGroupTotals(companyData);
+                        const companyRow = formatTotalsForPDF(companyTotals);
+                        
+                        // Show "All Plants" only in first row, empty for others (for merging)
+                        if (index === 0) {
+                            companyRow[0] = 'All Plants';  // Plant name only in first row
+                        } else {
+                            companyRow[0] = '';  // Empty for merging effect
+                        }
+                        companyRow[1] = coalCompany;   // Coal company name
+                        grandTotalsData.push(companyRow);
+                    });
+                    
+                    // Track coal company count for merging logic
+                    const coalCompanyCount = Object.keys(allCoalCompanyGroups).length;
+                    
+                    // Add overall FY total only if multiple coal companies
+                    if (coalCompanyCount > 1) {
+                        const fyTotals = QCCalculateGroupTotals(fyGroup.data);
+                        const fyTotalRow = formatTotalsForPDF(fyTotals);
+                        fyTotalRow[0] = 'All Plants';
+                        fyTotalRow[1] = 'All Sources';
+                        grandTotalsData.push(fyTotalRow);
+                    }
+                    
+                    // Generate the grand totals table
+                    doc.autoTable({
+                        head: [headers],
+                        body: grandTotalsData,
+                        startY: currentY,
+                        margin: { left: margin, right: margin },
+                        styles: { fontSize: 8, cellPadding: 1, fontStyle: 'bold' },
+                        headStyles: { fillColor: [220, 220, 220], fontSize: 8, textColor: [0, 0, 0], halign: 'center' },
+                        bodyStyles: { fontSize: 8, fillColor: [240, 248, 255] },
+                        columnStyles: {
+                            0: { halign: 'center', cellWidth: plantNameWidth },
+                            1: { halign: 'center', cellWidth: coalCompanyWidth },
+                            2: { halign: 'center', cellWidth: dataColumnWidth },
+                            3: { halign: 'center', cellWidth: dataColumnWidth },
+                            4: { halign: 'center', cellWidth: dataColumnWidth },
+                            5: { halign: 'center', cellWidth: dataColumnWidth },
+                            6: { halign: 'center', cellWidth: dataColumnWidth },
+                            7: { halign: 'center', cellWidth: dataColumnWidth },
+                            8: { halign: 'center', cellWidth: dataColumnWidth },
+                            9: { halign: 'center', cellWidth: dataColumnWidth },
+                            10: { halign: 'center', cellWidth: dataColumnWidth },
+                            11: { halign: 'center', cellWidth: dataColumnWidth },
+                            12: { halign: 'center', cellWidth: dataColumnWidth },
+                            13: { halign: 'center', cellWidth: dataColumnWidth },
+                            14: { halign: 'center', cellWidth: dataColumnWidth },
+                            15: { halign: 'center', cellWidth: dataColumnWidth },
+                            16: { halign: 'center', cellWidth: dataColumnWidth },
+                            17: { halign: 'center', cellWidth: dataColumnWidth },
+                            18: { halign: 'center', cellWidth: dataColumnWidth },
+                            19: { halign: 'center', cellWidth: dataColumnWidth },
+                            20: { halign: 'center', cellWidth: dataColumnWidth }
+                        },
+                        theme: 'striped',
+                        didParseCell: function(data) {
+                            // Handle "All Plants" cell merging
+                            if (data.column.index === 0 && coalCompanyCount > 1) {
+                                const isFyTotalRow = data.row.index === grandTotalsData.length - 1;
+                                const isFirstCompanyRow = data.row.index === 0;
+                                
+                                if (!isFyTotalRow) {
+                                    if (isFirstCompanyRow) {
+                                        // First row shows "All Plants" with styling
+                                        data.cell.styles.fillColor = [245, 245, 245]; // Light gray
+                                        data.cell.styles.fontStyle = 'bold';
+                                    } else {
+                                        // Subsequent rows should be empty for visual merging
+                                        data.cell.text = '';
+                                        data.cell.styles.fillColor = [245, 245, 245]; // Same background
+                                    }
+                                } else {
+                                    // FY total row styling
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Grey like headers
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.fontStyle = 'bold';
+                                }
+                            }
+                            
+                            // Style coal company column for total row
+                            if (data.column.index === 1) {
+                                const isFyTotalRow = data.row.index === grandTotalsData.length - 1;
+                                if (isFyTotalRow && coalCompanyCount > 1) {
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Grey like headers
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.fontStyle = 'bold';
+                                }
+                            }
+                        }
+                    });
+                    
+                    currentY = doc.lastAutoTable.finalY + 10;
+                }
+                
+                // Add horizontal line after each FY section
+                doc.setLineWidth(0.3);
+                doc.line(margin, currentY, doc.internal.pageSize.width - margin, currentY);
+                currentY += 8;
+            });
+            
+            // Add Overall Period Grand Total (consolidating all Financial Years)
+            const allFyData = [];
+            Object.keys(groupedData).forEach(fyKey => {
+                allFyData.push(...groupedData[fyKey].data);
+            });
+            
+            if (allFyData.length > 0) {
+                // Format dates for display (YYYY-MM to MMM-YYYY)
+                function formatDateForDisplay(dateStr) {
+                    const [year, month] = dateStr.split('-');
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    return `${monthNames[parseInt(month) - 1]}-${year}`;
+                }
+                
+                const formattedFromDate = formatDateForDisplay(fromDate);
+                const formattedToDate = formatDateForDisplay(toDate);
+                
+                checkNewPage(25);
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text(`OVERALL PERIOD GRAND TOTAL (${formattedFromDate} to ${formattedToDate})`, margin, currentY);
+                currentY += 10;
+                
+                // Group all period data by coal company
+                const overallCoalCompanyGroups = {};
+                allFyData.forEach(row => {
+                    const coalCompany = row[2] || 'Unknown';
+                    if (!overallCoalCompanyGroups[coalCompany]) {
+                        overallCoalCompanyGroups[coalCompany] = [];
+                    }
+                    overallCoalCompanyGroups[coalCompany].push(row);
+                });
+                
+                // Create overall period totals table
+                const overallTotalsData = [];
+                const hasMultipleOverallCoalCompanies = Object.keys(overallCoalCompanyGroups).length > 1;
+                
+                Object.keys(overallCoalCompanyGroups).forEach((coalCompany, index) => {
+                    const companyData = overallCoalCompanyGroups[coalCompany];
+                    const companyTotals = QCCalculateGroupTotals(companyData);
+                    const companyRow = formatTotalsForPDF(companyTotals);
+                    
+                    if (hasMultipleOverallCoalCompanies) {
+                        if (index === 0) {
+                            companyRow[0] = 'All Plants';  // Show "All Plants" only in first row
+                        } else {
+                            companyRow[0] = '';  // Empty for merging effect
+                        }
+                    } else {
+                        companyRow[0] = 'All Plants';
+                    }
+                    companyRow[1] = coalCompany;
+                    overallTotalsData.push(companyRow);
+                });
+                
+                // Add overall grand total row only if multiple coal companies
+                if (hasMultipleOverallCoalCompanies) {
+                    const overallGrandTotals = QCCalculateGroupTotals(allFyData);
+                    const overallGrandRow = formatTotalsForPDF(overallGrandTotals);
+                    overallGrandRow[0] = 'All Plants';
+                    overallGrandRow[1] = 'All Sources';
+                    overallTotalsData.push(overallGrandRow);
+                }
+                
+                // Generate the overall period table
+                doc.autoTable({
+                    head: [headers],
+                    body: overallTotalsData,
+                    startY: currentY,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 8, cellPadding: 1 },
+                    headStyles: { fillColor: [220, 220, 220], fontSize: 8, textColor: [0, 0, 0], halign: 'center' },
+                    bodyStyles: { fontSize: 8 }, // Removed yellow background
+                    alternateRowStyles: { fillColor: [245, 245, 245] }, // Light grey for alternating rows
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: plantNameWidth },
+                        1: { halign: 'center', cellWidth: coalCompanyWidth },
+                        2: { halign: 'center', cellWidth: dataColumnWidth },
+                        3: { halign: 'center', cellWidth: dataColumnWidth },
+                        4: { halign: 'center', cellWidth: dataColumnWidth },
+                        5: { halign: 'center', cellWidth: dataColumnWidth },
+                        6: { halign: 'center', cellWidth: dataColumnWidth },
+                        7: { halign: 'center', cellWidth: dataColumnWidth },
+                        8: { halign: 'center', cellWidth: dataColumnWidth },
+                        9: { halign: 'center', cellWidth: dataColumnWidth },
+                        10: { halign: 'center', cellWidth: dataColumnWidth },
+                        11: { halign: 'center', cellWidth: dataColumnWidth },
+                        12: { halign: 'center', cellWidth: dataColumnWidth },
+                        13: { halign: 'center', cellWidth: dataColumnWidth },
+                        14: { halign: 'center', cellWidth: dataColumnWidth },
+                        15: { halign: 'center', cellWidth: dataColumnWidth },
+                        16: { halign: 'center', cellWidth: dataColumnWidth },
+                        17: { halign: 'center', cellWidth: dataColumnWidth },
+                        18: { halign: 'center', cellWidth: dataColumnWidth },
+                        19: { halign: 'center', cellWidth: dataColumnWidth },
+                        20: { halign: 'center', cellWidth: dataColumnWidth }
+                    },
+                    didParseCell: function(data) {
+                        // Center-align ALL headers
+                        if (data.row.section === 'head') {
+                            data.cell.styles.halign = 'center';
+                        }
+                        
+                        // Handle "All Plants" cell merging for multiple coal companies
+                        if (hasMultipleOverallCoalCompanies && data.column.index === 0) {
+                            const currentRowIndex = data.row.index;
+                            const isGrandTotalRow = currentRowIndex === overallTotalsData.length - 1;
+                            
+                            if (!isGrandTotalRow && currentRowIndex < Object.keys(overallCoalCompanyGroups).length) {
+                                if (currentRowIndex === 0) {
+                                    // First row shows "All Plants" with special styling
+                                    data.cell.styles.halign = 'center';
+                                    data.cell.styles.valign = 'middle';
+                                    data.cell.styles.fontStyle = 'bold';
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Light grey background
+                                    data.cell.styles.textColor = [0, 0, 0];
+                                } else {
+                                    // Subsequent rows have same background with no borders for merging effect
+                                    data.cell.styles.lineWidth = 0;
+                                    data.cell.styles.fillColor = [220, 220, 220];
+                                    data.cell.styles.textColor = [0, 0, 0];
+                                    data.cell.styles.halign = 'center';
+                                    data.cell.styles.valign = 'middle';
+                                }
+                            }
+                        }
+                        
+                        // Make total row bold for ALL cells (including first 2 columns)
+                        if (hasMultipleOverallCoalCompanies) {
+                            const isGrandTotalRow = data.row.index === overallTotalsData.length - 1;
+                            if (isGrandTotalRow) {
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.fillColor = [220, 220, 220]; // Grey background for total row
+                                data.cell.styles.textColor = [0, 0, 0]; // Black text
+                            }
+                        }
+                    }
+                });
+                
+                currentY = doc.lastAutoTable.finalY + 15;
+            }
+        } else {
+            // Month-wise grouping - existing logic
+            Object.keys(groupedData).forEach(groupKey => {
+                const group = groupedData[groupKey];
+            
+            if (!coalCompanyWise && !plantWise) {
+                // Group data by plant for enhanced structure
+                const plantGroups = {};
+                group.data.forEach(row => {
+                    const plantName = row[1] || 'Unknown Plant';
+                    if (!plantGroups[plantName]) {
+                        plantGroups[plantName] = [];
+                    }
+                    plantGroups[plantName].push(row);
+                });
+                
+                const plantNames = Object.keys(plantGroups);
+                const hasMultiplePlants = plantNames.length > 1;
+                
+                // Create one merged table with all plant data
+                checkNewPage(25);
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.text(`${group.monthDisplay} - Plants Wise`, margin, currentY);
+                currentY += 5; // Reduced from 8 to 5
+                
+                // Prepare data with plant totals integrated and plant name merging
+                const mergedTableData = [];
+                const plantRowSpans = []; // Track which rows belong to which plant for styling
+                
+                plantNames.forEach((plantName, index) => {
+                    const plantData = plantGroups[plantName];
+                    const plantTotals = QCCalculateGroupTotals(plantData);
+                    
+                    // Check if this plant has multiple coal companies (check unique coal companies in plant data)
+                    const uniqueCoalCompanies = [...new Set(plantData.map(row => row[2]))];
+                    const hasMultipleCoalCompanies = uniqueCoalCompanies.length > 1;
+                    
+                    const plantStartRow = mergedTableData.length;
+                    
+                    // Add plant data rows
+                    plantData.forEach((row, rowIndex) => {
+                        const formattedRow = formatRowForPDF(row);
+                        // Only show plant name in first row of each plant group
+                        if (rowIndex > 0) {
+                            formattedRow[0] = ''; // Hide plant name for subsequent rows
+                        }
+                        mergedTableData.push(formattedRow);
+                    });
+                    
+                    // Add plant total row ONLY if there are multiple coal companies for this plant
+                    if (hasMultipleCoalCompanies) {
+                        const plantTotalsRow = formatTotalsForPDF(plantTotals);
+                        plantTotalsRow[0] = `TOTAL`; // Show TOTAL instead of plant name
+                        mergedTableData.push(plantTotalsRow);
+                    }
+                    
+                    // Track plant row span info
+                    plantRowSpans.push({
+                        plantName: plantName,
+                        startRow: plantStartRow,
+                        endRow: mergedTableData.length - 1,
+                        dataRowCount: plantData.length
+                    });
+                    
+                    // Add spacing between plants (except for last plant)
+                    if (index < plantNames.length - 1) {
+                        // Add empty row for visual separation
+                        const emptyRow = new Array(headers.length).fill('');
+                        mergedTableData.push(emptyRow);
+                    }
+                });
+                
+                // Create the merged table
+                doc.autoTable({
+                    head: [headers],
+                    body: mergedTableData,
+                    startY: currentY,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 7, cellPadding: 1 },
+                    headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+                    bodyStyles: { fontSize: 7 },
+                    alternateRowStyles: { fillColor: [245, 245, 245] },
+                    columnStyles: {
+                        // Plant name and Coal Company columns with fixed width
+                        0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                        1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                        // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                        2: { halign: 'center', cellWidth: dataColumnWidth },
+                        3: { halign: 'center', cellWidth: dataColumnWidth },
+                        4: { halign: 'center', cellWidth: dataColumnWidth },
+                        5: { halign: 'center', cellWidth: dataColumnWidth },
+                        6: { halign: 'center', cellWidth: dataColumnWidth },
+                        7: { halign: 'center', cellWidth: dataColumnWidth },
+                        8: { halign: 'center', cellWidth: dataColumnWidth },
+                        9: { halign: 'center', cellWidth: dataColumnWidth },
+                        10: { halign: 'center', cellWidth: dataColumnWidth },
+                        11: { halign: 'center', cellWidth: dataColumnWidth },
+                        12: { halign: 'center', cellWidth: dataColumnWidth },
+                        13: { halign: 'center', cellWidth: dataColumnWidth },
+                        14: { halign: 'center', cellWidth: dataColumnWidth },
+                        15: { halign: 'center', cellWidth: dataColumnWidth },
+                        16: { halign: 'center', cellWidth: dataColumnWidth },
+                        17: { halign: 'center', cellWidth: dataColumnWidth },
+                        18: { halign: 'center', cellWidth: dataColumnWidth },
+                        19: { halign: 'center', cellWidth: dataColumnWidth },
+                        20: { halign: 'center', cellWidth: dataColumnWidth }
+                    },
+                    didParseCell: function(data) {
+                        // Center-align ALL headers
+                        if (data.row.section === 'head') {
+                            data.cell.styles.halign = 'center';
+                        }
+                        
+                        // Style plant name cells (first column)
+                        if (data.column.index === 0) {
+                            // Find which plant group this row belongs to
+                            const currentRowIndex = data.row.index;
+                            const plantGroup = plantRowSpans.find(group => 
+                                currentRowIndex >= group.startRow && currentRowIndex <= group.endRow
+                            );
+                            
+                            if (plantGroup) {
+                                // If this is the first row of a plant group, center the plant name
+                                if (currentRowIndex === plantGroup.startRow) {
+                                    data.cell.styles.halign = 'center';
+                                    data.cell.styles.valign = 'middle';
+                                    data.cell.styles.fontStyle = 'bold';
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Light grey background
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                                }
+                                // For other rows in the plant group, remove borders to simulate merging
+                                else if (currentRowIndex < plantGroup.startRow + plantGroup.dataRowCount) {
+                                    data.cell.styles.lineWidth = 0;
+                                    data.cell.styles.fillColor = [220, 220, 220]; // Same light grey background
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                    data.cell.styles.halign = 'center';
+                                    data.cell.styles.valign = 'middle';
+                                    data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                                }
+                            }
+                        }
+                        
+                        // Highlight plant total rows
+                        const rowData = mergedTableData[data.row.index];
+                        if (rowData && rowData[0] && rowData[0] === 'TOTAL') {
+                            data.cell.styles.fontStyle = 'bold';
+                            data.cell.styles.fillColor = [248, 252, 255]; // Very light blue background
+                            data.cell.styles.textColor = [0, 0, 0]; // Ensure text is black for readability
+                        }
+                        // Make empty separator rows invisible
+                        else if (data.cell.text[0] === '') {
+                            data.cell.styles.fillColor = [255, 255, 255];
+                            data.cell.styles.lineWidth = 0;
+                        }
+                    },
+                    theme: 'striped'
+                });
+                
+                currentY = doc.lastAutoTable.finalY + 5; // Reduced from 10 to 5
+                
+                // Add consolidated coal company totals (only if multiple plants)
+                if (hasMultiplePlants) {
+                    checkNewPage(25);
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`${group.monthDisplay} - Coal Company-wise Totals`, margin, currentY);
+                    currentY += 5; // Reduced from 8 to 5
+                    
+                    // Group data by coal company and calculate totals only
+                    const coalCompanyGroups = {};
+                    group.data.forEach(row => {
+                        const coalCompany = row[2] || 'Unknown';
+                        if (!coalCompanyGroups[coalCompany]) {
+                            coalCompanyGroups[coalCompany] = [];
+                        }
+                        coalCompanyGroups[coalCompany].push(row);
+                    });
+                    
+                    // Prepare coal company totals table (totals only, no detailed data)
+                    const coalCompanyTotalsData = [];
+                    const allPlantsRowSpans = []; // Track "All Plants" rows for merging
+                    let allPlantsStartRow = 0;
+                    const hasMultipleCoalCompanies = Object.keys(coalCompanyGroups).length > 1;
+                    
+                    Object.keys(coalCompanyGroups).forEach((coalCompany, index) => {
+                        const companyData = coalCompanyGroups[coalCompany];
+                        const companyTotals = QCCalculateGroupTotals(companyData);
+                        const companyTotalsRow = formatTotalsForPDF(companyTotals);
+                        // Correct column placement: Plant Name in visibleColumns index 0, Coal Company in visibleColumns index 1
+                        
+                        if (hasMultipleCoalCompanies) {
+                            // Multiple coal companies: show "All Plants" merged format
+                            if (index === 0) {
+                                companyTotalsRow[0] = 'All Plants';        // Show "All Plants" only in first row
+                            } else {
+                                companyTotalsRow[0] = '';                  // Empty for merging effect
+                            }
+                        } else {
+                            // Single coal company: show plant names in Plant column
+                            if (hasMultiplePlants) {
+                                companyTotalsRow[0] = 'All Plants';
+                            } else {
+                                companyTotalsRow[0] = plantNames[0] || 'Unknown Plant';  // Show single plant name
+                            }
+                        }
+                        companyTotalsRow[1] = coalCompany;         // Coal Company column (visibleColumns[1])
+                        // Keep the rest of the data as is (Qty Dispatched, etc.)
+                        coalCompanyTotalsData.push(companyTotalsRow);
+                    });
+                    
+                    // Track "All Plants" span for styling only if multiple coal companies
+                    if (hasMultipleCoalCompanies && Object.keys(coalCompanyGroups).length > 0) {
+                        allPlantsRowSpans.push({
+                            startRow: allPlantsStartRow,
+                            endRow: Object.keys(coalCompanyGroups).length - 1,
+                            rowCount: Object.keys(coalCompanyGroups).length
+                        });
+                    }
+                    
+                    // Add grand total row to the same table only if multiple coal companies
+                    if (hasMultipleCoalCompanies) {
+                        const grandTotalsRow = formatTotalsForPDF(group.totals);
+                        grandTotalsRow[0] = 'All Plants';         // Show "All Plants" for grand total separately
+                        grandTotalsRow[1] = 'All Sources';        // Coal Company column (visibleColumns[1])
+                        // Keep the rest of the data as is (Qty Dispatched, etc.)
+                        coalCompanyTotalsData.push(grandTotalsRow);
+                    }
+                    
+                    // Show coal company totals table with grand total
+                    doc.autoTable({
+                        head: [headers],
+                        body: coalCompanyTotalsData,
+                        startY: currentY,
+                        margin: { left: margin, right: margin },
+                        styles: { fontSize: 7, cellPadding: 1, fontStyle: 'bold' },
+                        headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+                        bodyStyles: { fontSize: 7, fillColor: [240, 248, 255] }, // Light blue for company totals
+                        columnStyles: {
+                            // Plant name and Coal Company columns with fixed width
+                            0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                            1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                            // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                            2: { halign: 'center', cellWidth: dataColumnWidth },
+                            3: { halign: 'center', cellWidth: dataColumnWidth },
+                            4: { halign: 'center', cellWidth: dataColumnWidth },
+                            5: { halign: 'center', cellWidth: dataColumnWidth },
+                            6: { halign: 'center', cellWidth: dataColumnWidth },
+                            7: { halign: 'center', cellWidth: dataColumnWidth },
+                            8: { halign: 'center', cellWidth: dataColumnWidth },
+                            9: { halign: 'center', cellWidth: dataColumnWidth },
+                            10: { halign: 'center', cellWidth: dataColumnWidth },
+                            11: { halign: 'center', cellWidth: dataColumnWidth },
+                            12: { halign: 'center', cellWidth: dataColumnWidth },
+                            13: { halign: 'center', cellWidth: dataColumnWidth },
+                            14: { halign: 'center', cellWidth: dataColumnWidth },
+                            15: { halign: 'center', cellWidth: dataColumnWidth },
+                            16: { halign: 'center', cellWidth: dataColumnWidth },
+                            17: { halign: 'center', cellWidth: dataColumnWidth },
+                            18: { halign: 'center', cellWidth: dataColumnWidth },
+                            19: { halign: 'center', cellWidth: dataColumnWidth },
+                            20: { halign: 'center', cellWidth: dataColumnWidth }
+                        },
+                        didParseCell: function(data) {
+                            // Center-align ALL headers
+                            if (data.row.section === 'head') {
+                                data.cell.styles.halign = 'center';
+                            }
+                            
+                            // Style "All Plants" cells (first column) for merging
+                            if (data.column.index === 0) {
+                                const currentRowIndex = data.row.index;
+                                const isGrandTotalRow = currentRowIndex === coalCompanyTotalsData.length - 1;
+                                
+                                if (!isGrandTotalRow) {
+                                    // Handle "All Plants" merging for coal company rows
+                                    const allPlantsGroup = allPlantsRowSpans.find(group => 
+                                        currentRowIndex >= group.startRow && currentRowIndex <= group.endRow
+                                    );
+                                    
+                                    if (allPlantsGroup) {
+                                        if (currentRowIndex === allPlantsGroup.startRow) {
+                                            // First row shows "All Plants" with header styling
+                                            data.cell.styles.halign = 'center';
+                                            data.cell.styles.valign = 'middle';
+                                            data.cell.styles.fontStyle = 'bold';
+                                            data.cell.styles.fillColor = [220, 220, 220]; // Light grey background
+                                            data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                            data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                                        } else {
+                                            // Subsequent rows have same background with no borders
+                                            data.cell.styles.lineWidth = 0;
+                                            data.cell.styles.fillColor = [220, 220, 220]; // Same light grey background
+                                            data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                            data.cell.styles.halign = 'center';
+                                            data.cell.styles.valign = 'middle';
+                                            data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Special styling for grand total row (last row)
+                            if (data.row.index === coalCompanyTotalsData.length - 1) {
+                                data.cell.styles.fillColor = [255, 248, 220]; // Light yellow for grand total
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                                if (data.column.index === 0) {
+                                    data.cell.styles.textColor = [0, 0, 0]; // Black text for grand total
+                                }
+                            }
+                        },
+                        theme: 'striped'
+                    });
+                    
+                    currentY = doc.lastAutoTable.finalY + 5; // Reduced from 10 to 5
+                    
+                    // Add horizontal line after consolidated table
+                    doc.setLineWidth(0.3);
+                    doc.line(margin, currentY, pageWidth - margin, currentY);
+                    currentY += 5; // Reduced from 10 to 5
+                }
+                // Note: Removed single plant grand total table as total already appears in main table
+                
+            } else {
+                // Sub-grouping by coal company and/or plant
+                Object.keys(group.subGroups).forEach(subGroupKey => {
+                    const subGroup = group.subGroups[subGroupKey];
+                    
+                    checkNewPage(15);
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    // Combine month and sub-group in same line to save space
+                    const subGroupType = coalCompanyWise ? 'Coal Company' : 'Plant';
+                    const combinedLabel = `${group.monthDisplay} - ${subGroupType}: ${subGroup.name}`;
+                    doc.text(combinedLabel, margin, currentY);
+                    currentY += 8;
+                    
+                    if (plantWise && coalCompanyWise && subGroup.plantGroups) {
+                        // Further sub-grouping by plant
+                        Object.keys(subGroup.plantGroups).forEach(plantKey => {
+                            const plantGroup = subGroup.plantGroups[plantKey];
+                            
+                            checkNewPage(10);
+                            doc.setFontSize(10);
+                            doc.setFont("helvetica", "bold");
+                            // Combine coal company, month and plant in one line
+                            doc.text(`${group.monthDisplay} - Coal Company: ${subGroup.name} - Plant: ${plantGroup.name}`, margin, currentY);
+                            currentY += 8;
+                            
+                            const plantTableData = plantGroup.data.map(formatRowForPDF);
+                            const plantTotalsRow = formatTotalsForPDF(plantGroup.totals);
+                            
+                            // Only add totals row if there are multiple data rows (i.e., multiple coal companies for this plant)
+                            const tableBody = [...plantTableData];
+                            if (plantTableData.length > 1) {
+                                tableBody.push(plantTotalsRow);
+                            }
+                            
+                            // Combine data and totals in one table
+                            doc.autoTable({
+                                head: [headers],
+                                body: tableBody,
+                                startY: currentY,
+                                margin: { left: margin, right: margin },
+                                styles: { fontSize: 7, cellPadding: 1 },
+                                headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+                                bodyStyles: { fontSize: 7 },
+                                alternateRowStyles: { fillColor: [245, 245, 245] },
+                                columnStyles: {
+                                    // Plant name and Coal Company columns with fixed width
+                                    0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                                    1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                                    // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                                    2: { halign: 'center', cellWidth: dataColumnWidth },
+                                    3: { halign: 'center', cellWidth: dataColumnWidth },
+                                    4: { halign: 'center', cellWidth: dataColumnWidth },
+                                    5: { halign: 'center', cellWidth: dataColumnWidth },
+                                    6: { halign: 'center', cellWidth: dataColumnWidth },
+                                    7: { halign: 'center', cellWidth: dataColumnWidth },
+                                    8: { halign: 'center', cellWidth: dataColumnWidth },
+                                    9: { halign: 'center', cellWidth: dataColumnWidth },
+                                    10: { halign: 'center', cellWidth: dataColumnWidth },
+                                    11: { halign: 'center', cellWidth: dataColumnWidth },
+                                    12: { halign: 'center', cellWidth: dataColumnWidth },
+                                    13: { halign: 'center', cellWidth: dataColumnWidth },
+                                    14: { halign: 'center', cellWidth: dataColumnWidth },
+                                    15: { halign: 'center', cellWidth: dataColumnWidth },
+                                    16: { halign: 'center', cellWidth: dataColumnWidth },
+                                    17: { halign: 'center', cellWidth: dataColumnWidth },
+                                    18: { halign: 'center', cellWidth: dataColumnWidth },
+                                    19: { halign: 'center', cellWidth: dataColumnWidth },
+                                    20: { halign: 'center', cellWidth: dataColumnWidth }
+                                },
+                                didParseCell: function(data) {
+                                    // Center-align ALL headers
+                                    if (data.row.section === 'head') {
+                                        data.cell.styles.halign = 'center';
+                                    }
+                                    
+                                    // Highlight totals row
+                                    if (data.row.index === plantTableData.length) {
+                                        data.cell.styles.fontStyle = 'bold';
+                                        data.cell.styles.fillColor = [230, 240, 250];
+                                    }
+                                },
+                                theme: 'striped'
+                            });
+                            
+                            currentY = doc.lastAutoTable.finalY + 5;
+                        });
+                    } else {
+                        // Show data for this sub-group
+                        const subGroupTableData = subGroup.data.map(formatRowForPDF);
+                        const subGroupTotalsRow = formatTotalsForPDF(subGroup.totals);
+                        
+                        // Only add totals row if there are multiple data rows (i.e., multiple entries to total)
+                        const tableBody = [...subGroupTableData];
+                        if (subGroupTableData.length > 1) {
+                            tableBody.push(subGroupTotalsRow);
+                        }
+                        
+                        // Combine data and totals in one table
+                        doc.autoTable({
+                            head: [headers],
+                            body: tableBody,
+                            startY: currentY,
+                            margin: { left: margin, right: margin },
+                            styles: { fontSize: 7, cellPadding: 1 },
+                            headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+                            bodyStyles: { fontSize: 7 },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                                // Plant name and Coal Company columns with fixed width
+                                0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                                1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                                // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                                2: { halign: 'center', cellWidth: dataColumnWidth },
+                                3: { halign: 'center', cellWidth: dataColumnWidth },
+                                4: { halign: 'center', cellWidth: dataColumnWidth },
+                                5: { halign: 'center', cellWidth: dataColumnWidth },
+                                6: { halign: 'center', cellWidth: dataColumnWidth },
+                                7: { halign: 'center', cellWidth: dataColumnWidth },
+                                8: { halign: 'center', cellWidth: dataColumnWidth },
+                                9: { halign: 'center', cellWidth: dataColumnWidth },
+                                10: { halign: 'center', cellWidth: dataColumnWidth },
+                                11: { halign: 'center', cellWidth: dataColumnWidth },
+                                12: { halign: 'center', cellWidth: dataColumnWidth },
+                                13: { halign: 'center', cellWidth: dataColumnWidth },
+                                14: { halign: 'center', cellWidth: dataColumnWidth },
+                                15: { halign: 'center', cellWidth: dataColumnWidth },
+                                16: { halign: 'center', cellWidth: dataColumnWidth },
+                                17: { halign: 'center', cellWidth: dataColumnWidth },
+                                18: { halign: 'center', cellWidth: dataColumnWidth },
+                                19: { halign: 'center', cellWidth: dataColumnWidth },
+                                20: { halign: 'center', cellWidth: dataColumnWidth }
+                            },
+                            didParseCell: function(data) {
+                                // Center-align ALL headers
+                                if (data.row.section === 'head') {
+                                    data.cell.styles.halign = 'center';
+                                }
+                                
+                                // Highlight totals row
+                                if (data.row.index === subGroupTableData.length) {
+                                    data.cell.styles.fontStyle = 'bold';
+                                    data.cell.styles.fillColor = [230, 240, 250];
+                                }
+                            },
+                            theme: 'striped'
+                        });
+                        
+                        currentY = doc.lastAutoTable.finalY + 5;
+                    }
+                });
+                
+                // Add monthly consolidated table (coal company-wise data for all plants)
+                checkNewPage(20);
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.text(`${group.monthDisplay} - Coal Company-wise Consolidated Data`, margin, currentY);
+                currentY += 5; // Reduced from 8 to 5
+                
+                // Create consolidated data grouped by coal company
+                const consolidatedData = {};
+                group.data.forEach(row => {
+                    const coalCompany = row[2] || 'Unknown';
+                    if (!consolidatedData[coalCompany]) {
+                        consolidatedData[coalCompany] = [];
+                    }
+                    consolidatedData[coalCompany].push(row);
+                });
+                
+                // Generate consolidated table for each coal company
+                Object.keys(consolidatedData).forEach(coalCompany => {
+                    const companyData = consolidatedData[coalCompany];
+                    const companyTotals = QCCalculateGroupTotals(companyData);
+                    
+                    checkNewPage(25); // More space needed for full table
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Coal Company: ${coalCompany}`, margin, currentY);
+                    currentY += 8;
+                    
+                    // Create full table with headers and data rows
+                    const companyTableData = companyData.map(formatRowForPDF);
+                    const companyTotalsRow = formatTotalsForPDF(companyTotals);
+                    
+                    // Only add totals row if there are multiple plants for this coal company
+                    const tableBody = [...companyTableData];
+                    if (companyTableData.length > 1) {
+                        tableBody.push(companyTotalsRow);
+                    }
+                    
+                    doc.autoTable({
+                        head: [headers],
+                        body: tableBody,
+                        startY: currentY,
+                        margin: { left: margin, right: margin },
+                        styles: { fontSize: 7, cellPadding: 1 },
+                        headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+                        bodyStyles: { fontSize: 7 },
+                        alternateRowStyles: { fillColor: [245, 245, 245] },
+                        columnStyles: {
+                            // Plant name and Coal Company columns with fixed width
+                            0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                            1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                            // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                            2: { halign: 'center', cellWidth: dataColumnWidth },
+                            3: { halign: 'center', cellWidth: dataColumnWidth },
+                            4: { halign: 'center', cellWidth: dataColumnWidth },
+                            5: { halign: 'center', cellWidth: dataColumnWidth },
+                            6: { halign: 'center', cellWidth: dataColumnWidth },
+                            7: { halign: 'center', cellWidth: dataColumnWidth },
+                            8: { halign: 'center', cellWidth: dataColumnWidth },
+                            9: { halign: 'center', cellWidth: dataColumnWidth },
+                            10: { halign: 'center', cellWidth: dataColumnWidth },
+                            11: { halign: 'center', cellWidth: dataColumnWidth },
+                            12: { halign: 'center', cellWidth: dataColumnWidth },
+                            13: { halign: 'center', cellWidth: dataColumnWidth },
+                            14: { halign: 'center', cellWidth: dataColumnWidth },
+                            15: { halign: 'center', cellWidth: dataColumnWidth },
+                            16: { halign: 'center', cellWidth: dataColumnWidth },
+                            17: { halign: 'center', cellWidth: dataColumnWidth },
+                            18: { halign: 'center', cellWidth: dataColumnWidth },
+                            19: { halign: 'center', cellWidth: dataColumnWidth },
+                            20: { halign: 'center', cellWidth: dataColumnWidth }
+                        },
+                        didParseCell: function(data) {
+                            // Center-align ALL headers
+                            if (data.row.section === 'head') {
+                                data.cell.styles.halign = 'center';
+                            }
+                            
+                            // Highlight totals row
+                            if (data.row.index === companyTableData.length) {
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.fillColor = [230, 240, 250];
+                            }
+                        },
+                        theme: 'striped'
+                    });
+                    
+                    currentY = doc.lastAutoTable.finalY + 5;
+                });
+                
+                currentY += 5;
+                
+                // Month totals
+                checkNewPage(15);
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.text(`${group.monthDisplay} - Month Total/Average`, margin, currentY);
+                currentY += 5;
+                
+                const monthTotalsRow = formatTotalsForPDF(group.totals);
+                doc.autoTable({
+                    body: [monthTotalsRow],
+                    startY: currentY,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 9, cellPadding: 2, fontStyle: 'bold' },
+                    bodyStyles: { fillColor: [220, 220, 220] },
+                    theme: 'plain'
+                });
+                
+                currentY = doc.lastAutoTable.finalY + 10;
+            }
+        });
+        
+        // Add grand totals with proper table styling
+        checkNewPage(30);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text('GRAND TOTAL - Overall Coal Company-wise Summary', margin, currentY);
+        currentY += 5; // Reduced from 8 to 5
+        
+        // Group all data by coal company for final totals
+        const finalCoalCompanyGroups = {};
+        const allPlantNames = new Set();  // Collect all unique plant names
+        Object.keys(reportData.groupedData).forEach(groupKey => {
+            const group = reportData.groupedData[groupKey];
+            group.data.forEach(row => {
+                const coalCompany = row[2] || 'Unknown';
+                const plantName = row[1] || 'Unknown Plant';
+                allPlantNames.add(plantName);  // Add plant name to set
+                if (!finalCoalCompanyGroups[coalCompany]) {
+                    finalCoalCompanyGroups[coalCompany] = [];
+                }
+                finalCoalCompanyGroups[coalCompany].push(row);
+            });
+        });
+        
+        const finalPlantNames = Array.from(allPlantNames);
+        const hasFinalMultiplePlants = finalPlantNames.length > 1;
+        
+        // Prepare final grand total table with coal company breakdown
+        const finalTotalsData = [];
+        const finalAllPlantsRowSpans = []; // Track "All Plants" rows for merging
+        let finalAllPlantsStartRow = 0;
+        const hasMultipleFinalCoalCompanies = Object.keys(finalCoalCompanyGroups).length > 1;
+        
+        Object.keys(finalCoalCompanyGroups).forEach((coalCompany, index) => {
+            const companyData = finalCoalCompanyGroups[coalCompany];
+            const companyTotals = QCCalculateGroupTotals(companyData);
+            const companyTotalsRow = formatTotalsForPDF(companyTotals);
+            // Correct column placement: All Plants in plant column, coal company in coal company column
+            
+            if (hasMultipleFinalCoalCompanies) {
+                // Multiple coal companies: show "All Plants" merged format
+                if (index === 0) {
+                    companyTotalsRow[0] = 'All Plants';        // Show "All Plants" only in first row
+                } else {
+                    companyTotalsRow[0] = '';                  // Empty for merging effect
+                }
+            } else {
+                // Single coal company: show plant names in Plant column
+                if (hasFinalMultiplePlants) {
+                    companyTotalsRow[0] = 'All Plants';
+                } else {
+                    companyTotalsRow[0] = finalPlantNames[0] || 'Unknown Plant';  // Show single plant name
+                }
+            }
+            companyTotalsRow[1] = coalCompany;         // Coal Company column
+            finalTotalsData.push(companyTotalsRow);
+        });
+        
+        // Track "All Plants" span for styling only if multiple coal companies
+        if (hasMultipleFinalCoalCompanies && Object.keys(finalCoalCompanyGroups).length > 0) {
+            finalAllPlantsRowSpans.push({
+                startRow: finalAllPlantsStartRow,
+                endRow: Object.keys(finalCoalCompanyGroups).length - 1,
+                rowCount: Object.keys(finalCoalCompanyGroups).length
+            });
+        }
+        
+        // Add overall grand total row only if multiple coal companies
+        if (hasMultipleFinalCoalCompanies) {
+            const overallGrandTotalsRow = formatTotalsForPDF(reportData.grandTotals);
+            overallGrandTotalsRow[0] = 'All Plants';      // Show "All Plants" for grand total separately
+            overallGrandTotalsRow[1] = 'All Sources';     // Coal Company column
+            finalTotalsData.push(overallGrandTotalsRow);
+        }
+        
+        // Create the final grand total table with headers and proper styling
+        doc.autoTable({
+            head: [headers],
+            body: finalTotalsData,
+            startY: currentY,
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 7, cellPadding: 1, fontStyle: 'bold' },
+            headStyles: { fillColor: [220, 220, 220], fontSize: 7, textColor: [0, 0, 0] }, // Light grey with black text
+            bodyStyles: { fontSize: 7, fillColor: [240, 248, 255] }, // Light blue for company totals
+            columnStyles: {
+                // Plant name and Coal Company columns with fixed width
+                0: { halign: 'center', cellWidth: plantNameWidth },  // Plant Name
+                1: { halign: 'center', cellWidth: coalCompanyWidth },  // Coal Company
+                // All data columns after Coal Company (index 2+) are center-aligned with calculated width
+                2: { halign: 'center', cellWidth: dataColumnWidth },
+                3: { halign: 'center', cellWidth: dataColumnWidth },
+                4: { halign: 'center', cellWidth: dataColumnWidth },
+                5: { halign: 'center', cellWidth: dataColumnWidth },
+                6: { halign: 'center', cellWidth: dataColumnWidth },
+                7: { halign: 'center', cellWidth: dataColumnWidth },
+                8: { halign: 'center', cellWidth: dataColumnWidth },
+                9: { halign: 'center', cellWidth: dataColumnWidth },
+                10: { halign: 'center', cellWidth: dataColumnWidth },
+                11: { halign: 'center', cellWidth: dataColumnWidth },
+                12: { halign: 'center', cellWidth: dataColumnWidth },
+                13: { halign: 'center', cellWidth: dataColumnWidth },
+                14: { halign: 'center', cellWidth: dataColumnWidth },
+                15: { halign: 'center', cellWidth: dataColumnWidth },
+                16: { halign: 'center', cellWidth: dataColumnWidth },
+                17: { halign: 'center', cellWidth: dataColumnWidth },
+                18: { halign: 'center', cellWidth: dataColumnWidth },
+                19: { halign: 'center', cellWidth: dataColumnWidth },
+                20: { halign: 'center', cellWidth: dataColumnWidth }
+            },
+            didParseCell: function(data) {
+                // Center-align ALL headers
+                if (data.row.section === 'head') {
+                    data.cell.styles.halign = 'center';
+                }
+                
+                // Style "All Plants" cells (first column) for merging
+                if (data.column.index === 0) {
+                    const currentRowIndex = data.row.index;
+                    const isGrandTotalRow = currentRowIndex === finalTotalsData.length - 1;
+                    
+                    if (!isGrandTotalRow) {
+                        // Handle "All Plants" merging for coal company rows
+                        const allPlantsGroup = finalAllPlantsRowSpans.find(group => 
+                            currentRowIndex >= group.startRow && currentRowIndex <= group.endRow
+                        );
+                        
+                        if (allPlantsGroup) {
+                            if (currentRowIndex === allPlantsGroup.startRow) {
+                                // First row shows "All Plants" with header styling
+                                data.cell.styles.halign = 'center';
+                                data.cell.styles.valign = 'middle';
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.fillColor = [220, 220, 220]; // Light grey background
+                                data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                            } else {
+                                // Subsequent rows have same background with no borders
+                                data.cell.styles.lineWidth = 0;
+                                data.cell.styles.fillColor = [220, 220, 220]; // Same light grey background
+                                data.cell.styles.textColor = [0, 0, 0]; // Black text
+                                data.cell.styles.halign = 'center';
+                                data.cell.styles.valign = 'middle';
+                                data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                            }
+                        }
+                    }
+                }
+                
+                // Special styling for overall grand total row (last row)
+                if (data.row.index === finalTotalsData.length - 1) {
+                    data.cell.styles.fillColor = [255, 248, 220]; // Light yellow for overall grand total
+                    data.cell.styles.fontStyle = 'bold';
+                    data.cell.styles.minCellHeight = 6; // Reduced height for compactness
+                    if (data.column.index === 0) {
+                        data.cell.styles.textColor = [0, 0, 0]; // Black text for grand total
+                    }
+                }
+            },
+            theme: 'striped'
+        });
+        } // Close the else block for month-wise grouping
+        
+        // Add timestamp at bottom of last page
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        const timestamp = `Report generated on: ${new Date().toLocaleString()}`;
+        const timestampY = pageHeight - 5; // 5mm from bottom to match reduced margin
+        doc.text(timestamp, margin, timestampY);
+        
+        // Add page numbers to all pages
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            const pageText = `Page ${i}`;
+            const pageTextWidth = doc.getTextWidth(pageText);
+            doc.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - 5);
+        }
+        
+        // Save the PDF
+        const filename = `coal_special_report_${fromDate}_to_${toDate}_${grouping}.pdf`;
+        doc.save(filename);
+        
+    } catch (error) {
+        console.error('Error generating special report PDF:', error);
+        alert('Error generating PDF: ' + error.message);
+    }
+}
+
+// Generate Special Report Excel
+function QCGenerateSpecialReportExcel(reportData, fromDate, toDate, grouping, plantWise, coalCompanyWise) {
+    try {
+        if (typeof XLSX === 'undefined') {
+            alert('Excel library not loaded. Please ensure SheetJS is included.');
+            return;
+        }
+        
+        // Get visible columns and prepare data
+        const visibleColumns = QCGetVisibleColumns(true);
+        const headers = visibleColumns.map(col => col.header);
+        
+        // Prepare Excel data
+        const excelData = [];
+        excelData.push(['Details of coal received at PSPCL thermal power stations']);
+        // Format period - handle both YYYY-MM format and Google Sheets Date format
+        const fromDateFormatted = fromDate.includes('Date(') ? formatMonthForDisplay(fromDate) : 
+                                 fromDate.match(/^\d{4}-\d{2}$/) ? fromDate.replace(/(\d{4})-(\d{2})/, (match, year, month) => {
+                                     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                     return `${monthNames[parseInt(month) - 1]}-${year}`;
+                                 }) : formatMonthForDisplay(fromDate);
+        const toDateFormatted = toDate.includes('Date(') ? formatMonthForDisplay(toDate) : 
+                               toDate.match(/^\d{4}-\d{2}$/) ? toDate.replace(/(\d{4})-(\d{2})/, (match, year, month) => {
+                                   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                   return `${monthNames[parseInt(month) - 1]}-${year}`;
+                               }) : formatMonthForDisplay(toDate);
+        excelData.push([`during ${fromDateFormatted} to ${toDateFormatted}`]);
+        excelData.push([]); // Empty row
+        
+        // Function to format a row for Excel
+        const formatRowForExcel = (row) => {
+            return visibleColumns.map(col => {
+                let value = '';
+                
+                if (col.index <= 14) {
+                    value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
+                    if (col.index === 1) value = shortenPlantName(value);
+                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                        value = parseFloat(value);
+                    }
+                } else {
+                    // Calculate extended columns
+                    const coalCost = parseFloat(row[12]) || 0;
+                    const railwayFreight = parseFloat(row[13]) || 0;
+                    const gcv = parseFloat(row[11]) || 1;
+                    const qtyReceived = parseFloat(row[4]) || 0;
+                    const plantName = row[1] || 'PSPCL';
+                    
+                    switch (col.index) {
+                        case 15: // Landed Cost Rs/MT
+                            const landedCostPerMT = coalCost + railwayFreight;
+                            value = landedCostPerMT;
+                            break;
+                        case 16: // Landed Cost Rs/Mcal
+                            const landedCostPerMT2 = coalCost + railwayFreight;
+                            const landedCostPerMcal = gcv > 0 ? landedCostPerMT2 / gcv : 0;
+                            value = landedCostPerMcal;
+                            break;
+                        case 17: // Per Unit Cost Rs./Kwh
+                            const landedCostPerMT3 = coalCost + railwayFreight;
+                            const landedCostPerMcal3 = gcv > 0 ? landedCostPerMT3 / gcv : 0;
+                            const shr = getWeightedAverageSHRForPlant(plantName);
+                            const perUnitCost = shr * landedCostPerMcal3 / 1000;
+                            value = perUnitCost;
+                            break;
+                        case 18: // Total Amount (Rs. Crore)
+                            const landedCostPerMT4 = coalCost + railwayFreight;
+                            const totalAmount = (qtyReceived * landedCostPerMT4) / 100; // Convert to crores
+                            value = totalAmount;
+                            break;
+                        default:
+                            value = '';
+                    }
+                }
+                
+                return value;
+            });
+        };
+        
+        // Function to format totals row for Excel
+        const formatTotalsForExcel = (totals, label = 'TOTAL/AVG', showTotalInPlantColumn = false) => {
+            return visibleColumns.map(col => {
+                let value = '';
+                
+                switch (col.index) {
+                    case 0: value = label; break;
+                    case 1: value = showTotalInPlantColumn ? 'TOTAL' : ''; break;
+                    case 2: value = ''; break;
+                    case 3: value = totals.qtyDispatched; break;              // Qty Dispatched - Sum
+                    case 4: value = totals.qtyReceived; break;                // Qty Received - Sum
+                    case 5: value = totals.rakesReceived; break;              // Rakes Received - Sum
+                    case 6: value = totals.transitLoss.avg; break;            // Transit Loss - Avg
+                    case 7: value = totals.moisture.avg; break;               // Moisture - Weighted Avg
+                    case 8: value = totals.ash.avg; break;                    // Ash - Weighted Avg
+                    case 9: value = totals.vm.avg; break;                     // Volatile Matter - Weighted Avg
+                    case 10: value = totals.fc.avg; break;                    // Fixed Carbon - Weighted Avg
+                    case 11: value = totals.gcv.avg; break;                   // GCV - Weighted Avg
+                    case 12: value = totals.coalCost.avg; break;              // Coal Cost - Weighted Avg
+                    case 13: value = totals.railwayFreight.avg; break;        // Railway Freight - Weighted Avg
+                    case 14: value = totals.distance.avg; break;              // Distance - Weighted Avg
+                    case 15: value = totals.landedCostPerMT.avg; break;       // Landed Cost Rs/MT - Weighted Avg
+                    case 16: value = totals.landedCostPerMcal.avg; break;     // Landed Cost Rs/Mcal - Weighted Avg
+                    case 17: value = totals.perUnitCost.avg; break;           // Per Unit Cost - Weighted Avg
+                    case 18: value = totals.totalAmount; break;               // Total Amount - Sum
+                    default: value = '';
+                }
+                
+                return value;
+            });
+        };
+        
+        // Generate report based on grouping
+        const groupedData = reportData.groupedData;
+        
+        Object.keys(groupedData).forEach(groupKey => {
+            const group = groupedData[groupKey];
+            
+            if (!coalCompanyWise && !plantWise) {
+                // Add month/year header - simplified format
+                excelData.push([]);
+                excelData.push([group.monthDisplay]); // Just the month name, Excel will format with light grey BG
+                excelData.push(headers);
+                
+                // Group data by plant for enhanced structure
+                const plantGroups = {};
+                group.data.forEach(row => {
+                    const plantName = row[1] || 'Unknown Plant';
+                    if (!plantGroups[plantName]) {
+                        plantGroups[plantName] = [];
+                    }
+                    plantGroups[plantName].push(row);
+                });
+                
+                const plantNames = Object.keys(plantGroups);
+                const hasMultiplePlants = plantNames.length > 1;
+                
+                // Add each plant's data with totals
+                plantNames.forEach((plantName, index) => {
+                    const plantData = plantGroups[plantName];
+                    const plantTotals = QCCalculateGroupTotals(plantData);
+                    
+                    // Add plant data rows
+                    plantData.forEach(row => {
+                        excelData.push(formatRowForExcel(row));
+                    });
+                    
+                    // Add plant total row - simplified to just "TOTAL"
+                    const plantTotalsRow = formatTotalsForExcel(plantTotals, 'TOTAL', true);
+                    excelData.push(plantTotalsRow);
+                    
+                    // Add spacing between plants (except for last plant)
+                    if (index < plantNames.length - 1) {
+                        excelData.push([]); // Empty row for separation
+                    }
+                });
+                
+                // Add consolidated coal company totals (only if multiple plants)
+                if (hasMultiplePlants) {
+                    excelData.push([]);
+                    excelData.push([`${group.monthDisplay} - Coal Company-wise Totals`]);
+                    excelData.push(headers);
+                    
+                    // Group data by coal company and calculate totals only
+                    const coalCompanyGroups = {};
+                    group.data.forEach(row => {
+                        const coalCompany = row[2] || 'Unknown';
+                        if (!coalCompanyGroups[coalCompany]) {
+                            coalCompanyGroups[coalCompany] = [];
+                        }
+                        coalCompanyGroups[coalCompany].push(row);
+                    });
+                    
+                    // Add coal company totals and grand total
+                    Object.keys(coalCompanyGroups).forEach(coalCompany => {
+                        const companyData = coalCompanyGroups[coalCompany];
+                        const companyTotals = QCCalculateGroupTotals(companyData);
+                        const companyTotalsRow = formatTotalsForExcel(companyTotals);
+                        // Set correct column values
+                        companyTotalsRow[0] = 'All Plants';
+                        companyTotalsRow[1] = coalCompany;
+                        excelData.push(companyTotalsRow);
+                    });
+                    
+                    // Add grand total row to the same section
+                    const grandTotalsRow = formatTotalsForExcel(group.totals);
+                    grandTotalsRow[0] = 'All Plants';
+                    grandTotalsRow[1] = 'All Sources';
+                    excelData.push(grandTotalsRow);
+                }
+                
+            } else {
+                // Add month/year header
+                excelData.push([]);
+                excelData.push([`${group.monthDisplay}`]);
+                excelData.push(headers);
+                // Sub-grouping by coal company and/or plant
+                Object.keys(group.subGroups).forEach(subGroupKey => {
+                    const subGroup = group.subGroups[subGroupKey];
+                    
+                    const subGroupLabel = coalCompanyWise ? `Coal Company: ${subGroup.name}` : `Plant: ${subGroup.name}`;
+                    excelData.push([subGroupLabel]);
+                    
+                    if (plantWise && coalCompanyWise && subGroup.plantGroups) {
+                        // Further sub-grouping by plant
+                        Object.keys(subGroup.plantGroups).forEach(plantKey => {
+                            const plantGroup = subGroup.plantGroups[plantKey];
+                            
+                            excelData.push([`  Plant: ${plantGroup.name}`]);
+                            
+                            plantGroup.data.forEach(row => {
+                                excelData.push(formatRowForExcel(row));
+                            });
+                            
+                            // Plant totals
+                            excelData.push(formatTotalsForExcel(plantGroup.totals, `  Plant ${plantGroup.name} Total/Avg`));
+                            excelData.push([]);
+                        });
+                    } else {
+                        // Show data for this sub-group
+                        subGroup.data.forEach(row => {
+                            excelData.push(formatRowForExcel(row));
+                        });
+                        
+                        // Sub-group totals
+                        excelData.push(formatTotalsForExcel(subGroup.totals, `${subGroup.name} Total/Avg`));
+                        excelData.push([]);
+                    }
+                });
+                
+                // Add monthly consolidated table (coal company-wise data for all plants)
+                excelData.push([`${group.monthDisplay} - Coal Company-wise Consolidated Data`]);
+                
+                // Create consolidated data grouped by coal company
+                const consolidatedData = {};
+                group.data.forEach(row => {
+                    const coalCompany = row[2] || 'Unknown';
+                    if (!consolidatedData[coalCompany]) {
+                        consolidatedData[coalCompany] = [];
+                    }
+                    consolidatedData[coalCompany].push(row);
+                });
+                
+                // Generate consolidated table for each coal company
+                Object.keys(consolidatedData).forEach(coalCompany => {
+                    const companyData = consolidatedData[coalCompany];
+                    const companyTotals = QCCalculateGroupTotals(companyData);
+                    
+                    excelData.push([`Coal Company: ${coalCompany}`]);
+                    excelData.push(headers); // Add headers
+                    
+                    // Add all company data rows
+                    companyData.forEach(row => {
+                        excelData.push(formatRowForExcel(row));
+                    });
+                    
+                    // Add totals row
+                    excelData.push(formatTotalsForExcel(companyTotals));
+                    excelData.push([]);
+                });
+                
+                // Month totals
+                excelData.push([`${group.monthDisplay} - Month Total/Average`]);
+                excelData.push(formatTotalsForExcel(group.totals));
+            }
+            
+            excelData.push([]); // Empty row after each month
+        });
+        
+        // Add enhanced grand totals with coal company breakdown
+        excelData.push([]);
+        excelData.push(['GRAND TOTAL - Overall Coal Company-wise Summary']);
+        excelData.push(headers);
+        
+        // Group all data by coal company for final totals
+        const finalCoalCompanyGroups = {};
+        Object.keys(reportData.groupedData).forEach(groupKey => {
+            const group = reportData.groupedData[groupKey];
+            group.data.forEach(row => {
+                const coalCompany = row[2] || 'Unknown';
+                if (!finalCoalCompanyGroups[coalCompany]) {
+                    finalCoalCompanyGroups[coalCompany] = [];
+                }
+                finalCoalCompanyGroups[coalCompany].push(row);
+            });
+        });
+        
+        // Add final coal company totals
+        Object.keys(finalCoalCompanyGroups).forEach(coalCompany => {
+            const companyData = finalCoalCompanyGroups[coalCompany];
+            const companyTotals = QCCalculateGroupTotals(companyData);
+            const companyTotalsRow = formatTotalsForExcel(companyTotals);
+            // Set correct column values
+            companyTotalsRow[0] = 'All Plants';
+            companyTotalsRow[1] = coalCompany;
+            excelData.push(companyTotalsRow);
+        });
+        
+        // Add overall grand total
+        const overallGrandTotalsRow = formatTotalsForExcel(reportData.grandTotals);
+        overallGrandTotalsRow[0] = 'All Plants';
+        overallGrandTotalsRow[1] = 'All Sources';
+        excelData.push(overallGrandTotalsRow);
+        
+        // Create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+        
+        // Add the worksheet to workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Special Report');
+        
+        // Generate filename
+        const filename = `coal_special_report_${fromDate}_to_${toDate}_${grouping}.xlsx`;
+        
+        // Save the file
+        XLSX.writeFile(workbook, filename);
+        
+        console.log('Special Report Excel generated successfully');
+        
+    } catch (error) {
+        console.error('Special Report Excel error:', error);
+        alert(`Error generating special report Excel: ${error.message}`);
     }
 }
