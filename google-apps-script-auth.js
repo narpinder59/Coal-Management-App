@@ -98,8 +98,48 @@ function handleRequest(e) {
     return createResponse({success: false, message: 'No data received'});
   }
   
-  const data = JSON.parse(e.postData.contents);
-  console.log('Request received:', data.action, 'Data:', data);
+  let data;
+  
+  try {
+    // Check if it's form data or JSON data
+    const contentType = e.postData.type;
+    const contents = e.postData.contents;
+    
+    console.log('Content Type:', contentType);
+    console.log('Raw Contents:', contents);
+    
+    if (contentType === 'application/x-www-form-urlencoded') {
+      // Handle form submission data
+      console.log('Parsing form data...');
+      data = {};
+      const pairs = contents.split('&');
+      pairs.forEach(pair => {
+        const [key, value] = pair.split('=');
+        if (key && value) {
+          data[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+      });
+    } else {
+      // Handle JSON data
+      console.log('Parsing JSON data...');
+      data = JSON.parse(contents);
+    }
+    
+    console.log('Parsed data:', data);
+    
+  } catch (parseError) {
+    console.error('Parse error:', parseError.message);
+    return createResponse({
+      success: false, 
+      message: 'Data parsing error: ' + parseError.message + '. Raw data: ' + e.postData.contents.substring(0, 100)
+    });
+  }
+  
+  if (!data.action) {
+    return createResponse({success: false, message: 'No action specified in data: ' + JSON.stringify(data)});
+  }
+  
+  console.log('Processing action:', data.action, 'with data:', data);
   
   switch(data.action) {
     case 'register':
@@ -233,37 +273,51 @@ function registerUser(data) {
  */
 function sendOTP(data) {
   try {
+    console.log('🚀 sendOTP called with data:', data);
+    
     if (!data.email) {
+      console.log('❌ No email provided in data');
       return {success: false, message: 'Email is required'};
     }
     
+    console.log('📧 Email found:', data.email);
+    
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log('🔑 Generated OTP:', otp);
     
     // Store OTP temporarily (expires in 10 minutes)
     const expiry = new Date();
     expiry.setMinutes(expiry.getMinutes() + 10);
     
+    console.log('💾 Storing OTP in properties...');
     PropertiesService.getScriptProperties().setProperties({
       [`otp_${data.email}`]: otp,
       [`otp_expiry_${data.email}`]: expiry.getTime().toString()
     });
+    console.log('✅ OTP stored in properties');
     
     // Send OTP email
+    console.log('📤 Calling sendOTPEmail function...');
     const emailSent = sendOTPEmail(data.email, otp, data.name || 'User');
+    console.log('📬 Email sending result:', emailSent);
     
     if (emailSent) {
+      console.log('✅ OTP email sent successfully');
       return {
         success: true,
         message: 'OTP sent to your email successfully!',
         step: 'verify-otp'
       };
     } else {
+      console.log('❌ Failed to send OTP email');
       return {success: false, message: 'Failed to send OTP. Please try again.'};
     }
     
   } catch (error) {
-    console.error('Send OTP error:', error);
+    console.error('❌ Send OTP error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     return {success: false, message: 'Failed to send OTP: ' + error.message};
   }
 }
@@ -331,12 +385,19 @@ function verifyOTP(data) {
  */
 function loginUser(data) {
   try {
+    console.log('🔐 loginUser called with data:', data);
+    
     if (!data.mobile || !data.password) {
+      console.log('❌ Missing mobile or password');
       return {success: false, message: 'Mobile number and password are required'};
     }
     
+    console.log('📋 Getting sheet data...');
     const sheet = getOrCreateSheet();
     const sheetData = sheet.getDataRange().getValues();
+    console.log('📊 Found', sheetData.length - 1, 'users in sheet');
+    
+    console.log('🔍 Looking for mobile:', data.mobile, 'password:', data.password);
     
     // Find user by mobile number
     for (let i = 1; i < sheetData.length; i++) {
@@ -346,42 +407,62 @@ function loginUser(data) {
       const status = row[6];    // Column G - Status
       const otpStatus = row[8]; // Column I - OTPStatus
       
-      if (mobile === data.mobile && password === data.password) {
-        // Check OTP verification
-        if (otpStatus !== 'Verified') {
+      console.log(`🔍 Row ${i}: Mobile="${mobile}", Password="${password}", Status="${status}", OTPStatus="${otpStatus}"`);
+      
+      if (mobile == data.mobile) { // Use == instead of === to handle type differences
+        console.log('📱 Mobile number match found!');
+        
+        if (password == data.password) { // Use == instead of === to handle type differences
+          console.log('🔑 Password match found!');
+          
+          // Check OTP verification
+          if (otpStatus !== 'Verified') {
+            console.log('❌ OTP not verified:', otpStatus);
+            return {
+              success: false,
+              message: 'Please verify your email first before logging in.'
+            };
+          }
+          
+          // Check approval status
+          if (status !== 'Approved') {
+            console.log('❌ Account not approved:', status);
+            let message = 'Your account is pending admin approval.';
+            if (status === 'Rejected') {
+              message = 'Your account has been rejected. Please contact administrator.';
+            }
+            return {success: false, message: message};
+          }
+          
+          console.log('✅ Login successful for user:', row[0]);
+          
+          // Update last login
+          const today = new Date().toISOString().split('T')[0];
+          sheet.getRange(i + 1, 6).setValue(today); // Column F - LastLogin
+          
           return {
-            success: false,
-            message: 'Please verify your email first before logging in.'
+            success: true,
+            message: 'Login successful!',
+            status: 'approved',
+            userData: {
+              name: row[0],      // Column A - Name
+              mobile: row[1],    // Column B - Mobile
+              email: row[2],     // Column C - Email
+              company: row[3]    // Column D - Company
+            }
           };
+        } else {
+          console.log('❌ Password mismatch. Expected:', password, 'Got:', data.password);
         }
-        
-        // Check approval status
-        if (status !== 'Approved') {
-          let message = 'Your account is pending admin approval.';
-          if (status === 'Rejected') {
-            message = 'Your account has been rejected. Please contact administrator.';
-          }
-          return {success: false, message: message};
+      } else {
+        // Only log first few for debugging without spam
+        if (i <= 3) {
+          console.log('❌ Mobile mismatch. Expected:', mobile, 'Got:', data.mobile);
         }
-        
-        // Update last login
-        const today = new Date().toISOString().split('T')[0];
-        sheet.getRange(i + 1, 6).setValue(today); // Column F - LastLogin
-        
-        return {
-          success: true,
-          message: 'Login successful!',
-          status: 'approved',
-          userData: {
-            name: row[0],      // Column A - Name
-            mobile: row[1],    // Column B - Mobile
-            email: row[2],     // Column C - Email
-            company: row[3]    // Column D - Company
-          }
-        };
       }
     }
     
+    console.log('❌ No matching user found');
     return {success: false, message: 'Invalid mobile number or password'};
     
   } catch (error) {
@@ -395,6 +476,10 @@ function loginUser(data) {
  */
 function sendOTPEmail(email, otp, name) {
   try {
+    console.log('📧 Attempting to send email to:', email);
+    console.log('🔑 OTP:', otp);
+    console.log('👤 Name:', name);
+    
     const subject = 'Coal Management App - Email Verification OTP';
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -426,12 +511,30 @@ function sendOTPEmail(email, otp, name) {
       </div>
     `;
     
+    console.log('📤 Sending email via GmailApp...');
     GmailApp.sendEmail(email, subject, '', {htmlBody: htmlBody});
+    console.log('✅ Email sent successfully!');
     return true;
     
   } catch (error) {
-    console.error('Email sending error:', error);
-    return false;
+    console.error('❌ Email sending error:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Try alternative method with MailApp
+    try {
+      console.log('🔄 Trying MailApp as fallback...');
+      MailApp.sendEmail({
+        to: email,
+        subject: subject,
+        htmlBody: htmlBody
+      });
+      console.log('✅ Email sent via MailApp successfully!');
+      return true;
+    } catch (mailError) {
+      console.error('❌ MailApp also failed:', mailError);
+      return false;
+    }
   }
 }
 
@@ -533,6 +636,39 @@ function testEmailSending() {
   } catch (error) {
     console.error('❌ Email sending test failed:', error);
     return 'Email test failed: ' + error.message;
+  }
+}
+
+/**
+ * Debug function to check sheet data for login issues
+ */
+function debugUserLogin() {
+  try {
+    const sheet = getOrCreateSheet();
+    const data = sheet.getDataRange().getValues();
+    
+    console.log('=== LOGIN DEBUG - SHEET DATA ===');
+    console.log('Total rows:', data.length);
+    console.log('Headers:', data[0]);
+    
+    // Log each user row with detailed info
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      console.log(`User ${i}:`, {
+        Name: row[0],
+        Mobile: `"${row[1]}" (type: ${typeof row[1]})`, 
+        Email: row[2],
+        Company: row[3],
+        Status: `"${row[6]}" (type: ${typeof row[6]})`,
+        Password: `"${row[7]}" (type: ${typeof row[7]})`,
+        OTPStatus: `"${row[8]}" (type: ${typeof row[8]})`
+      });
+    }
+    
+    return 'Check console logs for detailed user data';
+  } catch (error) {
+    console.error('Debug error:', error);
+    return 'Debug failed: ' + error.message;
   }
 }
 
