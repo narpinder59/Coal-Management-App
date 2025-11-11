@@ -2968,7 +2968,13 @@ body {
 
                 console.log('Total freed quantity to redistribute:', freedQuantity);
 
-                if (freedQuantity <= 0) {
+                // Compute remaining capacity (so we never exceed ACQ when redistributing)
+                const totalActualsBefore = rows.reduce((s, r) => s + (parseFloat(r.cells[3].textContent.replace(/,/g, '')) || 0), 0);
+                const remainingCapacity = acq - totalActualsBefore;
+                console.log('Total actuals before redistribution:', totalActualsBefore, 'Remaining capacity:', remainingCapacity);
+
+                // If no capacity or nothing freed, stop
+                if (freedQuantity <= 0 || remainingCapacity <= 0) {
                     console.log('No quantity freed up for redistribution');
                     // Update all dependent calculations
                     updateQuarterlyTable();
@@ -2976,6 +2982,12 @@ body {
                     updatePerDayValues();
                     updateSummaryTable();
                     return;
+                }
+
+                // Limit redistributed amount to available remaining capacity to avoid exceeding ACQ
+                const distributeAmount = Math.min(freedQuantity, remainingCapacity);
+                if (distributeAmount < freedQuantity) {
+                    console.log(`Clamping redistribution: requested ${freedQuantity}, will distribute ${distributeAmount} due to ACQ limit`);
                 }
 
                 // Find subsequent months that should receive redistributed quantity
@@ -3003,13 +3015,13 @@ body {
                 const distributionMethod = getDistributionMethod();
                 console.log('Distribution method:', distributionMethod);
 
-                // Redistribute freed quantity based on selected method
+                // Redistribute distributeAmount based on selected method
                 if (subsequentMonths.length > 0) {
                     if (distributionMethod === 'quarterly' && totalQuarterlyPercent > 0) {
                         // Quarterly percentage-based distribution
                         console.log('Using quarterly percentage distribution');
                         subsequentMonths.forEach(monthData => {
-                            const proportionalShare = (monthData.quarterlyPercent / totalQuarterlyPercent) * freedQuantity;
+                            const proportionalShare = (monthData.quarterlyPercent / totalQuarterlyPercent) * distributeAmount;
                             const currentActual = parseFloat(monthData.row.cells[3].textContent.replace(/,/g, '')) || 0;
                             const newActual = currentActual + proportionalShare;
                             console.log(`Month ${monthData.index} gets proportional share:`, proportionalShare);
@@ -3028,7 +3040,7 @@ body {
                     } else {
                         // Equal distribution (either method=equal or no quarterly percentages available)
                         console.log('Using equal distribution');
-                        const equalShare = freedQuantity / subsequentMonths.length;
+                        const equalShare = distributeAmount / subsequentMonths.length;
                         subsequentMonths.forEach(monthData => {
                             const currentActual = parseFloat(monthData.row.cells[3].textContent.replace(/,/g, '')) || 0;
                             const newActual = currentActual + equalShare;
