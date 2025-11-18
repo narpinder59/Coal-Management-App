@@ -7,7 +7,7 @@ let QualityCostHeaders2 = [];
 async function fetchQualityCostData1() {
     const SHEET_ID = '1cFngrabiTY-RMGDrw2eRn7Nn8LEY0IZyD0-QJT7UqTI';
     const SHEET_NAME = 'Quality&CostAnalysis1';
-    const RANGE = 'A1:Z';
+    const RANGE = 'A1:P';
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
     
     try {
@@ -28,13 +28,33 @@ async function fetchQualityCostData1() {
         
         const table = json.table;
         
-        // Extract headers from first row
-        if (table.rows.length > 0) {
-            QualityCostHeaders1 = table.rows[0].c.map(cell => cell ? cell.v : "");
-        }
+        // Create proper headers from actual Google Sheet headers
+        const properHeaders = [
+            'Period',                                     // 0
+            'Plant',                                      // 1
+            'Coal Company',                              // 2
+            'Qty. Dispatched (Lakh MT)',                // 3
+            'Qty. Received (Lakh MT)',                  // 4
+            'Rakes Received',                            // 5
+            'Transit Loss (%)',                         // 6
+            'Total Mositure (%)',                        // 7
+            'Eq. Moisture (%)',                         // 8
+            'Eq. Ash (%)',                              // 9
+            'VM (%)',                                    // 10
+            'GCV Eq. (kcal/kg)',                        // 11
+            'GCV ARB (kcal/kg)',                        // 12
+            'Wt. Avg. Coal Cost (Rs/MT)',               // 13
+            'Wt. Avg. Railway Frieght (Rs/MT)',         // 14
+            'Distance (kMs)'                             // 15
+        ];
         
-        // Extract data from remaining rows
-        const dataRows = table.rows.slice(1);
+        QualityCostHeaders1 = properHeaders;
+        console.log("=== PROPER HEADERS SET ===");
+        console.log("QualityCostHeaders1:", QualityCostHeaders1);
+        console.log("Total headers:", QualityCostHeaders1.length);
+        
+        // Extract ALL data rows (first row is actual data, not headers)
+        const dataRows = table.rows.slice(0);
         
         QualityCostData1 = dataRows
             .map((row, index) => {
@@ -56,9 +76,54 @@ async function fetchQualityCostData1() {
                     return null;
                 }
                 
+                // Log first 3 rows for debugging
+                if (index < 3) {
+                    console.log(`=== DATA ROW ${index} ===`);
+                    rowData.forEach((val, idx) => {
+                        console.log(`  [${idx}] (${QualityCostHeaders1[idx]}): ${val}`);
+                    });
+                }
+                
                 return rowData;
             })
             .filter(row => row !== null);
+            
+        console.log("Total data rows loaded:", QualityCostData1.length);
+        
+        // DETAILED DEBUG: Check specifically for coal cost and railway freight data
+        console.log("\n=== DETAILED COLUMN CHECK ===");
+        console.log("Column 13 header:", QualityCostHeaders1[13]);
+        console.log("Column 14 header:", QualityCostHeaders1[14]);
+        
+        // Sample first 5 data rows for these columns
+        let hasCoalCostData = false;
+        let hasFreightData = false;
+        
+        for (let i = 0; i < Math.min(5, QualityCostData1.length); i++) {
+            const row = QualityCostData1[i];
+            const col13Val = row[13];
+            const col14Val = row[14];
+            console.log(`Row ${i}: [13]="${col13Val}" (${typeof col13Val}), [14]="${col14Val}" (${typeof col14Val})`);
+            
+            if (col13Val && col13Val !== "" && col13Val !== null && col13Val !== undefined) hasCoalCostData = true;
+            if (col14Val && col14Val !== "" && col14Val !== null && col14Val !== undefined) hasFreightData = true;
+        }
+        
+        console.log("Has Coal Cost data in sampled rows:", hasCoalCostData);
+        console.log("Has Freight data in sampled rows:", hasFreightData);
+        
+        // Check ALL rows for non-empty coal cost/freight
+        let totalRowsWithCoalCost = 0;
+        let totalRowsWithFreight = 0;
+        for (let i = 0; i < QualityCostData1.length; i++) {
+            const row = QualityCostData1[i];
+            if (row[13] && row[13] !== "" && row[13] !== null && row[13] !== undefined) totalRowsWithCoalCost++;
+            if (row[14] && row[14] !== "" && row[14] !== null && row[14] !== undefined) totalRowsWithFreight++;
+        }
+        
+        console.log(`Total rows with Coal Cost data: ${totalRowsWithCoalCost} / ${QualityCostData1.length}`);
+        console.log(`Total rows with Freight data: ${totalRowsWithFreight} / ${QualityCostData1.length}`);
+        console.log("=== END COLUMN CHECK ===\n");
             
     } catch (error) {
         console.error("Error in fetchQualityCostData1:", error);
@@ -1011,12 +1076,14 @@ function QCPopulateColumnSelector() {
         { id: 'ash', label: 'Ash (%)', default: true },
         { id: 'volatileMatter', label: 'Volatile Matter (%)', default: false },
         { id: 'fixedCarbon', label: 'Fixed Carbon (%)', default: false },
-        { id: 'gcv', label: 'GCV (Kcal/Kg)', default: true },
+        { id: 'gcvEq', label: 'GCV Eq. (Kcal/Kg)', default: true },
+        { id: 'gcvArb', label: 'GCV ARB (Kcal/Kg)', default: true },
         { id: 'coalCost', label: 'Coal Cost (Rs/MT)', default: true },
         { id: 'railwayFreight', label: 'Railway Freight (Rs/MT)', default: true },
         { id: 'distance', label: 'Distance (KMs)', default: false },
         { id: 'landedCostMT', label: 'Landed Cost (Rs/MT)', default: true },
-        { id: 'landedCostMcal', label: 'Landed Cost (Rs/Mcal)', default: true },
+        { id: 'landedCostEqMcal', label: 'Landed Cost Eq Basis (Rs/Mcal)', default: true },
+        { id: 'landedCostArbMcal', label: 'Landed Cost ARB Basis (Rs/Mcal)', default: true },
         { id: 'perUnitCost', label: 'Per Unit Cost (Rs/kWh)', default: true },
         { id: 'totalAmount', label: 'Total Amount (Rs. Crore)', default: true }
     ];
@@ -1076,14 +1143,16 @@ function QCGetVisibleColumns(useSpecialReportColumns = null, forMonthWiseTable =
         { id: 'ash', header: 'Ash (%)', index: 8 + indexOffset },
         { id: 'volatileMatter', header: 'Volatile Matter (%)', index: 9 + indexOffset },
         { id: 'fixedCarbon', header: 'Fixed Carbon (%)', index: 10 + indexOffset },
-        { id: 'gcv', header: 'GCV (Kcal/Kg)', index: 11 + indexOffset },
-        { id: 'coalCost', header: 'Coal Cost (Rs/MT)', index: 12 + indexOffset },
-        { id: 'railwayFreight', header: 'Railway Freight (Rs/MT)', index: 13 + indexOffset },
-        { id: 'distance', header: 'Distance (KMs)', index: 14 + indexOffset },
-        { id: 'landedCostMT', header: 'Landed Cost (Rs/MT)', index: 15 + indexOffset },
-        { id: 'landedCostMcal', header: 'Landed Cost (Rs/Mcal)', index: 16 + indexOffset },
-        { id: 'perUnitCost', header: 'Per Unit Cost (Rs/kWh)', index: 17 + indexOffset },
-        { id: 'totalAmount', header: 'Total Amount (Rs. Crore)', index: 18 + indexOffset }
+        { id: 'gcvEq', header: 'GCV Eq. (Kcal/Kg)', index: 11 + indexOffset },
+        { id: 'gcvArb', header: 'GCV ARB (Kcal/Kg)', index: 12 + indexOffset },
+        { id: 'coalCost', header: 'Coal Cost (Rs/MT)', index: 13 + indexOffset },
+        { id: 'railwayFreight', header: 'Railway Freight (Rs/MT)', index: 14 + indexOffset },
+        { id: 'distance', header: 'Distance (KMs)', index: 15 + indexOffset },
+        { id: 'landedCostMT', header: 'Landed Cost (Rs/MT)', index: 16 + indexOffset },
+        { id: 'landedCostEqMcal', header: 'Landed Cost Eq Basis (Rs/Mcal)', index: 17 + indexOffset },
+        { id: 'landedCostArbMcal', header: 'Landed Cost ARB Basis (Rs/Mcal)', index: 18 + indexOffset },
+        { id: 'perUnitCost', header: 'Per Unit Cost (Rs/kWh)', index: 19 + indexOffset },
+        { id: 'totalAmount', header: 'Total Amount (Rs. Crore)', index: 20 + indexOffset }
     ];
     
     // Debug: Log checkbox selection status
@@ -1113,12 +1182,17 @@ function QCGetVisibleColumns(useSpecialReportColumns = null, forMonthWiseTable =
             'Ash %': 'ash',
             'Volatile Matter %': 'volatileMatter',
             'Fixed Carbon %': 'fixedCarbon',
-            'GCV (Kcal/Kg)': 'gcv',
+            'GCV (Kcal/Kg)': 'gcvEq',
+            'GCV Eq. (Kcal/Kg)': 'gcvEq',
+            'GCV ARB (Kcal/Kg)': 'gcvArb',
             'Coal Cost (Rs/MT)': 'coalCost',
             'Railway Freight (Rs/MT)': 'railwayFreight',
             'Distance (KMs)': 'distance',
             'Landed Cost Rs/MT': 'landedCostMT',
-            'Landed Cost Rs/Mcal': 'landedCostMcal',
+            'Landed Cost (Rs/MT)': 'landedCostMT',
+            'Landed Cost Rs/Mcal': 'landedCostEqMcal',
+            'Landed Cost Eq Basis (Rs/Mcal)': 'landedCostEqMcal',
+            'Landed Cost ARB Basis (Rs/Mcal)': 'landedCostArbMcal',
             'Per Unit Cost': 'perUnitCost',
             'Total Amount (Rs. Crore)': 'totalAmount'
         };
@@ -1558,16 +1632,20 @@ function createAggregatedRow(groupData) {
     const qtyReceived = parseFloat(aggregated[4]) || 0;
     aggregated[6] = qtyDispatched > 0 ? (((qtyDispatched - qtyReceived) / qtyDispatched) * 100).toFixed(2) : 0;
     
-    // Weighted average for columns H to N (7-13) w.r.t. Quantity Received
-    for (let colIdx = 7; colIdx <= 13; colIdx++) {
+    // Weighted average for columns H to P (7-14: Moisture, Eq Moisture, Eq Ash, VM, GCV Eq, GCV ARB, Coal Cost, Railway Freight)
+    // Use Qty Received (column 4) as the weight for averaging
+    for (let colIdx = 7; colIdx <= 14; colIdx++) {
         const values = rows.map(row => row[colIdx]);
         const weights = rows.map(row => row[4]); // Qty Received as weight
         aggregated[colIdx] = calculateWeightedAverage(values, weights).toFixed(2);
     }
     
-    // Simple average for column O (14) - non-zero values only
-    const columnOValues = rows.map(row => row[14]);
-    aggregated[14] = calculateSimpleAverage(columnOValues).toFixed(2);
+    // Simple average for column P (15 - Distance) - non-zero values only
+    const columnPValues = rows.map(row => row[15]);
+    aggregated[15] = calculateSimpleAverage(columnPValues).toFixed(0);
+
+    // Keep individual rows for downstream calculated columns (landed cost, per unit cost, total amount)
+    aggregated.individualRows = rows;
     
     return aggregated;
 }
@@ -1595,16 +1673,16 @@ function QCCalculateTotalRow(dataRows, label, visibleColumns) {
     const qtyReceived = parseFloat(totalRow[4]) || 0;
     totalRow[6] = qtyDispatched > 0 ? (((qtyDispatched - qtyReceived) / qtyDispatched) * 100) : 0;
     
-    // Calculate weighted averages for columns 7-13 w.r.t. Quantity Received
-    for (let colIdx = 7; colIdx <= 13; colIdx++) {
+    // Calculate weighted averages for columns 7-14 (Moisture..Railway Freight) w.r.t. Quantity Received
+    for (let colIdx = 7; colIdx <= 14; colIdx++) {
         const values = dataRows.map(row => row[colIdx]);
         const weights = dataRows.map(row => row[4]); // Qty Received as weight
         totalRow[colIdx] = calculateWeightedAverage(values, weights);
     }
     
-    // Simple average for column 14 (Distance)
-    const columnOValues = dataRows.map(row => row[14]);
-    totalRow[14] = calculateSimpleAverage(columnOValues);
+    // Simple average for column 15 (Distance)
+    const columnPValues = dataRows.map(row => row[15]);
+    totalRow[15] = calculateSimpleAverage(columnPValues);
     
     // Add individual rows for calculated column calculations
     totalRow.individualRows = dataRows;
@@ -1629,8 +1707,8 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
         } else if (col.index === 2) {
             // Coal Company column
             value = totalRowData[2] || '';
-        } else if (col.index <= 14) {
-            // Original data columns
+        } else if (col.index <= 15) {
+            // Original data columns (now up to 15 which is Distance)
             if (totalRowData[col.index] !== undefined) {
                 const val = parseFloat(totalRowData[col.index]);
                 if (!isNaN(val)) {
@@ -1638,7 +1716,9 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
                         value = val.toFixed(4);
                     } else if (col.index === 5) { // Rakes
                         value = Math.round(val);
-                    } else if (col.index === 11 || col.index === 12 || col.index === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
+                    } else if (col.index === 11 || col.index === 12 || col.index === 13 || col.index === 14) { // GCV Eq, GCV ARB, Coal Cost, Railway Freight - 0 decimals
+                        value = Math.round(val);
+                    } else if (col.index === 15) { // Distance - 0 decimals
                         value = Math.round(val);
                     } else if (col.index >= 6) { // Percentages and other costs
                         value = val.toFixed(2);
@@ -1652,45 +1732,66 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
         } else {
             // Extended/calculated columns - these need special calculation
             switch (col.index) {
-                case 15: // Landed Cost Rs/MT - weighted average based on quantity received
+                case 16: // Landed Cost Rs/MT - weighted average based on quantity received
                     if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
                         const values = totalRowData.individualRows.map(row => {
-                            const coalCost = parseFloat(row[12]) || 0;
-                            const railwayFreight = parseFloat(row[13]) || 0;
+                            const coalCost = parseFloat(row[13]) || 0;
+                            const railwayFreight = parseFloat(row[14]) || 0;
                             return coalCost + railwayFreight;
                         });
                         const weights = totalRowData.individualRows.map(row => parseFloat(row[4]) || 0); // Qty Received
                         value = calculateWeightedAverage(values, weights).toFixed(0);
                     } else {
                         // Fallback to simple calculation
-                        const coalCost = parseFloat(totalRowData[12]) || 0;
-                        const railwayFreight = parseFloat(totalRowData[13]) || 0;
+                        const coalCost = parseFloat(totalRowData[13]) || 0;
+                        const railwayFreight = parseFloat(totalRowData[14]) || 0;
                         value = (coalCost + railwayFreight).toFixed(0);
                     }
                     cellClass += ' qc-calculated-col';
                     break;
-                case 16: // Landed Cost Rs/Mcal - weighted average based on quantity received
+                case 17: // Landed Cost Eq Basis Rs/Mcal - weighted average based on quantity received
                     if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
                         const values = totalRowData.individualRows.map(row => {
-                            const coalCost = parseFloat(row[12]) || 0;
-                            const railwayFreight = parseFloat(row[13]) || 0;
-                            const gcv = parseFloat(row[11]) || 1;
+                            const coalCost = parseFloat(row[13]) || 0;
+                            const railwayFreight = parseFloat(row[14]) || 0;
+                            const gcvEq = parseFloat(row[11]) || 1;
                             const landedCostPerMT = coalCost + railwayFreight;
-                            return gcv > 0 ? landedCostPerMT / gcv : 0;
+                            return gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
                         });
                         const weights = totalRowData.individualRows.map(row => parseFloat(row[4]) || 0); // Qty Received
                         value = calculateWeightedAverage(values, weights).toFixed(4);
                     } else {
                         // Fallback to simple calculation
-                        const coalCost2 = parseFloat(totalRowData[12]) || 0;
-                        const railwayFreight2 = parseFloat(totalRowData[13]) || 0;
-                        const gcv = parseFloat(totalRowData[11]) || 1;
+                        const coalCost2 = parseFloat(totalRowData[13]) || 0;
+                        const railwayFreight2 = parseFloat(totalRowData[14]) || 0;
+                        const gcvEq = parseFloat(totalRowData[11]) || 1;
                         const landedCostPerMT = coalCost2 + railwayFreight2;
-                        value = gcv > 0 ? (landedCostPerMT / gcv).toFixed(4) : '0.0000';
+                        value = gcvEq > 0 ? (landedCostPerMT / gcvEq).toFixed(4) : '0.0000';
                     }
                     cellClass += ' qc-calculated-col';
                     break;
-                case 17: // Per Unit Cost - weighted average based on quantity received
+                case 18: // Landed Cost ARB Basis Rs/Mcal - weighted average based on quantity received
+                    if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
+                        const values = totalRowData.individualRows.map(row => {
+                            const coalCost = parseFloat(row[13]) || 0;
+                            const railwayFreight = parseFloat(row[14]) || 0;
+                            const gcvArb = parseFloat(row[12]) || 1;
+                            const landedCostPerMT = coalCost + railwayFreight;
+                            return gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
+                        });
+                        const weights = totalRowData.individualRows.map(row => parseFloat(row[4]) || 0); // Qty Received
+                        value = calculateWeightedAverage(values, weights).toFixed(4);
+                    } else {
+                        // Fallback to simple calculation
+                        const coalCost3 = parseFloat(totalRowData[13]) || 0;
+                        const railwayFreight3 = parseFloat(totalRowData[14]) || 0;
+                        const gcvArb = parseFloat(totalRowData[12]) || 1;
+                        const landedCostPerMT3 = coalCost3 + railwayFreight3;
+                        value = gcvArb > 0 ? (landedCostPerMT3 / gcvArb).toFixed(4) : '0.0000';
+                    }
+                    cellClass += ' qc-calculated-col';
+                    break;
+                case 19: // Per Unit Cost - weighted average based on quantity received
                     if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
                         const plant3 = totalRowData[1];
                         const shr3 = (plant3 === 'Grand Total') ? 
@@ -1698,36 +1799,36 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
                             getWeightedAverageSHRForPlant(plant3);
                         
                         const values = totalRowData.individualRows.map(row => {
-                            const coalCost = parseFloat(row[12]) || 0;
-                            const railwayFreight = parseFloat(row[13]) || 0;
-                            const gcv = parseFloat(row[11]) || 1;
+                            const coalCost = parseFloat(row[13]) || 0;
+                            const railwayFreight = parseFloat(row[14]) || 0;
+                            const gcvEq = parseFloat(row[11]) || 1;
                             const landedCostPerMT = coalCost + railwayFreight;
-                            const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
+                            const landedCostPerMcal = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
                             return shr3 * landedCostPerMcal / 1000;
                         });
                         const weights = totalRowData.individualRows.map(row => parseFloat(row[4]) || 0); // Qty Received
                         value = calculateWeightedAverage(values, weights).toFixed(3);
                     } else {
                         // Fallback to simple calculation
-                        const coalCost3 = parseFloat(totalRowData[12]) || 0;
-                        const railwayFreight3 = parseFloat(totalRowData[13]) || 0;
-                        const gcv3 = parseFloat(totalRowData[11]) || 1;
-                        const landedCostPerMT3 = coalCost3 + railwayFreight3;
-                        const landedCostPerMcal3 = gcv3 > 0 ? landedCostPerMT3 / gcv3 : 0;
+                        const coalCost4 = parseFloat(totalRowData[13]) || 0;
+                        const railwayFreight4 = parseFloat(totalRowData[14]) || 0;
+                        const gcvEq3 = parseFloat(totalRowData[11]) || 1;
+                        const landedCostPerMT4 = coalCost4 + railwayFreight4;
+                        const landedCostPerMcal4 = gcvEq3 > 0 ? landedCostPerMT4 / gcvEq3 : 0;
                         const plant3 = totalRowData[1];
                         const shr3 = (plant3 === 'Grand Total') ? 
                             getWeightedAverageSHRForPlant('PSPCL') : 
                             getWeightedAverageSHRForPlant(plant3);
-                        value = (shr3 * landedCostPerMcal3 / 1000).toFixed(3);
+                        value = (shr3 * landedCostPerMcal4 / 1000).toFixed(3);
                     }
                     cellClass += ' qc-calculated-col';
                     break;
-                case 18: // Total Amount (Rs. Crore) - sum of individual row total amounts
+                case 20: // Total Amount (Rs. Crore) - sum of individual row total amounts
                     if (totalRowData.individualRows && totalRowData.individualRows.length > 0) {
                         const totalAmount = totalRowData.individualRows.reduce((sum, row) => {
                             const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
-                            const coalCost = parseFloat(row[12]) || 0;
-                            const railwayFreight = parseFloat(row[13]) || 0;
+                            const coalCost = parseFloat(row[13]) || 0;
+                            const railwayFreight = parseFloat(row[14]) || 0;
                             const landedCostPerMT = coalCost + railwayFreight;
                             const rowTotalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert to crores
                             return sum + rowTotalAmount;
@@ -1736,8 +1837,8 @@ function QCRenderTotalRow(totalRowData, visibleColumns, label, cssClass = 'table
                     } else {
                         // Fallback to simple calculation
                         const qtyReceived = parseFloat(totalRowData[4]) || 0;
-                        const coalCost = parseFloat(totalRowData[12]) || 0;
-                        const railwayFreight = parseFloat(totalRowData[13]) || 0;
+                        const coalCost = parseFloat(totalRowData[13]) || 0;
+                        const railwayFreight = parseFloat(totalRowData[14]) || 0;
                         const landedCostPerMT = coalCost + railwayFreight;
                         const totalAmount = (qtyReceived * landedCostPerMT) / 100;
                         value = totalAmount.toFixed(2);
@@ -1784,56 +1885,64 @@ function QCRenderTableCells(row, visibleColumns, extendedData = {}) {
     
     visibleColumns.forEach(col => {
         let value = '';
-        
-        // Check if this is the month column (index 0)
+
+        // Compute a baseIndex that represents the original data column index (without month column)
+        const baseIndex = col.index - (hasMonthColumn ? 1 : 0);
+
+        // Month column (explicit) - show as-is
         if (col.id === 'month') {
-            // Month column - show as-is
             value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
-        } else if (col.index <= 14) {
-            // Original data columns (adjusted for month column if present)
+        }
+        // Original data columns: baseIndex 0..15 (Distance at 15)
+        else if (baseIndex <= 15) {
             value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
-            
+
             // Apply plant name shortening for plant name column
             if (col.id === 'plant') {
                 value = shortenPlantName(value);
             }
-            
+
             // Format numbers for better display (skip month, plant, and coal company columns)
-            if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
-                const baseIndex = col.index - (hasMonthColumn ? 1 : 0);
-                
+            if (baseIndex >= 3 && baseIndex <= 15 && !isNaN(parseFloat(value))) {
                 if (baseIndex === 3 || baseIndex === 4) { // Qty columns - 4 decimals
                     value = parseFloat(value).toFixed(4);
                 } else if (baseIndex === 5) { // Rakes
                     value = Math.round(parseFloat(value));
-                } else if (baseIndex === 11 || baseIndex === 12 || baseIndex === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
+                } else if ([11,12,13,14].includes(baseIndex)) { // GCV Eq, GCV ARB, Coal Cost, Railway Freight - 0 decimals
                     value = Math.round(parseFloat(value));
+                } else if (baseIndex === 15) { // Distance - 0 decimals
+                    value = parseFloat(value).toFixed(0);
                 } else if (baseIndex >= 6) { // Percentages and other costs
                     value = parseFloat(value).toFixed(2);
                 }
             }
-        } else {
-            // Extended/calculated columns
-            const baseIndex = col.index - (hasMonthColumn ? 1 : 0);
+        }
+        // Extended/calculated columns: baseIndex >= 16
+        else {
             switch (baseIndex) {
-                case 15: // Landed Cost Rs/MT
+                case 16: // Landed Cost Rs/MT
                     value = extendedData.landedCostPerMT ? extendedData.landedCostPerMT.toFixed(0) : '&nbsp;';
                     break;
-                case 16: // Landed Cost Rs/Mcal
-                    value = extendedData.landedCostPerMcal ? extendedData.landedCostPerMcal.toFixed(4) : '&nbsp;';
+                case 17: // Landed Cost Eq Basis Rs/Mcal
+                    value = extendedData.landedCostEqPerMcal ? extendedData.landedCostEqPerMcal.toFixed(4) : '&nbsp;';
                     break;
-                case 17: // Per Unit Cost - 3 decimals
+                case 18: // Landed Cost ARB Basis Rs/Mcal
+                    value = extendedData.landedCostArbPerMcal ? extendedData.landedCostArbPerMcal.toFixed(4) : '&nbsp;';
+                    break;
+                case 19: // Per Unit Cost - 3 decimals
                     value = extendedData.perUnitCost ? extendedData.perUnitCost.toFixed(3) : '&nbsp;';
                     break;
-                case 18: // Total Amount (Rs. Crore)
+                case 20: // Total Amount (Rs. Crore)
                     value = extendedData.totalAmount ? extendedData.totalAmount.toFixed(2) : '&nbsp;';
                     break;
+                default:
+                    value = '&nbsp;';
             }
         }
         
         // Add special classes for calculated columns
         let cellClass = 'text-center';
-        if (col.index >= 15) cellClass += ' qc-calculated-col';
+        if (col.index >= 16) cellClass += ' qc-calculated-col';
         
         html += `<td class="${cellClass}">${value}</td>`;
     });
@@ -1916,14 +2025,16 @@ function QCRenderMainTable(processedData) {
             
             html += `<tr class="${rowClasses.join(' ')}">`;
             
-            const coalCost = parseFloat(row[12]) || 0;
-            const railwayFreight = parseFloat(row[13]) || 0;
-            const gcv = parseFloat(row[11]) || 1;
+            const coalCost = parseFloat(row[13]) || 0;
+            const railwayFreight = parseFloat(row[14]) || 0;
+            const gcvEq = parseFloat(row[11]) || 1;
+            const gcvArb = parseFloat(row[12]) || 1;
             
             // Prepare extended data
             const landedCostPerMT = coalCost + railwayFreight;
-            const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
-            const perUnitCost = psppclSHR * landedCostPerMcal / 1000;
+            const landedCostEqPerMcal = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
+            const landedCostArbPerMcal = gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
+            const perUnitCost = psppclSHR * landedCostEqPerMcal / 1000;
             
             // Calculate Total Amount (Rs. Crore)
             const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
@@ -1932,7 +2043,8 @@ function QCRenderMainTable(processedData) {
             const extendedData = {
                 shr: psppclSHR,
                 landedCostPerMT: landedCostPerMT,
-                landedCostPerMcal: landedCostPerMcal,
+                landedCostEqPerMcal: landedCostEqPerMcal,
+                landedCostArbPerMcal: landedCostArbPerMcal,
                 perUnitCost: perUnitCost,
                 totalAmount: totalAmount
             };
@@ -1951,7 +2063,7 @@ function QCRenderMainTable(processedData) {
                     // Other columns
                     let value = '';
                     
-                    if (col.index <= 14) {
+                    if (col.index <= 15) {
                         value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
                         
                         // Apply plant name shortening for column 1 (plant name)
@@ -1960,12 +2072,12 @@ function QCRenderMainTable(processedData) {
                         }
                         
                         // Format numbers
-                        if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                        if (col.index >= 3 && col.index <= 15 && !isNaN(parseFloat(value))) {
                             if (col.index === 3 || col.index === 4) { // Qty columns - 4 decimals
                                 value = parseFloat(value).toFixed(4);
                             } else if (col.index === 5) {
                                 value = Math.round(parseFloat(value));
-                            } else if (col.index === 11 || col.index === 12 || col.index === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
+                            } else if (col.index === 11 || col.index === 12 || col.index === 13 || col.index === 14) { // GCV Eq, GCV ARB, Coal Cost, Railway Freight - 0 decimals
                                 value = Math.round(parseFloat(value));
                             } else if (col.index >= 6) {
                                 value = parseFloat(value).toFixed(2);
@@ -1974,20 +2086,23 @@ function QCRenderMainTable(processedData) {
                     } else {
                         // Extended columns
                         switch (col.index) {
-                            case 15:
+                            case 16:
                                 value = landedCostPerMT.toFixed(0);
                                 break;
-                            case 16:
-                                value = landedCostPerMcal.toFixed(4);
-                                break;
                             case 17:
-                                value = perUnitCost.toFixed(3);
+                                value = landedCostEqPerMcal.toFixed(4);
                                 break;
                             case 18:
+                                value = landedCostArbPerMcal.toFixed(4);
+                                break;
+                            case 19:
+                                value = perUnitCost.toFixed(3);
+                                break;
+                            case 20:
                                 // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
-                                const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
-                                const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert Lakh MT to MT (multiply by 100000) then divide by 10000000 for crore = divide by 100
-                                value = totalAmount.toFixed(2);
+                                const qtyRec = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
+                                const totalAmt = (qtyRec * landedCostPerMT) / 100; // Convert Lakh MT to MT (multiply by 100000) then divide by 10000000 for crore = divide by 100
+                                value = totalAmt.toFixed(2);
                                 break;
                         }
                     }
@@ -2056,17 +2171,19 @@ function QCRenderMainTable(processedData) {
                     
                     html += `<tr class="${rowClasses.join(' ')}">`;
                     
-                    const coalCost = parseFloat(row[12]) || 0;
-                    const railwayFreight = parseFloat(row[13]) || 0;
-                    const gcv = parseFloat(row[11]) || 1;
+                    const coalCost = parseFloat(row[13]) || 0;
+                    const railwayFreight = parseFloat(row[14]) || 0;
+                    const gcvEq = parseFloat(row[11]) || 1;
+                    const gcvArb = parseFloat(row[12]) || 1;
                     
                     // Get weighted average SHR for the plant (same for all rows of this plant)
                     const shr = getWeightedAverageSHRForPlant(plantName);
                     
                     // Prepare extended data
                     const landedCostPerMT = coalCost + railwayFreight;
-                    const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
-                    const perUnitCost = shr * landedCostPerMcal / 1000;
+                    const landedCostEqPerMcal = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
+                    const landedCostArbPerMcal = gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
+                    const perUnitCost = shr * landedCostEqPerMcal / 1000;
                     
                     // Calculate Total Amount (Rs. Crore)
                     const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
@@ -2075,7 +2192,8 @@ function QCRenderMainTable(processedData) {
                     const extendedData = {
                         shr: shr,
                         landedCostPerMT: landedCostPerMT,
-                        landedCostPerMcal: landedCostPerMcal,
+                        landedCostEqPerMcal: landedCostEqPerMcal,
+                        landedCostArbPerMcal: landedCostArbPerMcal,
                         perUnitCost: perUnitCost,
                         totalAmount: totalAmount
                     };
@@ -2095,7 +2213,7 @@ function QCRenderMainTable(processedData) {
                             // Other columns
                             let value = '';
                             
-                            if (col.index <= 14) {
+                            if (col.index <= 15) {
                                 value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '&nbsp;';
                                 
                                 // Apply plant name shortening for column 1 (plant name)
@@ -2104,12 +2222,12 @@ function QCRenderMainTable(processedData) {
                                 }
                                 
                                 // Format numbers
-                                if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                                if (col.index >= 3 && col.index <= 15 && !isNaN(parseFloat(value))) {
                                     if (col.index === 3 || col.index === 4) { // Qty columns - 4 decimals
                                         value = parseFloat(value).toFixed(4);
                                     } else if (col.index === 5) {
                                         value = Math.round(parseFloat(value));
-                                    } else if (col.index === 11 || col.index === 12 || col.index === 13) { // GCV, Coal Cost, Railway Freight - 0 decimals
+                                    } else if (col.index === 11 || col.index === 12 || col.index === 13 || col.index === 14) { // GCV Eq, GCV ARB, Coal Cost, Railway Freight - 0 decimals
                                         value = Math.round(parseFloat(value));
                                     } else if (col.index >= 6) {
                                         value = parseFloat(value).toFixed(2);
@@ -2118,16 +2236,19 @@ function QCRenderMainTable(processedData) {
                             } else {
                                 // Extended columns
                                 switch (col.index) {
-                                    case 15:
+                                    case 16:
                                         value = landedCostPerMT.toFixed(0);
                                         break;
-                                    case 16:
-                                        value = landedCostPerMcal.toFixed(4);
-                                        break;
                                     case 17:
-                                        value = perUnitCost.toFixed(3);
+                                        value = landedCostEqPerMcal.toFixed(4);
                                         break;
                                     case 18:
+                                        value = landedCostArbPerMcal.toFixed(4);
+                                        break;
+                                    case 19:
+                                        value = perUnitCost.toFixed(3);
+                                        break;
+                                    case 20:
                                         // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
                                         const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
                                         const totalAmount = (qtyReceived * landedCostPerMT) / 100; // Convert Lakh MT to MT (multiply by 100000) then divide by 10000000 for crore = divide by 100
@@ -2137,7 +2258,7 @@ function QCRenderMainTable(processedData) {
                             }
                             
                             let cellClass = 'text-center';
-                            if (col.index >= 15) cellClass += ' qc-calculated-col';
+                            if (col.index >= 16) cellClass += ' qc-calculated-col';
                             
                             html += `<td class="${cellClass}">${value}</td>`;
                         }
@@ -2169,9 +2290,10 @@ function QCRenderMainTable(processedData) {
             processedData.forEach(row => {
                 html += '<tr>';
                 
-                const coalCost = parseFloat(row[12]) || 0;
-                const railwayFreight = parseFloat(row[13]) || 0;
-                const gcv = parseFloat(row[11]) || 1;
+                const coalCost = parseFloat(row[13]) || 0;
+                const railwayFreight = parseFloat(row[14]) || 0;
+                const gcvEq = parseFloat(row[11]) || 1;
+                const gcvArb = parseFloat(row[12]) || 1;
                 
                 // Calculate extended columns
                 const plant = row[1];
@@ -2191,8 +2313,9 @@ function QCRenderMainTable(processedData) {
                 
                 // Prepare extended data
                 const landedCostPerMT = coalCost + railwayFreight;
-                const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
-                const perUnitCost = shr * landedCostPerMcal / 1000;
+                const landedCostEqPerMcal = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
+                const landedCostArbPerMcal = gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
+                const perUnitCost = shr * landedCostEqPerMcal / 1000;
                 
                 // Calculate Total Amount (Rs. Crore)
                 const qtyReceived = parseFloat(row[4]) || 0; // Qty Received in Lakh MT
@@ -2201,7 +2324,8 @@ function QCRenderMainTable(processedData) {
                 const extendedData = {
                     shr: shr,
                     landedCostPerMT: landedCostPerMT,
-                    landedCostPerMcal: landedCostPerMcal,
+                    landedCostEqPerMcal: landedCostEqPerMcal,
+                    landedCostArbPerMcal: landedCostArbPerMcal,
                     perUnitCost: perUnitCost,
                     totalAmount: totalAmount
                 };
@@ -2557,6 +2681,17 @@ function QCRenderMonthWiseTable() {
         }
         monthGroups[month].push(row);
     });
+
+    // Diagnostic: inspect visibleColumns and sample rows to verify distance index presence
+    try {
+        console.log('QCRenderMonthWiseTable: visibleColumns:', visibleColumns.map(c => ({id: c.id, header: c.header, index: c.index})).slice(0,50));
+        console.log('QCRenderMonthWiseTable: sample monthWiseData rows (lengths and dist@16):');
+        monthWiseData.slice(0,5).forEach((r, i) => {
+            try { console.log(`  row ${i} length=${r.length}, values[16]=`, r[16]); } catch(e) { console.log('  row', i, 'error reading index 16', e); }
+        });
+    } catch (e) {
+        console.log('QCRenderMonthWiseTable: diagnostics failed', e);
+    }
     
     // Get month order chronologically
     const monthOrder = Object.keys(monthGroups).sort((a, b) => {
@@ -2619,16 +2754,19 @@ function QCRenderMonthWiseTable() {
                 html += '<tr>';
                 
                 // Calculate extended data for each row
-                const coalCost = parseFloat(row[13]) || 0; // Coal cost at index 13
-                const railwayFreight = parseFloat(row[14]) || 0; // Railway freight at index 14
-                const gcv = parseFloat(row[12]) || 1; // GCV at index 12
-                const qtyReceived = parseFloat(row[5]) || 0; // Qty received at index 5
+                // Note: month was prepended, so original columns are shifted by +1
+                const coalCost = parseFloat(row[14]) || 0; // Coal cost at shifted index 14 (original 13)
+                const railwayFreight = parseFloat(row[15]) || 0; // Railway freight at shifted index 15 (original 14)
+                const gcv = parseFloat(row[12]) || 1; // GCV at shifted index 12 (original 11)
+                const qtyReceived = parseFloat(row[5]) || 0; // Qty received at shifted index 5 (original 4)
                 
                 const landedCostPerMT = coalCost + railwayFreight;
-                const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
-                
+                const landedCostEqPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
+                const gcvArb = parseFloat(row[13]) || 1; // GCV ARB shifted index 13 (original 12)
+                const landedCostArbPerMcal = gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
+
                 const plantSHR = getWeightedAverageSHRForPlant(plantName) || getWeightedAverageSHRForPlant('PSPCL');
-                const perUnitCost = plantSHR * landedCostPerMcal / 1000;
+                const perUnitCost = plantSHR * landedCostEqPerMcal / 1000;
                 
                 // Calculate Total Amount (Rs. Crore)
                 const coalCostTotal = (qtyReceived * 100000 * coalCost) / 10000000;
@@ -2637,7 +2775,8 @@ function QCRenderMonthWiseTable() {
                 
                 const extendedData = {
                     landedCostPerMT,
-                    landedCostPerMcal,
+                    landedCostEqPerMcal,
+                    landedCostArbPerMcal,
                     perUnitCost,
                     totalAmount
                 };
@@ -2701,16 +2840,17 @@ function QCCalculateMonthWiseTotalRow(dataRows, label, visibleColumns) {
     const qtyReceived = parseFloat(totalRow[5]) || 0;
     totalRow[7] = qtyDispatched > 0 ? (((qtyDispatched - qtyReceived) / qtyDispatched) * 100) : 0;
     
-    // Calculate weighted averages for columns 8-14 w.r.t. Quantity Received (were 7-13)
-    for (let colIdx = 8; colIdx <= 14; colIdx++) {
+    // Calculate weighted averages for columns 8-15 (Moisture..Railway Freight) w.r.t. Quantity Received
+    // These correspond to original columns 7-14 shifted by +1 due to month column
+    for (let colIdx = 8; colIdx <= 15; colIdx++) {
         const values = dataRows.map(row => row[colIdx]);
         const weights = dataRows.map(row => row[5]); // Qty Received as weight (now at index 5)
         totalRow[colIdx] = calculateWeightedAverage(values, weights);
     }
-    
-    // Simple average for column 15 (Distance) (was 14)
-    const columnOValues = dataRows.map(row => row[15]);
-    totalRow[15] = calculateSimpleAverage(columnOValues);
+
+    // Simple average for column 16 (Distance) (originally at 15)
+    const columnOValues = dataRows.map(row => row[16]);
+    totalRow[16] = calculateSimpleAverage(columnOValues);
     
     // Add individual rows for calculated column calculations
     totalRow.individualRows = dataRows;
@@ -2727,58 +2867,75 @@ function QCRenderMonthWiseTotalRow(totalRowData, visibleColumns, label, cssClass
     visibleColumns.forEach(col => {
         let value = '';
         let cellClass = 'text-center';
-        
+        const hasMonth = visibleColumns.some(c => c.id === 'month');
+        const offset = hasMonth ? 1 : 0; // data rows and totalRowData are shifted by +1 when month column exists
+
         if (col.id === 'month') {
             // Month column - empty for totals
             value = '&nbsp;';
         } else if (col.id === 'plant') {
-            // Plant/Label column (now at index 2 in totalRowData)
+            // Plant/Label column (now at index 2 in totalRowData when month present)
             const shortenedLabel = shortenPlantName(label);
             value = `<strong>${shortenedLabel}</strong>`;
         } else if (col.id === 'coalCompany') {
             // Coal company column - empty for totals
             value = '&nbsp;';
-        } else if (col.index >= 4 && col.index <= 15) {
-            // Data columns (adjusted for month column shift)
+        } else if (col.index >= 4 && col.index <= 16) {
+            // Data columns (adjusted for month column shift). Include distance at index 16.
             const rawValue = totalRowData[col.index];
             if (rawValue !== undefined && rawValue !== '') {
                 if (col.index === 4 || col.index === 5) { // Qty columns (were 3,4)
                     value = parseFloat(rawValue).toFixed(4);
                 } else if (col.index === 6) { // Rakes (was 5)
                     value = Math.round(parseFloat(rawValue));
-                } else if (col.index >= 7) { // Other columns (were 6+)
+                } else if (col.index === 16) { // Distance - 0 decimals
+                    value = Math.round(parseFloat(rawValue));
+                } else if (col.index >= 7) { // Other columns (percentages and costs)
                     value = parseFloat(rawValue).toFixed(2);
                 }
             } else {
                 value = '&nbsp;';
             }
         } else if (col.index >= 16) {
-            // Extended/calculated columns (indices shifted by 1)
+            // Extended/calculated columns (indices shifted when month column present)
             let calcValue = 0;
-            
-            switch (col.index) {
-                case 16: // Landed Cost Rs/MT (coal cost + railway freight at indices 13, 14)
-                    const coalCost = parseFloat(totalRowData[13]) || 0;
-                    const railwayFreight = parseFloat(totalRowData[14]) || 0;
+
+            // Compute base indices in totalRowData (shifted by offset)
+            const coalCostIdx = 13 + offset;
+            const railwayFreightIdx = 14 + offset;
+            const gcvEqIdx = 11 + offset;
+            const gcvArbIdx = 12 + offset;
+            const qtyReceivedIdx = 5 + offset; // Qty Received position in totalRowData
+
+            switch (col.id) {
+                case 'landedCostMT':
+                    const coalCost = parseFloat(totalRowData[coalCostIdx]) || 0;
+                    const railwayFreight = parseFloat(totalRowData[railwayFreightIdx]) || 0;
                     calcValue = coalCost + railwayFreight;
                     value = calcValue.toFixed(0);
                     break;
-                case 17: // Landed Cost Rs/Mcal
-                    const landedCostMT = (parseFloat(totalRowData[13]) || 0) + (parseFloat(totalRowData[14]) || 0);
-                    const gcv = parseFloat(totalRowData[12]) || 1;
-                    calcValue = gcv > 0 ? landedCostMT / gcv : 0;
+                case 'landedCostEqMcal':
+                    const landedCostMT = (parseFloat(totalRowData[coalCostIdx]) || 0) + (parseFloat(totalRowData[railwayFreightIdx]) || 0);
+                    const gcvEq = parseFloat(totalRowData[gcvEqIdx]) || 1;
+                    calcValue = gcvEq > 0 ? landedCostMT / gcvEq : 0;
                     value = calcValue.toFixed(4);
                     break;
-                case 18: // Per Unit Cost
-                    const landedCostMcal = ((parseFloat(totalRowData[13]) || 0) + (parseFloat(totalRowData[14]) || 0)) / (parseFloat(totalRowData[12]) || 1);
+                case 'landedCostArbMcal':
+                    const landedCostMT2 = (parseFloat(totalRowData[coalCostIdx]) || 0) + (parseFloat(totalRowData[railwayFreightIdx]) || 0);
+                    const gcvArb = parseFloat(totalRowData[gcvArbIdx]) || 1;
+                    calcValue = gcvArb > 0 ? landedCostMT2 / gcvArb : 0;
+                    value = calcValue.toFixed(4);
+                    break;
+                case 'perUnitCost':
+                    const landedCostEqMcal = ((parseFloat(totalRowData[coalCostIdx]) || 0) + (parseFloat(totalRowData[railwayFreightIdx]) || 0)) / (parseFloat(totalRowData[gcvEqIdx]) || 1);
                     const shr = getWeightedAverageSHRForPlant('PSPCL');
-                    calcValue = shr * landedCostMcal / 1000;
+                    calcValue = shr * landedCostEqMcal / 1000;
                     value = calcValue.toFixed(3);
                     break;
-                case 19: // Total Amount (Rs. Crore)
-                    const qtyRec = parseFloat(totalRowData[5]) || 0; // Qty received at index 5
-                    const coalCostAmt = parseFloat(totalRowData[13]) || 0;
-                    const railwayFreightAmt = parseFloat(totalRowData[14]) || 0;
+                case 'totalAmount':
+                    const qtyRec = parseFloat(totalRowData[qtyReceivedIdx]) || 0; // Qty received at shifted index
+                    const coalCostAmt = parseFloat(totalRowData[coalCostIdx]) || 0;
+                    const railwayFreightAmt = parseFloat(totalRowData[railwayFreightIdx]) || 0;
                     const coalCostTotalCalc = (qtyRec * 100000 * coalCostAmt) / 10000000;
                     const railwayFreightTotalCalc = (qtyRec * 100000 * railwayFreightAmt) / 10000000;
                     calcValue = coalCostTotalCalc + railwayFreightTotalCalc;
@@ -2790,7 +2947,7 @@ function QCRenderMonthWiseTotalRow(totalRowData, visibleColumns, label, cssClass
         } else {
             value = '&nbsp;';
         }
-        
+
         html += `<td class="${cellClass}">${value}</td>`;
     });
     
@@ -3425,9 +3582,10 @@ function QCGeneratePDFFromScratch() {
                     }
                 } else {
                     // Extended/calculated columns
-                    const coalCost = parseFloat(row[12]) || 0;
-                    const railwayFreight = parseFloat(row[13]) || 0;
-                    const gcv = parseFloat(row[11]) || 1;
+                    const coalCost = parseFloat(row[13]) || 0;
+                    const railwayFreight = parseFloat(row[14]) || 0;
+                    const gcvEq = parseFloat(row[11]) || 1;
+                    const gcvArb = parseFloat(row[12]) || 1;
                     const plantName = row[1] || 'PSPCL';
                     
                     // Determine SHR based on consolidation
@@ -3444,18 +3602,22 @@ function QCGeneratePDFFromScratch() {
                     }
                     
                     switch (col.index) {
-                        case 15: // Landed Cost Rs/MT
+                        case 16: // Landed Cost Rs/MT
                             value = (coalCost + railwayFreight).toFixed(0);
                             break;
-                        case 16: // Landed Cost Rs/Mcal
+                        case 17: // Landed Cost Eq Basis Rs/Mcal
                             const landedCostPerMT = coalCost + railwayFreight;
-                            value = gcv > 0 ? (landedCostPerMT / gcv).toFixed(4) : '0.0000';
+                            value = gcvEq > 0 ? (landedCostPerMT / gcvEq).toFixed(4) : '0.0000';
                             break;
-                        case 17: // Per Unit Cost
-                            const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
-                            value = (shr * landedCostPerMcal / 1000).toFixed(3);
+                        case 18: // Landed Cost ARB Basis Rs/Mcal
+                            const landedCostPerMT2 = coalCost + railwayFreight;
+                            value = gcvArb > 0 ? (landedCostPerMT2 / gcvArb).toFixed(4) : '0.0000';
                             break;
-                        case 18: // Total Amount (Rs. Crore)
+                        case 19: // Per Unit Cost
+                            const landedCostEqMcal = gcvEq > 0 ? (coalCost + railwayFreight) / gcvEq : 0;
+                            value = (shr * landedCostEqMcal / 1000).toFixed(3);
+                            break;
+                        case 20: // Total Amount (Rs. Crore)
                             const qtyReceived = parseFloat(row[4]) || 0;
                             const landedCostTotal = coalCost + railwayFreight;
                             const totalAmount = (qtyReceived * landedCostTotal) / 100;
@@ -3676,14 +3838,14 @@ function QCFormatTotalRowForPDF(totalRow, visibleColumns) {
             return 'Grand Total';
         } else if (col.index === 2) {
             return '';
-        } else if (col.index <= 14) {
+        } else if (col.index <= 15) {
             const val = parseFloat(totalRow[col.index]);
             if (!isNaN(val)) {
                 if (col.index === 3 || col.index === 4) {
                     return val.toFixed(4);
                 } else if (col.index === 5) {
                     return Math.round(val).toString();
-                } else if (col.index === 11 || col.index === 12 || col.index === 13) {
+                } else if (col.index === 11 || col.index === 12 || col.index === 13 || col.index === 14) {
                     return Math.round(val).toString();
                 } else {
                     return val.toFixed(2);
@@ -3692,22 +3854,26 @@ function QCFormatTotalRowForPDF(totalRow, visibleColumns) {
             return '';
         } else {
             // Calculate extended columns for total
-            const coalCost = parseFloat(totalRow[12]) || 0;
-            const railwayFreight = parseFloat(totalRow[13]) || 0;
-            const gcv = parseFloat(totalRow[11]) || 1;
+            const coalCost = parseFloat(totalRow[13]) || 0;
+            const railwayFreight = parseFloat(totalRow[14]) || 0;
+            const gcvEq = parseFloat(totalRow[11]) || 1;
+            const gcvArb = parseFloat(totalRow[12]) || 1;
             const shr = getWeightedAverageSHRForPlant('PSPCL');
             
             switch (col.index) {
-                case 15:
-                    return (coalCost + railwayFreight).toFixed(0);
                 case 16:
-                    const landedCostPerMT = coalCost + railwayFreight;
-                    return gcv > 0 ? (landedCostPerMT / gcv).toFixed(4) : '0.0000';
+                    return (coalCost + railwayFreight).toFixed(0);
                 case 17:
-                    const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
-                    return (shr * landedCostPerMcal / 1000).toFixed(3);
+                    const landedCostPerMT = coalCost + railwayFreight;
+                    return gcvEq > 0 ? (landedCostPerMT / gcvEq).toFixed(4) : '0.0000';
                 case 18:
-                    // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 10000000
+                    const landedCostPerMT2 = coalCost + railwayFreight;
+                    return gcvArb > 0 ? (landedCostPerMT2 / gcvArb).toFixed(4) : '0.0000';
+                case 19:
+                    const landedCostEqMcal = gcvEq > 0 ? (coalCost + railwayFreight) / gcvEq : 0;
+                    return (shr * landedCostEqMcal / 1000).toFixed(3);
+                case 20:
+                    // Total Amount (Rs. Crore) = Qty Received * Landed Cost (Rs/MT) / 100
                     const qtyReceived = parseFloat(totalRow[4]) || 0; // Qty Received in Lakh MT
                     const landedCostTotal = coalCost + railwayFreight;
                     const totalAmount = (qtyReceived * landedCostTotal) / 100; // Convert Lakh MT to MT then divide by 10000000 for crore = divide by 100
@@ -3794,7 +3960,7 @@ function QCExportToExcel() {
             const rowData = visibleColumns.map(col => {
                 let value = '';
                 
-                if (col.index <= 14) {
+                if (col.index <= 15) {
                     // Original data columns
                     value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
                     
@@ -3804,14 +3970,15 @@ function QCExportToExcel() {
                     }
                     
                     // Keep numbers as numbers for Excel
-                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                    if (col.index >= 3 && col.index <= 15 && !isNaN(parseFloat(value))) {
                         value = parseFloat(value);
                     }
                 } else {
                     // Extended/calculated columns
-                    const coalCost = parseFloat(row[12]) || 0;
-                    const railwayFreight = parseFloat(row[13]) || 0;
-                    const gcv = parseFloat(row[11]) || 1;
+                    const coalCost = parseFloat(row[13]) || 0;
+                    const railwayFreight = parseFloat(row[14]) || 0;
+                    const gcvEq = parseFloat(row[11]) || 1;
+                    const gcvArb = parseFloat(row[12]) || 1;
                     const plantName = row[1] || 'PSPCL';
                     
                     // Determine SHR based on consolidation
@@ -3828,18 +3995,22 @@ function QCExportToExcel() {
                     }
                     
                     switch (col.index) {
-                        case 15: // Landed Cost Rs/MT
+                        case 16: // Landed Cost Rs/MT
                             value = coalCost + railwayFreight;
                             break;
-                        case 16: // Landed Cost Rs/Mcal
+                        case 17: // Landed Cost Eq Basis Rs/Mcal
                             const landedCostPerMT = coalCost + railwayFreight;
-                            value = gcv > 0 ? landedCostPerMT / gcv : 0;
+                            value = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
                             break;
-                        case 17: // Per Unit Cost
-                            const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
-                            value = shr * landedCostPerMcal / 1000;
+                        case 18: // Landed Cost ARB Basis Rs/Mcal
+                            const landedCostPerMT2 = coalCost + railwayFreight;
+                            value = gcvArb > 0 ? landedCostPerMT2 / gcvArb : 0;
                             break;
-                        case 18: // Total Amount (Rs. Crore)
+                        case 19: // Per Unit Cost
+                            const landedCostEqMcal = gcvEq > 0 ? (coalCost + railwayFreight) / gcvEq : 0;
+                            value = shr * landedCostEqMcal / 1000;
+                            break;
+                        case 20: // Total Amount (Rs. Crore)
                             const qtyReceived = parseFloat(row[4]) || 0;
                             const landedCostTotal = coalCost + railwayFreight;
                             value = (qtyReceived * landedCostTotal) / 100;
@@ -3864,26 +4035,30 @@ function QCExportToExcel() {
                         return 'Grand Total';
                     } else if (col.index === 2) {
                         return '';
-                    } else if (col.index <= 14) {
+                    } else if (col.index <= 15) {
                         const val = parseFloat(totalRow[col.index]);
                         return !isNaN(val) ? val : '';
                     } else {
                         // Calculate extended columns for total
-                        const coalCost = parseFloat(totalRow[12]) || 0;
-                        const railwayFreight = parseFloat(totalRow[13]) || 0;
-                        const gcv = parseFloat(totalRow[11]) || 1;
+                        const coalCost = parseFloat(totalRow[13]) || 0;
+                        const railwayFreight = parseFloat(totalRow[14]) || 0;
+                        const gcvEq = parseFloat(totalRow[11]) || 1;
+                        const gcvArb = parseFloat(totalRow[12]) || 1;
                         const shr = getWeightedAverageSHRForPlant('PSPCL');
                         
                         switch (col.index) {
-                            case 15:
-                                return coalCost + railwayFreight;
                             case 16:
-                                const landedCostPerMT = coalCost + railwayFreight;
-                                return gcv > 0 ? landedCostPerMT / gcv : 0;
+                                return coalCost + railwayFreight;
                             case 17:
-                                const landedCostPerMcal = gcv > 0 ? (coalCost + railwayFreight) / gcv : 0;
-                                return shr * landedCostPerMcal / 1000;
+                                const landedCostEqMcal = gcvEq > 0 ? (coalCost + railwayFreight) / gcvEq : 0;
+                                return landedCostEqMcal;
                             case 18:
+                                const landedCostArbMcal = gcvArb > 0 ? (coalCost + railwayFreight) / gcvArb : 0;
+                                return landedCostArbMcal;
+                            case 19:
+                                const landedCostEqMcal2 = gcvEq > 0 ? (coalCost + railwayFreight) / gcvEq : 0;
+                                return shr * landedCostEqMcal2 / 1000;
+                            case 20:
                                 const qtyReceived = parseFloat(totalRow[4]) || 0;
                                 const landedCostTotal = coalCost + railwayFreight;
                                 return (qtyReceived * landedCostTotal) / 100;
@@ -4144,14 +4319,16 @@ function QCPopulateSpecialReportSelections() {
         { key: 'Qty Dispatched (MT)', label: 'Qty Dispatched (MT)', checked: true },
         { key: 'Qty Received (MT)', label: 'Qty Received (MT)', checked: true },
         { key: 'Rakes Received', label: 'Rakes Received', checked: true },
-        { key: 'GCV (Kcal/Kg)', label: 'GCV (Kcal/Kg)', checked: true },
+        { key: 'GCV Eq. (Kcal/Kg)', label: 'GCV Eq. (Kcal/Kg)', checked: true },
+        { key: 'GCV ARB (Kcal/Kg)', label: 'GCV ARB (Kcal/Kg)', checked: true },
         { key: 'Ash %', label: 'Ash %', checked: true },
         { key: 'Moisture %', label: 'Moisture %', checked: true },
         { key: 'Coal Cost (Rs/MT)', label: 'Coal Cost (Rs/MT)', checked: true },
         { key: 'Railway Freight (Rs/MT)', label: 'Railway Freight (Rs/MT)', checked: true },
         { key: 'Transit Loss %', label: 'Transit Loss %', checked: true },
-        { key: 'Landed Cost Rs/MT', label: 'Landed Cost Rs/MT', checked: true },
-        { key: 'Landed Cost Rs/Mcal', label: 'Landed Cost Rs/Mcal', checked: true },
+        { key: 'Landed Cost (Rs/MT)', label: 'Landed Cost (Rs/MT)', checked: true },
+        { key: 'Landed Cost Eq Basis (Rs/Mcal)', label: 'Landed Cost Eq Basis (Rs/Mcal)', checked: true },
+        { key: 'Landed Cost ARB Basis (Rs/Mcal)', label: 'Landed Cost ARB Basis (Rs/Mcal)', checked: true },
         { key: 'Per Unit Cost', label: 'Per Unit Cost', checked: true },
         { key: 'Total Amount (Rs. Crore)', label: 'Total Amount (Rs. Crore)', checked: true }
     ];
@@ -4360,13 +4537,15 @@ function QCCalculateGroupTotals(dataArray) {
         ash: { sum: 0, count: 0, avg: 0 },          // Index 8 - weighted average
         vm: { sum: 0, count: 0, avg: 0 },           // Index 9 - weighted average
         fc: { sum: 0, count: 0, avg: 0 },           // Index 10 - weighted average
-        gcv: { sum: 0, count: 0, avg: 0 },          // Index 11 - weighted average
-        coalCost: { sum: 0, count: 0, avg: 0 },     // Index 12 - weighted average
-        railwayFreight: { sum: 0, count: 0, avg: 0 }, // Index 13 - weighted average
-        distance: { sum: 0, count: 0, avg: 0 },     // Index 14 - weighted average
+        gcv: { sum: 0, count: 0, avg: 0 },          // Index 11 - GCV Eq - weighted average
+        gcvArb: { sum: 0, count: 0, avg: 0 },       // Index 12 - GCV ARB - weighted average (NEW)
+        coalCost: { sum: 0, count: 0, avg: 0 },     // Index 13 - weighted average
+        railwayFreight: { sum: 0, count: 0, avg: 0 }, // Index 14 - weighted average
+        distance: { sum: 0, count: 0, avg: 0 },     // Index 15 - weighted average
         // Extended calculated columns
         landedCostPerMT: { sum: 0, count: 0, avg: 0 },
-        landedCostPerMcal: { sum: 0, count: 0, avg: 0 },
+        landedCostEqMcal: { sum: 0, count: 0, avg: 0 },
+        landedCostArbMcal: { sum: 0, count: 0, avg: 0 },
         perUnitCost: { sum: 0, count: 0, avg: 0 },
         totalAmount: 0
     };
@@ -4377,9 +4556,10 @@ function QCCalculateGroupTotals(dataArray) {
         const qtyDispatched = parseFloat(row[3]) || 0;
         const qtyReceived = parseFloat(row[4]) || 0;
         const rakesReceived = parseFloat(row[5]) || 0;
-        const coalCost = parseFloat(row[12]) || 0;
-        const railwayFreight = parseFloat(row[13]) || 0;
-        const gcv = parseFloat(row[11]) || 1;
+        const coalCost = parseFloat(row[13]) || 0;
+        const railwayFreight = parseFloat(row[14]) || 0;
+        const gcvEq = parseFloat(row[11]) || 1;
+        const gcvArb = parseFloat(row[12]) || 1;
         const plantName = row[1] || 'PSPCL';
         
         // Sum quantities and rakes
@@ -4389,9 +4569,10 @@ function QCCalculateGroupTotals(dataArray) {
         
         // Calculate extended columns for each row
         const landedCostPerMT = coalCost + railwayFreight;
-        const landedCostPerMcal = gcv > 0 ? landedCostPerMT / gcv : 0;
+        const landedCostEqMcal = gcvEq > 0 ? landedCostPerMT / gcvEq : 0;
+        const landedCostArbMcal = gcvArb > 0 ? landedCostPerMT / gcvArb : 0;
         const shr = getWeightedAverageSHRForPlant(plantName);
-        const perUnitCost = shr * landedCostPerMcal / 1000;
+        const perUnitCost = shr * landedCostEqMcal / 1000;
         const totalAmount = (qtyReceived * landedCostPerMT) / 100;
         
         totals.totalAmount += totalAmount;
@@ -4412,10 +4593,11 @@ function QCCalculateGroupTotals(dataArray) {
             addToWeightedAverage(row[8], 'ash', qtyReceived);          // Ash
             addToWeightedAverage(row[9], 'vm', qtyReceived);           // Volatile Matter
             addToWeightedAverage(row[10], 'fc', qtyReceived);          // Fixed Carbon
-            addToWeightedAverage(row[11], 'gcv', qtyReceived);         // GCV
-            addToWeightedAverage(row[12], 'coalCost', qtyReceived);    // Coal Cost
-            addToWeightedAverage(row[13], 'railwayFreight', qtyReceived); // Railway Freight
-            addToWeightedAverage(row[14], 'distance', qtyReceived);    // Distance
+            addToWeightedAverage(row[11], 'gcv', qtyReceived);         // GCV Eq
+            addToWeightedAverage(row[12], 'gcvArb', qtyReceived);      // GCV ARB (NEW)
+            addToWeightedAverage(row[13], 'coalCost', qtyReceived);    // Coal Cost
+            addToWeightedAverage(row[14], 'railwayFreight', qtyReceived); // Railway Freight
+            addToWeightedAverage(row[15], 'distance', qtyReceived);    // Distance
         }
     });
     
@@ -4429,7 +4611,8 @@ function QCCalculateGroupTotals(dataArray) {
     // Calculate extended columns from total values (not weighted averages)
     const totalCoalCost = totals.coalCost.avg || 0;
     const totalRailwayFreight = totals.railwayFreight.avg || 0;
-    const totalGCV = totals.gcv.avg || 1;
+    const totalGCVEq = totals.gcv.avg || 1;
+    const totalGCVArb = totals.gcvArb.avg || 1;
     
     // Landed Cost Rs/MT = Coal Cost + Railway Freight
     totals.landedCostPerMT = {
@@ -4438,19 +4621,26 @@ function QCCalculateGroupTotals(dataArray) {
         avg: totalCoalCost + totalRailwayFreight
     };
     
-    // Landed Cost Rs/Mcal = Landed Cost Rs/MT / GCV
-    totals.landedCostPerMcal = {
+    // Landed Cost Eq Basis Rs/Mcal = Landed Cost Rs/MT / GCV Eq
+    totals.landedCostEqMcal = {
         sum: 0,
         count: 0,
-        avg: totalGCV > 0 ? (totalCoalCost + totalRailwayFreight) / totalGCV : 0
+        avg: totalGCVEq > 0 ? (totalCoalCost + totalRailwayFreight) / totalGCVEq : 0
     };
     
-    // Per Unit Cost Rs/kWh = SHR * Landed Cost Rs/Mcal / 1000
+    // Landed Cost ARB Basis Rs/Mcal = Landed Cost Rs/MT / GCV ARB (NEW)
+    totals.landedCostArbMcal = {
+        sum: 0,
+        count: 0,
+        avg: totalGCVArb > 0 ? (totalCoalCost + totalRailwayFreight) / totalGCVArb : 0
+    };
+    
+    // Per Unit Cost Rs/kWh = SHR * Landed Cost Eq Basis Rs/Mcal / 1000
     const avgSHR = getWeightedAverageSHRForPlant('PSPCL'); // Use average SHR
     totals.perUnitCost = {
         sum: 0,
         count: 0,
-        avg: avgSHR * (totals.landedCostPerMcal.avg) / 1000
+        avg: avgSHR * (totals.landedCostEqMcal.avg) / 1000
     };
     
     // Fix transit loss - multiply by 100 if it's in decimal form
@@ -4715,6 +4905,13 @@ function QCGenerateSpecialReportPDF(reportData, fromDate, toDate, grouping, plan
         const coalCompanyWidth = 18; // mm
         const availableWidth = pageWidth - (2 * margin) - plantNameWidth - coalCompanyWidth; // Total width minus margins minus first two columns
         const visibleColumns = QCGetVisibleColumns(true);
+        // Diagnostic: log which columns are being used for PDF export
+        try {
+            console.log('QCGenerateSpecialReportPDF: reportData.selectedColumns =', reportData.selectedColumns);
+            console.log('QCGenerateSpecialReportPDF: visibleColumns for PDF:', visibleColumns.map(c => ({id: c.id, header: c.header, index: c.index}))); 
+        } catch (e) {
+            console.log('QCGenerateSpecialReportPDF: diagnostics failed', e);
+        }
         const dataColumnCount = visibleColumns.length - 2; // Exclude Plant Name and Coal Company columns
         const dataColumnWidth = Math.floor(availableWidth / dataColumnCount); // Equal width for all data columns
         
@@ -4754,42 +4951,52 @@ function QCGenerateSpecialReportPDF(reportData, fromDate, toDate, grouping, plan
             return visibleColumns.map(col => {
                 let value = '';
                 
-                if (col.index <= 14) {
+                if (col.index <= 15) {
                     value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
                     if (col.index === 1) value = shortenPlantName(value);
-                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                    if (col.index >= 3 && col.index <= 15 && !isNaN(parseFloat(value))) {
                         if (col.index === 3 || col.index === 4) {
                             value = parseFloat(value).toFixed(4);
+                        } else if (col.index === 11 || col.index === 12) {
+                            value = parseFloat(value).toFixed(0); // GCV columns as integers
+                        } else if (col.index === 13 || col.index === 14) {
+                            value = parseFloat(value).toFixed(0); // Coal Cost and Freight as integers
                         } else {
                             value = parseFloat(value).toFixed(2);
                         }
                     }
                 } else {
                     // Calculate extended columns
-                    const coalCost = parseFloat(row[12]) || 0;
-                    const railwayFreight = parseFloat(row[13]) || 0;
-                    const gcv = parseFloat(row[11]) || 1;
+                    const coalCost = parseFloat(row[13]) || 0;
+                    const railwayFreight = parseFloat(row[14]) || 0;
+                    const gcvEq = parseFloat(row[11]) || 1;
+                    const gcvArb = parseFloat(row[12]) || 1;
                     const qtyReceived = parseFloat(row[4]) || 0;
                     const plantName = row[1] || 'PSPCL';
                     
                     switch (col.index) {
-                        case 15: // Landed Cost Rs/MT
+                        case 16: // Landed Cost Rs/MT
                             const landedCostPerMT = coalCost + railwayFreight;
                             value = landedCostPerMT.toFixed(0);
                             break;
-                        case 16: // Landed Cost Rs/Mcal
+                        case 17: // Landed Cost Eq Basis Rs/Mcal
                             const landedCostPerMT2 = coalCost + railwayFreight;
-                            const landedCostPerMcal = gcv > 0 ? landedCostPerMT2 / gcv : 0;
-                            value = landedCostPerMcal.toFixed(4);
+                            const landedCostEqMcal = gcvEq > 0 ? landedCostPerMT2 / gcvEq : 0;
+                            value = landedCostEqMcal.toFixed(4);
                             break;
-                        case 17: // Per Unit Cost Rs./Kwh
+                        case 18: // Landed Cost ARB Basis Rs/Mcal
+                            const landedCostPerMT2b = coalCost + railwayFreight;
+                            const landedCostArbMcal = gcvArb > 0 ? landedCostPerMT2b / gcvArb : 0;
+                            value = landedCostArbMcal.toFixed(4);
+                            break;
+                        case 19: // Per Unit Cost Rs./Kwh
                             const landedCostPerMT3 = coalCost + railwayFreight;
-                            const landedCostPerMcal3 = gcv > 0 ? landedCostPerMT3 / gcv : 0;
+                            const landedCostEqMcal3 = gcvEq > 0 ? landedCostPerMT3 / gcvEq : 0;
                             const shr = getWeightedAverageSHRForPlant(plantName);
-                            const perUnitCost = shr * landedCostPerMcal3 / 1000;
+                            const perUnitCost = shr * landedCostEqMcal3 / 1000;
                             value = perUnitCost.toFixed(3);
                             break;
-                        case 18: // Total Amount (Rs. Crore)
+                        case 20: // Total Amount (Rs. Crore)
                             const landedCostPerMT4 = coalCost + railwayFreight;
                             const totalAmount = (qtyReceived * landedCostPerMT4) / 100; // Convert to crores
                             value = totalAmount.toFixed(2);
@@ -4820,14 +5027,16 @@ function QCGenerateSpecialReportPDF(reportData, fromDate, toDate, grouping, plan
                     case 8: value = totals.ash.avg.toFixed(2); break;            // Ash - Weighted Avg
                     case 9: value = totals.vm.avg.toFixed(2); break;             // Volatile Matter - Weighted Avg
                     case 10: value = totals.fc.avg.toFixed(2); break;            // Fixed Carbon - Weighted Avg
-                    case 11: value = totals.gcv.avg.toFixed(0); break;           // GCV - Weighted Avg
-                    case 12: value = totals.coalCost.avg.toFixed(0); break;      // Coal Cost - Weighted Avg
-                    case 13: value = totals.railwayFreight.avg.toFixed(0); break; // Railway Freight - Weighted Avg
-                    case 14: value = totals.distance.avg.toFixed(0); break;      // Distance - Weighted Avg
-                    case 15: value = totals.landedCostPerMT.avg.toFixed(0); break; // Landed Cost Rs/MT - Weighted Avg
-                    case 16: value = totals.landedCostPerMcal.avg.toFixed(4); break; // Landed Cost Rs/Mcal - Weighted Avg
-                    case 17: value = totals.perUnitCost.avg.toFixed(3); break;   // Per Unit Cost - Weighted Avg
-                    case 18: value = totals.totalAmount.toFixed(2); break;       // Total Amount - Sum
+                    case 11: value = totals.gcv.avg.toFixed(0); break;           // GCV Eq - Weighted Avg
+                    case 12: value = totals.gcvArb.avg.toFixed(0); break;        // GCV ARB - Weighted Avg (NEW)
+                    case 13: value = totals.coalCost.avg.toFixed(0); break;      // Coal Cost - Weighted Avg
+                    case 14: value = totals.railwayFreight.avg.toFixed(0); break; // Railway Freight - Weighted Avg
+                    case 15: value = totals.distance.avg.toFixed(0); break;      // Distance - Weighted Avg
+                    case 16: value = totals.landedCostPerMT.avg.toFixed(0); break; // Landed Cost Rs/MT - Weighted Avg
+                    case 17: value = totals.landedCostEqMcal.avg.toFixed(4); break; // Landed Cost Eq Basis Rs/Mcal - Weighted Avg
+                    case 18: value = totals.landedCostArbMcal.avg.toFixed(4); break; // Landed Cost ARB Basis Rs/Mcal - Weighted Avg (NEW)
+                    case 19: value = totals.perUnitCost.avg.toFixed(3); break;   // Per Unit Cost - Weighted Avg
+                    case 20: value = totals.totalAmount.toFixed(2); break;       // Total Amount - Sum
                     default: value = '';
                 }
                 
@@ -6061,6 +6270,13 @@ function QCGenerateSpecialReportExcel(reportData, fromDate, toDate, grouping, pl
         
         // Get visible columns and prepare data
         const visibleColumns = QCGetVisibleColumns(true);
+        // Diagnostic: log which columns are used for Excel export
+        try {
+            console.log('QCGenerateSpecialReportExcel: reportData.selectedColumns =', reportData.selectedColumns);
+            console.log('QCGenerateSpecialReportExcel: visibleColumns for Excel:', visibleColumns.map(c => ({id: c.id, header: c.header, index: c.index}))); 
+        } catch (e) {
+            console.log('QCGenerateSpecialReportExcel: diagnostics failed', e);
+        }
         const headers = visibleColumns.map(col => col.header);
         
         // Prepare Excel data
@@ -6085,38 +6301,44 @@ function QCGenerateSpecialReportExcel(reportData, fromDate, toDate, grouping, pl
             return visibleColumns.map(col => {
                 let value = '';
                 
-                if (col.index <= 14) {
+                if (col.index <= 15) {
                     value = row[col.index] !== undefined && row[col.index] !== '' ? row[col.index] : '';
                     if (col.index === 1) value = shortenPlantName(value);
-                    if (col.index >= 3 && col.index <= 14 && !isNaN(parseFloat(value))) {
+                    if (col.index >= 3 && col.index <= 15 && !isNaN(parseFloat(value))) {
                         value = parseFloat(value);
                     }
                 } else {
                     // Calculate extended columns
-                    const coalCost = parseFloat(row[12]) || 0;
-                    const railwayFreight = parseFloat(row[13]) || 0;
-                    const gcv = parseFloat(row[11]) || 1;
+                    const coalCost = parseFloat(row[13]) || 0;
+                    const railwayFreight = parseFloat(row[14]) || 0;
+                    const gcvEq = parseFloat(row[11]) || 1;
+                    const gcvArb = parseFloat(row[12]) || 1;
                     const qtyReceived = parseFloat(row[4]) || 0;
                     const plantName = row[1] || 'PSPCL';
                     
                     switch (col.index) {
-                        case 15: // Landed Cost Rs/MT
+                        case 16: // Landed Cost Rs/MT
                             const landedCostPerMT = coalCost + railwayFreight;
                             value = landedCostPerMT;
                             break;
-                        case 16: // Landed Cost Rs/Mcal
+                        case 17: // Landed Cost Eq Basis Rs/Mcal
                             const landedCostPerMT2 = coalCost + railwayFreight;
-                            const landedCostPerMcal = gcv > 0 ? landedCostPerMT2 / gcv : 0;
-                            value = landedCostPerMcal;
+                            const landedCostEqMcal = gcvEq > 0 ? landedCostPerMT2 / gcvEq : 0;
+                            value = landedCostEqMcal;
                             break;
-                        case 17: // Per Unit Cost Rs./Kwh
+                        case 18: // Landed Cost ARB Basis Rs/Mcal
+                            const landedCostPerMT2b = coalCost + railwayFreight;
+                            const landedCostArbMcal = gcvArb > 0 ? landedCostPerMT2b / gcvArb : 0;
+                            value = landedCostArbMcal;
+                            break;
+                        case 19: // Per Unit Cost Rs./Kwh
                             const landedCostPerMT3 = coalCost + railwayFreight;
-                            const landedCostPerMcal3 = gcv > 0 ? landedCostPerMT3 / gcv : 0;
+                            const landedCostEqMcal3 = gcvEq > 0 ? landedCostPerMT3 / gcvEq : 0;
                             const shr = getWeightedAverageSHRForPlant(plantName);
-                            const perUnitCost = shr * landedCostPerMcal3 / 1000;
+                            const perUnitCost = shr * landedCostEqMcal3 / 1000;
                             value = perUnitCost;
                             break;
-                        case 18: // Total Amount (Rs. Crore)
+                        case 20: // Total Amount (Rs. Crore)
                             const landedCostPerMT4 = coalCost + railwayFreight;
                             const totalAmount = (qtyReceived * landedCostPerMT4) / 100; // Convert to crores
                             value = totalAmount;
@@ -6147,14 +6369,16 @@ function QCGenerateSpecialReportExcel(reportData, fromDate, toDate, grouping, pl
                     case 8: value = totals.ash.avg; break;                    // Ash - Weighted Avg
                     case 9: value = totals.vm.avg; break;                     // Volatile Matter - Weighted Avg
                     case 10: value = totals.fc.avg; break;                    // Fixed Carbon - Weighted Avg
-                    case 11: value = totals.gcv.avg; break;                   // GCV - Weighted Avg
-                    case 12: value = totals.coalCost.avg; break;              // Coal Cost - Weighted Avg
-                    case 13: value = totals.railwayFreight.avg; break;        // Railway Freight - Weighted Avg
-                    case 14: value = totals.distance.avg; break;              // Distance - Weighted Avg
-                    case 15: value = totals.landedCostPerMT.avg; break;       // Landed Cost Rs/MT - Weighted Avg
-                    case 16: value = totals.landedCostPerMcal.avg; break;     // Landed Cost Rs/Mcal - Weighted Avg
-                    case 17: value = totals.perUnitCost.avg; break;           // Per Unit Cost - Weighted Avg
-                    case 18: value = totals.totalAmount; break;               // Total Amount - Sum
+                    case 11: value = totals.gcv.avg; break;                   // GCV Eq - Weighted Avg
+                    case 12: value = totals.gcvArb.avg; break;                // GCV ARB - Weighted Avg
+                    case 13: value = totals.coalCost.avg; break;              // Coal Cost - Weighted Avg
+                    case 14: value = totals.railwayFreight.avg; break;        // Railway Freight - Weighted Avg
+                    case 15: value = totals.distance.avg; break;              // Distance - Weighted Avg
+                    case 16: value = totals.landedCostPerMT.avg; break;       // Landed Cost Rs/MT - Weighted Avg
+                    case 17: value = totals.landedCostEqMcal.avg; break;      // Landed Cost Eq Basis Rs/Mcal - Weighted Avg
+                    case 18: value = totals.landedCostArbMcal.avg; break;     // Landed Cost ARB Basis Rs/Mcal - Weighted Avg
+                    case 19: value = totals.perUnitCost.avg; break;           // Per Unit Cost - Weighted Avg
+                    case 20: value = totals.totalAmount; break;               // Total Amount - Sum
                     default: value = '';
                 }
                 
