@@ -496,9 +496,9 @@ function getWeightedAverageSHRForPlant(plant) {
         // Get data from correct columns based on headers:
         // Column A (0): Month
         // Column B (1): Plant  
-        // Column C (2): SHR (Kcal/Kwh)
+        // Column C (2): SHR (kcal/Kwh)
         // Column D (3): Specific Coal Consumption (Kg/Kwh)
-        // Column E (4): Units Generated (Lus)
+        // Column E (4): Units Generated (LUs)
         
         const rowMonth = row[0];
         const rowPlant = (typeof row[1] === 'object' && row[1].v !== undefined) ? 
@@ -962,106 +962,101 @@ function showQualityCostAnalysis() {
 // Populate month dropdowns - SIMPLE VERSION
 function QCPopulateMonthDropdowns() {
     console.log("QCPopulateMonthDropdowns: Starting");
-    
+
     const months = getUniqueMonths();
     console.log("QCPopulateMonthDropdowns: Got months array:", months);
-    
+
     const startDropdown = document.getElementById('QCStartMonth');
     const endDropdown = document.getElementById('QCEndMonth');
-    
-    console.log("Dropdowns found:", !!startDropdown, !!endDropdown);
-    
+
     if (!startDropdown || !endDropdown) {
         console.log("QCPopulateMonthDropdowns: Dropdown elements not found");
         return;
     }
-    
+
     if (!months || months.length === 0) {
         console.log("QCPopulateMonthDropdowns: No months data");
         startDropdown.innerHTML = '<option value="">No data available</option>';
         endDropdown.innerHTML = '<option value="">No data available</option>';
         return;
     }
-    
+
     // Clear existing options
     startDropdown.innerHTML = '<option value="">Select Start Month</option>';
     endDropdown.innerHTML = '<option value="">Select End Month</option>';
-    
-    console.log("QCPopulateMonthDropdowns: Processing", months.length, "months");
-    
+
     // Add each month as an option
-    months.forEach((month, index) => {
-        console.log(`Processing month ${index}:`, month);
+    months.forEach(month => {
         const displayText = formatMonthForDisplay(month);
-        console.log(`Display text for month ${index}:`, displayText);
-        
-        // Skip invalid months
-        if (displayText === 'Invalid Date') {
-            console.log(`Skipping invalid month ${index}`);
-            return;
-        }
-        
+        if (displayText === 'Invalid Date') return;
+
         const option1 = document.createElement('option');
         option1.value = month;
         option1.textContent = displayText;
         startDropdown.appendChild(option1);
-        
+
         const option2 = document.createElement('option');
         option2.value = month;
         option2.textContent = displayText;
         endDropdown.appendChild(option2);
-        
-        console.log(`Added option ${index}: ${displayText}`);
     });
-    
-    console.log("QCPopulateMonthDropdowns: Finished adding options");
-    console.log("Start dropdown options count:", startDropdown.children.length);
-    console.log("End dropdown options count:", endDropdown.children.length);
-    
-    // AUTO-SELECT MONTHS if we have valid options
-    if (months.length > 0) {
-        // Remove invalid options from our months array for selection
-        const validMonths = months.filter(month => {
-            const displayText = formatMonthForDisplay(month);
-            return displayText !== 'Invalid Date';
+
+    // AUTO-SELECT MONTHS
+    const validMonths = months.filter(m => formatMonthForDisplay(m) !== 'Invalid Date');
+
+    if (validMonths.length > 0) {
+        let defaultStartMonth = null;
+        let defaultEndMonth = null;
+
+        // --- Step 1: sort months chronologically ---
+        const sortedMonths = validMonths.slice().sort((a, b) => {
+            const ma = a.match(/Date\((\d+),(\d+),1\)/);
+            const mb = b.match(/Date\((\d+),(\d+),1\)/);
+            if (!ma || !mb) return 0;
+            const ya = parseInt(ma[1], 10), maNum = parseInt(ma[2], 10);
+            const yb = parseInt(mb[1], 10), mbNum = parseInt(mb[2], 10);
+            return ya === yb ? maNum - mbNum : ya - yb;
         });
-        
-        console.log("QCPopulateMonthDropdowns: Valid months for auto-selection:", validMonths.length);
-        
-        if (validMonths.length > 0) {
-            // Default to 2 quarters back: Jan 2025 and Mar 2025
-            let defaultStartMonth = null;
-            let defaultEndMonth = null;
-            
-            // Look for Jan 2025 (Date(2025,0,1)) and Mar 2025 (Date(2025,2,1))
-            const jan2025Pattern = /Date\(2025,0,1\)/;
-            const mar2025Pattern = /Date\(2025,2,1\)/;
-            
-            validMonths.forEach(month => {
-                if (jan2025Pattern.test(month)) {
-                    defaultStartMonth = month;
-                }
-                if (mar2025Pattern.test(month)) {
-                    defaultEndMonth = month;
-                }
-            });
-            
-            // If Jan 2025 and Mar 2025 are not found, fallback to first and last available months
-            if (!defaultStartMonth || !defaultEndMonth) {
-                console.log("QCPopulateMonthDropdowns: Jan 2025 or Mar 2025 not found, using first and last available months");
-                defaultStartMonth = validMonths[0];
-                defaultEndMonth = validMonths[validMonths.length - 1];
-            }
-            
-            console.log("QCPopulateMonthDropdowns: Auto-selecting:", defaultStartMonth, "to", defaultEndMonth);
-            
-            startDropdown.value = defaultStartMonth;
-            endDropdown.value = defaultEndMonth;
-            
-            // Trigger the render after auto-selection
-            console.log("QCPopulateMonthDropdowns: Triggering table render after auto-selection");
-            setTimeout(() => QCRenderTables(), 100);
+
+        // --- Step 2: find latest FY present ---
+        const lastMonthStr = sortedMonths[sortedMonths.length - 1];
+        const lastMatch = lastMonthStr.match(/Date\((\d+),(\d+),1\)/);
+        let fyYear;
+        if (lastMatch) {
+            const lastYear = parseInt(lastMatch[1], 10);
+            const lastMonth = parseInt(lastMatch[2], 10);
+            // If last month is Jan–Mar, FY started previous April
+            fyYear = lastMonth <= 2 ? lastYear - 1 : lastYear;
         }
+
+        // --- Step 3: filter months belonging to that FY ---
+        const fyMonths = sortedMonths.filter(m => {
+            const match = m.match(/Date\((\d+),(\d+),1\)/);
+            if (!match) return false;
+            const year = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10);
+            return (year === fyYear && month >= 3) || (year === fyYear + 1 && month <= 2);
+        });
+
+        if (fyMonths.length > 0) {
+            // Start = April of FY if present, else first FY month
+            const aprilPattern = new RegExp(`Date\\(${fyYear},3,1\\)`);
+            defaultStartMonth = fyMonths.find(m => aprilPattern.test(m)) || fyMonths[0];
+            // End = latest available month in FY
+            defaultEndMonth = fyMonths[fyMonths.length - 1];
+        } else {
+            // Fallback: first and last overall
+            defaultStartMonth = sortedMonths[0];
+            defaultEndMonth = sortedMonths[sortedMonths.length - 1];
+        }
+
+        console.log("QCPopulateMonthDropdowns: Auto-selecting:", defaultStartMonth, "to", defaultEndMonth);
+
+        startDropdown.value = defaultStartMonth;
+        endDropdown.value = defaultEndMonth;
+
+        // Trigger render after auto-selection
+        setTimeout(() => QCRenderTables(), 100);
     }
 }
 
@@ -2511,7 +2506,7 @@ function QCRenderSummaryTable(processedData) {
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-start"><strong>Specific Coal Consumption (Kg/kWh)</strong></td>`;
+                                <td class="text-start"><strong>Specific Coal Consumption (kg/kWh)</strong></td>`;
     
     // Add SCC values for each plant
     sortedPlants.forEach(plant => {
@@ -2521,11 +2516,11 @@ function QCRenderSummaryTable(processedData) {
     
     // Calculate SHR/GCV ratio for PSPCL
     const psppclSHRtoGCVRatio = psppclWeightedGCV > 0 ? psppclSHR / psppclWeightedGCV : 0;
-    html += `<td class="text-center">${psppclSHRtoGCVRatio.toFixed(6)}</td>`;
+    html += `<td class="text-center">${psppclSHRtoGCVRatio.toFixed(3)}</td>`;
     
     html += `</tr>
                             <tr>
-                                <td class="text-start"><strong>SHR (Kg/kWh)</strong></td>`;
+                                <td class="text-start"><strong>SHR (kcal/kWh)</strong></td>`;
     
     // Add SHR values for each plant
     sortedPlants.forEach(plant => {
@@ -2538,7 +2533,7 @@ function QCRenderSummaryTable(processedData) {
     
     html += `</tr>
                             <tr>
-                                <td class="text-start"><strong>Units Generated (Lus)</strong></td>`;
+                                <td class="text-start"><strong>Units Generated (LUs)</strong></td>`;
     
     // Add Units Generated for each plant
     sortedPlants.forEach(plant => {
@@ -3440,35 +3435,35 @@ function QCGetSummaryData() {
             summaryData.push({
                 parameter: `${plant} - SCC`,
                 value: data.avgSCC > 0 ? data.avgSCC.toFixed(3) : '-',
-                unit: 'Kg/kWh'
+                unit: 'kg/kWh'
             });
             summaryData.push({
                 parameter: `${plant} - SHR`,
                 value: data.avgSHR > 0 ? data.avgSHR.toFixed(2) : '-',
-                unit: 'Kg/kWh'
+                unit: 'kcal/kWh'
             });
             summaryData.push({
                 parameter: `${plant} - Units Generated`,
                 value: data.totalUnits.toFixed(2),
-                unit: 'Lus'
+                unit: 'LUs'
             });
         });
         
         // Add PSPCL totals
         summaryData.push({
             parameter: 'PSPCL - SCC',
-            value: psppclSHRtoGCVRatio.toFixed(6),
-            unit: 'Kg/kWh'
+            value: psppclSHRtoGCVRatio.toFixed(3),
+            unit: 'kg/kWh'
         });
         summaryData.push({
             parameter: 'PSPCL - SHR',
             value: psppclSHR.toFixed(2),
-            unit: 'Kg/kWh'
+            unit: 'kcal/kWh'
         });
         summaryData.push({
             parameter: 'PSPCL - Total Units Generated',
             value: psppclTotalUnits.toFixed(2),
-            unit: 'Lus'
+            unit: 'LUs'
         });
         summaryData.push({
             parameter: 'PSPCL - Weighted Average GCV',
