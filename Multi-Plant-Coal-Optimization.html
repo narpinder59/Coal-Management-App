@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Multi-Plant Coal Optimization</title>
+  <style>
+    /* Make layout resilient on very small screens */
+    html,body,*,*::before,*::after{box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;margin:0;padding:20px;transition:background .3s,color .3s}
+    body.night{background:#f3f7fb;color:#062029}
+    body.night .plant-card{background:#071426;border:1px solid rgba(255,255,255,0.08);box-shadow:0 4px 12px rgba(0,0,0,0.6);color:#e6eef8}
+    body.night .row label{color:#cfe6ff}
+    /* Make inputs lighter in night mode so they are visible without focus */
+    body.night input, body.night select, body.night .inp{background:#eaf6ff;color:#062029;border-color:#78a9c9}
+    .resultCard{padding:8px;border-radius:4px;border:1px dashed #ddd;background:#fafafa;color:#222}
+    body.night .resultCard{background:#07101a;color:#e6eef8;border-color:rgba(255,255,255,0.08)}
+    .bestOption{margin-top:6px;padding:6px;border-radius:4px}
+    .bestOption.bestA{background:#e9f7ef;border:1px solid #c3e6cb;color:#0b3a1a}
+    .bestOption.bestB{background:#fff6e6;border:1px solid #ffe0a3;color:#6a3b00}
+    body.night .bestOption.bestA{background:#0f422b;border:1px solid rgba(0,0,0,0.2);color:#cfe6d6}
+    body.night .bestOption.bestB{background:#4a3518;border:1px solid rgba(0,0,0,0.2);color:#ffeccf}
+    .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .blending-icon{display:flex;align-items:center;gap:8px}
+    .mixer{width:46px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#222;font-weight:700}
+    /* mesh icon grid */
+    .mesh{display:grid;grid-template-columns:repeat(4,6px);grid-gap:4px}
+    .mesh .cell{width:6px;height:6px;border-radius:2px;background:rgba(0,0,0,0.15);box-shadow:0 0 6px rgba(0,0,0,0.05) inset}
+    .mesh .cell.run{animation:runLight 1.6s linear infinite}
+    @keyframes runLight{0%{background:#ffd700;box-shadow:0 0 8px #ffd700}25%{background:#ffb84d}50%{background:#ffd700}75%{background:#ffb84d}100%{background:#ffd700}}
+    body.night .mesh .cell{background:rgba(255,255,255,0.08)}
+    body.night .mixer{color:#fff}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .plants{display:flex;flex-wrap:wrap;gap:12px}
+    .plant-card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:12px;width:380px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+    .plant-card h3{margin:0 0 8px 0}
+    .row{display:flex;gap:8px;margin-bottom:6px}
+    .row label{flex:0 0 140px;font-size:13px;color:#333}
+    .row input, .row select{flex:1;padding:6px;border:1px solid #ccc;border-radius:3px}
+    .results{margin-top:16px}
+    .btn{padding:8px 10px;border-radius:4px;border:0;background:#1976d2;color:#fff;cursor:pointer}
+    .btn.secondary{background:#6c757d}
+    .removeBtn{background:#d9534f;color:#fff;border:0}
+    .resetBtn{background:#f0ad4e;color:#000;border:0}
+    .chosen{background:#e9f7ef;border-color:#c3e6cb}
+    .small{font-size:12px;padding:6px}
+    /* Mobile responsiveness */
+    @media (max-width:600px){
+      body{padding:10px}
+      .plant-card{width:100%}
+      /* allow flex items to shrink and wrap so nothing forces horizontal scroll */
+      .plant-card, .row label, .row input, .row select, .header, .header > div, .plants {min-width:0}
+      .header{flex-wrap:wrap}
+      .header > div:last-child{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+      /* Keep label and input on the same line on mobile: smaller label width and centered alignment */
+      .row{flex-direction:row;align-items:center;gap:8px}
+      .row label{flex:0 0 120px;font-size:13px;margin-bottom:0}
+      .row input, .row select{flex:1}
+      .header{flex-direction:column;align-items:flex-start;gap:8px}
+      .header .blending-icon{width:100%;justify-content:space-between}
+    }
+    /* Ensure inputs can shrink to avoid overflow */
+    .row input, .row select {min-width:0}
+  </style>
+  <!-- html2canvas and jsPDF for export features -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="blending-icon"><div class="mixer"><div class="mesh">
+        <div class="cell run"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell run"></div><div class="cell"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell"></div><div class="cell run"></div><div class="cell"></div>
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell run"></div>
+      </div></div><div style="font-weight:700;font-size:18px">Multi-Plant Coal Optimization</div></div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="backBtn" class="btn secondary small" onclick="goBackToCalculators()">◀ Back</button>
+      <button id="nightToggle" class="btn secondary small">🌙</button>
+      <button id="exportPdf" class="btn small">Export PDF</button>
+      <button id="exportJpg" class="btn small">Export JPG</button>
+      <button id="exportCsv" class="btn small">Export CSV</button>
+      <button id="exportXlsx" class="btn small">Export XLSX</button>
+    </div>
+  </div>
+  <div id="exportArea">
+    <div class="toolbar">
+      <button id="addPlantBtn" class="btn">Add Plant</button>
+      <button id="resetBtn" class="btn resetBtn">Reset</button>
+    </div>
+
+    <div id="plantsContainer" class="plants"></div>
+
+    <div id="globalResults" class="results"></div>
+  </div>
+
+  <script>
+    // Presets provided by user
+    const PRESETS = {
+      NPL: {
+        name:'NPL', capacity:1400, plf:85, normativeGCV:3800, SHR:2262,
+        FSA_qty_lakh:47.15, FSA_gcv:3800,
+        FLEXI_gcv:3800, FLEXI_cost:6171,
+        PACH_gcv:4128, PACH_cost:6244
+      },
+      TSPL: {
+        name:'TSPL', capacity:1980, plf:80, normativeGCV:3800, SHR:2400,
+        FSA_qty_lakh:55.43, FSA_gcv:3342,
+        FLEXI_gcv:3500, FLEXI_cost:6065,
+        PACH_gcv:4128, PACH_cost:6330
+      }
+      ,PSPCL: {
+        name:'PSPCL', capacity:2300, plf:80, normativeGCV:4100, SHR:2700,
+        FSA_qty_lakh:57.01, FSA_gcv:4100,
+        FLEXI_gcv:4000, FLEXI_cost:6000,
+        PACH_gcv:4128, PACH_cost:5525
+      }
+    };
+
+    let plantIdCounter = 0;
+
+    function createPlantCard(preset){
+      plantIdCounter++;
+      const id = plantIdCounter;
+      const card = document.createElement('div');
+      card.className = 'plant-card';
+      card.dataset.id = id;
+
+      card.innerHTML = `
+        <h3>Plant <span class="plant-title"></span></h3>
+        <div class="row"><label>Plant Name</label><input class="inp plant_name" type="text" placeholder="Enter plant name"></div>
+        <div class="row"><label>Preset</label>
+          <select class="preset-select">
+            <option value="">--none--</option>
+            <option value="NPL">NPL</option>
+            <option value="TSPL">TSPL</option>
+            <option value="PSPCL">PSPCL</option>
+            <option value="CUSTOM">Custom (blank)</option>
+          </select>
+        </div>
+
+        <div class="row"><label>Generation Capacity (MW)</label><input class="inp capacity" type="number" step="1"></div>
+        <div class="row"><label>Plant PLF (%)</label><input class="inp plf" type="number" step="0.1"></div>
+        <div class="row"><label>Normative GCV (kcal/kg)</label><input class="inp normativeGCV" type="number" step="1"></div>
+        <div class="row"><label>SHR (kcal/kWh)</label><input class="inp SHR" type="number" step="1"></div>
+
+        <hr>
+        <strong>FSA Coal</strong>
+        <div class="row"><label>FSA Qty (Lakh MT)</label><input class="inp fsa_qty" type="number" step="0.01"></div>
+        <div class="row"><label>FSA GCV (kcal/kg)</label><input class="inp fsa_gcv" type="number" step="1"></div>
+        <div class="row"><label>FSA Landed Cost (Rs/MT)</label><input class="inp fsa_cost" type="number" step="1" placeholder=""></div>
+
+        <hr>
+        <strong>Option A <span class="optA_label">(Coal Name)</span></strong>
+        <div class="row"><label>Option A Name</label><input class="inp optA_name" type="text" placeholder=""></div>
+        <div class="row"><label>GCV (kcal/kg)</label><input class="inp optA_gcv" type="number" step="1"></div>
+        <div class="row"><label>Landed Cost (Rs/MT)</label><input class="inp optA_cost" type="number" step="1"></div>
+
+        <hr>
+        <strong>Option B <span class="optB_label">(Coal Name)</span></strong>
+        <div class="row"><label>Option B Name</label><input class="inp optB_name" type="text" placeholder=""></div>
+        <div class="row"><label>GCV (kcal/kg)</label><input class="inp optB_gcv" type="number" step="1"></div>
+        <div class="row"><label>Landed Cost (Rs/MT)</label><input class="inp optB_cost" type="number" step="1"></div>
+
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <button class="btn removeBtn small">Remove</button>
+        </div>
+
+        <div class="resultArea" style="margin-top:10px"></div>
+      `;
+
+
+      // Populate if preset
+      if(preset){
+        setTimeout(()=> applyPresetToCard(card,preset),0);
+      }
+
+      // Events
+      card.querySelector('.preset-select').addEventListener('change', (e)=>{
+        const val = e.target.value;
+        if(val === 'CUSTOM'){
+          // clear fields for custom
+          const inputs = card.querySelectorAll('.inp');
+          inputs.forEach(i=>{ if(!i.classList.contains('preset-select')) i.value = ''; });
+          card.querySelector('.plant-title').textContent = '';
+          updateGlobalResults();
+          return;
+        }
+        if(val && PRESETS[val]) applyPresetToCard(card, PRESETS[val]);
+      });
+
+      // Live calculate on any input change inside the card
+      card.addEventListener('input', (e)=>{
+        // If plant name changed, update header
+        const pname = card.querySelector('.plant_name').value || '';
+        card.querySelector('.plant-title').textContent = pname;
+
+        // If name inputs changed, update labels
+        const optAname = card.querySelector('.optA_name').value || 'Option A';
+        const optBname = card.querySelector('.optB_name').value || 'Option B';
+        const optALabel = card.querySelector('.optA_label');
+        const optBLabel = card.querySelector('.optB_label');
+        if(optALabel) optALabel.textContent = `(${optAname})`;
+        if(optBLabel) optBLabel.textContent = `(${optBname})`;
+
+        // Recalculate and render
+        try{
+          const res = calculateForCard(card);
+          renderResultArea(card, res);
+          updateGlobalResults();
+        }catch(err){/* ignore calculation errors until fields valid */}
+      });
+
+      card.querySelector('.removeBtn').addEventListener('click', ()=>{
+          const pname = card.querySelector('.plant-title').textContent || 'this plant';
+          if(!confirm(`Remove ${pname}?`)) return;
+          card.remove();
+          updateGlobalResults();
+      });
+
+      return card;
+    }
+
+    function applyPresetToCard(card,preset){
+      if(card.querySelector('.plant_name')) card.querySelector('.plant_name').value = preset.name || '';
+      card.querySelector('.plant-title').textContent = preset.name || 'Preset';
+      card.querySelector('.capacity').value = preset.capacity;
+      card.querySelector('.plf').value = preset.plf;
+      card.querySelector('.normativeGCV').value = preset.normativeGCV;
+      card.querySelector('.SHR').value = preset.SHR;
+      card.querySelector('.fsa_qty').value = preset.FSA_qty_lakh;
+      card.querySelector('.fsa_gcv').value = preset.FSA_gcv;
+      card.querySelector('.optA_gcv').value = preset.FLEXI_gcv;
+      card.querySelector('.optA_cost').value = preset.FLEXI_cost;
+      // set option names if present
+      if(card.querySelector('.optA_name')) card.querySelector('.optA_name').value = preset.FLEXI_name || 'FLEXI';
+      if(card.querySelector('.optB_name')) card.querySelector('.optB_name').value = preset.PACH_name || 'Pachhwara';
+      card.querySelector('.optB_gcv').value = preset.PACH_gcv;
+      card.querySelector('.optB_cost').value = preset.PACH_cost;
+
+      // update visible labels and run calculation
+      const optALabel = card.querySelector('.optA_label');
+      const optBLabel = card.querySelector('.optB_label');
+      if(optALabel) optALabel.textContent = `(${card.querySelector('.optA_name').value || 'Option A'})`;
+      if(optBLabel) optBLabel.textContent = `(${card.querySelector('.optB_name').value || 'Option B'})`;
+      try{ const res = calculateForCard(card); renderResultArea(card,res); updateGlobalResults(); }catch(e){}
+    }
+
+    function parseFloatOrZero(v){return v===''||v===null||v===undefined?0:parseFloat(v)||0}
+
+    function calculateForCard(card){
+      // Read inputs
+      const A = parseFloatOrZero(card.querySelector('.capacity').value);
+      const B = parseFloatOrZero(card.querySelector('.plf').value);
+      const C = parseFloatOrZero(card.querySelector('.normativeGCV').value);
+      const D = parseFloatOrZero(card.querySelector('.SHR').value);
+      const G = parseFloatOrZero(card.querySelector('.fsa_qty').value); // Lakh MT
+      const H = parseFloatOrZero(card.querySelector('.fsa_gcv').value);
+      const FSA_cost_per_MT = parseFloatOrZero(card.querySelector('.fsa_cost') ? card.querySelector('.fsa_cost').value : 0);
+      const K_A = parseFloatOrZero(card.querySelector('.optA_gcv').value);
+      const M_A = parseFloatOrZero(card.querySelector('.optA_cost').value);
+      const K_B = parseFloatOrZero(card.querySelector('.optB_gcv').value);
+      const M_B = parseFloatOrZero(card.querySelector('.optB_cost').value);
+
+      // Generation in kWh per year
+      const generation_kWh = 8760 * A * (B / 100) * 1000; // kWh
+
+      // Total energy requirement in kcal
+      const total_kcal = generation_kWh * D;
+
+      // Annual coal requirement in Lakh MT (as per provided formula): E_lakh = (8760*A*(B/100)*D)/(C*100000)
+      const E_lakh = (8760 * A * (B/100) * D) / (C * 100000);
+
+      // FSA energy available
+      const FSA_energy_kcal = G * 1e8 * H; // G Lakh MT -> kg = G*1e5*1000 = G*1e8
+
+      // Balance energy to be arranged
+      const J_kcal = total_kcal - FSA_energy_kcal;
+      const J_positive = Math.max(J_kcal,0);
+
+      // Option calculations helper (returns object)
+      function optionCalc(K_gcv, cost_per_MT){
+        // Quantity in MT = J_kcal / (K_gcv * 1000)
+        const qty_MT = J_positive / (K_gcv * 1000);
+        const qty_lakh = qty_MT / 100000;
+        const annual_cost_rs = qty_MT * cost_per_MT;
+        const annual_cost_crore = annual_cost_rs / 1e7;
+        return {qty_MT, qty_lakh, annual_cost_rs, annual_cost_crore};
+      }
+
+      const optA = optionCalc(K_A || C, M_A || 0);
+      const optB = optionCalc(K_B || C, M_B || 0);
+
+      // Option names
+      const optionAName = (card.querySelector('.optA_name') && card.querySelector('.optA_name').value) || 'Option A';
+      const optionBName = (card.querySelector('.optB_name') && card.querySelector('.optB_name').value) || 'Option B';
+
+      // Determine economical option (lower annual cost)
+      const betterName = (optA.annual_cost_crore <= optB.annual_cost_crore) ? optionAName : optionBName;
+      const saving_crore = Math.abs(optA.annual_cost_crore - optB.annual_cost_crore);
+
+      // FSA quantity and cost
+      const fsa_qty_lakh = G;
+      const fsa_qty_MT = G * 100000; // 1 Lakh MT = 100000 MT
+      const fsa_annual_cost_rs = fsa_qty_MT * FSA_cost_per_MT;
+      const fsa_cost_crore = fsa_annual_cost_rs / 1e7;
+
+      // Compute energy shares in million kcal
+      const fsa_million_kcal = FSA_energy_kcal / 1e6; // million kcal supplied by FSA
+      const opt_million_kcal = J_positive / 1e6; // million kcal to be supplied by option
+      const total_million_kcal = (fsa_million_kcal + opt_million_kcal) || 1;
+
+      // Per-coal cost per million kcal (Rs per million kcal)
+      const fsa_cost_per_million = (fsa_million_kcal > 0) ? (fsa_annual_cost_rs / fsa_million_kcal) : 0;
+      const optA_cost_per_million = (opt_million_kcal > 0) ? (optA.annual_cost_rs / opt_million_kcal) : 0;
+      const optB_cost_per_million = (opt_million_kcal > 0) ? (optB.annual_cost_rs / opt_million_kcal) : 0;
+
+      // Weighted (energy-share) combined cost per million kcal for FSA + Option A/B
+      const combinedA_cost_per_million = (fsa_cost_per_million * fsa_million_kcal + optA_cost_per_million * opt_million_kcal) / total_million_kcal;
+      const combinedB_cost_per_million = (fsa_cost_per_million * fsa_million_kcal + optB_cost_per_million * opt_million_kcal) / total_million_kcal;
+
+      // Generation cost (Rs/kWh) per coal (from landed cost -> Rs/MT formula)
+      const fsa_gen_cost_per_kWh = (H > 0) ? (FSA_cost_per_MT * D / (H * 1000)) : 0;
+      const optA_gen_cost_per_kWh = (K_A > 0) ? (M_A * D / (K_A * 1000)) : 0;
+      const optB_gen_cost_per_kWh = (K_B > 0) ? (M_B * D / (K_B * 1000)) : 0;
+
+      // Weighted combined generation cost (Rs/kWh)
+      const combinedA_gen_cost_per_kWh = (fsa_gen_cost_per_kWh * fsa_million_kcal + optA_gen_cost_per_kWh * opt_million_kcal) / total_million_kcal;
+      const combinedB_gen_cost_per_kWh = (fsa_gen_cost_per_kWh * fsa_million_kcal + optB_gen_cost_per_kWh * opt_million_kcal) / total_million_kcal;
+
+      const combined_diff_gen_cost_per_kWh = combinedA_gen_cost_per_kWh - combinedB_gen_cost_per_kWh;
+
+      // Additional metrics: cost per million kcal and generation cost
+      // cost_per_million_cal = cost_per_MT * 1000 / GCV  (Rs per million kcal)
+      const T_cost_per_million_cal = (K_A > 0) ? (M_A * 1000 / K_A) : 0; // FLEXI
+      const U_cost_per_million_cal = (K_B > 0) ? (M_B * 1000 / K_B) : 0; // Pachhwara
+      // generation cost Rs/kWh = cost_per_MT * D / (GCV * 1000)
+      const V_gen_cost_per_kWh = (K_A > 0) ? (M_A * D / (K_A * 1000)) : 0; // FLEXI
+      const W_gen_cost_per_kWh = (K_B > 0) ? (M_B * D / (K_B * 1000)) : 0; // Pachhwara
+      // Saving per unit as FLEXI - Pachhwara
+      const X_saving_per_kWh = V_gen_cost_per_kWh - W_gen_cost_per_kWh;
+
+      return {
+        plantTitle: card.querySelector('.plant-title').textContent || 'Plant',
+        capacity:A, plf:B, normativeGCV:C, SHR:D,
+        generation_kWh, total_kcal, E_lakh, FSA_energy_kcal, J_kcal: J_positive,
+        FLEXI: optA, Pachhwara: optB, optionAName, optionBName, betterName, saving_crore, fsa_qty_lakh, fsa_cost_crore,
+        fsa_annual_cost_rs: fsa_annual_cost_rs,
+        T_cost_per_million_cal, U_cost_per_million_cal, V_gen_cost_per_kWh, W_gen_cost_per_kWh, X_saving_per_kWh,
+        // Combined weighted metrics
+        combinedA_total_rs: (fsa_annual_cost_rs + optA.annual_cost_rs),
+        combinedB_total_rs: (fsa_annual_cost_rs + optB.annual_cost_rs),
+        combinedA_total_cr: (fsa_annual_cost_rs + optA.annual_cost_rs) / 1e7,
+        combinedB_total_cr: (fsa_annual_cost_rs + optB.annual_cost_rs) / 1e7,
+        combinedA_cost_per_million: combinedA_cost_per_million,
+        combinedB_cost_per_million: combinedB_cost_per_million,
+        combinedA_gen_cost_per_kWh: combinedA_gen_cost_per_kWh,
+        combinedB_gen_cost_per_kWh: combinedB_gen_cost_per_kWh,
+        combined_diff_gen_cost_per_kWh: combined_diff_gen_cost_per_kWh
+      };
+    }
+
+    function renderResultArea(card, res){
+      const area = card.querySelector('.resultArea');
+      if(!res){ area.innerHTML = ''; return; }
+      area.innerHTML = `
+        <div class="resultCard">
+          <div><strong>${res.plantTitle}</strong></div>
+          <div>Annual Req: ${res.E_lakh.toFixed(2)} Lakh MT</div>
+          <div>Total Energy: ${Number(res.total_kcal/1e6).toFixed(3)} Million kcal</div>
+          <div>FSA Energy: ${Number(res.FSA_energy_kcal/1e6).toFixed(3)} Million kcal — Qty: ${Number(res.fsa_qty_lakh).toFixed(2)} Lakh MT — Cost: ₹${res.fsa_cost_crore.toFixed(2)} Cr</div>
+          <div>Balance Energy: ${Number(res.J_kcal/1e6).toFixed(3)} Million kcal</div>
+          <div>${res.optionAName}: ${res.FLEXI.qty_lakh.toFixed(2)} Lakh MT — Cost: ₹${res.FLEXI.annual_cost_crore.toFixed(2)} Cr</div>
+          <div>${res.optionBName}: ${res.Pachhwara.qty_lakh.toFixed(2)} Lakh MT — Cost: ₹${res.Pachhwara.annual_cost_crore.toFixed(2)} Cr</div>
+          <div class="bestOption ${res.betterName===res.optionAName ? 'bestA' : 'bestB'}">Best Option: <strong>${res.betterName}</strong> — Annual Saving: ₹${res.saving_crore.toFixed(2)} Cr</div>
+          <hr>
+          <div><strong>Cost Metrics (${res.optionAName} vs ${res.optionBName})</strong></div>
+          <div>${res.optionAName} Cost (Rs/Million Cal): ${Number(res.T_cost_per_million_cal/1000).toFixed(3)}</div>
+          <div>${res.optionBName} Cost (Rs/Million Cal): ${Number(res.U_cost_per_million_cal/1000).toFixed(3)}</div>
+          <div>${res.optionAName} Generation Cost (Rs/kWh): ${Number(res.V_gen_cost_per_kWh).toFixed(2)}</div>
+          <div>${res.optionBName} Generation Cost (Rs/kWh): ${Number(res.W_gen_cost_per_kWh).toFixed(2)}</div>
+          <div>Saving per Unit (Rs/kWh) (${res.optionAName} - ${res.optionBName}): ${Number(res.X_saving_per_kWh).toFixed(2)}</div>
+
+          <hr>
+          <div><strong>Cost Metrics (${res.plantTitle})</strong></div>
+          ${(() => {
+            try{
+              const fsaRs = Number(res.fsa_annual_cost_rs) || 0;
+              const aRs = Number(res.FLEXI.annual_cost_rs) || (Number(res.FLEXI.annual_cost_crore || 0) * 1e7);
+              const bRs = Number(res.Pachhwara.annual_cost_rs) || (Number(res.Pachhwara.annual_cost_crore || 0) * 1e7);
+              const totalA = fsaRs + aRs;
+              const totalB = fsaRs + bRs;
+              const totalA_cr = totalA / 1e7;
+              const totalB_cr = totalB / 1e7;
+              // Use weighted combined metrics computed in calculateForCard
+              const totalA_cr_disp = Number(res.combinedA_total_cr || totalA_cr);
+              const totalB_cr_disp = Number(res.combinedB_total_cr || totalB_cr);
+              const combinedA_cost_per_million = Number(res.combinedA_cost_per_million || 0);
+              const combinedB_cost_per_million = Number(res.combinedB_cost_per_million || 0);
+              const combinedA_gen = Number(res.combinedA_gen_cost_per_kWh || 0);
+              const combinedB_gen = Number(res.combinedB_gen_cost_per_kWh || 0);
+              const diffKwh = combinedA_gen - combinedB_gen;
+              return `
+                <div>FSA + ${res.optionAName} — Total Cost: ₹${totalA_cr_disp.toFixed(2)} Cr — Cost (Rs/Million Cal): ${(combinedA_cost_per_million/1000).toFixed(3)} — Gen Cost (Rs/kWh): ${combinedA_gen.toFixed(4)}</div>
+                <div>FSA + ${res.optionBName} — Total Cost: ₹${totalB_cr_disp.toFixed(2)} Cr — Cost (Rs/Million Cal): ${(combinedB_cost_per_million/1000).toFixed(3)} — Gen Cost (Rs/kWh): ${combinedB_gen.toFixed(4)}</div>
+                <div>Difference (Rs/kWh) (${res.optionAName} - ${res.optionBName}): ${diffKwh.toFixed(4)}</div>
+              `;
+            }catch(e){ return '<div>Error computing combined metrics</div>'; }
+          })()}
+        </div>
+      `;
+    }
+
+    function updateGlobalResults(){
+      const cards = Array.from(document.querySelectorAll('.plant-card'));
+      const summaries = [];
+      cards.forEach(c=>{
+        const resArea = c.querySelector('.resultArea');
+        const calcBtn = c.querySelector('.calcBtn');
+        // Try to compute silently
+        try{
+          const res = calculateForCard(c);
+          if(res){
+            summaries.push({title:res.plantTitle,best:res.betterName,saving:res.saving_crore});
+            // mark card visually (highlight when Option A is better)
+            c.classList.toggle('chosen', res.betterName===res.optionAName);
+            // populate result area if empty
+            if(resArea.innerHTML.trim()==='') renderResultArea(c,res);
+          }
+        }catch(e){/*ignore*/}
+      });
+
+      const out = document.getElementById('globalResults');
+      if(summaries.length===0){ out.innerHTML=''; return; }
+      out.innerHTML = '<h3>Summary</h3>' + summaries.map(s=>`<div>${s.title}: Best — <strong>${s.best}</strong>; Saving ₹${s.saving.toFixed(2)} Cr</div>`).join('');
+    }
+
+    // Controls
+    document.getElementById('addPlantBtn').addEventListener('click', ()=>{
+      // Add empty card with select for presets
+      const card = createPlantCard();
+      document.getElementById('plantsContainer').appendChild(card);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      if(!confirm('Reset all plants?')) return;
+      document.getElementById('plantsContainer').innerHTML='';
+      plantIdCounter = 0;
+      addInitialPlant();
+      updateGlobalResults();
+    });
+
+    function addInitialPlant(){
+      // Start with one blank plant (user will select preset or enter values)
+      const card = createPlantCard();
+      document.getElementById('plantsContainer').appendChild(card);
+    }
+
+    // Init
+    addInitialPlant();
+    updateGlobalResults();
+
+    // Night/day toggle
+    document.getElementById('nightToggle').addEventListener('click', ()=>{
+      const btn = document.getElementById('nightToggle');
+      const isNight = document.body.classList.toggle('night');
+      btn.innerHTML = isNight ? '☀️' : '🌙';
+    });
+
+    /**
+     * Go back to calculators page (tries parent opener then falls back to index)
+     */
+    function goBackToCalculators(){
+      if(window.opener && !window.opener.closed){
+        try{
+          window.opener.focus();
+          if(typeof window.opener.showCalculatorsPage === 'function') window.opener.showCalculatorsPage();
+          window.close();
+          return;
+        }catch(e){ /* fallthrough to redirect */ }
+      }
+      try{ window.location.href = 'index.html#calculators'; }catch(e){ alert('Please use browser back or close this tab to return to calculators'); }
+    }
+
+    // Export functions
+    async function exportToPDF(){
+      try{
+        const cards = Array.from(document.querySelectorAll('.plant-card'));
+        if(cards.length===0){ alert('No plants to export'); return; }
+        // collect plant names and values (same order as snapshot)
+        const plantNames = [];
+        const plantValues = [];
+        cards.forEach(c=>{
+          try{
+            const r = calculateForCard(c);
+            plantNames.push(r.plantTitle || 'Plant');
+            const costDiff = (Number(r.FLEXI.annual_cost_crore) - Number(r.Pachhwara.annual_cost_crore)).toFixed(4);
+            const fsaRs = Number(r.fsa_annual_cost_rs || (Number(r.fsa_cost_crore||0) * 1e7));
+            const aRs = Number(r.FLEXI.annual_cost_rs || (Number(r.FLEXI.annual_cost_crore||0) * 1e7));
+            const bRs = Number(r.Pachhwara.annual_cost_rs || (Number(r.Pachhwara.annual_cost_crore||0) * 1e7));
+            const totalA = fsaRs + aRs;
+            const totalB = fsaRs + bRs;
+            // Prefer weighted combined metrics from calculateForCard if available
+            const totalA_cr = (r.combinedA_total_cr !== undefined) ? Number(r.combinedA_total_cr).toFixed(2) : ((totalA / 1e7).toFixed(2));
+            const totalB_cr = (r.combinedB_total_cr !== undefined) ? Number(r.combinedB_total_cr).toFixed(2) : ((totalB / 1e7).toFixed(2));
+            const costPerMillionA_display = ((Number(r.combinedA_cost_per_million || (totalA * 1e6 / (Number(r.total_kcal||1)))))/1000).toFixed(3);
+            const costPerMillionB_display = ((Number(r.combinedB_cost_per_million || (totalB * 1e6 / (Number(r.total_kcal||1)))))/1000).toFixed(3);
+            const genCostA = (Number(r.combinedA_gen_cost_per_kWh || (totalA / (Number(r.generation_kWh || 1))))).toFixed(4);
+            const genCostB = (Number(r.combinedB_gen_cost_per_kWh || (totalB / (Number(r.generation_kWh || 1))))).toFixed(4);
+            const diffKwh = (Number(genCostA) - Number(genCostB)).toFixed(4);
+            plantValues.push([
+              r.capacity || '', r.plf || '', r.normativeGCV || '', r.SHR || '', Number(r.E_lakh).toFixed(4), Number(r.fsa_qty_lakh).toFixed(4), Number(r.fsa_cost_crore).toFixed(4),
+              r.optionAName || '', Number(r.FLEXI.qty_lakh).toFixed(4), Number(r.FLEXI.annual_cost_crore).toFixed(4),
+              r.optionBName || '', Number(r.Pachhwara.qty_lakh).toFixed(4), Number(r.Pachhwara.annual_cost_crore).toFixed(4),
+              r.betterName || '', costDiff,
+              (Number(r.T_cost_per_million_cal)/1000).toFixed(3), (Number(r.U_cost_per_million_cal)/1000).toFixed(3), Number(r.V_gen_cost_per_kWh).toFixed(2), Number(r.W_gen_cost_per_kWh).toFixed(2), Number(r.X_saving_per_kWh).toFixed(2),
+              totalA_cr, costPerMillionA_display, genCostA, totalB_cr, costPerMillionB_display, genCostB, diffKwh
+            ]);
+          }catch(e){}
+        });
+
+        // base metrics (we will augment with combined metrics below)
+        const baseMetrics = ['Capacity(MW)','PLF(%)','GCV(kcal/kg)','SHR(kcal/kWh)','Annual Req (Lakh MT)','FSA Qty (Lakh MT)','FSA Cost (Rs Cr)','Option A','OptA Qty (Lakh MT)','OptA Cost (Rs Cr)','Option B','OptB Qty (Lakh MT)','OptB Cost (Rs Cr)','Best Option','Cost Difference (Rs Cr)','Cost A (Rs/Million Cal)','Cost B (Rs/Million Cal)','Gen Cost A (Rs/kWh)','Gen Cost B (Rs/kWh)','Saving per kWh (Rs)'];
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p','mm','a4'); // portrait
+
+        const marginLeft = 20;
+        doc.setFontSize(14);
+        doc.setFont(undefined,'bold');
+        doc.text('Coal Optimizations at Plants', marginLeft, 18);
+
+        // Build dynamic metric labels using first plant's option names if available
+        const firstOptA = (plantValues[0] && plantValues[0][7]) || 'Option A';
+        const firstOptB = (plantValues[0] && plantValues[0][10]) || 'Option B';
+        const combinedMetrics = [
+          `FSA + ${firstOptA} Total Cost (Rs Cr)`,
+          `FSA + ${firstOptA} Cost (Rs/Million Cal)`,
+          `FSA + ${firstOptA} Gen Cost (Rs/kWh)`,
+          `FSA + ${firstOptB} Total Cost (Rs Cr)`,
+          `FSA + ${firstOptB} Cost (Rs/Million Cal)`,
+          `FSA + ${firstOptB} Gen Cost (Rs/kWh)`,
+          `Difference (Rs/kWh)`
+        ];
+        const metrics = baseMetrics.concat(combinedMetrics);
+
+        const head = [[ 'Metric', ...plantNames ]];
+        const body = metrics.map((m,mi)=>{
+          return [m, ...plantValues.map(pv=> pv[mi] !== undefined ? pv[mi] : '')];
+        });
+
+        doc.autoTable({
+          head: head,
+          body: body,
+          startY: 26,
+          margin: {left: marginLeft, right: 10},
+          styles: {fontSize:8, cellPadding:2},
+          bodyStyles: {minCellHeight: 6},
+          headStyles: {fillColor: [44,90,160], textColor:255, fontStyle:'bold'},
+          theme: 'grid'
+        });
+
+        doc.save('coal-comparator.pdf');
+      }catch(err){
+        console.error(err); alert('PDF export failed: '+err.message);
+      }
+    }
+
+    async function exportToJPG(){
+      const snapshot = buildExportSnapshot();
+      // force portrait-like width for JPG (approx A4 at 96dpi: 794px width)
+      snapshot.style.width = '794px';
+      snapshot.style.boxSizing = 'border-box';
+      document.body.appendChild(snapshot);
+      const opts = {scale:3, useCORS:true, allowTaint:false, logging:false, width: snapshot.scrollWidth, height: snapshot.scrollHeight, windowWidth: document.documentElement.offsetWidth};
+      const canvas = await html2canvas(snapshot, opts);
+      const link = document.createElement('a');
+      link.download = 'coal-comparator.jpg';
+      link.href = canvas.toDataURL('image/jpeg',1.0);
+      link.click();
+      snapshot.remove();
+    }
+
+    function exportToCSV(){
+      const cards = Array.from(document.querySelectorAll('.plant-card'));
+      let metrics = null; // will build after we collect plantValues so we can use option names
+      const plantValues = [];
+      const plantNames = [];
+      cards.forEach(c=>{
+        try{
+          const r = calculateForCard(c);
+          plantNames.push(r.plantTitle || 'Plant');
+          const costDiff = (Number(r.FLEXI.annual_cost_crore) - Number(r.Pachhwara.annual_cost_crore)).toFixed(4);
+          const fsaRs = Number(r.fsa_annual_cost_rs || (Number(r.fsa_cost_crore||0) * 1e7));
+          const aRs = Number(r.FLEXI.annual_cost_rs || (Number(r.FLEXI.annual_cost_crore||0) * 1e7));
+          const bRs = Number(r.Pachhwara.annual_cost_rs || (Number(r.Pachhwara.annual_cost_crore||0) * 1e7));
+          const totalA = fsaRs + aRs;
+          const totalB = fsaRs + bRs;
+          const totalA_cr = (totalA / 1e7).toFixed(2);
+          const totalB_cr = (totalB / 1e7).toFixed(2);
+            // use weighted combined metrics if available
+            const totalA_cr_disp = (r.combinedA_total_cr !== undefined) ? Number(r.combinedA_total_cr).toFixed(2) : totalA_cr;
+            const totalB_cr_disp = (r.combinedB_total_cr !== undefined) ? Number(r.combinedB_total_cr).toFixed(2) : totalB_cr;
+            const costPerMillionA_display = ((Number(r.combinedA_cost_per_million || (totalA * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+            const costPerMillionB_display = ((Number(r.combinedB_cost_per_million || (totalB * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+            const genCostA = (Number(r.combinedA_gen_cost_per_kWh || (totalA / (Number(r.generation_kWh || 1))))).toFixed(4);
+            const genCostB = (Number(r.combinedB_gen_cost_per_kWh || (totalB / (Number(r.generation_kWh || 1))))).toFixed(4);
+          const diffKwh = (Number(genCostA) - Number(genCostB)).toFixed(4);
+          plantValues.push([
+            r.capacity || '', r.plf || '', r.normativeGCV || '', r.SHR || '', Number(r.E_lakh).toFixed(4), Number(r.fsa_qty_lakh).toFixed(4), Number(r.fsa_cost_crore).toFixed(4),
+            r.optionAName || '', Number(r.FLEXI.qty_lakh).toFixed(4), Number(r.FLEXI.annual_cost_crore).toFixed(4),
+            r.optionBName || '', Number(r.Pachhwara.qty_lakh).toFixed(4), Number(r.Pachhwara.annual_cost_crore).toFixed(4),
+            r.betterName || '', costDiff,
+            (Number(r.T_cost_per_million_cal)/1000).toFixed(3), (Number(r.U_cost_per_million_cal)/1000).toFixed(3), Number(r.V_gen_cost_per_kWh).toFixed(2), Number(r.W_gen_cost_per_kWh).toFixed(2), Number(r.X_saving_per_kWh).toFixed(2),
+            totalA_cr_disp, costPerMillionA_display, genCostA, totalB_cr_disp, costPerMillionB_display, genCostB, diffKwh
+          ]);
+        }catch(e){ }
+      });
+
+      // build metrics now using first plant's option names
+      const firstOptA = (plantValues[0] && plantValues[0][7]) || 'Option A';
+      const firstOptB = (plantValues[0] && plantValues[0][10]) || 'Option B';
+      metrics = ['Plant','Capacity(MW)','PLF(%)','GCV(kcal/kg)','SHR(kcal/kWh)','Annual Req (Lakh MT)','FSA Qty (Lakh MT)','FSA Cost (Rs Crore)',
+        `Option A ${firstOptA}`, `${firstOptA} Qty (Lakh MT)`, `${firstOptA} Cost (Rs Cr)`,
+        `Option B ${firstOptB}`, `${firstOptB} Qty (Lakh MT)`, `${firstOptB} Cost (Rs Cr)`,
+        'Best Option','Cost Difference (Rs Cr)', 'Cost A (Rs/Million Cal)','Cost B (Rs/Million Cal)','Gen Cost A (Rs/kWh)','Gen Cost B (Rs/kWh)','Saving per kWh (Rs)',
+        `FSA + ${firstOptA} Total Cost (Rs Cr)`, `FSA + ${firstOptA} Cost (Rs/Million Cal)`, `FSA + ${firstOptA} Gen Cost (Rs/kWh)`,
+        `FSA + ${firstOptB} Total Cost (Rs Cr)`, `FSA + ${firstOptB} Cost (Rs/Million Cal)`, `FSA + ${firstOptB} Gen Cost (Rs/kWh)`,
+        'Difference (Rs/kWh)'];
+
+      // build transposed rows: first row is title row with plant names
+      const rows = [];
+      rows.push(["Coal Optimizations at Plants", ...plantNames]);
+      // metrics start from index 1 because 'Plant' metric is covered by plantNames
+      const metricKeys = metrics.slice(1);
+      metricKeys.forEach((m, idx)=>{
+        const row = [m];
+        plantValues.forEach(pv=> row.push(pv[idx] !== undefined ? pv[idx] : ''));
+        rows.push(row);
+      });
+
+      const csv = rows.map(r=>r.map(cell=>`"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'coal-comparator.csv';
+      link.click();
+    }
+
+    // Build a clean HTML snapshot (table) for export (PDF/JPG) so inputs aren't chopped
+    function buildExportSnapshot(){
+      const cards = Array.from(document.querySelectorAll('.plant-card'));
+      const wrapper = document.createElement('div');
+      wrapper.style.background = document.body.classList.contains('night') ? '#f3f7fb' : '#ffffff';
+      wrapper.style.color = document.body.classList.contains('night') ? '#062029' : '#222';
+      wrapper.style.maxWidth = '1200px';
+      // left margin larger than right to align top-left
+      wrapper.style.margin = '10px 20px 10px 60px';
+      wrapper.style.padding = '16px';
+      wrapper.style.boxShadow = '0 6px 18px rgba(0,0,0,0.05)';
+      wrapper.style.borderRadius = '6px';
+      wrapper.style.textAlign = 'left';
+
+      const title = document.createElement('h2');
+      title.textContent = 'Coal Optimizations at Plants';
+      title.style.marginBottom = '12px';
+      title.style.color = wrapper.style.color;
+      wrapper.appendChild(title);
+
+      let metrics = null;
+
+      // collect plant names and their values
+      const plantNames = [];
+      const plantValues = [];
+      cards.forEach(c=>{
+        try{
+          const r = calculateForCard(c);
+          plantNames.push(r.plantTitle || 'Plant');
+          const costDiff = (Number(r.FLEXI.annual_cost_crore) - Number(r.Pachhwara.annual_cost_crore)).toFixed(4);
+          const fsaRs = Number(r.fsa_annual_cost_rs || (Number(r.fsa_cost_crore||0) * 1e7));
+          const aRs = Number(r.FLEXI.annual_cost_rs || (Number(r.FLEXI.annual_cost_crore||0) * 1e7));
+          const bRs = Number(r.Pachhwara.annual_cost_rs || (Number(r.Pachhwara.annual_cost_crore||0) * 1e7));
+          const totalA = fsaRs + aRs;
+          const totalB = fsaRs + bRs;
+          const totalA_cr = (totalA / 1e7).toFixed(2);
+          const totalB_cr = (totalB / 1e7).toFixed(2);
+          const totalA_cr_disp = (r.combinedA_total_cr !== undefined) ? Number(r.combinedA_total_cr).toFixed(2) : totalA_cr;
+          const totalB_cr_disp = (r.combinedB_total_cr !== undefined) ? Number(r.combinedB_total_cr).toFixed(2) : totalB_cr;
+          const costPerMillionA_display = ((Number(r.combinedA_cost_per_million || (totalA * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+          const costPerMillionB_display = ((Number(r.combinedB_cost_per_million || (totalB * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+          const genCostA = (Number(r.combinedA_gen_cost_per_kWh || (totalA / (Number(r.generation_kWh || 1))))).toFixed(4);
+          const genCostB = (Number(r.combinedB_gen_cost_per_kWh || (totalB / (Number(r.generation_kWh || 1))))).toFixed(4);
+          const diffKwh = (Number(genCostA) - Number(genCostB)).toFixed(4);
+          plantValues.push([
+            r.capacity || '', r.plf || '', r.normativeGCV || '', r.SHR || '', Number(r.E_lakh).toFixed(4), Number(r.fsa_qty_lakh).toFixed(4), Number(r.fsa_cost_crore).toFixed(4),
+              r.optionAName || '', Number(r.FLEXI.qty_lakh).toFixed(4), Number(r.FLEXI.annual_cost_crore).toFixed(4),
+              r.optionBName || '', Number(r.Pachhwara.qty_lakh).toFixed(4), Number(r.Pachhwara.annual_cost_crore).toFixed(4),
+              r.betterName || '', costDiff,
+              (Number(r.T_cost_per_million_cal)/1000).toFixed(3), (Number(r.U_cost_per_million_cal)/1000).toFixed(3), Number(r.V_gen_cost_per_kWh).toFixed(2), Number(r.W_gen_cost_per_kWh).toFixed(2), Number(r.X_saving_per_kWh).toFixed(2),
+                totalA_cr_disp, costPerMillionA_display, genCostA, totalB_cr_disp, costPerMillionB_display, genCostB, diffKwh
+          ]);
+        }catch(e){}
+      });
+
+        // build dynamic metrics labels using first plant option names
+        const firstOptA = (plantValues[0] && plantValues[0][7]) || 'Option A';
+        const firstOptB = (plantValues[0] && plantValues[0][10]) || 'Option B';
+        metrics = ['Capacity(MW)','PLF(%)','GCV(kcal/kg)','SHR(kcal/kWh)','Annual Req (Lakh MT)','FSA Qty (Lakh MT)','FSA Cost (Rs Cr)',
+          `Option A ${firstOptA}`, `${firstOptA} Qty (Lakh MT)`, `${firstOptA} Cost (Rs Cr)`,
+          `Option B ${firstOptB}`, `${firstOptB} Qty (Lakh MT)`, `${firstOptB} Cost (Rs Cr)`,
+          'Best Option','Cost Difference (Rs Cr)', 'Cost A (Rs/Million Cal)','Cost B (Rs/Million Cal)','Gen Cost A (Rs/kWh)','Gen Cost B (Rs/kWh)','Saving per kWh (Rs)',
+          `FSA + ${firstOptA} Total Cost (Rs Cr)`, `FSA + ${firstOptA} Cost (Rs/Million Cal)`, `FSA + ${firstOptA} Gen Cost (Rs/kWh)`,
+          `FSA + ${firstOptB} Total Cost (Rs Cr)`, `FSA + ${firstOptB} Cost (Rs/Million Cal)`, `FSA + ${firstOptB} Gen Cost (Rs/kWh)`,
+          'Difference (Rs/kWh)'];
+
+      const table = document.createElement('table');
+      table.style.borderCollapse = 'collapse';
+      table.style.fontSize = '12px';
+      table.style.marginLeft = '0';
+
+      // header row: first cell empty (title is above), then plant names
+      const thead = document.createElement('thead');
+      const hr = document.createElement('tr');
+      const firstTh = document.createElement('th');
+      firstTh.textContent = '';
+      firstTh.style.border = '1px solid #ccc';
+      firstTh.style.padding = '6px';
+      firstTh.style.background = '#f4f6f8';
+      hr.appendChild(firstTh);
+      plantNames.forEach(pn=>{
+        const th = document.createElement('th');
+        th.textContent = pn;
+        th.style.border = '1px solid #ccc';
+        th.style.padding = '6px';
+        th.style.background = '#f4f6f8';
+        hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      metrics.forEach((m, mi)=>{
+        const tr = document.createElement('tr');
+        const tdLabel = document.createElement('td');
+        tdLabel.textContent = m;
+        tdLabel.style.border = '1px solid #ddd';
+        tdLabel.style.padding = '6px';
+        tdLabel.style.fontWeight = '600';
+        tr.appendChild(tdLabel);
+        plantValues.forEach(pv=>{
+          const td = document.createElement('td');
+          td.textContent = pv[mi] !== undefined ? pv[mi] : '';
+          td.style.border = '1px solid #ddd';
+          td.style.padding = '6px';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+
+      const note = document.createElement('div');
+      note.style.marginTop = '10px';
+      note.style.fontSize = '11px';
+      note.textContent = 'Snapshot generated for export. Values shown are as entered.';
+      wrapper.appendChild(note);
+
+      wrapper.id = 'exportSnapshot';
+      return wrapper;
+    }
+
+    function exportToXLSX(){
+      const cards = Array.from(document.querySelectorAll('.plant-card'));
+      let metrics = null;
+      const plantNames = [];
+      const plantValues = [];
+      cards.forEach(c=>{
+        try{
+          const r = calculateForCard(c);
+          plantNames.push(r.plantTitle || 'Plant');
+          const costDiff = (Number(r.FLEXI.annual_cost_crore) - Number(r.Pachhwara.annual_cost_crore)).toFixed(4);
+          const fsaRs = Number(r.fsa_annual_cost_rs || (Number(r.fsa_cost_crore||0) * 1e7));
+          const aRs = Number(r.FLEXI.annual_cost_rs || (Number(r.FLEXI.annual_cost_crore||0) * 1e7));
+          const bRs = Number(r.Pachhwara.annual_cost_rs || (Number(r.Pachhwara.annual_cost_crore||0) * 1e7));
+          const totalA = fsaRs + aRs;
+          const totalB = fsaRs + bRs;
+          const totalA_cr = (totalA / 1e7).toFixed(2);
+          const totalB_cr = (totalB / 1e7).toFixed(2);
+            const totalA_cr_disp = (r.combinedA_total_cr !== undefined) ? Number(r.combinedA_total_cr).toFixed(2) : totalA_cr;
+            const totalB_cr_disp = (r.combinedB_total_cr !== undefined) ? Number(r.combinedB_total_cr).toFixed(2) : totalB_cr;
+            const costPerMillionA_display = ((Number(r.combinedA_cost_per_million || (totalA * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+            const costPerMillionB_display = ((Number(r.combinedB_cost_per_million || (totalB * 1e6 / (Number(r.total_kcal || 1)))))/1000).toFixed(3);
+            const genCostA = (Number(r.combinedA_gen_cost_per_kWh || (totalA / (Number(r.generation_kWh || 1))))).toFixed(4);
+            const genCostB = (Number(r.combinedB_gen_cost_per_kWh || (totalB / (Number(r.generation_kWh || 1))))).toFixed(4);
+          const diffKwh = (Number(genCostA) - Number(genCostB)).toFixed(4);
+          plantValues.push([
+            r.capacity || '', r.plf || '', r.normativeGCV || '', r.SHR || '', Number(r.E_lakh).toFixed(4), Number(r.fsa_qty_lakh).toFixed(4), Number(r.fsa_cost_crore).toFixed(4),
+            r.optionAName || '', Number(r.FLEXI.qty_lakh).toFixed(4), Number(r.FLEXI.annual_cost_crore).toFixed(4),
+            r.optionBName || '', Number(r.Pachhwara.qty_lakh).toFixed(4), Number(r.Pachhwara.annual_cost_crore).toFixed(4),
+            r.betterName || '', costDiff,
+            (Number(r.T_cost_per_million_cal)/1000).toFixed(3), (Number(r.U_cost_per_million_cal)/1000).toFixed(3), Number(r.V_gen_cost_per_kWh).toFixed(2), Number(r.W_gen_cost_per_kWh).toFixed(2), Number(r.X_saving_per_kWh).toFixed(2),
+            totalA_cr_disp, costPerMillionA_display, genCostA, totalB_cr_disp, costPerMillionB_display, genCostB, diffKwh
+          ]);
+        }catch(e){}
+      });
+
+      // build dynamic metric labels using first plant option names
+      const firstOptA = (plantValues[0] && plantValues[0][7]) || 'Option A';
+      const firstOptB = (plantValues[0] && plantValues[0][10]) || 'Option B';
+      metrics = ['Plant','Capacity(MW)','PLF(%)','GCV(kcal/kg)','SHR(kcal/kWh)','Annual Req (Lakh MT)','FSA Qty (Lakh MT)','FSA Cost (Rs Cr)',
+        `Option A ${firstOptA}`, `${firstOptA} Qty (Lakh MT)`, `${firstOptA} Cost (Rs Cr)`,
+        `Option B ${firstOptB}`, `${firstOptB} Qty (Lakh MT)`, `${firstOptB} Cost (Rs Cr)`,
+        'Best Option','Cost Difference (Rs Cr)', 'Cost A (Rs/Million Cal)','Cost B (Rs/Million Cal)','Gen Cost A (Rs/kWh)','Gen Cost B (Rs/kWh)','Saving per kWh (Rs)',
+        `FSA + ${firstOptA} Total Cost (Rs Cr)`, `FSA + ${firstOptA} Cost (Rs/Million Cal)`, `FSA + ${firstOptA} Gen Cost (Rs/kWh)`,
+        `FSA + ${firstOptB} Total Cost (Rs Cr)`, `FSA + ${firstOptB} Cost (Rs/Million Cal)`, `FSA + ${firstOptB} Gen Cost (Rs/kWh)`,
+        'Difference (Rs/kWh)'];
+
+      const rows = [];
+      rows.push(["Coal Optimizations at Plants", ...plantNames]);
+      // metrics start from index 1 because 'Plant' metric is covered by plantNames
+      const metricKeys = metrics.slice(1);
+      metricKeys.forEach((m, idx)=>{
+        const row = [m];
+        plantValues.forEach(pv=> row.push(pv[idx] !== undefined ? pv[idx] : ''));
+        rows.push(row);
+      });
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Comparator');
+      XLSX.writeFile(wb, 'coal-comparator.xlsx');
+    }
+
+    document.getElementById('exportXlsx').addEventListener('click', exportToXLSX);
+
+    document.getElementById('exportPdf').addEventListener('click', exportToPDF);
+    document.getElementById('exportJpg').addEventListener('click', exportToJPG);
+    document.getElementById('exportCsv').addEventListener('click', exportToCSV);
+  </script>
+</body>
+</html>

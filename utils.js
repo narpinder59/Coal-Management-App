@@ -338,6 +338,17 @@ function showCalculatorsPage() {
                             </button>
                         </div>
 
+                        <!-- Multi-Plant Coal Optimization -->
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-secondary">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-grid-3x3-gap text-secondary me-3 fs-5"></i>
+                                <span class="fw-medium">Multi-Plant Coal Optimization</span>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="window.open('Multi-Plant-Coal-Optimization.html', '_blank')">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open
+                            </button>
+                        </div>
+
                         <!-- Blended Coal Analysis -->
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-primary">
                             <div class="d-flex align-items-center">
@@ -446,4 +457,16 @@ async function loadCostAnalysisCalculator() {
 function showCostAnalysisCalculator() {
     console.log("Redirecting to Cost Analysis of 2 Types of Coal Calculator...");
     window.open('Cost Analysis of 2 Types of Coal.html', '_blank');
+}
+
+// Load Multi-Plant Coal Optimization in new tab
+async function loadMultiPlantComparator() {
+    console.log("Opening Multi-Plant Coal Optimization in new tab...");
+    window.open('Multi-Plant-Coal-Comparator.html', '_blank');
+}
+
+// Compatibility function for Multi-Plant Coal Optimization
+function showMultiPlantComparator() {
+    console.log("Redirecting to Multi-Plant Coal Optimization...");
+    window.open('Multi-Plant-Coal-Comparator.html', '_blank');
 }
